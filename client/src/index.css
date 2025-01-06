@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    scroll-behavior: smooth;
+}
+
+.active {
+    color: rgb(79, 70, 229);
+    background-color: rgb(243, 244, 246);
+}
+
+.mobile-menu {
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-menu-button {
+    transition: transform 0.3s ease-in-out;
+}
