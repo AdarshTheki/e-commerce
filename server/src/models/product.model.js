@@ -1,30 +1,60 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const productSchema = new Schema({
-  title: { type: String, required: true, index: true },
-  status: {
-    type: String,
-    required: true,
-    default: "INACTIVE",
-    enum: ["ACTIVE", "INACTIVE"],
+const productSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 100,
+    },
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
+    brand: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    thumbnail: String,
+    images: [String],
+    description: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
+    },
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    stock: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    discount: {
+      type: Number,
+      min: 0,
+      max: 100,
+    },
   },
-  trending: {
-    type: String,
-    required: true,
-    default: "NO",
-    enum: ["YES", "NO"],
-  },
-  category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
-  brand: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
-  variant: { type: Schema.Types.ObjectId, ref: "Variant" },
-  lowest_variants: [{ type: Schema.Types.ObjectId, ref: "Variant" }],
-  discount_price: { type: Number, required: true, default: 0 },
-  original_price: { type: Number, required: true, default: 0 },
-  delivery_amount: { type: Number, required: true, default: 0 },
-  specification: { type: String, required: true },
-  overview: { type: String, required: true },
-});
+  { timestamps: true }
+);
 
 productSchema.plugin(aggregatePaginate);
 

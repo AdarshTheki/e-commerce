@@ -35,18 +35,18 @@ import reviewRoute from "./routes/review.router.js";
 import categoryRoute from "./routes/category.router.js";
 import brandRoute from "./routes/brand.router.js";
 import variantRoute from "./routes/variant.router.js";
+import cartRoute from "./routes/cart.router.js";
 import { ApiError } from "./utils/ApiError.js";
-import cartRouter from "./routes/cart.router.js";
 
 // used all base url
-app.use("/api/v1/users", userRoute);
-app.use("/api/v1/products", productRoute);
-app.use("/api/v1/orders", orderRoute);
-app.use("/api/v1/reviews", reviewRoute);
+app.use("/api/v1/user", userRoute);
+app.use("/api/v1/product", productRoute);
+app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/brand", brandRoute);
 app.use("/api/v1/variant", variantRoute);
-app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/cart", cartRoute);
 
 app.get("/api/v1", async (req, res) =>
   res.send(`<h2>Check Health Success</h2>`)

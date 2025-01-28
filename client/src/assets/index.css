@@ -3,18 +3,34 @@
 @tailwind utilities;
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 .active {
-    color: rgb(79, 70, 229);
-    background-color: rgb(243, 244, 246);
+  color: rgb(79, 70, 229);
 }
 
-.mobile-menu {
-    transition: transform 0.3s ease-in-out;
-}
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 1px;
+    height: 1px;
+  }
 
-.mobile-menu-button {
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 2px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .mobile-menu {
     transition: transform 0.3s ease-in-out;
+  }
+
+  .mobile-menu-button {
+    transition: transform 0.3s ease-in-out;
+  }
 }

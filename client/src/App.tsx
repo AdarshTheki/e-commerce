@@ -1,45 +1,40 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Loading } from './utils';
+import { PrivateRoute } from './components';
 import {
-  ProductUpdate,
-  ProductCreate,
-  ProductListing,
-  ProfileSettings,
-  CategoryListing,
-} from './Admin/Pages';
-import { PrivateRoute, Login, Register } from './Component';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
-import { Header, Footer } from './Utils';
-import { login } from './Redux/authSlice';
-import instance from './axiosInstance';
+  Login,
+  Register,
+  Notfound,
+  Analytics,
+  Dashboard,
+  Customers,
+  Inventory,
+  Products,
+} from './pages';
+import useFetch from './hooks/useFetch';
 
-const App = () => {
-  const dispatch = useDispatch();
+const App: React.FC = () => {
+  const { data, loading } = useFetch<FetchResponseProp>('/api/v1/user/me');
 
-  useEffect(() => {
-    instance
-      .get('/users/me')
-      .then((res) => dispatch(login(res?.data?.data)))
-      .catch((err) => console.log(err));
-  }, [dispatch]);
+  if (loading) return <Loading />;
+
+  const isAuth = data?.user?._id;
 
   return (
     <div className='bg-[#F3F4F6]'>
       <BrowserRouter>
-        <Header />
         <Routes>
-          <Route path='/' element={<h2>Home....</h2>} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/admin' element={<PrivateRoute />}>
-            <Route path='product' element={<ProductListing />} />
-            <Route path='category' element={<CategoryListing />} />
-            <Route path='profile' element={<ProfileSettings />} />
-            <Route path='product/create' element={<ProductCreate />} />
-            <Route path='product/:id/update' element={<ProductUpdate />} />
+          <Route path='' element={<PrivateRoute isAuth={isAuth} />}>
+            <Route index element={<Dashboard />} />
+            <Route path='/analytics' element={<Analytics />} />
+            <Route path='/customers' element={<Customers />} />
+            <Route path='/inventory' element={<Inventory />} />
+            <Route path='/products' element={<Products />} />
+            <Route path='*' element={<Notfound />} />
           </Route>
+          <Route path='/register' element={<Register />} />
+          <Route path='/login' element={<Login />} />
         </Routes>
-        <Footer />
       </BrowserRouter>
     </div>
   );

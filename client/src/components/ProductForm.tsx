@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 
-import { Input, Select, SpinnerBtn, categories, brands, Editor } from '../../Utils';
+import { Input, Select, SpinnerBtn, categories, brands, Editor } from '../utils';
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const [loading, setLoading] = useState<boolean>(false);

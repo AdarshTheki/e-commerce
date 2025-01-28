@@ -1,9 +1,10 @@
-import Cart from './Cart';
-import CategoryListing from './CategoryListing';
-import Checkout from './Checkout';
-import HomePage from './HomePage';
-import MegaMenu from './MegaMenu';
-import ProductDetail from './ProductDetail';
-import ProductListing from './CategoryListing';
+import Login from './Login';
+import Register from './Register';
+import Notfound from './Notfound';
+import Analytics from './Analytics';
+import Customers from './Customers';
+import Dashboard from './Dashboard';
+import Inventory from './Inventory';
+import Products from './Products';
 
-export { Cart, CategoryListing, Checkout, HomePage, MegaMenu, ProductDetail, ProductListing };
+export { Login, Products, Register, Notfound, Analytics, Customers, Dashboard, Inventory };

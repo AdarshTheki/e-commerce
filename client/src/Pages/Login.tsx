@@ -1,14 +1,11 @@
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
-import { Input, SpinnerBtn } from '../Utils';
-import { login } from '../Redux/authSlice';
-import axiosInstance from '../axiosInstance';
+import { Input, SpinnerBtn } from '../utils';
 
-const Login = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,24 +14,30 @@ const Login = () => {
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
 
-    axiosInstance
-      .post('/users/sign-in', { email, password })
-      .then((res) => {
-        setLoading(true);
-        if (res.data?.data) {
-          document.cookie = `token=${res.data?.data?.accessToken}`;
-          dispatch(login(res.data?.data?.user));
-          navigate('/');
-        } else {
-          alert('internal server error');
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    if (!email || !password) {
+      return toast.error('please fill the valid inputs');
+    }
+
+    try {
+      setLoading(true);
+      const { data } = await axios.post(
+        '/api/v1/user/sign-in',
+        { email, password },
+        { withCredentials: true }
+      );
+      if (data) {
+        toast.success('user login succeeded');
+        window.location.href = '/';
+      }
+    } catch (err) {
+      toast.error('user login failed, Try again!', err?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <section className='min-h-screen bg-gray-100 flex items-center justify-center p-4'>
+    <section className='bg-gray-100 flex items-center justify-center p-4'>
       <div className='w-full max-w-md space-y-8'>
         {/* <!-- Login Form --> */}
         <div className='bg-white p-8 rounded-lg border border-gray-200'>
@@ -43,11 +46,11 @@ const Login = () => {
             <p className='text-gray-600 mt-2'>Sign in to your account</p>
           </div>
 
-          <form className='space-y-6' onSubmit={handelSubmit}>
-            <Input name='email' type='email' label='Email' autoComplete='off' />
-            <Input name='password' type='password' label='Password' autoComplete='off' />
+          <form onSubmit={handelSubmit}>
+            <Input name='email' type='email' label='Email' autoComplete='off' required />
+            <Input name='password' type='password' label='Password' autoComplete='off' required />
 
-            <div className='flex items-center justify-between'>
+            <div className='flex my-2 items-center justify-between'>
               <div className='flex items-center'>
                 <input
                   id='checkbox'
@@ -64,7 +67,7 @@ const Login = () => {
               </NavLink>
             </div>
 
-            <div className='flex items-center w-full justify-center'>
+            <div className='flex my-4 items-center w-full justify-center'>
               <SpinnerBtn
                 loading={loading}
                 className='w-full'

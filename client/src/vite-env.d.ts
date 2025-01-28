@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 
+interface FetchResponseProp {
+  message: string;
+  status: boolean;
+  [key?: string]: any;
+}
+
 interface UserType {
   username: string;
   email: string;
@@ -20,20 +26,18 @@ interface PromiseResponseType {
 
 interface ProductType {
   _id: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'active' | 'inactive';
   title: string;
-  original_price?: number;
-  delivery_amount?: number;
-  discount_price?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  specification?: string;
-  overview?: string;
-  trending?: 'YES' | 'NO';
-  category?: CategoryType;
-  brand?: BrandType;
-  lowest_variants?: [VariantType];
-  variant?: VariantType;
+  category: string;
+  brand: string;
+  description: string;
+  price: number;
+  discount: number;
+  rating: number;
+  thumbnail: string;
+  images: [string];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface BrandType {

@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
@@ -53,7 +52,7 @@ const signUp = asyncHandler(async (req, res, next) => {
     }
     return res
       .status(200)
-      .json({ statusCode: 200, message: "user sign-up successfully" });
+      .json({ status: true, message: "user sign-up successfully" });
   } catch (error) {
     next(error);
   }
@@ -88,13 +87,13 @@ const signIn = asyncHandler(async (req, res, next) => {
       .status(200)
       .cookie("refreshToken", refreshToken, payload)
       .cookie("accessToken", accessToken, payload)
-      .json(
-        new ApiResponse(
-          200,
-          { user, accessToken, refreshToken },
-          "sign-in success with cookies are refreshToken and accessToken"
-        )
-      );
+      .json({
+        user,
+        accessToken,
+        refreshToken,
+        message: "sign-in success with cookies",
+        status: true,
+      });
   } catch (error) {
     next(error);
   }
@@ -112,7 +111,7 @@ const logout = asyncHandler(async (req, res, next) => {
       .status(200)
       .clearCookie("refreshToken", { httpOnly: true })
       .clearCookie("accessToken", { httpOnly: true })
-      .json(new ApiResponse(200, {}, "user logged out successfully"));
+      .json({ message: "user logged out successfully", status: true });
   } catch (error) {
     next(error);
   }
@@ -149,13 +148,13 @@ const getRefreshToken = asyncHandler(async (req, res, next) => {
       .status(200)
       .cookie("accessToken", accessToken, { httpOnly: true })
       .cookie("refreshToken", refreshToken, { httpOnly: true })
-      .json(
-        new ApiResponse(
-          200,
-          { user, accessToken, refreshToken },
-          "get new refresh token"
-        )
-      );
+      .json({
+        user,
+        accessToken,
+        refreshToken,
+        status: true,
+        message: "get new refresh token",
+      });
   } catch (error) {
     next(error);
   }
@@ -185,7 +184,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, {}, "update user successfully"));
+      .json({ message: "update user successfully", status: true });
   } catch (error) {
     next(error);
   }
@@ -221,7 +220,7 @@ const updateUserAvatar = asyncHandler(async (req, res, next) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, {}, "update user avatar successfully"));
+      .json({ message: "update user avatar successfully", status: true });
   } catch (error) {
     next(error);
   }
@@ -248,11 +247,11 @@ const removeUserAvatar = asyncHandler(async (req, res, next) => {
       );
       return res
         .status(200)
-        .json(ApiResponse(201, {}, "remove user avatar success"));
+        .json({ message: "remove user avatar success", status: true });
     }
     return res
       .status(401)
-      .json(new ApiResponse(301, {}, "avatar not remove properly"));
+      .json({ message: "avatar not remove properly", status: false });
   } catch (error) {
     next(error);
   }
@@ -266,7 +265,7 @@ const getMe = asyncHandler(async (req, res, next) => {
     }
     return res
       .status(200)
-      .json(new ApiResponse(200, user, "get me user successfully"));
+      .json({ message: "get me user successfully", user, status: true });
   } catch (error) {
     next(error);
   }
@@ -286,15 +285,11 @@ const updateWishlist = asyncHandler(async (req, res, next) => {
       { new: true }
     );
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          { wishlist: updatedUser.wishlist },
-          "get wishlist updated"
-        )
-      );
+    res.status(200).json({
+      wishlist: updatedUser.wishlist,
+      message: "get wishlist updated",
+      status: true,
+    });
   } catch (error) {
     next(error);
   }

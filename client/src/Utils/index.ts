@@ -1,14 +1,10 @@
-import Input from './Input';
-import Label from './Label';
-import Select from './Select';
+import Loading from './Loading';
 import SpinnerBtn from './SpinnerBtn';
-import useFetch from './useFetch';
+import Input from './Input';
+import Select from './Select';
 import Textarea from './Textarea';
-import Editor from './Editor';
-import Header from './Header';
-import Footer from './Footer';
 
-export { SpinnerBtn, Editor, Input, Label, Select, Textarea, Header, Footer, useFetch };
+export { Loading, SpinnerBtn, Input, Select, Textarea };
 
 export const categories = [
   {

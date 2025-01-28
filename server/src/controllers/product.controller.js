@@ -1,228 +1,260 @@
-import { isValidObjectId } from "mongoose";
 import { Product } from "../models/product.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
 import {
   uploadSingleImg,
   uploadMultiImg,
   removeSingleImg,
   removeMultiImg,
 } from "../utils/cloudinary.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
-import { title } from "process";
 
-const getSingleProduct = asyncHandler(async (req, res, next) => {
+const getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    if (!isValidObjectId(productId)) {
-      throw new ApiError(401, "product ID is invalid");
-    }
+    const products = await Product.findById(productId);
 
-    const product = await Product.findById(productId)
-      .populate("category", "-products -createdAt -updatedAt -status")
-      .populate("brand", "-createdAt -updatedAt -status")
-      .populate("variant", "-createdAt -updatedAt -status")
-      .populate("lowest_variants", "-createdAt -updatedAt -status")
-      .exec();
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          product,
-          "get single product by productId successfully"
-        )
-      );
+    return res.status(200).json({
+      products,
+      message: "get single product successfully",
+      status: true,
+    });
   } catch (error) {
-    next(error);
+    return res.status(500).json({
+      message: error.message,
+      status: false,
+    });
   }
-});
+};
 
-const getAllProducts = asyncHandler(async (req, res, next) => {
+// GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
+const getAllProducts = async (req, res) => {
   try {
     const {
-      categoryId = "",
-      brandId = "",
+      title,
+      brand,
+      category,
+      minPrice,
+      maxPrice,
+      minRating,
+      maxRating,
+      sortBy,
+      order = "asc", // default ascending order
       page = 1,
       limit = 10,
-      sort = "",
-      status = "",
     } = req.query;
 
-    let q = {};
-    categoryId && (q.category = categoryId);
-    brandId && (q.brand = brandId);
-    status && (q.status = status == "ACTIVE" ? "ACTIVE" : "INACTIVE");
+    // Build query object
+    const query = {};
 
-    const products = await Product.find(q)
-      .populate("category", "title")
-      .populate("brand", "title")
-      .select("status delivery_amount original_amount title")
-      .sort({ title: sort === "asc" ? "asc" : "desc" })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .exec();
+    // Search by title (case-insensitive partial match)
+    if (title) {
+      query.title = { $regex: title, $options: "i" };
+    }
 
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(200, products, "get all products with query success")
-      );
+    // Filter by brand (case-insensitive match)
+    if (brand) {
+      query.brand = { $regex: brand, $options: "i" };
+    }
+
+    // Filter by category (exact match)
+    if (category) {
+      query.category = category;
+    }
+
+    // Filter by price range
+    if (minPrice || maxPrice) {
+      query.price = {};
+      if (minPrice) query.price.$gte = Number(minPrice);
+      if (maxPrice) query.price.$lte = Number(maxPrice);
+    }
+
+    // Filter by rating range
+    if (minRating || maxRating) {
+      query.rating = {};
+      if (minRating) query.rating.$gte = Number(minRating);
+      if (maxRating) query.rating.$lte = Number(maxRating);
+    }
+
+    // Pagination options
+    const skip = (Number(page) - 1) * Number(limit);
+    const perPage = Number(limit);
+
+    // Sorting options
+    const sortOptions = {};
+    if (sortBy) {
+      sortOptions[sortBy] = order === "desc" ? -1 : 1; // -1 for descending, 1 for ascending
+    }
+
+    // Execute query
+    const products = await Product.find(query)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(perPage);
+
+    // Count total products matching the query
+    const totalProducts = await Product.countDocuments(query);
+
+    res.status(200).json({
+      docs: products,
+      totalDocs: totalProducts,
+      totalPages: Math.ceil(totalProducts / perPage),
+      page: Number(page),
+      limit: Number(limit),
+    });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
-});
+};
 
-const addProduct = asyncHandler(async (req, res, next) => {
-  const { thumbnail, images } = req.files;
-  const {
-    title,
-    description,
-    category,
-    brand,
-    price,
-    discount,
-    rating,
-    stock,
-  } = req.body;
-  const userId = req?.user._id;
+const createProduct = async (req, res) => {
   try {
-    if (!thumbnail[0] || images.length === 0) {
-      throw new ApiError(401, "add product files not upload properly");
-    }
-
-    if (!userId) {
-      throw new ApiError(404, "product user is not authenticated");
-    }
-
-    if (
-      !title ||
-      !description ||
-      !category ||
-      !brand ||
-      !price ||
-      !discount ||
-      !rating ||
-      !stock
-    ) {
-      throw new ApiError(401, "product fill data properly");
-    }
-
-    const thumbnailPath = await uploadSingleImg(thumbnail[0].path);
-    const imagesPath = await uploadMultiImg(images);
-
-    if (!thumbnailPath && !imagesPath.length === 0) {
-      throw new ApiError(401, "product files not upload on cloudinary");
-    }
-
-    const product = await Product.create({
+    const {
       title,
-      description,
       category,
       brand,
+      description,
       price,
-      discount,
       rating,
       stock,
-      owner: userId,
-      thumbnail: thumbnailPath,
-      images: imagesPath,
+      discount,
+    } = req.body;
+
+    // Handle image uploads
+    const thumbnail = req.files?.thumbnail
+      ? await uploadSingleImg(req.files.thumbnail[0].path)
+      : "";
+    const images = req.files?.images
+      ? await uploadMultiImg(req.files.images)
+      : [];
+
+    const product = new Product({
+      title,
+      category,
+      brand,
+      thumbnail,
+      images,
+      description,
+      price,
+      rating,
+      stock,
+      discount,
     });
 
-    if (!product) {
-      throw new ApiError(401, "create product failed");
-    }
-
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "created new product successfully"));
+    await product.save();
+    res.status(201).json({ success: true, product });
   } catch (error) {
-    next(error);
+    res.status(500).json({ success: false, message: error.message });
   }
-});
+};
 
-const updateProduct = asyncHandler(async (req, res, next) => {
-  const { productId } = req.params;
-  const { title, description, category, price } = req.body;
-  const { thumbnail, images } = req.files;
+// Update Product
+const updateProduct = async (req, res) => {
   try {
-    if (!isValidObjectId(productId)) {
-      throw new ApiError(401, "Invalid product ID");
+    const { id } = req.params;
+    const {
+      title,
+      category,
+      brand,
+      description,
+      price,
+      rating,
+      stock,
+      discount,
+    } = req.body;
+
+    const product = await Product.findById(id);
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+
+    // Update thumbnail if provided
+    if (req.files?.thumbnail) {
+      if (product.thumbnail) {
+        await removeSingleImg(product.thumbnail); // Remove old thumbnail
+      }
+      product.thumbnail = await uploadSingleImg(req.files.thumbnail[0].path);
     }
 
-    const product = await Product.findOne({ _id: productId });
-
-    if (!product) {
-      throw new ApiError(401, "this product not found on database");
+    // Update images if provided
+    if (req.files?.images) {
+      if (product.images.length > 0) {
+        await removeMultiImg(product.images); // Remove old images
+      }
+      product.images = await uploadMultiImg(req.files.images);
     }
 
-    if (thumbnail[0]?.path) {
-      const thumbnailPath = await uploadSingleImg(thumbnail[0]?.path);
-      product.thumbnail = thumbnailPath;
+    // Update other product details
+    product.title = title || product.title;
+    product.category = category || product.category;
+    product.brand = brand || product.brand;
+    product.description = description || product.description;
+    product.price = price || product.price;
+    product.rating = rating || product.rating;
+    product.stock = stock || product.stock;
+    product.discount = discount || product.discount;
+
+    await product.save();
+    res.status(200).json({ success: true, product });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Delete Product
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findById(id);
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+
+    // Remove thumbnail and images from Cloudinary
+    if (product.thumbnail) {
+      await removeSingleImg(product.thumbnail);
+    }
+    if (product.images.length > 0) {
+      await removeMultiImg(product.images);
     }
 
-    if (images.length > 0) {
-      const imagesPath = await uploadMultiImg(images);
-      product.images = imagesPath;
-    }
+    await product.remove();
+    res
+      .status(200)
+      .json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 
-    if (title) {
-      product.title = title;
-    }
+// update Status
+const updateStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
 
-    if (description) {
-      product.description = description;
-    }
-    if (category) {
-      product.category = category;
-    }
-    if (price) {
-      product.price = price;
-    }
+    const product = await Product.findById(id);
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
-    if (!product) {
-      throw new ApiError(401, "update product failed");
-    }
+    product.status = status;
 
     await product.save();
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, {}, "product updated successfully"));
+    res.status(200).json({ success: true, product });
   } catch (error) {
-    next(error);
+    res.status(500).json({ success: false, message: error.message });
   }
-});
-
-const deleteProduct = asyncHandler(async (req, res, next) => {
-  const { productId } = req.params;
-  try {
-    const deleted = await Product.findByIdAndDelete(productId);
-
-    if (!deleted) {
-      throw new ApiError(404, "product not found on database");
-    }
-
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          {},
-          "product deleted successfully also with thumbnail & images"
-        )
-      );
-  } catch (error) {
-    next(error);
-  }
-});
+};
 
 export {
-  addProduct,
   getSingleProduct,
   getAllProducts,
   updateProduct,
   deleteProduct,
+  createProduct,
+  updateStatus,
 };

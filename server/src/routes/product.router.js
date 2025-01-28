@@ -4,9 +4,10 @@ import { upload } from "../middlewares/multer.middleware.js";
 import {
   getSingleProduct,
   getAllProducts,
-  addProduct,
   updateProduct,
   deleteProduct,
+  createProduct,
+  updateStatus,
 } from "../controllers/product.controller.js";
 
 const router = Router();
@@ -17,13 +18,15 @@ router.route("/:productId").delete(deleteProduct);
 
 router.route("/:productId").get(getSingleProduct);
 
+router.route("/:productId/status").patch(updateStatus);
+
 router.route("/").post(
   verifyJWT,
   upload.fields([
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 4 },
   ]),
-  addProduct
+  createProduct
 );
 
 router.route("/:productId").patch(
