@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const productSchema = new mongoose.Schema(
   {
@@ -52,11 +51,10 @@ const productSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   },
   { timestamps: true }
 );
-
-productSchema.plugin(aggregatePaginate);
 
 productSchema.index({ title: "text" });
 

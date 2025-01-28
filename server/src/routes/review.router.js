@@ -10,7 +10,10 @@ router.get("/:productId", verifyJWT, async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const reviews = await Review.find({ productId }).populate("User");
+    const reviews = await Review.find({ productId }).populate(
+      "userId",
+      "username"
+    );
     if (!reviews)
       return res
         .status(401)
@@ -57,18 +60,28 @@ router.post("/", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId, comment, rating } = req.body;
-    const newReview = new Review({ productId, userId, comment, rating });
+    const newReview = await Review.create({
+      productId,
+      userId,
+      comment,
+      rating,
+    });
 
-    await newReview.save();
-
-    // Update product's average rating and review list
     const product = await Product.findById(productId);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Add the new review to the reviews list
     product.reviews.push(newReview._id);
+
+    // Update average rating
     const totalRatings = product.reviews.length;
     const avgRating =
       (product.rating * (totalRatings - 1) + rating) / totalRatings;
-    product.rating = avgRating;
+    product.rating = avgRating.toFixed(2); // Optional: Limit to 2 decimals
 
+    // Save the product
     await product.save();
 
     res
