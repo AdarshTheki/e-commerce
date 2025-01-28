@@ -1,26 +1,16 @@
 import { Router } from "express";
-import {
-  createCategory,
-  getAllCategories,
-  getSingleCategory,
-  deleteCategory,
-  updateCategory,
-  updateCategoryByProduct,
-} from "../controllers/category.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { Category } from "../models/category.model.js";
 
 const router = Router();
 
-router
-  .route("/")
-  .get(getAllCategories)
-  .post(upload.single("thumbnail"), createCategory);
-
-router
-  .route("/:categoryId")
-  .get(getSingleCategory)
-  .post(updateCategoryByProduct)
-  .patch(upload.single("thumbnail"), updateCategory)
-  .delete(deleteCategory);
+router.get("/", async (req, res) => {
+  try {
+    const results = await Category.find().limit(20);
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
 
 export default router;

@@ -2,6 +2,7 @@ import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Review } from "../models/review.model.js";
 import { Product } from "../models/product.model.js";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -10,10 +11,16 @@ router.get("/:productId", verifyJWT, async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const reviews = await Review.find({ productId }).populate(
-      "userId",
-      "username"
-    );
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
+
+    const reviews = await Review.find({ productId })
+      .populate("userId", "username")
+      .populate("replies.userId", "username")
+      .populate("reports.userId", "username");
+
     if (!reviews)
       return res
         .status(401)
@@ -26,10 +33,17 @@ router.get("/:productId", verifyJWT, async (req, res) => {
 });
 
 // delete review by reviewId
-router.delete("/:reviewId", async (req, res) => {
+router.delete("/:reviewId", verifyJWT, async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const review = await Review.findByIdAndDelete(reviewId);
+    const userId = req.user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(reviewId))
+      return res
+        .status(404)
+        .json({ message: "reviewId is invalid", status: false });
+
+    const review = await Review.findOneAndDelete({ _id: reviewId, userId });
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
@@ -60,6 +74,7 @@ router.post("/", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId, comment, rating } = req.body;
+
     const newReview = await Review.create({
       productId,
       userId,
@@ -79,7 +94,7 @@ router.post("/", verifyJWT, async (req, res) => {
     const totalRatings = product.reviews.length;
     const avgRating =
       (product.rating * (totalRatings - 1) + rating) / totalRatings;
-    product.rating = avgRating.toFixed(2); // Optional: Limit to 2 decimals
+    product.rating = avgRating.toFixed(1); // Optional: Limit to 2 decimals
 
     // Save the product
     await product.save();
@@ -111,7 +126,7 @@ router.patch("/", async (req, res) => {
     const totalRatings = product.reviews.length;
     const avgRating =
       (product.rating * totalRatings - oldRating + rating) / totalRatings;
-    product.rating = avgRating;
+    product.rating = avgRating.toFixed(1);
 
     await product.save();
 

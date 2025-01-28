@@ -2,23 +2,20 @@ import Stripe from "stripe";
 import { Order } from "../models/order.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-import {
-  redirect_url,
-  stripe_api_key,
-  stripe_webhook_secret,
-} from "../constant.js";
 
-const stripe = new Stripe(stripe_api_key, { apiVersion: "2024-04-10" });
+const stripe = new Stripe(process.env.STRIPE_API_KEY, {
+  apiVersion: "2024-04-10",
+});
 
 export const stripWebhook = asyncHandler(async (req, res, next) => {
   const payload = JSON.stringify(req.body, null, 2);
-
+  const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const header = stripe.webhooks.generateTestHeaderString({
     payload,
     secret,
   });
 
-  if (!payload || !stripe_webhook_secret || !header) {
+  if (!payload || !stripeWebhookSecret || !header) {
     throw new ApiError(404, "Not enough data to text or headers");
   }
 
@@ -26,7 +23,7 @@ export const stripWebhook = asyncHandler(async (req, res, next) => {
     const event = stripe.webhooks.constructEvent(
       payload,
       header,
-      stripe_webhook_secret
+      stripeWebhookSecret
     );
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
@@ -71,6 +68,7 @@ export const stripWebhook = asyncHandler(async (req, res, next) => {
 
 export const checkoutStrip = asyncHandler(async (req, res, next) => {
   const { cartItems } = req.body;
+  const redirect_url = process.env.ECOMMERCE_REDIRECT_URL;
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

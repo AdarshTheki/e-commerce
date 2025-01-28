@@ -18,12 +18,7 @@ const userSchema = new Schema(
       enum: ["customer", "admin", "user"],
       default: "customer",
     },
-    wishlist: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
+    favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     avatar: String, // cloudinary url
     refreshToken: String,
   },

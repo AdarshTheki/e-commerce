@@ -1,6 +1,7 @@
 import { Cart } from "../models/cart.model.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Router } from "express";
+import mongoose from "mongoose";
 
 const router = Router();
 
@@ -8,7 +9,10 @@ const router = Router();
 router.get("/", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
-    const carts = await Cart.find({ userId }).populate("items.productId");
+    const carts = await Cart.findOne({ userId }).populate(
+      "items.productId",
+      "-description -images"
+    );
     if (!carts)
       return res.status(401).json({ message: "user carts not exits" });
     res.status(200).json(carts);
@@ -22,6 +26,11 @@ router.post("/", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId, quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
 
     let cart = await Cart.findOne({ userId });
 
@@ -50,6 +59,12 @@ router.post("/", verifyJWT, async (req, res) => {
 router.delete("/:id", verifyJWT, async (req, res) => {
   try {
     const productId = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
+
     const userId = req?.user?._id;
     const cart = await Cart.findOne({ userId });
 
@@ -74,6 +89,11 @@ router.put("/", verifyJWT, async (req, res) => {
     const userId = req?.user?._id;
     const { quantity, productId } = req.body;
 
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
+
     const cart = await Cart.findOne({ userId });
 
     if (!cart) {
@@ -97,7 +117,7 @@ router.put("/", verifyJWT, async (req, res) => {
 });
 
 // Remove all items from cart
-router.delete("/all", verifyJWT, async (req, res) => {
+router.delete("/delete/all", verifyJWT, async (req, res) => {
   try {
     const userId = req?.user?._id;
 
@@ -114,10 +134,15 @@ router.delete("/all", verifyJWT, async (req, res) => {
 });
 
 // Move item to wishlist
-router.post("/wishlist", verifyJWT, async (req, res) => {
+router.post("/move-wishlist", verifyJWT, async (req, res) => {
   try {
     const userId = req.user?._id;
     const { productId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
 
     const cart = await Cart.findOne({ userId });
 
@@ -143,10 +168,15 @@ router.post("/wishlist", verifyJWT, async (req, res) => {
 });
 
 // Move item from wishlist to cart
-router.post("/cart", verifyJWT, async (req, res) => {
+router.post("/move-cart", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
     const { productId, quantity } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
 
     const cart = await Cart.findOne({ userId });
 

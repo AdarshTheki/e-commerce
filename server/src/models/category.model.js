@@ -1,19 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
-const categorySchema = new Schema(
-    {
-        status: {
-            type: String,
-            required: true,
-            default: "INACTIVE",
-            enum: ["ACTIVE", "INACTIVE"],
-        },
-        title: { type: String, required: true, index: true },
-        thumbnail: { type: String, required: true },
-        products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
-    },
-    { timestamps: true }
-);
+const categorySchema = new Schema({
+  status: {
+    type: String,
+    required: true,
+    default: "inactive",
+    enum: ["active", "inactive"],
+  },
+  title: { type: String, required: true, index: true },
+  thumbnail: { type: String, required: true },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+  createdAt: { type: Date, default: Date.now },
+});
 
 categorySchema.index({ title: "text" });
 
