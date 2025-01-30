@@ -2,26 +2,22 @@ import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { BellDotIcon, Menu, Settings, X } from 'lucide-react';
-import { menuItems, Input } from '../utils';
+import { Input, menuItems } from '../utils';
 
 const Layout: React.FC = () => {
   const [open, setOpen] = useState(false);
   return (
-    <div id='root' className='bg-[#fafafa]'>
+    <div id='root' className='bg-[#faf8ff]'>
       <div className='flex'>
         {/* <!-- Desktop Menu --> */}
         <Sidebar />
 
         {/* <!-- Mobile Menu Button Fixed --> */}
-        <div className='lg:hidden fixed top-3 right-2 z-50'>
+        <div className='lg:hidden fixed top-3.5 right-2 z-50'>
           <button
             onClick={() => setOpen(!open)}
             type='button'
-            className='mobile-menu-button bg-white p-2 rounded-lg focus:outline-none'
-            // onClick={() =>
-            //     document.querySelector('.mobile-menu').classList.toggle('hidden')
-            // }
-          >
+            className='mobile-menu-button bg-white p-2 rounded-lg focus:outline-none'>
             {open ? <X /> : <Menu />}
           </button>
         </div>
@@ -47,21 +43,21 @@ const Layout: React.FC = () => {
         </div>
 
         {/* Main Body */}
-        <main className='flex-1 h-full sm:overflow-y-auto'>
+        <main className='h-full sm:overflow-y-auto w-[100vw]'>
           <div className='sticky top-0 z-10 bg-white border-b border-neutral-200/30'>
-            <div className='flex sm:px-4 p-2 pr-14 justify-between items-center'>
-              <Input name='search' placeholder='search' />
-              <div className='flex items-center gap-4'>
-                <NavLink to={'/settings/#setting'} className='text-gray-600 hover:text-gray-900'>
-                  <BellDotIcon />
-                </NavLink>
-                <NavLink to={'/settings/#preference'} className='text-gray-600 hover:text-gray-900'>
-                  <Settings />
-                </NavLink>
-              </div>
+            <div className='flex items-center justify-end gap-4 py-4 pl-4 pr-14'>
+              <Input name='search' placeholder='Search...' />
+              <NavLink to={'/products'} className='text-gray-600 hover:text-gray-900'>
+                <BellDotIcon />
+              </NavLink>
+              <NavLink to={'/settings'} className='text-gray-600 hover:text-gray-900'>
+                <Settings />
+              </NavLink>
             </div>
           </div>
-          <div className='w-full p-2 sm:p-6'>
+
+          {/* Main of all Components */}
+          <div className='w-full p-4 sm:p-6 h-full space-y-6'>
             <Outlet />
           </div>
         </main>

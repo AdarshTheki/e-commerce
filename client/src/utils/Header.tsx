@@ -12,20 +12,20 @@ const Header = () => {
         {/* <!-- Top Bar --> */}
         <div className='hidden lg:flex justify-between items-center py-2 text-sm border-b'>
           <div className='flex items-center gap-4'>
-            <a href='#' className='flex items-center gap-1 hover:text-blue-600'>
+            <a href='#' className='flex items-center gap-1 hover:text-indigo-600'>
               <Phone size={14} />
               <span>+1 234 567 890</span>
             </a>
-            <a href='#' className='flex items-center gap-1 hover:text-blue-600'>
+            <a href='#' className='flex items-center gap-1 hover:text-indigo-600'>
               <Mail size={14} />
               <span>support@store.com</span>
             </a>
           </div>
           <div className='flex items-center space-x-6'>
-            <a href='#' className='hover:text-blue-600 flex gap-1 items-center'>
+            <a href='#' className='hover:text-indigo-600 flex gap-1 items-center'>
               <MapPin size={14} /> Track Order
             </a>
-            <a href='#' className='hover:text-blue-600 flex gap-1 items-center'>
+            <a href='#' className='hover:text-indigo-600 flex gap-1 items-center'>
               <Store size={14} /> Store Locator
             </a>
           </div>
@@ -49,10 +49,10 @@ const Header = () => {
               <input
                 type='text'
                 placeholder='Search products...'
-                className='w-full pl-4 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500'
+                className='w-full pl-4 pr-10 py-2 border rounded-lg focus:outline-none focus:border-indigo-500'
               />
               <button className='absolute right-3 top-1/2 -translate-y-1/2'>
-                <Search className='text-gray-400 hover:text-blue-600' />
+                <Search className='text-gray-400 hover:text-indigo-600' />
               </button>
             </div>
           </div>
@@ -63,14 +63,14 @@ const Header = () => {
               <Search className='text-xl' />
             </button>
 
-            <a href='#' className='relative hover:text-blue-600 hidden lg:block'>
+            <a href='#' className='relative hover:text-indigo-600 hidden lg:block'>
               <ShoppingCart />
               <span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>
                 0
               </span>
             </a>
 
-            <a href='#' className='relative hover:text-blue-600'>
+            <a href='#' className='relative hover:text-indigo-600'>
               <CakeSlice />
               <span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>
                 0
@@ -88,11 +88,11 @@ const Header = () => {
                 <NavLink to={'/profile'}>{user?.username}</NavLink>
               ) : (
                 <div className='text-sm'>
-                  <NavLink to={'/login'} className='hover:text-blue-600'>
+                  <NavLink to={'/login'} className='hover:text-indigo-600'>
                     Sign In
                   </NavLink>
                   <span className='px-2'>|</span>
-                  <NavLink to={'/register'} className='hover:text-blue-600'>
+                  <NavLink to={'/register'} className='hover:text-indigo-600'>
                     Register
                   </NavLink>
                 </div>
@@ -116,7 +116,7 @@ const Header = () => {
               <NavLink
                 key={item.title}
                 to={`/${item.slug}`}
-                className='hover:text-blue-600 capitalize'>
+                className='hover:text-indigo-600 capitalize'>
                 {item.title}
               </NavLink>
             ))}
@@ -133,7 +133,7 @@ const Header = () => {
               <NavLink
                 key={item.title}
                 to={`/${item.slug}`}
-                className='hover:text-blue-600 capitalize'>
+                className='hover:text-indigo-600 capitalize'>
                 {item.title}
               </NavLink>
             ))}

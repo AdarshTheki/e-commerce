@@ -15,9 +15,19 @@ import {
   ProfileSettings,
 } from './pages';
 import useFetch from './hooks/useFetch';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { login } from './redux/authSlice';
 
 const App: React.FC = () => {
-  const { data, loading } = useFetch<FetchResponseProp>('/api/v1/user/current-user');
+  const { data, loading } = useFetch('/api/v1/user/current-user');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (data?._id) {
+      dispatch(login(data));
+    }
+  }, [data]);
 
   if (loading) return <Loading />;
 

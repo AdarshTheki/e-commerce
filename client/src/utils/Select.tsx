@@ -14,7 +14,7 @@ const Select: React.FC<SelectProps> = ({ label, name, options, className = '', .
       <select
         id={name}
         name={name}
-        className={`block cursor-pointer w-full text-base px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+        className={`block cursor-pointer w-full text-base px-4 py-2 border bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
         {...rest}>
         {options.map((option) => (
           <option key={option.id} value={option.id}>

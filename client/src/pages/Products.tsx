@@ -27,56 +27,57 @@ export default function Product() {
         <h2 className='mb-6 text-xl font-semibold'>Products</h2>
         <NavLink
           to={'/products/create'}
-          className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200'>
+          className='bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200'>
           Add Product
         </NavLink>
       </div>
 
       {/* Filter products */}
-      <div className='flex mb-5 max-md:flex-wrap sm:gap-4 gap-2 items-center justify-between bg-white sm:p-3 p-2 border rounded-lg'>
+      <div className='flex mb-5 sm:gap-4 max-sm:flex-wrap gap-2 items-center justify-between bg-white sm:p-3 p-2 border rounded-lg'>
         <Input
           name='search'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           type='text'
-          className='flex-1'
+          className='!flex-1'
           placeholder='Search products...'
         />
-
-        <Select
-          name='status'
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          options={[
-            { id: 'active', title: 'active' },
-            { id: 'inactive', title: 'inactive' },
-          ]}
-          className='text-sm lowercase'
-        />
-        <Select
-          name='sortBy'
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          options={[
-            { id: 'title-asc', title: 'title asc' },
-            { id: 'title-desc', title: 'title desc' },
-            { id: 'price-asc', title: 'price asc' },
-            { id: 'price-desc', title: 'price desc' },
-          ]}
-          className=' lowercase text-sm'
-        />
-        <Select
-          name='limit'
-          value={limit}
-          onChange={(e) => setLimit(e.target.value)}
-          options={[
-            { id: '10', title: '10 / page' },
-            { id: '30', title: '30 / page' },
-            { id: '50', title: '50 / page' },
-            { id: '100', title: '100 / page' },
-          ]}
-          className=' lowercase text-sm'
-        />
+        <div className='flex items-center justify-between gap-5'>
+          <Select
+            name='status'
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            options={[
+              { id: 'active', title: 'active' },
+              { id: 'inactive', title: 'inactive' },
+            ]}
+            className='text-sm lowercase'
+          />
+          <Select
+            name='sortBy'
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            options={[
+              { id: 'title-asc', title: 'title asc' },
+              { id: 'title-desc', title: 'title desc' },
+              { id: 'price-asc', title: 'price asc' },
+              { id: 'price-desc', title: 'price desc' },
+            ]}
+            className=' lowercase text-sm'
+          />
+          <Select
+            name='limit'
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
+            options={[
+              { id: '10', title: '10 / page' },
+              { id: '30', title: '30 / page' },
+              { id: '50', title: '50 / page' },
+              { id: '100', title: '100 / page' },
+            ]}
+            className=' lowercase text-sm'
+          />
+        </div>
       </div>
 
       {data?.totalDocs && !loading ? (
@@ -97,7 +98,7 @@ const ProductDisplay = ({ item, refetch }: { item: ProductType[]; refetch: () =>
             {['product', 'brand', 'category', 'price', 'status', 'action'].map((heading) => (
               <th
                 key={heading}
-                className='px-6 py-4 text-left text-xs font-medium bg-blue-50 text-gray-500 uppercase tracking-wider border-b'>
+                className='px-6 py-4 text-left text-xs font-medium bg-indigo-50 text-gray-500 uppercase tracking-wider border-b'>
                 {heading}
               </th>
             ))}
@@ -150,7 +151,7 @@ const ProductMobile = ({ item, refetch }: { item: ProductType; refetch: () => vo
         <h3 className='font-semibold line-clamp-2 capitalize'>{item.title.toLowerCase()}</h3>
         <div className='flex items-center justify-end gap-3'>
           <NavLink to={`/products/${item?._id}`}>
-            <Pencil size={18} className='text-blue-600 hover:text-blue-800' />
+            <Pencil size={18} className='text-indigo-600 hover:text-indigo-800' />
           </NavLink>
           <Trash2
             size={18}
@@ -229,7 +230,7 @@ const ProductDesktop = ({ item, refetch }: { item: ProductType; refetch: () => v
       </td>
       <td className='flex gap-3 pt-5 justify-center'>
         <NavLink to={`/products/${item?._id}`}>
-          <Pencil size={18} className='text-blue-600 hover:text-blue-800' />
+          <Pencil size={18} className='text-indigo-600 hover:text-indigo-800' />
         </NavLink>
         <Trash2
           size={18}

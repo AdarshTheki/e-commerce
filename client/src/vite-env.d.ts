@@ -15,6 +15,20 @@ interface UserType {
   favorite: [string];
   avatar: string;
   refreshToke: string;
+  firstName?: string;
+  lastName?: string;
+  countryCode?: string;
+  phoneNumber?: number;
+}
+
+interface AddressType {
+  owner: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  pinCode: number;
+  country: string;
 }
 
 interface PromiseResponseType {

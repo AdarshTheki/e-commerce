@@ -55,14 +55,14 @@ const Login: React.FC = () => {
                 <input
                   id='checkbox'
                   type='checkbox'
-                  className='h-4 w-4 text-blue-600 border-gray-300 rounded'
+                  className='h-4 w-4 text-indigo-600 border-gray-300 rounded'
                   required
                 />
                 <label htmlFor='checkbox' className='ml-2 cursor-pointer text-sm text-gray-600'>
                   Remember me
                 </label>
               </div>
-              <NavLink to='/' className='text-sm text-blue-600 hover:text-blue-500'>
+              <NavLink to='/' className='text-sm text-indigo-600 hover:text-indigo-500'>
                 Forgot password?
               </NavLink>
             </div>
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
 
           <p className='mt-6 text-center text-sm text-gray-600'>
             Don't have an account?
-            <NavLink to={'/register'} className='text-blue-600 mx-2 hover:text-blue-500'>
+            <NavLink to={'/register'} className='text-indigo-600 mx-2 hover:text-indigo-500'>
               Sign up
             </NavLink>
           </p>

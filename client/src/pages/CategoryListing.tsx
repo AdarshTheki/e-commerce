@@ -1,4 +1,4 @@
-import { Input, Select, useFetch } from '../../Utils';
+import { Input, Select, useFetch } from '../utils';
 import { format } from 'date-fns';
 
 const CategoryListing = () => {
@@ -12,9 +12,9 @@ const CategoryListing = () => {
         }`}>
         <div className='p-8 rounded-lg'>
           <div className='flex space-x-4'>
-            <div className='w-4 h-4 bg-blue-700 rounded-full animate-pulse'></div>
-            <div className='w-4 h-4 bg-blue-700 rounded-full animate-pulse delay-100'></div>
-            <div className='w-4 h-4 bg-blue-700 rounded-full animate-pulse delay-200'></div>
+            <div className='w-4 h-4 bg-indigo-700 rounded-full animate-pulse'></div>
+            <div className='w-4 h-4 bg-indigo-700 rounded-full animate-pulse delay-100'></div>
+            <div className='w-4 h-4 bg-indigo-700 rounded-full animate-pulse delay-200'></div>
           </div>
         </div>
       </div>

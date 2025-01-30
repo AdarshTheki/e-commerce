@@ -173,7 +173,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             Product Gallery Images
             {previews?.length ? (
               <label htmlFor='image-uploads'>
-                <span className='ml-6 text-xs text-blue-600 hover:bg-gray-100 p-2 rounded cursor-pointer'>
+                <span className='ml-6 text-xs text-indigo-600 hover:bg-gray-100 p-2 rounded cursor-pointer'>
                   Another Upload files
                 </span>
                 <input
@@ -188,7 +188,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>
                 <div className='space-y-1 text-center'>
                   <div className='flex text-sm text-gray-600'>
-                    <label className='relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
+                    <label className='relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none'>
                       <span>Upload multiple files</span>
                       <input
                         type='file'
@@ -247,7 +247,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>
                 <div className='space-y-1 text-center'>
                   <div className='flex text-sm text-gray-600'>
-                    <label className='relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
+                    <label className='relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none'>
                       <span>Upload single file</span>
                       <input
                         type='file'

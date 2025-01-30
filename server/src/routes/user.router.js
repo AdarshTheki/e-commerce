@@ -9,6 +9,19 @@ import { User } from "../models/user.model.js";
 
 const router = Router();
 
+// get all user
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find()
+      .select("-password -refreshToken")
+      .sort({ createdAt: -1 })
+      .limit(10);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(501).json({ message: error.message, status: false });
+  }
+});
+
 router.post("/sign-up", async (req, res) => {
   try {
     const { email, password, username, role } = req.body;

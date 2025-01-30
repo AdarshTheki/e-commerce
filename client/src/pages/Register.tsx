@@ -62,7 +62,7 @@ const Register: React.FC = () => {
               <input
                 type='checkbox'
                 id='checkbox'
-                className='h-4 w-4 text-blue-600 border-gray-300 rounded'
+                className='h-4 w-4 text-indigo-600 border-gray-300 rounded'
                 required
               />
               <span>I agree to the Terms and Privacy Policy</span>
@@ -70,14 +70,14 @@ const Register: React.FC = () => {
 
             <button
               type='submit'
-              className='w-full mt-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
+              className='w-full mt-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'>
               Create account
             </button>
           </form>
 
           <p className='mt-6 text-center text-sm text-gray-600'>
             Already have an account?
-            <NavLink to={'/login'} className='text-blue-600 mx-2 hover:text-blue-500'>
+            <NavLink to={'/login'} className='text-indigo-600 mx-2 hover:text-indigo-500'>
               Sign in
             </NavLink>
           </p>
