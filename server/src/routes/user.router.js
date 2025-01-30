@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { Router } from "express";
+
 import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { User } from "../models/user.model.js";
-import axios from "axios";
 
 const router = Router();
 
@@ -74,7 +74,7 @@ router.post("/sign-in", async (req, res) => {
     const payload = {
       maxAge: 2 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
     };
 
     return res
@@ -136,6 +136,9 @@ router.post("/change-password", verifyJWT, async (req, res) => {
 
     const user = await User.findById(req.user._id);
 
+    if (user.email === "demo_user@gmail.com")
+      throw Error("This demo user will not be password change");
+
     const check = await user.isPasswordCorrect(oldPassword);
     if (!check) throw Error("your old password is wrong");
 
@@ -177,7 +180,7 @@ router.post("/refresh-token", verifyJWT, async (req, res) => {
     const payload = {
       maxAge: 2 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
     };
 
     res
@@ -204,19 +207,36 @@ router.post("/google", async (req, res) => {
 
 router.patch("/update", verifyJWT, async (req, res) => {
   try {
-    const { password, email, role, username } = req.body;
+    const { countryCode, firstName, lastName, phoneNumber } = req.body;
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select(
+      "-refreshToken -password"
+    );
 
-    user.password = password || user.password;
-    user.email = email || user.email;
-    user.role = role || user.role;
-    user.username =
-      username?.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase() || user.username;
+    user.countryCode = countryCode || user.countryCode;
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
 
     await user.save({ validateBeforeSave: false });
 
-    res.status(200).json(user, { message: "update user", status: false });
+    res.status(200).json({ message: "update user success", status: false });
+  } catch (error) {
+    res.status(501).json({ message: error.message, status: false });
+  }
+});
+
+router.patch("/role", verifyJWT, async (req, res) => {
+  try {
+    const { role } = req.body;
+    const user = await User.findById(req.user._id);
+
+    if (!user) throw Error("user not founded on db");
+
+    user.role = role;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(201).json({ message: "update role success", status: true });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
   }
@@ -290,6 +310,8 @@ router.patch("/favorite/:id", verifyJWT, async (req, res) => {
       },
       { new: true }
     );
+
+    if (!user) throw Error("favorite update failed, Please try again.");
 
     res.status(200).json({ message: "favorite update succeed", status: true });
   } catch (error) {

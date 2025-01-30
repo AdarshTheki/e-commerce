@@ -1,3 +1,5 @@
+import { Box, ShoppingBag, BookText, Users, Settings, ChartBar, HousePlug } from 'lucide-react';
+
 import Loading from './Loading';
 import SpinnerBtn from './SpinnerBtn';
 import Input from './Input';
@@ -5,6 +7,16 @@ import Select from './Select';
 import Textarea from './Textarea';
 
 export { Loading, SpinnerBtn, Input, Select, Textarea };
+
+export const menuItems = [
+  { id: 1, title: 'Dashboard', path: '/', icon: HousePlug },
+  { id: 2, title: 'Products', path: '/products', icon: Box },
+  { id: 3, title: 'Orders', path: '/orders', icon: ShoppingBag },
+  { id: 4, title: 'Customers', path: '/customers', icon: Users },
+  { id: 5, title: 'Inventory', path: '/inventory', icon: BookText },
+  { id: 6, title: 'Analytics', path: '/analytics', icon: ChartBar },
+  { id: 7, title: 'Settings', path: '/settings', icon: Settings },
+];
 
 export const categories = [
   {

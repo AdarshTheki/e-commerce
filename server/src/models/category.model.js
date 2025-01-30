@@ -9,6 +9,7 @@ const categorySchema = new Schema({
   },
   title: { type: String, required: true, index: true },
   thumbnail: { type: String, required: true },
+  description: { type: String, minlength: 100, maxlength: 1000, trim: true },
   products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   createdAt: { type: Date, default: Date.now },
 });

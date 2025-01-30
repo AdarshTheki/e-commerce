@@ -37,7 +37,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <section className='bg-gray-100 flex items-center justify-center p-4'>
+    <section className='bg-gray-100 flex items-center justify-center p-4 py-20'>
       <div className='w-full max-w-md space-y-8'>
         {/* <!-- Login Form --> */}
         <div className='bg-white p-8 rounded-lg border border-gray-200'>

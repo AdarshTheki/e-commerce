@@ -9,12 +9,12 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 
 const Select: React.FC<SelectProps> = ({ label, name, options, className = '', ...rest }) => {
   return (
-    <div className=''>
+    <div>
       {label && <Label text={label} htmlFor={name} />}
       <select
         id={name}
         name={name}
-        className={`block cursor-pointer w-full sm:text-base text-sm px-4 sm:py-2 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+        className={`block cursor-pointer w-full text-base px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
         {...rest}>
         {options.map((option) => (
           <option key={option.id} value={option.id}>

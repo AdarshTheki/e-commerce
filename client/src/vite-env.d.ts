@@ -34,6 +34,7 @@ interface ProductType {
   price: number;
   discount: number;
   rating: number;
+  stock: number;
   thumbnail: string;
   images: [string];
   createdAt: Date;

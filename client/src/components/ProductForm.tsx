@@ -2,26 +2,27 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 
-import { Input, Select, SpinnerBtn, categories, brands, Editor } from '../utils';
+import { Input, Select, SpinnerBtn, Textarea } from '../utils';
+import { toast } from 'react-toastify';
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [previews, setPreviews] = useState<string[]>(data?.images.length ? data.images : []);
+  const [thumbnail, setThumbnail] = useState<string | null>(data?.thumbnail || '');
+  const [preview, setPreview] = useState<File | null>();
+
   const [formData, setFormData] = useState({
-    status: data?.status || '',
     title: data?.title || '',
-    original_price: data?.original_price || 0,
-    delivery_amount: data?.delivery_amount || 0,
-    discount_price: data?.discount_price || 0,
-    createdAt: data?.createdAt || '',
-    updatedAt: data?.updatedAt || '',
-    specification: data?.specification || '',
-    overview: data?.overview || '',
-    trending: data?.trending || '',
-    category: data?.category?._id || '',
-    brand: data?.brand?._id || '',
+    category: data?.category || '',
+    brand: data?.brand || '',
+    discount: data?.discount || 0,
+    price: data?.price || 0,
+    rating: data?.rating || 0,
+    stock: data?.stock || 0,
   });
+  const [description, setDescription] = useState(data?.description || '');
+  const [status, setStatus] = useState(data?.status === 'active' ? 'active' : 'inactive');
 
   interface ImageChangeEvent extends React.ChangeEvent<HTMLInputElement> {
     target: HTMLInputElement & EventTarget;
@@ -33,142 +34,165 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     setPreviews(Array.from(files).map((file: File) => URL.createObjectURL(file)));
   };
 
+  const removeImage = (id: number) => {
+    setPreviews(previews.filter((_, index) => index !== id));
+    setImages(images.filter((_, index) => index !== id));
+  };
+
+  const handleThumbnailChange = (event: ImageChangeEvent) => {
+    const file = event.target.files[0];
+    setThumbnail(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setStatus(e.target.value);
+  };
+
+  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value.replace(/[^a-zA-Z0-9\s]|\s{2,}/g, ''));
   };
 
   const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!thumbnail) return toast.error('please select product thumbnail');
+    if (!images.length) return toast.error('please select product gallery images');
     setLoading(true);
+
     setTimeout(() => {
       setLoading(false);
     }, 3000);
   };
 
-  const removeImage = (id: number) => {
-    setPreviews(previews.filter((_, index) => index !== id));
-    setImages(images.filter((_, index) => index !== id));
-  };
-
   return (
-    <div>
-      <h3 className='mb-6 text-xl font-semibold'>
+    <>
+      <h3 className='text-xl font-semibold p-2'>
         {data?._id ? 'Update Product' : 'Add New Product'}
       </h3>
       <form onSubmit={handelSubmit} className='bg-white p-2 sm:p-6 rounded-lg'>
         <div className='space-y-4'>
           <Input
             required
+            optionals='(required & not allowed special char)'
             name='title'
             label='title'
             type='text'
             onChange={handleChange}
             value={formData?.title}
           />
-          <div className='grid gap-2 md:grid-cols-3 grid-cols-2'>
+          <div className='grid sm:grid-cols-3 grid-cols-2 gap-5'>
             <Input
               required
-              name='delivery_amount'
-              label='delivery charge'
-              type='number'
-              onChange={handleChange}
-              value={formData?.delivery_amount}
-            />
-            <Input
-              required
-              name='original_price'
-              label='original price'
-              type='number'
-              onChange={handleChange}
-              value={formData?.original_price}
-            />
-            <Input
-              required
-              name='discount_price'
-              label='discount price'
-              type='number'
-              onChange={handleChange}
-              value={formData?.discount_price}
-            />
-
-            <Select
-              label='category'
+              optionals='(required)'
               name='category'
-              className='capitalize'
-              data={data?.category}
-              options={categories}
-              onChange={handleSelectChange}
-              value={formData.category}
+              label='category'
+              className='flex-1'
+              onChange={handleChange}
+              value={formData?.category}
             />
-
-            <Select
-              label='brand'
+            <Input
+              required
+              optionals='(required)'
               name='brand'
-              className='capitalize'
-              options={brands}
-              data={data?.brand}
-              onChange={handleSelectChange}
-              value={formData.brand}
+              label='brand'
+              className='flex-1'
+              onChange={handleChange}
+              value={formData?.brand}
             />
             <Select
               label='status'
               name='status'
               className='capitalize'
               options={[
-                { _id: 'ACTIVE', title: 'Active' },
-                { _id: 'INACTIVE', title: 'Inactive' },
+                { id: 'active', title: 'Active' },
+                { id: 'inactive', title: 'Inactive' },
               ]}
               onChange={handleSelectChange}
-              value={formData.status}
-            />
-            <Select
-              label='trending'
-              name='trending'
-              className='capitalize'
-              options={[
-                { _id: 'NO', title: 'No' },
-                { _id: 'YES', title: 'Yes' },
-              ]}
+              value={status}
             />
           </div>
-          <div className='sm:grid grid-cols-2 text-sm gap-5'>
-            <div>
-              <h4 className='font-semibold'>Overview</h4>
-              <Editor
-                value={formData.overview}
-                onChange={(value: string) => setFormData({ ...formData, overview: value })}
-              />
-            </div>
-            <div>
-              <h4 className='font-semibold'>Specification</h4>
-              <Editor
-                value={formData.specification}
-                onChange={(value: string) => setFormData({ ...formData, specification: value })}
-              />
-            </div>
+          <div className='grid sm:grid-cols-4 grid-cols-2 gap-5'>
+            <Input
+              required
+              optionals='(%)'
+              name='discount'
+              label='discount'
+              type='number'
+              onChange={handleChange}
+              value={formData?.discount}
+            />
+
+            <Input
+              optionals='($)'
+              label='price'
+              name='price'
+              type='number'
+              className='capitalize'
+              onChange={handleChange}
+              value={formData.price}
+            />
+
+            <Input
+              optionals='(max 5.0)'
+              label='rating'
+              name='rating'
+              type='number'
+              className='capitalize'
+              onChange={handleChange}
+              value={formData.rating}
+            />
+
+            <Input
+              optionals='(available)'
+              label='stock'
+              name='stock'
+              type='number'
+              className='capitalize'
+              onChange={handleChange}
+              value={formData.stock}
+            />
           </div>
 
+          <Textarea
+            optionals='(required & not allowed special char)'
+            label='description'
+            onChange={handleTextAreaChange}
+            value={description}
+            name='description'
+            className='sm:min-h-[120px] min-h-[200px]'
+            maxChar={1000}
+          />
+
+          {/* select images */}
           <label className='block text-sm font-medium text-gray-700 mt-5'>
-            Product Images
+            Product Gallery Images
             {previews?.length ? (
-              <label className='relative ml-5 border py-1 cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
-                <span className='px-5'>More Upload files</span>
-                <input type='file' onChange={handleImageChange} multiple className='sr-only' />
+              <label htmlFor='image-uploads'>
+                <span className='ml-6 text-xs text-blue-600 hover:bg-gray-100 p-2 rounded cursor-pointer'>
+                  Another Upload files
+                </span>
+                <input
+                  type='file'
+                  id='image-uploads'
+                  onChange={handleImageChange}
+                  multiple
+                  className='sr-only'
+                />
               </label>
             ) : (
               <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>
                 <div className='space-y-1 text-center'>
                   <div className='flex text-sm text-gray-600'>
                     <label className='relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
-                      <span>Upload files</span>
+                      <span>Upload multiple files</span>
                       <input
                         type='file'
+                        id='image-uploads'
                         onChange={handleImageChange}
                         multiple
                         className='sr-only'
@@ -181,22 +205,69 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               </div>
             )}
           </label>
-          <div className='grid md:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-5'>
-            {previews?.map((preview, index) => (
-              <div className='border p-2 flex items-center justify-center relative'>
-                <img key={index} src={preview} alt={`Image ${index + 1}`} width={200} />
+
+          {/* show previews */}
+          {previews.length ? (
+            <div className='grid md:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-5'>
+              {previews?.map((preview, index) => (
+                <div className='border p-1 flex items-center justify-center relative rounded-md'>
+                  <img key={index} src={preview} alt={`Image ${index + 1}`} width={200} />
+                  <Trash2
+                    size={18}
+                    strokeWidth={2}
+                    color='#ed0707'
+                    onClick={() => removeImage(index)}
+                    className='absolute top-2 right-2 cursor-pointer'
+                  />
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <div className='flex flex-col gap-3 py-5'>
+            <label htmlFor='thumbnail' className='block text-sm font-medium text-gray-700'>
+              Product thumbnail
+            </label>
+            {/* show preview */}
+            {preview ? (
+              <div className='border p-1 relative rounded-md w-fit'>
+                <img src={preview} alt='thumbnail' width={200} />
                 <Trash2
-                  onClick={() => removeImage(index)}
-                  className='hover:text-red-900 text-red-600 absolute top-0 right-0 bg-white cursor-pointer'
+                  size={18}
+                  strokeWidth={2}
+                  color='#ed0707'
+                  onClick={() => {
+                    setPreview(null);
+                    setThumbnail('');
+                  }}
+                  className='absolute top-2 right-2 cursor-pointer'
                 />
               </div>
-            ))}
+            ) : (
+              <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>
+                <div className='space-y-1 text-center'>
+                  <div className='flex text-sm text-gray-600'>
+                    <label className='relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none'>
+                      <span>Upload single file</span>
+                      <input
+                        type='file'
+                        id='thumbnail'
+                        className='sr-only'
+                        onChange={handleThumbnailChange}
+                      />
+                    </label>
+                    <p className='pl-1'>or drag and drop</p>
+                  </div>
+                  <p className='text-xs text-gray-500'>PNG, JPG, GIF up to 10MB</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         <div className='mt-6 flex justify-end space-x-3'>
           <NavLink
-            to={'/product'}
+            to={'/products'}
             type='button'
             className='px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50'>
             Cancel
@@ -205,7 +276,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
           <SpinnerBtn loading={loading} primaryName='Save Product' props={{ type: 'submit' }} />
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

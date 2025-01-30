@@ -1,16 +1,6 @@
-import { Home } from 'lucide-react';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-
-const menuItems = [
-  { id: 1, title: 'Dashboard', path: '/', icon: Home },
-  { id: 2, title: 'Products', path: '/products', icon: Home },
-  { id: 3, title: 'Orders', path: '/orders', icon: Home },
-  { id: 4, title: 'Customers', path: '/customers', icon: Home },
-  { id: 5, title: 'Inventory', path: '/inventory', icon: Home },
-  { id: 6, title: 'Analytics', path: '/analytics', icon: Home },
-  { id: 7, title: 'Settings', path: '/settings', icon: Home },
-];
+import { menuItems } from '../utils';
 
 const Sidebar: React.FC = () => {
   return (

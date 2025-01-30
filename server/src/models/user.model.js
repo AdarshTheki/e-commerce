@@ -19,6 +19,10 @@ const userSchema = new Schema(
       default: "customer",
     },
     favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    countryCode: String,
+    firstName: String,
+    lastName: String,
+    phoneNumber: Number,
     avatar: String, // cloudinary url
     refreshToken: String,
   },

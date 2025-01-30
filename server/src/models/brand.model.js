@@ -1,20 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 
-const brandSchema = new Schema(
-  {
-    title: { type: String, required: true, index: true },
-    sequence: { type: Number, required: true, default: 0 },
-    thumbnail: { type: String, required: true },
-    top_brand: { type: String, enum: ["NO", "YES"], default: "NO" },
-    status: {
-      type: String,
-      required: true,
-      default: "INACTIVE",
-      enum: ["ACTIVE", "INACTIVE"],
-    },
+const brandSchema = new Schema({
+  status: {
+    type: String,
+    required: true,
+    default: "inactive",
+    enum: ["active", "inactive"],
   },
-  { timestamps: true }
-);
+  title: { type: String, required: true, index: true },
+  thumbnail: { type: String, required: true },
+  description: { type: String, minlength: 100, maxlength: 1000, trim: true },
+  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
+  createdAt: { type: Date, default: Date.now },
+});
 
 brandSchema.index({ title: "text" });
 
