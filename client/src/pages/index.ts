@@ -9,8 +9,10 @@ import Products from './Products';
 import ProductUpdate from './ProductUpdate';
 import ProductCreate from './ProductCreate';
 import ProfileSettings from './ProfileSettings';
+import Categories from './Categories';
 
 export {
+  Categories,
   Login,
   Products,
   ProductUpdate,

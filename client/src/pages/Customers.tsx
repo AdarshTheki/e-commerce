@@ -1,6 +1,6 @@
 import { EllipsisVertical } from 'lucide-react';
 import useFetch from '../hooks/useFetch';
-import { Loading } from '../utils';
+import { Loading, formatDate } from '../utils';
 
 const Customers = () => {
   const { data, loading, error } = useFetch('/api/v1/user');
@@ -43,7 +43,7 @@ const Card = ({ user }: { user: UserType }) => {
       <div className='space-y-3'>
         <div className='flex justify-between text-sm'>
           <span className='text-gray-500'>Member Since</span>
-          <span>Nov 28, 2023</span>
+          <span>{formatDate(user?.createdAt) || 'Nov 28, 2023'}</span>
         </div>
         <div className='flex justify-between text-sm'>
           <span className='text-gray-500'>Total Orders</span>

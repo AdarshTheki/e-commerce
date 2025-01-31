@@ -394,6 +394,17 @@ const AddressComponent = () => {
 };
 
 const PreferencesComponent = () => {
+  const logoutHandler = async () => {
+    try {
+      const res = await axios.post('/api/v1/user/logout', { withCredentials: true });
+      if (res.data) {
+        toast.success('user logout success');
+        window.location.href = '/';
+      }
+    } catch (error) {
+      toast.error(error.res.data.message);
+    }
+  };
   return (
     <div id='preference'>
       <h3 className='text-lg font-semibold'>Preferences</h3>
@@ -428,6 +439,11 @@ const PreferencesComponent = () => {
             <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
           </label>
         </div>
+        <button
+          className='p-2 bg-red-600 text-white hover:opacity-85 px-4 rounded-lg'
+          onClick={logoutHandler}>
+          Logout
+        </button>
       </div>
     </div>
   );

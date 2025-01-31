@@ -3,14 +3,13 @@ import { NavLink } from 'react-router-dom';
 import { Pencil, Trash2 } from 'lucide-react';
 
 import useFetch from '../hooks/useFetch';
-import { Select, Input, Loading } from '../utils';
+import { Input, Loading, Dropdown } from '../utils';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export default function Product() {
-  const [status, setStatus] = useState<string>('active');
   const [sortBy, setSortBy] = useState<string>('title-asc');
-  const [limit, setLimit] = useState<number>(10);
+  const [limit, setLimit] = useState<string>('10');
   const [search, setSearch] = useState<string>('');
 
   // GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
@@ -39,44 +38,16 @@ export default function Product() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           type='text'
-          className='!flex-1'
+          className='w-full'
           placeholder='Search products...'
         />
         <div className='flex items-center justify-between gap-5'>
-          <Select
-            name='status'
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            options={[
-              { id: 'active', title: 'active' },
-              { id: 'inactive', title: 'inactive' },
-            ]}
-            className='text-sm lowercase'
-          />
-          <Select
-            name='sortBy'
+          <Dropdown
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            options={[
-              { id: 'title-asc', title: 'title asc' },
-              { id: 'title-desc', title: 'title desc' },
-              { id: 'price-asc', title: 'price asc' },
-              { id: 'price-desc', title: 'price desc' },
-            ]}
-            className=' lowercase text-sm'
+            onSelect={setSortBy}
+            options={['title-asc', 'title-desc', 'price-asc', 'price-desc']}
           />
-          <Select
-            name='limit'
-            value={limit}
-            onChange={(e) => setLimit(e.target.value)}
-            options={[
-              { id: '10', title: '10 / page' },
-              { id: '30', title: '30 / page' },
-              { id: '50', title: '50 / page' },
-              { id: '100', title: '100 / page' },
-            ]}
-            className=' lowercase text-sm'
-          />
+          <Dropdown value={limit} onSelect={setLimit} options={['10', '30', '50', '100']} />
         </div>
       </div>
 
@@ -165,17 +136,12 @@ const ProductMobile = ({ item, refetch }: { item: ProductType; refetch: () => vo
       </p>
       <div className='space-x-4 capitalize space-y-3'>
         <strong className='whitespace-nowrap text-sm text-gray-700'>Price ${item.price}</strong>
-        <select
+        <Dropdown
+          options={['active', 'inactive']}
           value={status}
-          onChange={(e) => {
-            setStatus(e.target.value);
-            handleStatus(e.target.value);
-          }}
-          className='text-sm py-1.5 px-2 rounded cursor-pointer'>
-          <option defaultChecked>Select</option>
-          <option value='active'>Active</option>
-          <option value='inactive'>Inactive</option>
-        </select>
+          onSelect={setStatus}
+          onFetch={handleStatus}
+        />
       </div>
     </div>
   );
@@ -216,17 +182,12 @@ const ProductDesktop = ({ item, refetch }: { item: ProductType; refetch: () => v
       <td className='px-6 py-2 whitespace-nowrap'>{item?.category}</td>
       <td className='px-6 py-2 whitespace-nowrap text-sm text-gray-500'>{item.price}</td>
       <td className='px-6 py-2 whitespace-nowrap'>
-        <select
+        <Dropdown
+          options={['active', 'inactive']}
           value={status}
-          onChange={(e) => {
-            setStatus(e.target.value);
-            handleStatus(e.target.value);
-          }}
-          className='text-sm py-1.5 px-2 rounded cursor-pointer'>
-          <option defaultChecked>Select</option>
-          <option value='active'>Active</option>
-          <option value='inactive'>Inactive</option>
-        </select>
+          onFetch={handleStatus}
+          onSelect={setStatus}
+        />
       </td>
       <td className='flex gap-3 pt-5 justify-center'>
         <NavLink to={`/products/${item?._id}`}>

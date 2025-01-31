@@ -13,6 +13,7 @@ import {
   ProductUpdate,
   ProductCreate,
   ProfileSettings,
+  Categories,
 } from './pages';
 import useFetch from './hooks/useFetch';
 import { useDispatch } from 'react-redux';
@@ -23,15 +24,15 @@ const App: React.FC = () => {
   const { data, loading } = useFetch('/api/v1/user/current-user');
   const dispatch = useDispatch();
 
+  const isAuth = data?._id;
+
   useEffect(() => {
-    if (data?._id) {
+    if (isAuth) {
       dispatch(login(data));
     }
   }, [data]);
 
   if (loading) return <Loading />;
-
-  const isAuth = data?._id;
 
   return (
     <div>
@@ -45,6 +46,7 @@ const App: React.FC = () => {
             <Route path='/products' element={<Products />} />
             <Route path='/products/:id' element={<ProductUpdate />} />
             <Route path='/products/create' element={<ProductCreate />} />
+            <Route path='/categories' element={<Categories />} />
             <Route path='/settings' element={<ProfileSettings />} />
             <Route path='*' element={<Notfound />} />
           </Route>
