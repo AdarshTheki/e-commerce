@@ -14,6 +14,7 @@ import {
   ProductCreate,
   ProfileSettings,
   Categories,
+  CategoryCreate,
 } from './pages';
 import useFetch from './hooks/useFetch';
 import { useDispatch } from 'react-redux';
@@ -40,14 +41,17 @@ const App: React.FC = () => {
         <Routes>
           <Route path='' element={<PrivateRoute isAuth={isAuth} />}>
             <Route index element={<Dashboard />} />
-            <Route path='/analytics' element={<Analytics />} />
-            <Route path='/customers' element={<Customers />} />
+            <Route path='/analytic' element={<Analytics />} />
+            <Route path='/customer' element={<Customers />} />
             <Route path='/inventory' element={<Inventory />} />
-            <Route path='/products' element={<Products />} />
-            <Route path='/products/:id' element={<ProductUpdate />} />
-            <Route path='/products/create' element={<ProductCreate />} />
-            <Route path='/categories' element={<Categories />} />
-            <Route path='/settings' element={<ProfileSettings />} />
+            <Route path='/product' element={<Products />} />
+            <Route path='/product/:id' element={<ProductUpdate />} />
+            <Route path='/product/create' element={<ProductCreate />} />
+            <Route path='/category' element={<Categories />} />
+            <Route path='/brand' element={<Categories />} />
+            <Route path='/brand/create' element={<CategoryCreate />} />
+            <Route path='/category/create' element={<CategoryCreate />} />
+            <Route path='/setting' element={<ProfileSettings />} />
             <Route path='*' element={<Notfound />} />
           </Route>
           <Route path='/register' element={<Register />} />

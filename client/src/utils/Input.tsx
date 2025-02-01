@@ -17,7 +17,7 @@ const Input: React.FC<InputProps> = ({
   ...rest
 }) => {
   return (
-    <div>
+    <div className='flex-1'>
       {label && <Label text={label} htmlFor={name} optionals={optionals} />}
       <input
         id={name}

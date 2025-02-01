@@ -1,25 +1,141 @@
-import { Pen, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { Pen, Plus, Trash2 } from 'lucide-react';
+import axios from 'axios';
+
+import { formatDate, Input, Loading, DropdownMenu, Breadcrumb } from '../utils';
 import useFetch from '../hooks/useFetch';
-import { formatDate, Input, Loading, Select } from '../utils';
+import useDebounce from '../hooks/useDebounce';
+import { NavLink, useLocation } from 'react-router-dom';
+
+const sortByOptions = [
+  { label: 'Title by asc ', value: 'title-asc' },
+  { label: 'Title by desc ', value: 'title-desc' },
+  { label: 'Created at asc ', value: 'createdAt-asc' },
+  { label: 'Created at desc ', value: 'createdAt-desc' },
+];
+
+const pageSizeOptions = [
+  { label: '10 per page', value: 10 },
+  { label: '30 per page', value: 30 },
+  { label: '50 per page', value: 50 },
+  { label: '100 per page', value: 100 },
+];
 
 const CategoryListing = () => {
-  const { data, refetch } = useFetch('/api/v1/category');
+  const { pathname } = useLocation();
+  const [sortBy, setSortBy] = useState<string>('title-asc');
+  const [limit, setLimit] = useState<string>('10');
+  const [search, setSearch] = useState<string>('');
+  const query = useDebounce(search, 500);
+
+  const { data, refetch } = useFetch(
+    `/api/v1${pathname}?limit=${limit}&title=${query}&sortBy=${sortBy.split('-')[0]}&order=${
+      sortBy.split('-')[1]
+    }`
+  );
+
+  const pageItem = () => {
+    return (
+      <div className='w-[140px]'>
+        {pageSizeOptions.map((i) => (
+          <button
+            onClick={() => setLimit(String(i.value))}
+            className={`w-full hover:bg-gray-50 py-1.5 pl-0 text-sm ${
+              i.value == Number(limit) && 'text-indigo-600'
+            }`}
+            key={i.label}>
+            {i.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  const sortByItem = () => {
+    return (
+      <div className='w-[140px]'>
+        {sortByOptions.map((i) => (
+          <button
+            onClick={() => setSortBy(i.value)}
+            className={`w-full hover:bg-gray-50 py-1.5 text-sm ${
+              i.value === sortBy && 'text-indigo-600'
+            }`}
+            key={i.label}>
+            {i.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
-    <div className='p-2'>
-      <div className='p-2 rounded-lg bg-white flex items-center gap-3'>
-        <Input name='title' placeholder='Search title...' />
+    <>
+      <div className='flex items-center justify-between'>
+        <Breadcrumb
+          paths={[
+            { label: 'Home', to: '/' },
+            { label: pathname.split('/').join(''), to: `${pathname}` },
+          ]}
+        />
+        <NavLink
+          to={`${pathname}/create`}
+          className='bg-indigo-600 capitalize flex items-center justify-center gap-2 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700'>
+          <Plus size={16} /> <span>Add {pathname.split('/').join('')}</span>
+        </NavLink>
       </div>
-      <div className='grid md:grid-cols-3 sm:grid-cols-2  gap-2'>
-        {data?.length ? (
-          data?.map((item: BrandType) => (
-            <CategoryItem key={item._id} {...item} refetch={refetch} />
-          ))
-        ) : (
-          <Loading />
-        )}
+
+      <div className='p-4 rounded-lg bg-white'>
+        {/* Filter products */}
+        <div className='flex sm:gap-4 gap-2 items-center justify-between'>
+          <Input
+            name='search'
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type='text'
+            className='w-full text-sm py-1.5'
+            placeholder='Search products...'
+          />
+          <div className='flex items-center justify-between sm:gap-4 gap-2'>
+            <DropdownMenu name='sort' position='right'>
+              {sortByItem()}
+            </DropdownMenu>
+            <DropdownMenu name='page' position='right'>
+              {pageItem()}
+            </DropdownMenu>
+          </div>
+        </div>
+        {/* <!-- Pagination --> */}
+        <div className='sm:flex-row flex gap-2 flex-col items-center sm:justify-between text-sm justify-center pt-5'>
+          <p className='text-sm text-gray-500'>Showing 1 to 10 of 45 products</p>
+          <div className='flex space-x-2'>
+            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
+              Previous
+            </button>
+            <button className='px-3 py-1 bg-indigo-600 text-white rounded-lg'>1</button>
+            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
+              2
+            </button>
+            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
+              3
+            </button>
+            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
+              Next
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {data?.length ? (
+        <div className='grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2 min-h-screen'>
+          {data?.map((item: BrandType) => (
+            <CategoryItem key={item._id} path={pathname} {...item} refetch={refetch} />
+          ))}
+        </div>
+      ) : (
+        <Loading className='h-[50vh]' />
+      )}
+    </>
   );
 };
 
@@ -32,43 +148,63 @@ const CategoryItem = ({
   createdAt,
   thumbnail,
   refetch,
-}: BrandType & { refetch: () => void }) => {
-  const handleDelete = async (id: string) => {
+  path,
+}: BrandType & { refetch: () => void; path: string }) => {
+  const handleDelete = async () => {
     try {
-      const res = await (
-        await fetch(`http://localhost:8000/api/v1/brand/${id}`, { method: 'DELETE' })
-      ).json();
-      if (res) {
+      const res = await axios.delete(`/api/v1${path}/${_id}`);
+      if (res.data) {
         refetch();
-        console.log(res);
+        toast.success(`${path} deleted success`);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleStatus = async (text: string) => {
+    try {
+      const res = await axios.patch(`/api/v1${path}/status/${_id}`, { status: text });
+      if (res.data) {
+        refetch();
+        toast.success('status update success');
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 
   return (
     <div className='bg-white rounded-lg border border-neutral-200/20'>
-      <div className='flex items-center justify-between mb-2 relative rounded-t-lg overflow-hidden'>
-        <img alt={title} src={thumbnail} />
-        <button className='text-neutral-600 hover:bg-neutral-50 rounded-lg absolute top-1 right-8'>
+      <div className='flex items-center justify-between relative rounded-t-lg overflow-hidden'>
+        <div className='w-full'>
+          <img alt={title} src={thumbnail || 'https://placehold.co/600x400/png'} />
+        </div>
+        <NavLink
+          to={`${path}/${_id}`}
+          className='text-indigo-600 w-8 h-8 flex items-center justify-center hover:bg-neutral-50 rounded-lg absolute top-1 right-10'>
           <Pen size={18} />
-        </button>
+        </NavLink>
         <button
-          onClick={() => handleDelete(_id)}
-          className='text-red-600 hover:bg-neutral-50 rounded-lg  absolute top-1 right-1'>
+          onClick={handleDelete}
+          className='text-red-600 w-8 h-8 flex items-center justify-center hover:bg-neutral-50 rounded-lg  absolute top-1 right-1'>
           <Trash2 size={18} />
         </button>
       </div>
       <div className='p-3'>
-        <h3 className='mb-2 font-medium capitalize'>{title}</h3>
-        <div className='flex justify-between items-center text-sm font-medium text-gray-600'>
+        <h3 className='mb-2 text-gray-600 font-medium capitalize'>{title}</h3>
+        <div className='flex gap-2 flex-wrap justify-between items-center text-sm'>
           <span>{formatDate(createdAt)}</span>
-          {status === 'active' ? (
-            <span className='text-green-500'>{status}</span>
-          ) : (
-            <span className='text-red-500'>{status}</span>
-          )}
+          <DropdownMenu name={status.toLowerCase()}>
+            {['active', 'inactive'].map((i) => (
+              <button
+                key={i}
+                onClick={() => handleStatus(i)}
+                className='py-2 w-[100px] hover:bg-gray-100 block capitalize'>
+                {i}
+              </button>
+            ))}
+          </DropdownMenu>
         </div>
       </div>
     </div>

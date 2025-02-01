@@ -7,7 +7,7 @@ import { Input, menuItems } from '../utils';
 const Layout: React.FC = () => {
   const [open, setOpen] = useState(false);
   return (
-    <div id='root' className='bg-[#faf8ff]'>
+    <div id='root' className='bg-[#E5E7EB]'>
       <div className='flex'>
         {/* <!-- Desktop Menu --> */}
         <Sidebar />

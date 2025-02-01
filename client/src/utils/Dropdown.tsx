@@ -1,19 +1,13 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, ReactNode } from 'react';
 
 interface DropdownProps {
-  options: string[];
-  onSelect: (option: string) => void;
-  value: string;
-  onFetch?: (option: string | number) => void;
+  children: ReactNode;
+  name: string;
+  position?: 'left' | 'right';
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
-  options,
-  onSelect,
-  value = 'Select Option',
-  onFetch,
-}) => {
+const Dropdown: React.FC<DropdownProps> = ({ children, name, position = 'left' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,26 +24,18 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <div className='relative inline-block' ref={dropdownRef}>
-      <button
+      <span
         onClick={() => setIsOpen(!isOpen)}
-        className='px-3 py-1.5 hover:bg-blue-50 border capitalize text-sm rounded-md flex gap-2 items-center'>
-        {value} {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-      </button>
+        className='px-3 cursor-pointer py-1.5 hover:bg-blue-50 border capitalize text-sm rounded-md flex gap-2 items-center'>
+        {name} {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </span>
 
       {isOpen && (
-        <div className='absolute z-20 left-0 mt-2 w-fit bg-white border rounded-md shadow-lg'>
-          {options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                onSelect(option);
-                setIsOpen(false);
-                if (onFetch) onFetch(option);
-              }}
-              className='block text-sm w-full capitalize px-4 py-2 text-left hover:bg-gray-100'>
-              {option.split('-').join(' ')}
-            </button>
-          ))}
+        <div
+          className={`absolute z-20 mt-2 w-fit bg-white border rounded-md shadow-lg ${
+            position === 'left' ? 'left-0' : 'right-0'
+          }`}>
+          {children}
         </div>
       )}
     </div>

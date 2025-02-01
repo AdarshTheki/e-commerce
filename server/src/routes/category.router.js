@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
@@ -9,12 +9,24 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { page = 1, limit = 20, sortBy = "title", order = "asc" } = req.query;
+    const {
+      title = "",
+      page = 1,
+      limit = 20,
+      sortBy = "title",
+      order = "asc",
+    } = req.query;
 
-    const results = await Category.find()
-      .limit(limit)
+    let q = {};
+
+    if (title) {
+      q.title = { $regex: title, $options: "i" };
+    }
+
+    const results = await Category.find(q)
+      .limit(Number(limit))
       .select("-products -description")
-      .skip((page - 1) * limit)
+      .skip((Number(page) - 1) * Number(limit))
       .sort({ [sortBy]: order === "asc" ? 1 : -1 });
 
     res.status(200).json(results);
@@ -57,6 +69,25 @@ router.post("/", upload.single("thumbnail"), async (req, res) => {
     if (!category) throw Error("category create failed");
 
     res.status(201).json(category);
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+router.patch("/status/:id", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const { id } = req.params;
+    if (!isValidObjectId(id)) throw Error("invalid category ID");
+    if (!status) throw Error("please enter a status active & inactive");
+
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { status: status },
+      { new: true }
+    );
+
+    res.status(203).json({ category, message: "status updated success" });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
