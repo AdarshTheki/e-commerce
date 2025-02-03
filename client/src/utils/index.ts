@@ -17,14 +17,15 @@ import Select from './Select';
 import Textarea from './Textarea';
 import DropdownMenu from './Dropdown';
 import Breadcrumb from './Breadcrumb';
+import PaginationBtn from './PaginationBtn';
 
-export { Loading, Breadcrumb, DropdownMenu, SpinnerBtn, Input, Select, Textarea };
+export { Loading, PaginationBtn, Breadcrumb, DropdownMenu, SpinnerBtn, Input, Select, Textarea };
 
 export const menuItems = [
   { id: 1, title: 'Dashboard', path: '/', icon: HousePlug },
   { id: 2, title: 'Products', path: '/product', icon: Box },
   { id: 8, title: 'Categories', path: '/category', icon: Cat },
-  { id: 8, title: 'Brands', path: '/brand', icon: Gift },
+  { id: 9, title: 'Brands', path: '/brand', icon: Gift },
   { id: 3, title: 'Orders', path: '/order', icon: ShoppingBag },
   { id: 4, title: 'Customers', path: '/customer', icon: Users },
   { id: 5, title: 'Inventory', path: '/inventory', icon: BookText },

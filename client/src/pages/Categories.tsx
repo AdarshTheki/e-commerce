@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { Pen, Plus, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
-import { formatDate, Input, Loading, DropdownMenu, Breadcrumb } from '../utils';
+import { formatDate, Input, Loading, DropdownMenu, Breadcrumb, PaginationBtn } from '../utils';
 import useFetch from '../hooks/useFetch';
 import useDebounce from '../hooks/useDebounce';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -25,22 +25,29 @@ const pageSizeOptions = [
 const CategoryListing = () => {
   const { pathname } = useLocation();
   const [sortBy, setSortBy] = useState<string>('title-asc');
-  const [limit, setLimit] = useState<string>('10');
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const query = useDebounce(search, 500);
 
   const { data, refetch } = useFetch(
-    `/api/v1${pathname}?limit=${limit}&title=${query}&sortBy=${sortBy.split('-')[0]}&order=${
-      sortBy.split('-')[1]
-    }`
+    `/api/v1${pathname}?limit=${limit}&page=${page}&title=${query}&sortBy=${
+      sortBy.split('-')[0]
+    }&order=${sortBy.split('-')[1]}`
   );
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= data?.totalPages) {
+      setPage(newPage);
+    }
+  };
 
   const pageItem = () => {
     return (
       <div className='w-[140px]'>
         {pageSizeOptions.map((i) => (
           <button
-            onClick={() => setLimit(String(i.value))}
+            onClick={() => setLimit(i.value)}
             className={`w-full hover:bg-gray-50 py-1.5 pl-0 text-sm ${
               i.value == Number(limit) && 'text-indigo-600'
             }`}
@@ -80,7 +87,7 @@ const CategoryListing = () => {
         />
         <NavLink
           to={`${pathname}/create`}
-          className='bg-indigo-600 capitalize flex items-center justify-center gap-2 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700'>
+          className='btn bg-[--primary] text-white text-sm flex items-center gap-2 capitalize'>
           <Plus size={16} /> <span>Add {pathname.split('/').join('')}</span>
         </NavLink>
       </div>
@@ -93,7 +100,7 @@ const CategoryListing = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             type='text'
-            className='w-full text-sm py-1.5'
+            className='text-sm py-1.5 pl-4 w-36 sm:w-full'
             placeholder='Search products...'
           />
           <div className='flex items-center justify-between sm:gap-4 gap-2'>
@@ -105,30 +112,44 @@ const CategoryListing = () => {
             </DropdownMenu>
           </div>
         </div>
-        {/* <!-- Pagination --> */}
-        <div className='sm:flex-row flex gap-2 flex-col items-center sm:justify-between text-sm justify-center pt-5'>
-          <p className='text-sm text-gray-500'>Showing 1 to 10 of 45 products</p>
-          <div className='flex space-x-2'>
-            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
-              Previous
+
+        <hr className='border my-4 border-gray-100' />
+
+        {/* Pagination */}
+        <div className='sm:flex-row flex gap-2 flex-col sm:justify-between text-sm'>
+          <p className='text-sm text-gray-500'>
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, data?.totalDocs)} of{' '}
+            {data?.totalDocs} products
+          </p>
+          <div className='flex gap-2 items-center'>
+            <button
+              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                page === 1 && 'hidden'
+              }`}
+              onClick={() => handlePageChange(page - 1)}>
+              Prev
             </button>
-            <button className='px-3 py-1 bg-indigo-600 text-white rounded-lg'>1</button>
-            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
-              2
-            </button>
-            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
-              3
-            </button>
-            <button className='px-3 py-1 border border-neutral-200/30 rounded-lg hover:bg-gray-50'>
+
+            <PaginationBtn
+              handlePageChange={handlePageChange}
+              page={data?.page}
+              totalPages={data?.totalPages}
+            />
+
+            <button
+              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                page === data?.totalPages && 'hidden'
+              }`}
+              onClick={() => handlePageChange(page + 1)}>
               Next
             </button>
           </div>
         </div>
       </div>
 
-      {data?.length ? (
+      {data?.totalDocs ? (
         <div className='grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2 min-h-screen'>
-          {data?.map((item: BrandType) => (
+          {data?.docs?.map((item: BrandType) => (
             <CategoryItem key={item._id} path={pathname} {...item} refetch={refetch} />
           ))}
         </div>
@@ -178,21 +199,21 @@ const CategoryItem = ({
     <div className='bg-white rounded-lg border border-neutral-200/20'>
       <div className='flex items-center justify-between relative rounded-t-lg overflow-hidden'>
         <div className='w-full'>
-          <img alt={title} src={thumbnail || 'https://placehold.co/600x400/png'} />
+          <img
+            alt={title}
+            src={thumbnail || 'https://placehold.co/600x500/png'}
+            className='min-h-40'
+          />
         </div>
-        <NavLink
-          to={`${path}/${_id}`}
-          className='text-indigo-600 w-8 h-8 flex items-center justify-center hover:bg-neutral-50 rounded-lg absolute top-1 right-10'>
-          <Pen size={18} />
+        <NavLink to={`${path}/${_id}`} className='svg-btn text-indigo-600 absolute top-1 right-10'>
+          <Pen size={16} />
         </NavLink>
-        <button
-          onClick={handleDelete}
-          className='text-red-600 w-8 h-8 flex items-center justify-center hover:bg-neutral-50 rounded-lg  absolute top-1 right-1'>
-          <Trash2 size={18} />
+        <button onClick={handleDelete} className='svg-btn text-red-600  absolute top-1 right-1'>
+          <Trash2 size={16} />
         </button>
       </div>
-      <div className='p-3'>
-        <h3 className='mb-2 text-gray-600 font-medium capitalize'>{title}</h3>
+      <div className='p-3 text-gray-700'>
+        <h3 className='mb-2 text-sm font-medium capitalize line-clamp-1'>{title}</h3>
         <div className='flex gap-2 flex-wrap justify-between items-center text-sm'>
           <span>{formatDate(createdAt)}</span>
           <DropdownMenu name={status.toLowerCase()}>

@@ -1,24 +1,18 @@
 import React from 'react';
 
-interface Button {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading: boolean;
-  primaryName: string | 'Save Product';
+  primaryName?: string;
   secondaryName?: string;
   className?: string;
-  props: React.ButtonHTMLAttributes<HTMLButtonElement>;
 }
 
-const SpinnerBtn: React.FC<Button> = ({
-  loading,
-  primaryName,
-  secondaryName,
-  className,
-  props,
-}) => {
+const SpinnerBtn: React.FC<ButtonProps> = (
+  { loading, primaryName = 'Save', secondaryName = 'Processing...', className = 'px-4 py-2' },
+  props
+) => {
   return (
-    <button
-      {...props}
-      className={`px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 ${className}`}>
+    <button {...props} className={`btn capitalize bg-[--primary] !text-white text-sm ${className}`}>
       {loading ? (
         <span
           className='flex items-center justify-center'
@@ -39,7 +33,7 @@ const SpinnerBtn: React.FC<Button> = ({
               fill='currentColor'
               d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
           </svg>
-          {secondaryName || 'Processing'}...
+          {secondaryName}
         </span>
       ) : (
         <span>{primaryName}</span>

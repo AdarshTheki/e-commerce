@@ -8,21 +8,17 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   optionals?: string;
 }
 
-const Input: React.FC<InputProps> = ({
-  label,
-  name,
-  error,
-  className = '',
-  optionals,
-  ...rest
-}) => {
+const Input: React.FC<InputProps> = (
+  { label, name, error, className = 'block w-full px-4 py-2 text-base', optionals, ...rest },
+  props
+) => {
   return (
-    <div className='flex-1'>
+    <div className='flex-1' {...props}>
       {label && <Label text={label} htmlFor={name} optionals={optionals} />}
       <input
         id={name}
         name={name}
-        className={`peer block w-full px-4 py-2 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+        className={`peer border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
         {...rest}
       />
       {error && (

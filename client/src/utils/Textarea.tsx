@@ -10,24 +10,20 @@ interface CustomTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement
   optionals?: string;
 }
 
-const CustomTextarea: React.FC<CustomTextareaProps> = ({
-  label,
-  name,
-  className = '',
-  maxChar = 50,
-  optionals,
-  ...props
-}) => {
+const CustomTextarea: React.FC<CustomTextareaProps> = (
+  { name, label, className = 'mt-1 block w-full px-3 py-2', maxChar = 50, optionals, ...rest },
+  props
+) => {
   return (
-    <div>
+    <div {...props}>
       <Label text={label} htmlFor={name} optionals={optionals} />
       <textarea
-        className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
-        {...props}
+        className={`border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+        {...rest}
       />
       {maxChar && (
         <p className='text-xs text-gray-500 text-right'>
-          Character from {props.value?.toString()?.length} to {maxChar}
+          Character from {rest.value?.toString()?.length} to {maxChar}
         </p>
       )}
     </div>

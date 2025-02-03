@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary: rgb(79, 70, 229);
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 .active {
-  color: rgb(79, 70, 229);
+  color: var(--primary);
 }
 
 @layer utilities {
@@ -24,6 +28,30 @@ html {
     background: #fff;
     cursor: pointer;
     border-radius: 5px;
+  }
+
+  .svg-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s ease-in;
+  }
+
+  .svg-btn:hover {
+    background-color: #ffffffdc;
+  }
+
+  .btn {
+    padding: 8px 18px;
+    border-radius: 1rem;
+    transition: all 0.1s ease-in;
+  }
+
+  .btn:hover {
+    opacity: 0.8;
   }
 
   .mobile-menu {

@@ -7,6 +7,18 @@ interface FetchResponseProp {
   [key?: string]: any;
 }
 
+interface PaginationProp {
+  docs: [any];
+  totalDocs: number;
+  limit: number;
+  page: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  nextPage: number | null;
+  hasPrevPage: boolean;
+  prevPage: number | null;
+}
+
 interface UserType {
   username: string;
   email: string;

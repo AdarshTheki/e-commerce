@@ -12,8 +12,6 @@ import {
 
 const router = Router();
 
-// GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
-// get all product query
 router.get("/", async (req, res) => {
   try {
     const {
@@ -30,64 +28,66 @@ router.get("/", async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Build query object
-    const query = {};
+    // Build the aggregation pipeline
+    const pipeline = [];
+
+    // Match stage for filtering
+    const matchQuery = {};
 
     // Search by title (case-insensitive partial match)
     if (title) {
-      query.title = { $regex: title, $options: "i" };
+      matchQuery.title = { $regex: title, $options: "i" };
     }
 
     // Filter by brand (case-insensitive match)
     if (brand) {
-      query.brand = { $regex: brand, $options: "i" };
+      matchQuery.brand = { $regex: brand, $options: "i" };
     }
 
     // Filter by category (exact match)
     if (category) {
-      query.category = category;
+      matchQuery.category = category;
     }
 
     // Filter by price range
     if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+      matchQuery.price = {};
+      if (minPrice) matchQuery.price.$gte = Number(minPrice);
+      if (maxPrice) matchQuery.price.$lte = Number(maxPrice);
     }
 
     // Filter by rating range
     if (minRating || maxRating) {
-      query.rating = {};
-      if (minRating) query.rating.$gte = Number(minRating);
-      if (maxRating) query.rating.$lte = Number(maxRating);
+      matchQuery.rating = {};
+      if (minRating) matchQuery.rating.$gte = Number(minRating);
+      if (maxRating) matchQuery.rating.$lte = Number(maxRating);
+    }
+
+    // Add match stage to the pipeline
+    if (Object.keys(matchQuery).length > 0) {
+      pipeline.push({ $match: matchQuery });
+    }
+
+    // Sort stage
+    if (sortBy) {
+      const sortOptions = {};
+      sortOptions[sortBy] = order === "desc" ? -1 : 1; // -1 for descending, 1 for ascending
+      pipeline.push({ $sort: sortOptions });
     }
 
     // Pagination options
-    const skip = (Number(page) - 1) * Number(limit);
-    const perPage = Number(limit);
-
-    // Sorting options
-    const sortOptions = {};
-    if (sortBy) {
-      sortOptions[sortBy] = order === "desc" ? -1 : 1; // -1 for descending, 1 for ascending
-    }
-
-    // Execute query
-    const products = await Product.find(query)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(perPage);
-
-    // Count total products matching the query
-    const totalProducts = await Product.countDocuments(query);
-
-    res.status(200).json({
-      docs: products,
-      totalDocs: totalProducts,
-      totalPages: Math.ceil(totalProducts / perPage),
+    const options = {
       page: Number(page),
       limit: Number(limit),
-    });
+    };
+
+    // Execute the aggregation pipeline with pagination
+    const result = await Product.aggregatePaginate(
+      Product.aggregate(pipeline),
+      options
+    );
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message, status: false });
   }

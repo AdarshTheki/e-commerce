@@ -37,9 +37,7 @@ const Customers = () => {
 export default Customers;
 
 const Card = ({ user }: { user: UserType }) => {
-  console.log(user);
   const url = user?.avatar || 'https://avatar.iran.liara.run/public';
-  console.log(url);
   return (
     <div className='bg-white rounded-lg border border-neutral-200/30 p-6'>
       <div className='flex items-center justify-between mb-4'>

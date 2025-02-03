@@ -4,6 +4,11 @@ import { Breadcrumb, Input, Select, SpinnerBtn, Textarea } from '../utils';
 import { Trash2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
+const statusOptions = [
+  { id: 'active', title: 'active' },
+  { id: 'inactive', title: 'inactive' },
+];
+
 const CategoryCreate = () => {
   const { pathname } = useLocation();
   const path = pathname.split('/')[1];
@@ -38,6 +43,7 @@ const CategoryCreate = () => {
 
   return (
     <>
+      {/* location links */}
       <div className='flex items-center justify-between'>
         <Breadcrumb
           paths={[
@@ -47,6 +53,8 @@ const CategoryCreate = () => {
         />
         <h2 className='capitalize font-medium text-gray-600 p-2'>Add {path}</h2>
       </div>
+
+      {/* item form data */}
       <form
         onSubmit={handleSubmit}
         className='sm:p-6 p-3 min-h-screen space-y-4 bg-white text-gray-600 rounded-lg'>
@@ -60,15 +68,11 @@ const CategoryCreate = () => {
           />
           <Select
             required
-            className='capitalize'
             onChange={handleChange}
             name='status'
             label='status'
             value={formData.status}
-            options={[
-              { id: 'active', title: 'active' },
-              { id: 'inactive', title: 'inactive' },
-            ]}
+            options={statusOptions}
           />
         </div>
         <Textarea
@@ -91,16 +95,16 @@ const CategoryCreate = () => {
                 setImage();
                 setPreview();
               }}
-              className='h-8 w-8 hover:bg-white rounded-lg text-red-600 absolute top-2 left-2 items-center justify-center flex'>
+              className='svg-btn text-red-600 absolute top-2 left-2'>
               <Trash2 size={18} />
             </button>
           </div>
         )}
-        <div className='flex items-center justify-end gap-5'>
-          <NavLink to={'/' + path} className='border py-2 px-4 rounded-lg'>
+        <div className='flex items-center justify-end gap-5 pt-10'>
+          <NavLink to={'/' + path} className='btn !text-red-600 border border-red-600  text-sm'>
             Cancel
           </NavLink>
-          <SpinnerBtn loading={loading} primaryName='Save' props={{ type: 'submit' }} />
+          <SpinnerBtn loading={loading} type='submit' primaryName={'save ' + path} />
         </div>
       </form>
     </>

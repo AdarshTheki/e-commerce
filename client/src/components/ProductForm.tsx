@@ -91,7 +91,6 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               optionals='(required)'
               name='category'
               label='category'
-              className='flex-1'
               onChange={handleChange}
               value={formData?.category}
             />
@@ -100,14 +99,12 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               optionals='(required)'
               name='brand'
               label='brand'
-              className='flex-1'
               onChange={handleChange}
               value={formData?.brand}
             />
             <Select
               label='status'
               name='status'
-              className='capitalize'
               options={[
                 { id: 'active', title: 'Active' },
                 { id: 'inactive', title: 'Inactive' },
@@ -132,7 +129,6 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               label='price'
               name='price'
               type='number'
-              className='capitalize'
               onChange={handleChange}
               value={formData.price}
             />
@@ -142,7 +138,6 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               label='rating'
               name='rating'
               type='number'
-              className='capitalize'
               onChange={handleChange}
               value={formData.rating}
             />
@@ -152,7 +147,6 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               label='stock'
               name='stock'
               type='number'
-              className='capitalize'
               onChange={handleChange}
               value={formData.stock}
             />
@@ -164,7 +158,8 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             onChange={handleTextAreaChange}
             value={description}
             name='description'
-            className='sm:min-h-[120px] min-h-[200px]'
+            rows={5}
+            maxLength={1000}
             maxChar={1000}
           />
 
@@ -269,11 +264,11 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
           <NavLink
             to={'/products'}
             type='button'
-            className='px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50'>
+            className='btn border border-red-600 text-red-600'>
             Cancel
           </NavLink>
           {/* spinner button */}
-          <SpinnerBtn loading={loading} primaryName='Save Product' props={{ type: 'submit' }} />
+          <SpinnerBtn loading={loading} primaryName='Save Product' type='submit' />
         </div>
       </form>
     </>

@@ -17,17 +17,32 @@ router.get("/", async (req, res) => {
       order = "asc",
     } = req.query;
 
-    let q = {};
+    const pipeline = [];
 
     if (title) {
-      q.title = { $regex: title, $options: "i" };
+      pipeline.push({
+        $match: {
+          title: { $regex: title, $options: "i" },
+        },
+      });
     }
 
-    const results = await Category.find(q)
-      .limit(Number(limit))
-      .select("-products -description")
-      .skip((Number(page) - 1) * Number(limit))
-      .sort({ [sortBy]: order === "asc" ? 1 : -1 });
+    pipeline.push({
+      $sort: { [sortBy]: order === "asc" ? 1 : -1 },
+    });
+
+    pipeline.push({
+      $project: {
+        products: 0,
+        description: 0,
+      },
+    });
+
+    const docs = Category.aggregate(pipeline);
+    const results = await Category.aggregatePaginate(docs, {
+      page: Number(page),
+      limit: Number(limit),
+    });
 
     res.status(200).json(results);
   } catch (error) {

@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import paginate from "mongoose-aggregate-paginate-v2";
 
 const categorySchema = new Schema({
   status: {
@@ -13,6 +14,8 @@ const categorySchema = new Schema({
   products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   createdAt: { type: Date, default: Date.now },
 });
+
+categorySchema.plugin(paginate);
 
 categorySchema.index({ title: "text" });
 
