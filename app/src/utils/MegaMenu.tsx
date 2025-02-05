@@ -1,6 +1,6 @@
 const MegaMenu = ({ name }: { name: string }) => {
+  // <div className='group relative'>
   return (
-    // <div className='group relative'>
     <div className='group'>
       <button className='capitalize cursor-pointer text-gray-700 rounded-lg focus:text-blue-600'>
         {name}

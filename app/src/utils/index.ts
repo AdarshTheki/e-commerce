@@ -1,0 +1,60 @@
+import Footer from './Footer';
+import Header from './Header';
+import MegaMenu from './MegaMenu';
+import Breadcrumb from './Breadcrumb';
+import Dropdown from './Dropdown';
+import Input from './Input';
+import Label from './Label';
+import Loading from './Loading';
+import PaginationBtn from './PaginationBtn';
+import Select from './Select';
+import SpinnerBtn from './SpinnerBtn';
+import Textarea from './Textarea';
+
+import {
+  Box,
+  ShoppingBag,
+  BookText,
+  Users,
+  Settings,
+  ChartBar,
+  HousePlug,
+  Cat,
+  Gift,
+} from 'lucide-react';
+
+export const menuItems = [
+  { id: 1, title: 'Dashboard', path: '/', icon: HousePlug },
+  { id: 2, title: 'Products', path: '/product', icon: Box },
+  { id: 8, title: 'Categories', path: '/category', icon: Cat },
+  { id: 9, title: 'Brands', path: '/brand', icon: Gift },
+  { id: 3, title: 'Orders', path: '/order', icon: ShoppingBag },
+  { id: 4, title: 'Customers', path: '/customer', icon: Users },
+  { id: 5, title: 'Inventory', path: '/inventory', icon: BookText },
+  { id: 6, title: 'Analytics', path: '/analytic', icon: ChartBar },
+  { id: 7, title: 'Settings', path: '/setting', icon: Settings },
+];
+
+export const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short', // Nov
+    day: '2-digit', // 28
+    year: 'numeric', // 2023
+  });
+};
+
+export {
+  Footer,
+  Header,
+  MegaMenu,
+  Breadcrumb,
+  Dropdown,
+  Input,
+  Label,
+  Loading,
+  PaginationBtn,
+  Select,
+  SpinnerBtn,
+  Textarea,
+};

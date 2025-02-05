@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useFetch } from '../utils';
 import { ChevronLeft, ChevronRight, Heart, LayoutGrid, List, Star } from 'lucide-react';
+import useFetch from '../hooks/useFetch';
 
 const ProductListing = () => {
   const { data, error, loading } = useFetch('/products?limit=30');
