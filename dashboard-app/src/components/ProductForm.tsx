@@ -207,13 +207,9 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               {previews?.map((preview, index) => (
                 <div className='border p-1 flex items-center justify-center relative rounded-md'>
                   <img key={index} src={preview} alt={`Image ${index + 1}`} width={200} />
-                  <Trash2
-                    size={18}
-                    strokeWidth={2}
-                    color='#ed0707'
-                    onClick={() => removeImage(index)}
-                    className='absolute top-2 right-2 cursor-pointer'
-                  />
+                  <button className='svg-btn text-red-600 absolute top-1 right-1 cursor-pointer'>
+                    <Trash2 size={18} strokeWidth={2} onClick={() => removeImage(index)} />
+                  </button>
                 </div>
               ))}
             </div>
@@ -227,16 +223,16 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             {preview ? (
               <div className='border p-1 relative rounded-md w-fit'>
                 <img src={preview} alt='thumbnail' width={200} />
-                <Trash2
-                  size={18}
-                  strokeWidth={2}
-                  color='#ed0707'
-                  onClick={() => {
-                    setPreview(null);
-                    setThumbnail('');
-                  }}
-                  className='absolute top-2 right-2 cursor-pointer'
-                />
+                <button className='svg-btn text-red-600 absolute top-1 right-1 cursor-pointer'>
+                  <Trash2
+                    size={18}
+                    strokeWidth={2}
+                    onClick={() => {
+                      setPreview(null);
+                      setThumbnail('');
+                    }}
+                  />
+                </button>
               </div>
             ) : (
               <div className='mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg'>

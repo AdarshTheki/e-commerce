@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     const users = await User.find()
       .select("-password -refreshToken")
       .sort({ createdAt: -1 })
-      .limit(10);
+      .limit(20);
     res.status(200).json(users);
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });

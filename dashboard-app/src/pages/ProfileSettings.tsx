@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { Input } from '../utils';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import { toast } from 'react-toastify';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+
+import { Breadcrumb, Input } from '../utils';
+import { RootState } from '../redux/store';
 import useFetch from '../hooks/useFetch';
 
 const ProfileSettings = () => {
   return (
     <>
-      <h2 className='text-xl px-2'>Settings</h2>
+      <div className='flex items-center justify-between p-2'>
+        <Breadcrumb
+          paths={[
+            { label: 'Home', to: '/' },
+            { label: 'Setting', to: '/setting' },
+          ]}
+        />
+      </div>
+
       <div className='bg-white min-h-screen sm:p-6 p-2 sm:flex justify-evenly overflow-hidden rounded-lg'>
         {/* Profile Avatar */}
         <AvatarComponent />
@@ -44,12 +53,12 @@ const Tabs = ({ children }) => {
   };
 
   return (
-    <div>
+    <>
       <div className='flex border-b border-gray-200 w-full overflow-x-auto'>
         {React.Children.map(children, (child, index) => (
           <button
             key={index}
-            className={`mr-5 py-2 font-medium border-b-2  text-gray-500 hover:text-gray-700 focus:outline-none ${
+            className={`mr-6 py-2 text-sm font-medium border-b-2  text-gray-500 hover:text-gray-700 focus:outline-none ${
               index === activeTab ? 'border-indigo-500 text-indigo-700' : 'border-transparent'
             }`}
             onClick={() => handleTabClick(index)}>
@@ -57,8 +66,8 @@ const Tabs = ({ children }) => {
           </button>
         ))}
       </div>
-      <div className='p-4'>{React.Children.toArray(children)[activeTab].props.children}</div>
-    </div>
+      <>{React.Children.toArray(children)[activeTab].props.children}</>
+    </>
   );
 };
 
@@ -182,35 +191,27 @@ const SectionsComponent = () => {
   };
 
   return (
-    <div>
-      <h2 className='text-lg font-semibold'>General Settings</h2>
-      <form className='grid pt-5 gap-6' onSubmit={onSettingsSubmit}>
-        <Input
-          value={formData.firstName}
-          onChange={handleChange}
-          name='firstName'
-          label='First Name'
-        />
-        <Input
-          value={formData.lastName}
-          onChange={handleChange}
-          name='lastName'
-          label='Last Name'
-        />
-        <Input
-          value={formData.phoneNumber}
-          type='number'
-          onChange={handleChange}
-          name='phoneNumber'
-          label='Phone'
-        />
-        <button
-          type='submit'
-          className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
-          {loading ? 'loading...' : 'Save Changes'}
-        </button>
-      </form>
-    </div>
+    <form className='grid pt-5 gap-4' onSubmit={onSettingsSubmit}>
+      <Input
+        value={formData.firstName}
+        onChange={handleChange}
+        name='firstName'
+        label='First Name'
+      />
+      <Input value={formData.lastName} onChange={handleChange} name='lastName' label='Last Name' />
+      <Input
+        value={formData.phoneNumber}
+        type='number'
+        onChange={handleChange}
+        name='phoneNumber'
+        label='Phone'
+      />
+      <button
+        type='submit'
+        className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
+        {loading ? 'loading...' : 'Save Changes'}
+      </button>
+    </form>
   );
 };
 
@@ -248,28 +249,25 @@ const SecurityComponent = () => {
   };
 
   return (
-    <div>
-      <h2 className='text-lg font-semibold'>Change Password</h2>
-      <form className='grid gap-5 mt-5' onSubmit={onSecuritySubmit}>
-        <Input
-          name='oldPassword'
-          value={formData.oldPassword}
-          onChange={handleChange}
-          label='Old Password'
-        />
-        <Input
-          name='newPassword'
-          value={formData.newPassword}
-          onChange={handleChange}
-          label='New Password'
-        />
-        <button
-          type='submit'
-          className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
-          {loading ? 'loading...' : 'Save Changes'}
-        </button>
-      </form>
-    </div>
+    <form className='grid pt-5 gap-4' onSubmit={onSecuritySubmit}>
+      <Input
+        name='oldPassword'
+        value={formData.oldPassword}
+        onChange={handleChange}
+        label='Old Password'
+      />
+      <Input
+        name='newPassword'
+        value={formData.newPassword}
+        onChange={handleChange}
+        label='New Password'
+      />
+      <button
+        type='submit'
+        className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
+        {loading ? 'loading...' : 'Save Changes'}
+      </button>
+    </form>
   );
 };
 
@@ -337,59 +335,56 @@ const AddressComponent = () => {
   };
 
   return (
-    <div>
-      <h2 className='text-lg font-semibold'>Home Address</h2>
-      <form className='pt-5 grid gap-5' onSubmit={onSubmitHandle}>
-        <Input
-          onChange={handleChange}
-          value={address.addressLine1}
-          name='addressLine1'
-          label='address Line 1'
-          optionals='(required)'
-        />
-        <Input
-          onChange={handleChange}
-          value={address.addressLine2}
-          name='addressLine2'
-          label='address Line 2'
-          optionals='(optionals)'
-        />
-        <Input
-          onChange={handleChange}
-          value={address.city}
-          name='city'
-          label='city'
-          optionals='(required)'
-        />
-        <Input
-          onChange={handleChange}
-          value={address.pinCode}
-          name='pinCode'
-          label='pinCode'
-          type='number'
-          optionals='(required)'
-        />
-        <Input
-          onChange={handleChange}
-          value={address.state}
-          name='state'
-          label='state'
-          optionals='(required)'
-        />
-        <Input
-          onChange={handleChange}
-          value={address.country}
-          name='country'
-          label='country'
-          optionals='(required)'
-        />
-        <button
-          type='submit'
-          className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
-          {loading ? 'loading...' : 'Save Changes'}
-        </button>
-      </form>
-    </div>
+    <form className='grid pt-5 gap-3' onSubmit={onSubmitHandle}>
+      <Input
+        onChange={handleChange}
+        value={address.addressLine1}
+        name='addressLine1'
+        label='address Line 1'
+        optionals='(required)'
+      />
+      <Input
+        onChange={handleChange}
+        value={address.addressLine2}
+        name='addressLine2'
+        label='address Line 2'
+        optionals='(optionals)'
+      />
+      <Input
+        onChange={handleChange}
+        value={address.city}
+        name='city'
+        label='city'
+        optionals='(required)'
+      />
+      <Input
+        onChange={handleChange}
+        value={address.pinCode}
+        name='pinCode'
+        label='pinCode'
+        type='number'
+        optionals='(required)'
+      />
+      <Input
+        onChange={handleChange}
+        value={address.state}
+        name='state'
+        label='state'
+        optionals='(required)'
+      />
+      <Input
+        onChange={handleChange}
+        value={address.country}
+        name='country'
+        label='country'
+        optionals='(required)'
+      />
+      <button
+        type='submit'
+        className='px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white'>
+        {loading ? 'loading...' : 'Save Changes'}
+      </button>
+    </form>
   );
 };
 
@@ -407,7 +402,6 @@ const PreferencesComponent = () => {
   };
   return (
     <div id='preference'>
-      <h3 className='text-lg font-semibold'>Preferences</h3>
       <div className='space-y-4 pt-5'>
         <div className='flex items-center justify-between'>
           <div>
