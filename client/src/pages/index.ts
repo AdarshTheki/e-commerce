@@ -1,29 +1,23 @@
-import Login from './Login';
-import Register from './Register';
+import CartsPage from './CartsPage';
+import CategoriesPage from './CategoriesPage';
+import CheckoutPage from './CheckoutPage';
+import HomePage from './HomePage';
+import SingleProductPage from './SingleProductPage';
+import ProductsPage from './ProductsPage';
+import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
 import Notfound from './Notfound';
-import Analytics from './Analytics';
-import Customers from './Customers';
-import Dashboard from './Dashboard';
-import Inventory from './Inventory';
-import Products from './Products';
-import ProductUpdate from './ProductUpdate';
-import ProductCreate from './ProductCreate';
-import ProfileSettings from './ProfileSettings';
-import Categories from './Categories';
-import CategoryCreate from './CategoryCreate';
+import SettingPage from './SettingPage';
 
 export {
-  CategoryCreate,
-  Categories,
-  Login,
-  Products,
-  ProductUpdate,
-  ProductCreate,
-  ProfileSettings,
-  Register,
+  CartsPage,
+  CategoriesPage,
+  CheckoutPage,
+  HomePage,
+  SingleProductPage,
+  ProductsPage,
+  LoginPage,
+  RegisterPage,
   Notfound,
-  Analytics,
-  Customers,
-  Dashboard,
-  Inventory,
+  SettingPage,
 };

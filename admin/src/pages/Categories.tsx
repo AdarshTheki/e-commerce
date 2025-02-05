@@ -78,7 +78,7 @@ const CategoryListing = () => {
 
   return (
     <>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between p-2'>
         <Breadcrumb
           paths={[
             { label: 'Home', to: '/' },
@@ -148,7 +148,7 @@ const CategoryListing = () => {
       </div>
 
       {data?.totalDocs ? (
-        <div className='grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2 min-h-screen'>
+        <div className='grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2'>
           {data?.docs?.map((item: BrandType) => (
             <CategoryItem key={item._id} path={pathname} {...item} refetch={refetch} />
           ))}
@@ -183,18 +183,6 @@ const CategoryItem = ({
     }
   };
 
-  const handleStatus = async (text: string) => {
-    try {
-      const res = await axios.patch(`/api/v1${path}/status/${_id}`, { status: text });
-      if (res.data) {
-        refetch();
-        toast.success('status update success');
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
   return (
     <div className='bg-white rounded-lg border border-neutral-200/20'>
       <div className='flex items-center justify-between relative rounded-t-lg overflow-hidden'>
@@ -213,19 +201,12 @@ const CategoryItem = ({
         </button>
       </div>
       <div className='p-3 text-gray-700'>
-        <h3 className='mb-2 text-sm font-medium capitalize line-clamp-1'>{title}</h3>
+        <h3 className='mb-2 font-medium capitalize line-clamp-1'>{title?.split('-')?.join(' ')}</h3>
         <div className='flex gap-2 flex-wrap justify-between items-center text-sm'>
           <span>{formatDate(createdAt)}</span>
-          <DropdownMenu name={status.toLowerCase()}>
-            {['active', 'inactive'].map((i) => (
-              <button
-                key={i}
-                onClick={() => handleStatus(i)}
-                className='py-2 w-[100px] hover:bg-gray-100 block capitalize'>
-                {i}
-              </button>
-            ))}
-          </DropdownMenu>
+          <span className={status.toLowerCase() !== 'active' ? 'status-inactive' : 'status-active'}>
+            {status.toLowerCase()}
+          </span>
         </div>
       </div>
     </div>

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import { BellDotIcon, Menu, Settings, X } from 'lucide-react';
 import { Input, menuItems } from '../utils';
 
 const Layout: React.FC = () => {
   const [open, setOpen] = useState(false);
-
   return (
     <div id='root' className='bg-[#E5E7EB]'>
       <div className='flex'>
         {/* <!-- Desktop Menu --> */}
+        <Sidebar />
 
         {/* <!-- Mobile Menu Button Fixed --> */}
         <div className='lg:hidden fixed top-3.5 right-2 z-50'>

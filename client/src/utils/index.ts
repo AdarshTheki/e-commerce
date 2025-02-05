@@ -1,3 +1,16 @@
+import Footer from './Footer';
+import Header from './Header';
+import MegaMenu from './MegaMenu';
+import Breadcrumb from './Breadcrumb';
+import Dropdown from './Dropdown';
+import Input from './Input';
+import Label from './Label';
+import Loading from './Loading';
+import PaginationBtn from './PaginationBtn';
+import Select from './Select';
+import SpinnerBtn from './SpinnerBtn';
+import Textarea from './Textarea';
+
 import {
   Box,
   ShoppingBag,
@@ -9,17 +22,6 @@ import {
   Cat,
   Gift,
 } from 'lucide-react';
-
-import Loading from './Loading';
-import SpinnerBtn from './SpinnerBtn';
-import Input from './Input';
-import Select from './Select';
-import Textarea from './Textarea';
-import DropdownMenu from './Dropdown';
-import Breadcrumb from './Breadcrumb';
-import PaginationBtn from './PaginationBtn';
-
-export { Loading, PaginationBtn, Breadcrumb, DropdownMenu, SpinnerBtn, Input, Select, Textarea };
 
 export const menuItems = [
   { id: 1, title: 'Dashboard', path: '/', icon: HousePlug },
@@ -42,29 +44,17 @@ export const formatDate = (dateString: string): string => {
   });
 };
 
-export const categories = [
-  'beauty',
-  'fragrances',
-  'furniture',
-  'groceries',
-  'home-decoration',
-  'kitchen-accessories',
-  'laptops',
-  'mens-shirts',
-  'mens-shoes',
-  'mens-watches',
-  'mobile-accessories',
-  'motorcycle',
-  'skin-care',
-  'smartphones',
-  'sports-accessories',
-  'sunglasses',
-  'tablets',
-  'tops',
-  'vehicle',
-  'womens-bags',
-  'womens-dresses',
-  'womens-jewellery',
-  'womens-shoes',
-  'womens-watches',
-];
+export {
+  Footer,
+  Header,
+  MegaMenu,
+  Breadcrumb,
+  Dropdown,
+  Input,
+  Label,
+  Loading,
+  PaginationBtn,
+  Select,
+  SpinnerBtn,
+  Textarea,
+};

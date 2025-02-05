@@ -1,5 +1,4 @@
-import PrivateRoute from './PrivateRoute';
 import Layout from './Layout';
-import ProductForm from './ProductForm';
+import PrivateRoute from './PrivateRoute';
 
-export { PrivateRoute, Layout, ProductForm };
+export { Layout, PrivateRoute };

@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useState } from 'react';
 import axios from 'axios';
 
-import { Input, Loading, DropdownMenu, Breadcrumb } from '../utils';
+import { Input, Loading, DropdownMenu, Breadcrumb, PaginationBtn } from '../utils';
 import useDebounce from '../hooks/useDebounce';
 import useFetch from '../hooks/useFetch';
 
@@ -24,14 +24,20 @@ const pageSizeOptions = [
 
 export default function Product() {
   const [sortBy, setSortBy] = useState<string>('title-asc');
-  const [limit, setLimit] = useState<string>('10');
+  const [limit, setLimit] = useState<number>(10);
+  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const query = useDebounce(search, 500);
 
-  // GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= data?.totalPages) {
+      setPage(newPage);
+    }
+  };
 
+  // GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
   const { data, loading } = useFetch<FetchResponseProp>(
-    `/api/v1/product?title=${query}&status=${status}&limit=${limit}&sortBy=${
+    `/api/v1/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
       sortBy.split('-')[0]
     }&order=${sortBy.split('-')[1]}`
   );
@@ -41,7 +47,7 @@ export default function Product() {
       <div className='w-[140px]'>
         {pageSizeOptions.map((i) => (
           <button
-            onClick={() => setLimit(String(i.value))}
+            onClick={() => setLimit(i.value)}
             className={`w-full hover:bg-gray-50 py-1.5 text-sm ${
               i.value == Number(limit) && 'text-indigo-600'
             }`}
@@ -72,7 +78,7 @@ export default function Product() {
 
   return (
     <>
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between p-2'>
         <Breadcrumb
           paths={[
             { label: 'Home', to: '/' },
@@ -106,21 +112,35 @@ export default function Product() {
             </DropdownMenu>
           </div>
         </div>
-        {/* <!-- Pagination --> */}
-        <div className='sm:flex-row flex gap-2 flex-col sm:justify-between text-sm pt-5'>
-          <p className='text-sm text-gray-500'>Showing 1 to 10 of 45 products</p>
-          <div className='flex gap-2'>
-            <button className='btn  text-xs border border-neutral-200 rounded-lg hover:bg-gray-50'>
+
+        <hr className='border my-4 border-gray-100' />
+
+        {/* Pagination */}
+        <div className='sm:flex-row flex gap-2 flex-col sm:justify-between text-sm'>
+          <p className='text-sm text-gray-500'>
+            Showing {(page - 1) * limit + 1} to {Math.min(page * limit, data?.totalDocs)} of{' '}
+            {data?.totalDocs} products
+          </p>
+          <div className='flex gap-2 items-center'>
+            <button
+              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                page === 1 && 'hidden'
+              }`}
+              onClick={() => handlePageChange(page - 1)}>
               Prev
             </button>
-            <button className='btn text-xs bg-indigo-600 text-white rounded-lg'>1</button>
-            <button className='btn text-xs border border-neutral-200 rounded-lg hover:bg-gray-50'>
-              2
-            </button>
-            <button className='btn text-xs border border-neutral-200 rounded-lg hover:bg-gray-50'>
-              3
-            </button>
-            <button className='btn text-xs border border-neutral-200 rounded-lg hover:bg-gray-50'>
+
+            <PaginationBtn
+              handlePageChange={handlePageChange}
+              page={data?.page}
+              totalPages={data?.totalPages}
+            />
+
+            <button
+              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                page === data?.totalPages && 'hidden'
+              }`}
+              onClick={() => handlePageChange(page + 1)}>
               Next
             </button>
           </div>
@@ -155,7 +175,7 @@ const ProductMobile = ({ item }: { item: ProductType }) => {
   };
 
   return (
-    <div key={item._id} className='border relative bg-white rounded-lg'>
+    <div key={item._id} className='border relative bg-white rounded-lg overflow-hidden'>
       <button className='svg-btn text-indigo-600 hover:text-indigo-800 absolute top-1 right-10'>
         <NavLink to={`/product/${item?._id}`}>
           <Pencil size={18} />
@@ -167,19 +187,15 @@ const ProductMobile = ({ item }: { item: ProductType }) => {
       <div>
         <img alt={item._id} src={item.thumbnail || 'https://placehold.co/600x500'} loading='lazy' />
       </div>
-      <div className='space-y-2 p-4'>
-        <h3 className='font-semibold line-clamp-2 capitalize'>{item.title.toLowerCase()}</h3>
-        <p className='text-sm text-gray-600'>
-          {item?.brand} | {item?.category}
-        </p>
-        <div className='flex flex-wrap gap-1   justify-between items-center'>
+      <div className='p-4 capitalize space-y-1'>
+        <p className='text-sm'>#{item?.brand}</p>
+        <h3 className='font-semibold line-clamp-1 capitalize'>{item.title.toLowerCase()}</h3>
+        <p className='text-sm text-gray-600'>{item?.category?.split('-').join(' ')}</p>
+        <div className='flex flex-wrap gap-1 justify-between items-center'>
           <h3 className='whitespace-nowrap font-semibold text-sm text-gray-700'>
             Price: ${item.price}
           </h3>
-          <span
-            className={`text-white capitalize bg-green-600 px-2 py-1 rounded-lg text-xs ${
-              status.toLowerCase() !== 'active' && '!bg-red-600'
-            }`}>
+          <span className={status.toLowerCase() !== 'active' ? 'status-inactive' : 'status-active'}>
             {status}
           </span>
         </div>
