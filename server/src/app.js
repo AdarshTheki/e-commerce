@@ -22,6 +22,8 @@ app.use(cookieParser());
 
 // app.use(limiter);
 
+app.use(createSession());
+
 // import all routing files
 import userRoute from "./routes/user.router.js";
 import productRoute from "./routes/product.router.js";
@@ -32,6 +34,7 @@ import brandRoute from "./routes/brand.router.js";
 import cartRoute from "./routes/cart.router.js";
 import addressRoute from "./routes/address.router.js";
 import { ApiError } from "./utils/ApiError.js";
+import { createSession } from "./middlewares/session.middleware.js";
 
 // used all base url
 app.use("/api/v1/user", userRoute);

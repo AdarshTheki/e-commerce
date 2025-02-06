@@ -1,33 +1,18 @@
 import { User } from "../models/user.model.js";
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
-import jwt from "jsonwebtoken";
 
-export const verifyJWT = asyncHandler(async (req, _, next) => {
-    try {
-        const token =
-            req.cookies?.accessToken ||
-            req.headers["authorization"]?.replace("Bearer ", "") ||
-            req.headers["x-auth-token"] ||
-            "";
+export const verifyJWT = async (req, _, next) => {
+  try {
+    const userId = req?.session?.user?._id;
 
-        if (!token) {
-            throw new ApiError(401, "Un-Authorization Request!");
-        }
+    if (!userId) throw Error("session user Id is not found on middleware");
 
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findById(userId).select("-password -refreshToken");
 
-        const user = await User.findById(decodedToken?._id).select(
-            "-password -refreshToken"
-        );
+    if (!user) throw Error("Invalid Access Token ! Please Login User");
 
-        if (!user) {
-            throw new ApiError(401, "Invalid Access Token ! Please Login User");
-        }
-
-        req.user = user;
-        next();
-    } catch (error) {
-        throw new ApiError(500, error?.message || "Authentication user");
-    }
-});
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(505).json({ message: error.message, status: false });
+  }
+};
