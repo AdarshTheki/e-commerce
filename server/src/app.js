@@ -1,7 +1,18 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { ApiError } from "./utils/ApiError.js";
 // import rateLimit from "express-rate-limit";
+
+// import all routing files
+import userRoute from "./routes/user.router.js";
+import productRoute from "./routes/product.router.js";
+import orderRoute from "./routes/order.router.js";
+import reviewRoute from "./routes/review.router.js";
+import categoryRoute from "./routes/category.router.js";
+import brandRoute from "./routes/brand.router.js";
+import cartRoute from "./routes/cart.router.js";
+import addressRoute from "./routes/address.router.js";
 
 const app = express();
 
@@ -22,20 +33,6 @@ app.use(cookieParser());
 
 // app.use(limiter);
 
-app.use(createSession());
-
-// import all routing files
-import userRoute from "./routes/user.router.js";
-import productRoute from "./routes/product.router.js";
-import orderRoute from "./routes/order.router.js";
-import reviewRoute from "./routes/review.router.js";
-import categoryRoute from "./routes/category.router.js";
-import brandRoute from "./routes/brand.router.js";
-import cartRoute from "./routes/cart.router.js";
-import addressRoute from "./routes/address.router.js";
-import { ApiError } from "./utils/ApiError.js";
-import { createSession } from "./middlewares/session.middleware.js";
-
 // used all base url
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
@@ -47,24 +44,13 @@ app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/address", addressRoute);
 
 app.get("/api/v1", async (req, res) => {
-  res.status(200).json({ message: "API Health Check Successful" });
+  res
+    .status(200)
+    .json({ message: "API Health Check Successful", status: "ok" });
 });
 
 app.get("*", (req, res) => {
   res.status(404).json({ message: "Endpoint Not Found" });
-});
-
-app.use((err, req, res, next) => {
-  console.log("custom error:", err.message);
-  if (err instanceof ApiError) {
-    res
-      .status(err.statusCode || 500)
-      .json({ message: err.message, status: false });
-  } else {
-    res
-      .status(500)
-      .json({ message: err.message || "Internal Server Error", status: false });
-  }
 });
 
 export { app };

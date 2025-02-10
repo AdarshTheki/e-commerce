@@ -28,63 +28,41 @@ router.get("/", async (req, res) => {
       limit = 10,
     } = req.query;
 
-    // Build the aggregation pipeline
     const pipeline = [];
 
-    // Match stage for filtering
     const matchQuery = {};
 
-    // Search by title (case-insensitive partial match)
-    if (title) {
-      matchQuery.title = { $regex: title, $options: "i" };
-    }
+    if (title) matchQuery.title = { $regex: title, $options: "i" };
 
-    // Filter by brand (case-insensitive match)
-    if (brand) {
-      matchQuery.brand = { $regex: brand, $options: "i" };
-    }
+    if (brand) matchQuery.brand = { $regex: brand, $options: "i" };
 
-    // Filter by category (exact match)
-    if (category) {
-      matchQuery.category = category;
-    }
+    if (category) matchQuery.category = category;
 
-    // Filter by price range
     if (minPrice || maxPrice) {
       matchQuery.price = {};
       if (minPrice) matchQuery.price.$gte = Number(minPrice);
       if (maxPrice) matchQuery.price.$lte = Number(maxPrice);
     }
 
-    // Filter by rating range
     if (minRating || maxRating) {
       matchQuery.rating = {};
       if (minRating) matchQuery.rating.$gte = Number(minRating);
       if (maxRating) matchQuery.rating.$lte = Number(maxRating);
     }
 
-    // Add match stage to the pipeline
     if (Object.keys(matchQuery).length > 0) {
       pipeline.push({ $match: matchQuery });
     }
 
-    // Sort stage
     if (sortBy) {
       const sortOptions = {};
       sortOptions[sortBy] = order === "desc" ? -1 : 1; // -1 for descending, 1 for ascending
       pipeline.push({ $sort: sortOptions });
     }
 
-    // Pagination options
-    const options = {
-      page: Number(page),
-      limit: Number(limit),
-    };
-
-    // Execute the aggregation pipeline with pagination
     const result = await Product.aggregatePaginate(
       Product.aggregate(pipeline),
-      options
+      { page: Number(page), limit: Number(limit) }
     );
 
     res.status(200).json(result);

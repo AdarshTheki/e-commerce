@@ -2,23 +2,31 @@ import { UAParser } from "ua-parser-js";
 
 export const userInfo = async (req, res, next) => {
   try {
-    if (req.session) {
-      const parser = new UAParser();
-      const userAgent = req.headers["user-agent"];
-      const ip =
-        req.headers["x-forwarded-for"] || req.socket.remoteAddress || "Unknown";
-      const uaResult = parser.setUA(userAgent).getResult();
+    const parser = new UAParser();
+    const userAgent = req.headers["user-agent"] || "Unknown";
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      req.socket.remoteAddress ||
+      "Unknown";
 
-      // Add metadata or update existing session metadata
-      req.session.metadata = {
-        device: uaResult.device.type || "desktop",
-        browser: uaResult.browser.name || "Unknown",
-        os: uaResult.os.name || "Unknown",
-        ip,
-      };
-    }
+    const uaResult = parser.setUA(userAgent).getResult();
+
+    // Attach metadata to the request object
+    req.metadata = {
+      device: uaResult.device.type || "desktop",
+      browser: uaResult.browser.name || "Unknown",
+      os: uaResult.os.name || "Unknown",
+      ip,
+      userAgent,
+    };
+
     next();
   } catch (error) {
-    res.status(505).json({ message: error.message, status: false });
+    res
+      .status(500)
+      .json({
+        message: error.message || "Internal Server Error",
+        status: false,
+      });
   }
 };

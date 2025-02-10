@@ -90,15 +90,13 @@ router.post("/sign-in", async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     };
 
-    return res
-      .status(200)
-      .cookie("refreshToken", refreshToken, payload)
-      .cookie("accessToken", accessToken, payload)
-      .json({
-        user: modifyUser,
-        accessToken,
-        refreshToken,
-      });
+    res.cookie("refreshToken", refreshToken, payload);
+    res.cookie("accessToken", accessToken, payload);
+    return res.status(200).json({
+      user: modifyUser,
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
   }

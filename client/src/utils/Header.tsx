@@ -55,11 +55,11 @@ const Header = () => {
         <div className='flex justify-between items-center py-2 text-sm border-b border-gray-200'>
           <div className='flex items-center gap-4'>
             <a href='#' className='flex items-center gap-1 hover:text-indigo-600'>
-              <Phone size={14} />
+              <Phone size={18} />
               <span>+1 234 567 890</span>
             </a>
             <a href='#' className='flex items-center gap-1 hover:text-indigo-600'>
-              <Mail size={14} />
+              <Mail size={18} />
               <span>support@store.com</span>
             </a>
           </div>
@@ -68,19 +68,19 @@ const Header = () => {
               title='Track Order'
               href='#'
               className='hover:text-indigo-600 flex gap-1 items-center'>
-              <MapPin size={14} /> <span className='max-sm:hidden'>Track Order</span>
+              <MapPin size={18} /> <span className='max-sm:hidden'>Track Order</span>
             </a>
             <a
               title='Store Locator'
               href='#'
               className='hover:text-indigo-600 flex gap-1 items-center'>
-              <Store size={14} /> <span className='max-sm:hidden'>Store Locator</span>
+              <Store size={18} /> <span className='max-sm:hidden'>Store Locator</span>
             </a>
           </div>
         </div>
 
         {/* Main Header*/}
-        <div className='flex items-center justify-between py-4'>
+        <div className='flex items-center justify-between py-2 sm:py-4'>
           {/* Mobile Menu Button*/}
           <button className='lg:hidden p-2 hover:bg-gray-100 rounded-lg'>
             <Menu />
@@ -97,7 +97,7 @@ const Header = () => {
               className={`w-full flex items-center border rounded-lg border-gray-300 ${
                 isDropdownOpen && 'border-indigo-600'
               }`}>
-              <Search size={18} className='mx-4' />
+              <Search size={20} className='mx-4' />
               <input
                 type='text'
                 placeholder='Search products...'
@@ -122,27 +122,27 @@ const Header = () => {
           <div className='flex items-center gap-5'>
             {searchOpen ? (
               <X
-                size={20}
+                size={26}
                 className='sm:hidden cursor-pointer'
                 onClick={() => setSearchOpen(false)}
               />
             ) : (
               <Search
-                size={20}
+                size={26}
                 className='sm:hidden cursor-pointer'
                 onClick={() => setSearchOpen(true)}
               />
             )}
 
             <a href='#' className='relative hover:text-indigo-600'>
-              <ShoppingCart size={18} />
+              <ShoppingCart size={26} />
               <span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
                 0
               </span>
             </a>
 
             <a href='#' className='relative hover:text-indigo-600'>
-              <CakeSlice size={18} />
+              <CakeSlice size={26} />
               <span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center'>
                 0
               </span>
@@ -173,7 +173,7 @@ const Header = () => {
               className={`w-full flex items-center border rounded-lg border-gray-300 ${
                 isDropdownOpen && 'border-indigo-600'
               }`}>
-              <Search size={18} className='mx-4' />
+              <Search size={26} className='mx-4' />
               <input
                 type='text'
                 placeholder='Search products...'

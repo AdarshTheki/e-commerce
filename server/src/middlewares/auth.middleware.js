@@ -1,18 +1,32 @@
+import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
-export const verifyJWT = async (req, _, next) => {
+export const verifyJWT = async (req, res, next) => {
   try {
-    const userId = req?.session?.user?._id;
+    const token =
+      req.cookies?.accessToken ||
+      req.headers.authorization?.replace("Bearer ", "");
 
-    if (!userId) throw Error("session user Id is not found on middleware");
+    if (!token) {
+      throw new Error("Unauthorized request: No token provided");
+    }
 
-    const user = await User.findById(userId).select("-password -refreshToken");
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    if (!user) throw Error("Invalid Access Token ! Please Login User");
+    const user = await User.findById(decodedToken?._id).select(
+      "-password -refreshToken"
+    );
+
+    if (!user) {
+      throw new Error("Invalid Access Token: User not found");
+    }
 
     req.user = user;
     next();
   } catch (error) {
-    res.status(505).json({ message: error.message, status: false });
+    return res.status(401).json({
+      message: error.message || "Invalid Access Token",
+      status: false,
+    });
   }
 };
