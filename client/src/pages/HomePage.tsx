@@ -1,6 +1,7 @@
 import { Star } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
+import { Typewriter } from '../utils';
 
 const HomePage = () => {
   return (
@@ -19,9 +20,11 @@ const HomePage = () => {
         <div className='px-4 h-full flex items-center justify-center relative'>
           <div className='max-w-lg text-center text-white grid items-center gap-6 justify-center'>
             <h1 className='sm:text-8xl text-5xl font-semibold'>JUST DO IT</h1>
-            <h4 className='sm:text-xl text-lg'>
-              Your sport journey begins here. Push your limits, break boundaries.
-            </h4>
+            <Typewriter
+              text='Your sport journey begins here. Push your limits, break boundaries.'
+              name='heading'
+              className='sm:text-xl text-lg'
+            />
             <button className='py-3 px-6 rounded-lg mx-auto hover:opacity-80 cursor-pointer bg-white text-black font-semibold text-xl w-fit'>
               Shop Now
             </button>
@@ -47,15 +50,22 @@ const HomePage = () => {
 export default HomePage;
 
 const FeaturedCategory = () => {
-  const { data, error, loading } = useFetch('/api/v1/category?limit=5');
+  const { data, error, loading } = useFetch('/api/v1/category?limit=6');
 
   if (error || loading) return <h2>loading...</h2>;
 
   return (
     <section className='bg-white py-5'>
       <div className='max-w-7xl mx-auto'>
-        <h2 className='text-2xl font-bold px-4'>Shop by Category</h2>
-        <div className='flex w-full py-5 overflow-x-auto'>
+        <div className='flex items-center justify-between px-2'>
+          <h2 className='text-2xl font-bold'>Shop by Category</h2>
+          <NavLink
+            to={'/category'}
+            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
+            View All
+          </NavLink>
+        </div>
+        <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
           {data?.totalDocs
             ? data?.docs?.map((item: CategoryType) => (
                 <div
@@ -89,15 +99,22 @@ const FeaturedCategory = () => {
 };
 
 const FeaturedBrand = () => {
-  const { data, error, loading } = useFetch('/api/v1/brand?limit=5');
+  const { data, error, loading } = useFetch('/api/v1/brand?limit=6');
 
   if (error || loading) return <h2>loading...</h2>;
 
   return (
     <section className='bg-gray-50'>
       <div className='max-w-7xl mx-auto'>
-        <h2 className='text-2xl font-bold px-4'>Featured Products</h2>
-        <div className='flex w-full py-5 overflow-x-auto'>
+        <div className='flex items-center justify-between px-2'>
+          <h2 className='text-2xl font-bold'>Featured Products</h2>
+          <NavLink
+            to={'/product'}
+            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
+            View All
+          </NavLink>
+        </div>
+        <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
           {data?.totalDocs
             ? data?.docs.map((item: BrandType) => (
                 <div className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp'>
@@ -131,9 +148,16 @@ const Testimonials = () => {
   return (
     <section className='py-5 bg-gray-50'>
       <div className='max-w-7xl mx-auto'>
-        <h2 className='text-2xl font-bold px-4'>What Our Customers Say</h2>
-        <div className='flex w-full py-5 overflow-x-auto'>
-          {Array.from({ length: 3 }, (_, index) => (
+        <div className='flex items-center justify-between px-2'>
+          <h2 className='text-2xl font-bold'>What Our Customers Say</h2>
+          <NavLink
+            to={'/product'}
+            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
+            View All
+          </NavLink>
+        </div>
+        <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
+          {Array.from({ length: 4 }, (_, index) => (
             <div
               key={index}
               className='bg-white min-w-[300px] max-w-[300px] p-4 rounded-lg shadow-sm mx-2'>

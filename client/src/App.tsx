@@ -7,7 +7,6 @@ import {
   RegisterPage,
   SettingPage,
   CartsPage,
-  CategoriesPage,
   CheckoutPage,
   HomePage,
   ProductsPage,
@@ -23,6 +22,12 @@ const App = () => {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/setting' element={<SettingPage />} />
+          <Route path='/login' element={<LoginPage />} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path='/products' element={<ProductsPage />} />
+          <Route path='/product/:id' element={<SingleProductPage />} />
+          <Route path='/cart' element={<CartsPage />} />
+          <Route path='/checkout' element={<CheckoutPage />} />
           <Route path='*' element={<Notfound />} />
         </Routes>
         <Footer />

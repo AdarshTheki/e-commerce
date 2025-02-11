@@ -10,6 +10,7 @@ import PaginationBtn from './PaginationBtn';
 import Select from './Select';
 import SpinnerBtn from './SpinnerBtn';
 import Textarea from './Textarea';
+import Typewriter from './Typewriter';
 
 import {
   Box,
@@ -57,4 +58,5 @@ export {
   Select,
   SpinnerBtn,
   Textarea,
+  Typewriter,
 };

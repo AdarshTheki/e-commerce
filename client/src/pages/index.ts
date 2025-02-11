@@ -1,5 +1,4 @@
 import CartsPage from './CartsPage';
-import CategoriesPage from './CategoriesPage';
 import CheckoutPage from './CheckoutPage';
 import HomePage from './HomePage';
 import SingleProductPage from './SingleProductPage';
@@ -11,7 +10,6 @@ import SettingPage from './SettingPage';
 
 export {
   CartsPage,
-  CategoriesPage,
   CheckoutPage,
   HomePage,
   SingleProductPage,

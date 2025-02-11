@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Heart, LayoutGrid, List, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Star } from 'lucide-react';
 import useFetch from '../hooks/useFetch';
 
 const ProductListing = () => {
-  const { data, error, loading } = useFetch('/products?limit=30');
-  const [view, setView] = useState(false);
+  const { data, error, loading } = useFetch('/api/v1/product?limit=30');
 
-  if (loading || error || !data?.data.length)
+  console.log(data);
+
+  if (loading || error || !data?.totalDocs)
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div className='flex space-x-2'>
@@ -25,7 +26,7 @@ const ProductListing = () => {
     <section id='productListing' className='py-2 bg-gray-50'>
       <div className='flex flex-col lg:flex-row gap-2'>
         {/* <!-- Filters Sidebar --> */}
-        <div className='w-[290px] max-lg:hidden sticky h-[75vh] top-[136px] overflow-y-auto scrollbar'>
+        <div className='w-[300px] max-lg:hidden sticky h-fit top-[108px] overflow-y-auto scrollbar'>
           <div className='bg-white rounded-lg shadow-sm px-6 py-3'>
             <h2 className='font-bold text-lg mb-4'>Filters</h2>
 
@@ -109,7 +110,7 @@ const ProductListing = () => {
         {/* <!-- Product Grid --> */}
         <div className='w-full'>
           {/* <!-- Sort and View Options --> */}
-          <div className='bg-white sticky h-fit top-[136px] z-10 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between'>
+          <div className='bg-white sticky h-fit top-[108px] z-10 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between'>
             <div className='flex items-center space-x-4'>
               <span className='text-gray-600'>Sort by:</span>
               <select className='border rounded px-2 py-1'>
@@ -121,22 +122,17 @@ const ProductListing = () => {
             </div>
             <div className='flex items-center'>
               <span className='text-gray-600'>View:</span>
-              <button onClick={() => setView(!view)} className='p-2 hover:bg-gray-100 rounded-lg'>
-                {view ? <LayoutGrid size={20} /> : <List size={20} />}
-              </button>
             </div>
           </div>
 
           {/* <!-- Products Grid --> */}
-          <div className={`grid md:grid-cols-2 gap-6 ${view ? '' : 'lg:grid-cols-3'}`}>
+          <div className={`grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
-            {data?.data?.length
-              ? data?.data?.map((item: ProductType) => (
+            {data?.totalDocs
+              ? data?.docs?.map((item: ProductType) => (
                   <div
                     key={item._id}
-                    className={`bg-white rounded-lg shadow-sm overflow-hidden group ${
-                      view ? 'grid grid-cols-2 items-center gap-2' : ''
-                    }`}>
+                    className={`bg-white rounded-lg shadow-sm overflow-hidden group`}>
                     <div className='relative'>
                       <img
                         src='https://placehold.co/200x140'
@@ -151,37 +147,19 @@ const ProductListing = () => {
                       </div>
                       <div className='absolute top-2 left-2'>
                         <span className='bg-red-500 text-white px-2 py-1 text-sm rounded'>
-                          {(
-                            ((item?.delivery_amount ?? 0) * 100) /
-                            (item?.original_price ?? 1)
-                          ).toFixed(1)}
-                          %
+                          {item.discount}%
                         </span>
                       </div>
                     </div>
                     <div className='p-4 space-y-2 capitalize'>
-                      <p className='text-gray-600 text-sm'>{item.brand?.title}</p>
+                      <p className='text-gray-600 text-sm'>{item.brand}</p>
                       <h3 className='font-semibold mb-2 text-gray-700 line-clamp-2'>
                         {item.title}
                       </h3>
-                      <div className='sm:flex max-sm:w-fit justify-between items-center'>
-                        <p className='bg-gray-200 px-3 py-1 text-xs rounded-2xl'>
-                          {item.category?.title}
-                        </p>
-                      </div>
-                      <div className='flex items-center justify-between mb-4 text-gray-700'>
-                        <div>
-                          <span className='text-lg font-bold'>${item.discount_price}</span>
-                          <span className='text-sm text-gray-500 line-through ml-2'>
-                            ${item.original_price}
-                          </span>
-                        </div>
-                        {item.status === 'ACTIVE' ? (
-                          <span className='text-green-600 text-sm'>In Stock</span>
-                        ) : (
-                          <span className='text-red-600 text-sm'>Out Stock</span>
-                        )}
-                      </div>
+                      <p className='bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit'>
+                        {item.category}
+                      </p>
+                      <p className='text-gray-600 text-xl'>${item.price}</p>
                     </div>
                   </div>
                 ))
