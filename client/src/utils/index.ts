@@ -1,5 +1,3 @@
-import Footer from './Footer';
-import Header from './Header';
 import MegaMenu from './MegaMenu';
 import Breadcrumb from './Breadcrumb';
 import Dropdown from './Dropdown';
@@ -46,8 +44,6 @@ export const formatDate = (dateString: string): string => {
 };
 
 export {
-  Footer,
-  Header,
   MegaMenu,
   Breadcrumb,
   Dropdown,

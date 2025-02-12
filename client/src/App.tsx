@@ -1,6 +1,5 @@
-import React from 'react';
-import { Layout, PrivateRoute } from './components';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom';
 import {
   LoginPage,
   Notfound,
@@ -12,11 +11,26 @@ import {
   ProductsPage,
   SingleProductPage,
 } from './pages';
-import { Footer, Header, Loading } from './utils';
+import useFetch from './hooks/useFetch';
+import { Footer, Header, PrivateRoute } from './components';
+import { Loading } from './utils';
+import { useDispatch } from 'react-redux';
+import { login } from './redux/authSlice';
 
 const App = () => {
+  const { data, loading } = useFetch('/api/v1/user/current-user');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (data?._id) {
+      dispatch(login(data));
+    }
+  }, [data]);
+
+  if (loading) return <Loading />;
+
   return (
-    <div>
+    <div className='w-full'>
       <Router>
         <Header />
         <Routes>
@@ -24,11 +38,13 @@ const App = () => {
           <Route path='/setting' element={<SettingPage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage />} />
-          <Route path='/products' element={<ProductsPage />} />
+          <Route path='/product' element={<ProductsPage />} />
           <Route path='/product/:id' element={<SingleProductPage />} />
-          <Route path='/cart' element={<CartsPage />} />
-          <Route path='/checkout' element={<CheckoutPage />} />
           <Route path='*' element={<Notfound />} />
+          <Route element={<PrivateRoute isAuth={data?._id} />}>
+            <Route path='/cart' element={<CartsPage />} />
+            <Route path='/checkout' element={<CheckoutPage />} />
+          </Route>
         </Routes>
         <Footer />
       </Router>

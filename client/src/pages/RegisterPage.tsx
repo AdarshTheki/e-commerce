@@ -1,9 +1,8 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-
-import { Input } from '../utils';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Input } from '../utils';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -26,8 +25,7 @@ const Register: React.FC = () => {
         navigate('/login');
       }
     } catch (err) {
-      toast.success('User register failed, Try again!');
-      console.log(err);
+      toast.error(err?.message);
     }
   };
 
@@ -44,7 +42,7 @@ const Register: React.FC = () => {
             <p className='text-gray-600 mt-2'>Sign up for a new account</p>
           </div>
 
-          <form onSubmit={handelSubmit}>
+          <form onSubmit={handelSubmit} className='space-y-4'>
             <Input name='username' type='text' label='Username' autoComplete='off' required />
             <Input name='email' type='email' label='Email' autoComplete='off' required />
             <Input name='password' type='text' label='Password' autoComplete='off' required />
@@ -62,6 +60,8 @@ const Register: React.FC = () => {
               <input
                 type='checkbox'
                 id='checkbox'
+                checked={true}
+                readOnly
                 className='h-4 w-4 text-indigo-600 border-gray-300 rounded'
                 required
               />

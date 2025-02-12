@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-
-import { Input, SpinnerBtn } from '../utils';
+import { Input } from '../utils';
 
 const Login: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -19,7 +16,6 @@ const Login: React.FC = () => {
     }
 
     try {
-      setLoading(true);
       const { data } = await axios.post(
         '/api/v1/user/sign-in',
         { email, password },
@@ -30,9 +26,7 @@ const Login: React.FC = () => {
         window.location.href = '/';
       }
     } catch (err) {
-      toast.error('user login failed, Try again!', err?.message);
-    } finally {
-      setLoading(false);
+      toast.error(err?.message);
     }
   };
 
@@ -46,15 +40,17 @@ const Login: React.FC = () => {
             <p className='text-gray-600 mt-2'>Sign in to your account</p>
           </div>
 
-          <form onSubmit={handelSubmit}>
+          <form onSubmit={handelSubmit} className='space-y-4'>
             <Input name='email' type='email' label='Email' autoComplete='off' required />
-            <Input name='password' type='password' label='Password' autoComplete='off' required />
+            <Input name='password' type='text' label='Password' autoComplete='off' required />
 
             <div className='flex my-2 items-center justify-between'>
               <div className='flex items-center'>
                 <input
                   id='checkbox'
                   type='checkbox'
+                  checked={true}
+                  readOnly
                   className='h-4 w-4 text-indigo-600 border-gray-300 rounded'
                   required
                 />
@@ -67,14 +63,11 @@ const Login: React.FC = () => {
               </NavLink>
             </div>
 
-            <div className='flex my-4 items-center w-full justify-center'>
-              <SpinnerBtn
-                loading={loading}
-                className='w-full'
-                primaryName='Sign in'
-                props={{ type: 'submit' }}
-              />
-            </div>
+            <button
+              type='submit'
+              className='w-full mt-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'>
+              Login
+            </button>
           </form>
 
           <p className='mt-6 text-center text-sm text-gray-600'>

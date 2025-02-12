@@ -1,6 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import Layout from './Layout';
+import { Navigate, Outlet } from 'react-router-dom';
 
 type PrivateRouteProp = {
   isAuth: boolean;
@@ -14,7 +13,7 @@ const PrivateRoute: React.FC<PrivateRouteProp> = ({ isAuth }) => {
     return <Navigate to='/' />;
   }
 
-  return isAuth ? <Layout /> : <Navigate to='/login' />;
+  return isAuth ? <Outlet /> : <Navigate to='/login' />;
 };
 
 export default PrivateRoute;
