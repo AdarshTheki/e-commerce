@@ -2,6 +2,7 @@ import { Star } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import useFetch from '../hooks/useFetch';
 import { Typewriter } from '../utils';
+import { useState } from 'react';
 
 const HomePage = () => {
   return (
@@ -25,12 +26,12 @@ const HomePage = () => {
               name='heading'
               className='sm:text-xl text-lg'
             />
-            <button className='py-3 px-6 rounded-lg mx-auto hover:opacity-80 cursor-pointer bg-white text-black font-semibold text-xl w-fit'>
+            <NavLink
+              to={'/product'}
+              className='py-3 px-6 rounded-lg mx-auto hover:opacity-80 cursor-pointer bg-white text-black font-semibold text-xl w-fit'>
               Shop Now
-            </button>
-            <NavLink to={'/'} className='underline font-medium'>
-              Explore Collection
             </NavLink>
+            <p className='underline font-medium'>Explore Collection</p>
           </div>
         </div>
       </section>
@@ -50,24 +51,19 @@ const HomePage = () => {
 export default HomePage;
 
 const FeaturedCategory = () => {
-  const { data, error, loading } = useFetch('/api/v1/category?limit=6');
+  const { data, error, loading } = useFetch('/api/v1/category?limit=30');
+  const [limit, setLimit] = useState(6);
 
   if (error || loading) return <h2>loading...</h2>;
 
   return (
     <section className='bg-white py-5'>
       <div className='max-w-7xl mx-auto'>
-        <div className='flex items-center justify-between px-2'>
-          <h2 className='text-2xl font-bold'>Shop by Category</h2>
-          <NavLink
-            to={'/category'}
-            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
-            View All
-          </NavLink>
-        </div>
+        <h2 className='text-2xl font-bold px-4'>Shop by Category</h2>
+
         <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
           {data?.totalDocs
-            ? data?.docs?.map((item: CategoryType) => (
+            ? data?.docs?.slice(0, limit)?.map((item: CategoryType) => (
                 <div
                   key={item._id}
                   className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group animate__animated animate__fadeInUp animate__fadeIn'>
@@ -78,20 +74,27 @@ const FeaturedCategory = () => {
                     loading='lazy'
                   />
                   <div className='absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300'></div>
-                  <div className='absolute bottom-0 left-0 right-0 p-8 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300'>
+                  <div className='absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300'>
                     <h3 className='text-2xl font-bold text-white mb-3 capitalize'>{item.title}</h3>
-                    <p className='text-gray-200 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-                      Performance wear for every athlete
-                    </p>
+                    <p className='text-gray-200 mb-4'>Performance wear for every athlete</p>
                     <NavLink
                       to={`/category/${item._id}`}
-                      className='bg-white text-black px-6 py-3 rounded-lg hover:scale-105 transition-transform duration-300'>
+                      className='bg-white text-black px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300'>
                       Explore
                     </NavLink>
                   </div>
                 </div>
               ))
             : null}
+          {limit !== 30 && (
+            <div className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] shadow-lg rounded-lg flex items-center justify-center'>
+              <button
+                onClick={() => setLimit(30)}
+                className='text-blue-500 cursor-pointer hover:text-blue-700 font-medium'>
+                View All
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -99,24 +102,18 @@ const FeaturedCategory = () => {
 };
 
 const FeaturedBrand = () => {
-  const { data, error, loading } = useFetch('/api/v1/brand?limit=6');
+  const { data, error, loading } = useFetch('/api/v1/brand?limit=30');
+  const [limit, setLimit] = useState(6);
 
   if (error || loading) return <h2>loading...</h2>;
 
   return (
     <section className='bg-gray-50'>
       <div className='max-w-7xl mx-auto'>
-        <div className='flex items-center justify-between px-2'>
-          <h2 className='text-2xl font-bold'>Featured Products</h2>
-          <NavLink
-            to={'/product'}
-            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
-            View All
-          </NavLink>
-        </div>
+        <h2 className='text-2xl font-bold px-4'>Featured Products</h2>
         <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
           {data?.totalDocs
-            ? data?.docs.map((item: BrandType) => (
+            ? data?.docs?.slice(0, limit)?.map((item: BrandType) => (
                 <div className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp'>
                   <img
                     src='https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_610,c_limit/0ebd455c-1c7e-4958-8c64-20eacc1d760d/image.png'
@@ -138,6 +135,15 @@ const FeaturedBrand = () => {
                 </div>
               ))
             : null}
+          {limit !== 30 && (
+            <div className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] shadow-lg rounded-lg flex items-center justify-center'>
+              <button
+                onClick={() => setLimit(30)}
+                className='text-blue-500 cursor-pointer hover:text-blue-700 font-medium'>
+                View All
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -148,14 +154,7 @@ const Testimonials = () => {
   return (
     <section className='py-5 bg-gray-50'>
       <div className='max-w-7xl mx-auto'>
-        <div className='flex items-center justify-between px-2'>
-          <h2 className='text-2xl font-bold'>What Our Customers Say</h2>
-          <NavLink
-            to={'/product'}
-            className='text-blue-500 hover:text-blue-700 underline text-sm font-medium'>
-            View All
-          </NavLink>
-        </div>
+        <h2 className='text-2xl font-bold px-4'>What Our Customers Say</h2>
         <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
           {Array.from({ length: 4 }, (_, index) => (
             <div

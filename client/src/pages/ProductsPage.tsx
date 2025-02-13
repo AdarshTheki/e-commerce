@@ -26,7 +26,7 @@ const ProductListing = () => {
     <section id='productListing' className='py-2 bg-gray-50'>
       <div className='flex flex-col lg:flex-row gap-2'>
         {/* <!-- Filters Sidebar --> */}
-        <div className='w-[300px] max-lg:hidden sticky h-fit top-[108px] overflow-y-auto scrollbar'>
+        <div className='w-[300px] max-lg:hidden sticky h-fit top-[72px] overflow-y-auto scrollbar'>
           <div className='bg-white rounded-lg shadow-sm px-6 py-3'>
             <h2 className='font-bold text-lg mb-4'>Filters</h2>
 
@@ -110,7 +110,7 @@ const ProductListing = () => {
         {/* <!-- Product Grid --> */}
         <div className='w-full'>
           {/* <!-- Sort and View Options --> */}
-          <div className='bg-white sticky h-fit top-[108px] z-10 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between'>
+          <div className='bg-white sticky h-fit top-[72px] z-10 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between'>
             <div className='flex items-center space-x-4'>
               <span className='text-gray-600'>Sort by:</span>
               <select className='border rounded px-2 py-1'>
