@@ -66,7 +66,7 @@ const FeaturedCategory = () => {
             ? data?.docs?.slice(0, limit)?.map((item: CategoryType) => (
                 <div
                   key={item._id}
-                  className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group animate__animated animate__fadeInUp animate__fadeIn'>
+                  className='min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group'>
                   <img
                     src='https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg'
                     alt='Sports Collection'
