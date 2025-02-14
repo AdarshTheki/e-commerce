@@ -181,7 +181,7 @@ const ProductListing = () => {
                       </div>
                     </div>
                     <div className='p-4 space-y-2 capitalize'>
-                      <p className=' space-x-3'>
+                      <p className='space-x-3'>
                         <span className='text-gray-600 text-sm'>{item.brand}</span>
                         <span className='bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit'>
                           {item.category}
@@ -197,26 +197,6 @@ const ProductListing = () => {
                 ))
               : null}
           </div>
-
-          {/* <!-- Pagination --> */}
-          {/* <div className='my-5 p-4 shadow-sm rounded-lg bg-white flex items-center justify-between'>
-            <div>
-              <p>Show page 1 to 100</p>
-            </div>
-            <nav className='flex items-center space-x-2'>
-              <button className='px-3 text-sm py-1 border hover:bg-gray-100'>
-                <ChevronLeft size={18} className='text-gray-700' />
-              </button>
-              <button className='px-3 text-sm py-1 border rounded bg-blue-600 text-white'>1</button>
-              <button className='px-3 text-sm py-1 border rounded hover:bg-gray-100'>2</button>
-              <button className='px-3 text-sm py-1 border rounded hover:bg-gray-100'>3</button>
-              <span className='px-3 text-sm py-1 border'>...</span>
-              <button className='px-3 text-sm py-1 border rounded hover:bg-gray-100'>10</button>
-              <button className='px-3 text-sm py-1 border hover:bg-gray-100'>
-                <ChevronRight size={18} className='text-gray-700' />
-              </button>
-            </nav>
-          </div> */}
         </div>
       </div>
     </section>
