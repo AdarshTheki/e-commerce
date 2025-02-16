@@ -1,26 +1,30 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, Heart, Star } from 'lucide-react';
 import useFetch from '../hooks/useFetch';
-import { Loading } from '../utils';
+import { Loading, categories } from '../utils';
 
 const ProductListing = () => {
   const [limit, setLimit] = useState(10);
   const [category, setCategory] = useState('');
-  const [brand, setBrand] = useState('');
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
+  const [maxPrice, setMaxPrice] = useState(100000);
+  const [rating, setRating] = useState(0);
 
-  const query = new URLSearchParams({
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(), // Ensure limit is included correctly
     ...(category && { category }),
-    ...(brand && { brand }),
     minPrice: minPrice.toString(),
     maxPrice: maxPrice.toString(),
+    ...(rating && {
+      minRating: (rating === 5 ? rating - 0.5 : rating).toString(),
+      maxRating: (rating === 5 ? rating : rating + 1).toString(),
+    }),
   }).toString();
 
-  const { data } = useFetch(`/api/v1/product?limit=30${query}`);
+  const { data } = useFetch(`/api/v1/product?${queryParams}`);
 
   return (
-    <section id='productListing' className='py-2 bg-gray-50'>
+    <section id='productListing' className='py-2 bg-gray-100'>
       <div className='flex flex-col lg:flex-row gap-2'>
         {/* <!-- Filters Sidebar --> */}
         <div className='w-[300px] max-lg:hidden sticky h-fit top-[54px] overflow-y-auto scrollbar'>
@@ -34,7 +38,7 @@ const ProductListing = () => {
                 type='range'
                 className='w-full'
                 min={0}
-                max={1000}
+                max={100000}
                 step='10'
                 onChange={(e) => setMaxPrice(parseInt(e.target.value))}
               />
@@ -56,81 +60,69 @@ const ProductListing = () => {
               </div>
             </div>
 
-            {/* <!-- Brand Filter --> */}
-            <div className='my-2'>
-              <h3 className='font-medium'>Brand</h3>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Apple (24)</span>
-              </label>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Samsung (36)</span>
-              </label>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Google (12)</span>
-              </label>
-            </div>
-
             {/* <!-- Category Filter --> */}
             <div className='my-2'>
               <h3 className='font-medium'>Category</h3>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Apple (24)</span>
-              </label>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Samsung (36)</span>
-              </label>
-              <label className='flex items-center'>
-                <input type='checkbox' className='form-checkbox text-blue-600' />
-                <span className='ml-2'>Google (12)</span>
-              </label>
+              <ul className='max-h-[150px] overflow-y-auto w-full scrollbar-hidden'>
+                {categories.map((it) => (
+                  <label
+                    htmlFor={it}
+                    key={it}
+                    className='flex items-center capitalize text-sm mb-1 cursor-pointer'>
+                    <input
+                      onClick={(e) => setCategory((e.target as HTMLInputElement).checked ? it : '')}
+                      value={category}
+                      checked={category === it}
+                      id={it}
+                      type='checkbox'
+                      className='form-checkbox text-blue-600'
+                    />
+                    <span className='ml-2'>{it.replace('-', ' ')}</span>
+                  </label>
+                ))}
+              </ul>
             </div>
 
             {/* <!-- Rating Filter --> */}
-            <div className=''>
+            <div className='my-2'>
               <h3 className='font-medium'>Rating</h3>
-              <label className='flex items-center'>
-                <input type='radio' name='rating' className='form-radio text-blue-600' />
-                <span className='ml-2 flex items-center'>
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <span className='ml-1'>(5)</span>
-                </span>
-              </label>
-              <label className='flex items-center'>
-                <input type='radio' name='rating' className='form-radio text-blue-600' />
-                <span className='ml-2 flex items-center'>
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star size={16} />
-                  <span className='ml-1'>(4+)</span>
-                </span>
-              </label>
-              <label className='flex items-center'>
-                <input type='radio' name='rating' className='form-radio text-blue-600' />
-                <span className='ml-2 flex items-center'>
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star fill='#000' size={16} />
-                  <Star size={16} />
-                  <Star size={16} />
-                  <span className='ml-1'>(3+)</span>
-                </span>
-              </label>
+              <ul className='max-h-[200px] overflow-y-auto w-full scrollbar-hidden'>
+                {[1, 2, 3, 4, 5].map((it) => (
+                  <label
+                    htmlFor={it + 'id'}
+                    key={it}
+                    className='flex items-center gap-2 capitalize text-sm cursor-pointer'>
+                    <input
+                      onClick={(e) => setRating((e.target as HTMLInputElement).checked ? it : 0)}
+                      value={rating}
+                      checked={rating === it}
+                      id={it + 'id'}
+                      type='checkbox'
+                      className='form-checkbox text-blue-600'
+                    />
+                    <span className='flex items-center'>
+                      {[...Array(5)].map((_, index) => (
+                        <span key={index} className='text-yellow-400 text-xl'>
+                          {index < it ? '★' : '☆'}
+                        </span>
+                      ))}
+                    </span>
+                  </label>
+                ))}
+              </ul>
             </div>
 
             {/* <!-- Apply Filters Button --> */}
-            <button className='w-full mt-3 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors'>
-              Apply Filters
+            <button
+              onClick={() => {
+                setLimit(10);
+                setCategory('');
+                setMaxPrice(100000);
+                setMinPrice(0);
+                setRating(0);
+              }}
+              className='mt-3 bg-red-600 text-white py-2 px-6 rounded hover:bg-red-700 transition-colors'>
+              Reset Filters
             </button>
           </div>
         </div>
@@ -138,18 +130,34 @@ const ProductListing = () => {
         {/* <!-- Product Grid --> */}
         <div className='w-full'>
           {/* <!-- Sort and View Options --> */}
-          <div className='bg-white sticky h-fit top-[54px] z-10 shadow-sm p-4 mb-6 flex flex-wrap items-center justify-between'>
-            <div className='flex items-center space-x-4'>
-              <span className='text-gray-600'>Sort by:</span>
-              <select className='border rounded px-2 py-1'>
+          <div className='bg-white sticky h-fit top-[54px] z-10 p-4 mb-4 flex flex-wrap items-center justify-between'>
+            <div>
+              <span className='text-sm capitalize'>
+                products show {data?.page} to {data?.limit} of {data?.totalDocs}
+              </span>
+            </div>
+            <div className='flex text-sm items-center space-x-2'>
+              <label htmlFor='sortBy' className='text-gray-600'>
+                Sort by:
+              </label>
+              <select id='sortBy' className='border border-gray-300 rounded px-2 py-1'>
                 <option>Featured</option>
                 <option>Price: Low to High</option>
                 <option>Price: High to Low</option>
                 <option>Customer Rating</option>
               </select>
-            </div>
-            <div className='flex items-center'>
-              <span className='text-gray-600'>View:</span>
+              <label htmlFor='page' className='text-gray-600'>
+                Limit:
+              </label>
+              <select
+                id='page'
+                onClick={(e) => setLimit((e.target as HTMLSelectElement).value)}
+                className='border border-gray-300 rounded px-2 py-1'>
+                <option value={10}>10 / page</option>
+                <option value={30}>30 / page</option>
+                <option value={50}>50 / page</option>
+                <option value={100}>100 / page</option>
+              </select>
             </div>
           </div>
 
@@ -159,9 +167,7 @@ const ProductListing = () => {
             {/* <!-- Product Card --> */}
             {data?.totalDocs
               ? data?.docs?.map((item: ProductType) => (
-                  <div
-                    key={item._id}
-                    className={`bg-white rounded-lg shadow-sm overflow-hidden group`}>
+                  <div key={item._id} className={`bg-white overflow-hidden group`}>
                     <div className='relative'>
                       <img
                         src='https://placehold.co/200x140'
@@ -170,7 +176,7 @@ const ProductListing = () => {
                         loading='lazy'
                       />
                       <div className='absolute top-2 right-2 space-y-2'>
-                        <button className='bg-white p-1.5 rounded-full shadow hover:bg-gray-100'>
+                        <button className='bg-white p-1 rounded-full shadow hover:bg-gray-100'>
                           <Heart fill='red' stroke='0' />
                         </button>
                       </div>
@@ -191,7 +197,12 @@ const ProductListing = () => {
                         {item.title}
                       </h3>
 
-                      <p className='text-gray-600 text-xl'>${item.price}</p>
+                      <p className='flex justify-between'>
+                        <span className='text-gray-600 text-xl'>${item.price}</span>{' '}
+                        <span>
+                          {item.rating} <span className='text-xl text-yellow-400'>★</span>
+                        </span>
+                      </p>
                     </div>
                   </div>
                 ))
