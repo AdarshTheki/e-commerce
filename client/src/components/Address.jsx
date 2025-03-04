@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { Input } from '../utils';
 import errorHandler from '../helper/errorHandler';
 import { baseUrl } from '../helper/constant';
+import instance from '../helper/axiosInstance';
 
 const Address = () => {
   const { data } = useFetch('/api/v1/address');
@@ -39,17 +40,13 @@ const Address = () => {
     e.preventDefault();
     try {
       if (!data?._id) {
-        const res = await axios.post(baseUrl + '/api/v1/address', { ...address });
+        const res = await instance.post('/api/v1/address', { ...address });
         if (res.data) {
           toast.success('address crated success');
           setAddress(res.data);
         }
       } else {
-        const res = await axios.patch(
-          baseUrl + '/api/v1/address/' + data?._id,
-          { ...address, pinCode: parseInt(address.pinCode) },
-          { withCredentials: true }
-        );
+        const res = await instance.patch(`/api/v1/address/${data?._id}`, { ...address });
         if (res.data) {
           toast.success('address updated success');
           setAddress(res.data);

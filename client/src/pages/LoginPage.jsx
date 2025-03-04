@@ -39,7 +39,14 @@ const Login = () => {
           </div>
 
           <form onSubmit={handelSubmit} className='space-y-4'>
-            <Input name='email' type='email' label='Email' autoComplete='off' required />
+            <Input
+              value='adarsh12@gmail.com'
+              name='email'
+              type='email'
+              label='Email'
+              autoComplete='off'
+              required
+            />
             <Input name='password' type='text' label='Password' autoComplete='off' required />
 
             <div className='flex my-2 items-center justify-between'>

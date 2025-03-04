@@ -29,7 +29,7 @@ const ProductListing = () => {
     <section id='productListing' className='py-2 bg-gray-100'>
       <div className='flex flex-col lg:flex-row gap-2'>
         {/* <!-- Filters Sidebar --> */}
-        <div className='w-[300px] max-lg:hidden sticky h-fit top-[54px] overflow-y-auto scrollbar'>
+        <div className='w-[300px] max-lg:hidden sticky h-full top-[54px] overflow-y-auto scrollbar'>
           <div className='bg-white text-gray-700 shadow-sm px-6 py-3'>
             <h2 className='font-bold text-lg mb-4'>Filters</h2>
 
@@ -72,10 +72,11 @@ const ProductListing = () => {
                     key={it}
                     className='flex items-center capitalize text-sm mb-1 cursor-pointer'>
                     <input
-                      onClick={(e) => setCategory(e.target.checked ? it : '')}
+                      onChange={(e) => setCategory(e.target.checked ? it : '')}
                       value={category}
                       checked={category === it}
                       id={it}
+                      name={it}
                       type='checkbox'
                       className='form-checkbox text-blue-600'
                     />
@@ -91,14 +92,15 @@ const ProductListing = () => {
               <ul className='max-h-[200px] overflow-y-auto w-full scrollbar-hidden'>
                 {[3, 4, 5].map((it) => (
                   <label
-                    htmlFor={it + 'id'}
+                    htmlFor={it}
                     key={it}
                     className='flex items-center gap-2 capitalize text-sm cursor-pointer'>
                     <input
-                      onClick={(e) => setRating(e.target.checked ? it : 0)}
+                      onChange={(e) => setRating(e.target.checked ? it : 0)}
                       value={rating}
                       checked={rating === it}
-                      id={it + 'id'}
+                      id={it}
+                      name={it}
                       type='checkbox'
                       className='form-checkbox text-blue-600'
                     />
@@ -173,7 +175,7 @@ const ProductListing = () => {
                     <div className='relative min-h-[200px] bg-black/20'>
                       <NavLink to={`/product/${item._id}`}>
                         <img
-                          src={item.images[0] || 'https://placehold.co/200x140'}
+                          src={item.thumbnail || item.images[0] || 'https://placehold.co/200x140'}
                           alt='Product'
                           className='w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100'
                           loading='lazy'

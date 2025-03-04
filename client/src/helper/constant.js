@@ -22,7 +22,7 @@ export const menuItems = [
   { id: 7, title: 'Settings', path: '/setting', icon: Settings },
 ];
 
-export const baseUrl = import.meta.env.BASE_URL || 'http://localhost:3000';
+export const baseUrl = 'http://localhost:3000';
 
 export const formatDate = (dateString = '') => {
   const date = new Date(dateString);

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 
 import { Input } from '../utils';
-import { baseUrl } from '../helper/constant';
+import instance from '../helper/axiosInstance';
 
 const General = () => {
   const user = useSelector((state) => state.auth.user);
@@ -37,7 +36,7 @@ const General = () => {
     const { firstName, lastName, phoneNumber } = formData;
     try {
       setLoading(true);
-      const response = await axios.patch(baseUrl + '/api/v1/user/update', {
+      const response = await instance.patch('/api/v1/user/update', {
         firstName,
         lastName,
         phoneNumber,

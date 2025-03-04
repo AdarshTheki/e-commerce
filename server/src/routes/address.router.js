@@ -68,8 +68,13 @@ router.post("/", verifyJWT, async (req, res) => {
       country,
     });
 
-    const savedAddress = await newAddress.save();
-    res.status(201).json(savedAddress); // 201 Created
+    await newAddress.save();
+
+    res.status(201).json({
+      shipping: newAddress,
+      message: "shipping address created success",
+      success: true,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

@@ -1,14 +1,14 @@
-import axios from 'axios';
 import { toast } from 'react-toastify';
-import { baseUrl } from '../helper/constant';
+import instance from '../helper/axiosInstance';
 
 const Preference = () => {
   const logoutHandler = async () => {
     try {
-      const res = await axios.post(baseUrl + '/api/v1/user/logout');
+      const res = await instance.post('/api/v1/user/logout');
       if (res.data) {
         toast.success('user logout success', { toastId: 'logout-success' });
         setTimeout(() => {
+          localStorage.setItem('token', null);
           window.location.href = '/';
         }, 3000);
       }

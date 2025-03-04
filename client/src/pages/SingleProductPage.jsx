@@ -8,6 +8,8 @@ import useFetch from '../hooks/useFetch';
 import { HeartFavorite } from '../components';
 import { baseUrl } from '../helper/constant';
 import { Loading } from '../utils';
+import errorHandler from '../helper/errorHandler';
+import instance from '../helper/axiosInstance';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -20,7 +22,7 @@ const ProductDetail = () => {
     const getProduct = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/api/v1/product/${id}`);
+        const res = await instance.get(`/api/v1/product/${id}`);
         if (res.data) {
           setProduct(res.data);
         }
@@ -35,12 +37,12 @@ const ProductDetail = () => {
 
   const handleAddToCart = async (productId, quantity) => {
     try {
-      const res = await axios.post(`${baseUrl}/api/v1/cart`, { productId, quantity });
+      const res = await instance.post(`/api/v1/cart`, { productId, quantity });
       if (res.data) {
         toast.success('Add to cart success');
       }
     } catch (error) {
-      toast.error('Add to cart failed', error?.message);
+      errorHandler(error);
     }
   };
 
@@ -197,18 +199,16 @@ const RelatedProduct = ({ url }) => {
   if (error || loading) return <h2>loading...</h2>;
 
   return (
-    <section className='bg-white py-5'>
-      <h2 className='text-2xl font-bold px-4'>Related Products</h2>
-      <div className='flex w-full py-5 overflow-x-auto scrollbar-hidden'>
+    <section className='mt-10 pl-2'>
+      <h2 className='text-2xl font-bold py-2'>Related Products</h2>
+      <div className='flex w-full gap-4 overflow-x-auto scrollbar-hidden'>
         {data?.totalDocs
           ? data?.docs?.map((item) => (
-              <div
-                key={item._id}
-                className='bg-white overflow-hidden min-w-[220px] border rounded-lg ml-4'>
-                <div className='relative min-h-[200px] bg-black/5'>
+              <div key={item._id} className='bg-white overflow-hidden min-w-[230px]'>
+                <div className='relative min-h-[200px] bg-black/20 rounded-lg overflow-hidden'>
                   <NavLink to={`/product/${item._id}`}>
                     <img
-                      src={item.thumbnail || 'https://placehold.co/200x140'}
+                      src={item.thumbnail || item.images[0] || 'https://placehold.co/200x140'}
                       alt='Product'
                       className='w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100'
                       loading='lazy'
@@ -223,9 +223,15 @@ const RelatedProduct = ({ url }) => {
                     </span>
                   </div>
                 </div>
-                <div className='p-2 space-y-2 capitalize'>
-                  <h3 className='font-semibold mb-2 text-gray-700 line-clamp-1'>{item.title}</h3>
-                  <p>{item.category}</p>
+                <div className='p-4 space-y-2 capitalize'>
+                  <p className='space-x-3'>
+                    <span className='text-gray-600 text-sm'>{item.brand}</span>
+                    <span className='bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit'>
+                      {item.category}
+                    </span>
+                  </p>
+                  <h3 className='font-semibold mb-2 text-gray-700 line-clamp-2'>{item.title}</h3>
+
                   <p className='flex justify-between'>
                     <span className='text-gray-600 text-xl'>${item.price}</span>{' '}
                     <span>
