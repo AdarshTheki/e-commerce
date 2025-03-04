@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 
 const Tabs = ({ tabs, totals, items, formData }) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(4);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleToNext = async () => {
     if (activeTab === 3) {

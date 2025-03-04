@@ -6,7 +6,6 @@ import {
   RegisterPage,
   SettingPage,
   CartsPage,
-  CheckoutPage,
   HomePage,
   ProductsPage,
   SingleProductPage,
@@ -42,11 +41,10 @@ const App = () => {
           <Route path='/register' element={<RegisterPage />} />
           <Route path='/product' element={<ProductsPage />} />
           <Route path='/product/:id' element={<SingleProductPage />} />
-          <Route path='*' element={<Notfound />} />
           <Route element={<PrivateRoute isAuth={data?._id} />}>
             <Route path='/cart' element={<CartsPage />} />
-            <Route path='/checkout' element={<CheckoutPage />} />
           </Route>
+          <Route path='*' element={<Notfound />} />
         </Routes>
         <Footer />
       </Router>
