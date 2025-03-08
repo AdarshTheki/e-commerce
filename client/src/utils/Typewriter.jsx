@@ -32,7 +32,7 @@ const Typewriter = ({ text, speed = 100, name = 'demo', className, infinite = fa
   }, [index, isDeleting, text, speed]);
 
   return (
-    <p id={name} className={`text-lg text-gray-800 dark:text-gray-200 ${className}`}>
+    <p id={name} className={`text-lg text-white ${className}`}>
       {displayText}
     </p>
   );

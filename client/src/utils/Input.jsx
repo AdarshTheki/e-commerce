@@ -17,7 +17,7 @@ const Input = (
       <input
         id={name}
         name={name}
-        className={`peer border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+        className={`peer border border-gray-300 rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
         {...rest}
       />
       {error && (

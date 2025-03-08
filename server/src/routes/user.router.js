@@ -9,6 +9,13 @@ import { User } from "../models/user.model.js";
 
 const router = Router();
 
+const cookiePayload = {
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  httpOnly: true,
+  sameSite: "Strict",
+  secure: process.env.NODE_ENV === "production",
+};
+
 // get all user
 router.get("/", async (req, res) => {
   try {
@@ -84,14 +91,8 @@ router.post("/sign-in", async (req, res) => {
       "-password -refreshToken"
     );
 
-    const payload = {
-      maxAge: 2 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    };
-
-    res.cookie("refreshToken", refreshToken, payload);
-    res.cookie("accessToken", accessToken, payload);
+    res.cookie("refreshToken", refreshToken, cookiePayload);
+    res.cookie("accessToken", accessToken, cookiePayload);
     return res.status(200).json({
       user: modifyUser,
       accessToken,
@@ -116,8 +117,8 @@ router.post("/logout", verifyJWT, async (req, res) => {
 
     return res
       .status(200)
-      .clearCookie("refreshToken", { httpOnly: true })
-      .clearCookie("accessToken", { httpOnly: true })
+      .clearCookie("refreshToken", cookiePayload)
+      .clearCookie("accessToken", cookiePayload)
       .json({ message: "user logged out success", status: true });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
@@ -188,16 +189,10 @@ router.post("/refresh-token", verifyJWT, async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    const payload = {
-      maxAge: 2 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    };
-
     res
       .status(200)
-      .cookie("accessToken", accessToken, payload)
-      .cookie("refreshToken", refreshToken, payload)
+      .cookie("accessToken", accessToken, cookiePayload)
+      .cookie("refreshToken", refreshToken, cookiePayload)
       .json(user, accessToken, refreshToken);
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });

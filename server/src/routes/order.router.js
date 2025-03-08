@@ -104,15 +104,31 @@ router.post("/stripe-checkout", async (req, res) => {
   }
 });
 
-router.get("/all", async (req, res) => {
+// get all orders
+router.get("/", async (req, res) => {
   try {
-    const allOrders = await Order.find().sort({ createdAt: -1 }).limit(10);
+    const { page = 1, limit = 10, sort = "createdAt" } = req.query;
+    const skip = (page - 1) * limit;
 
-    if (!allOrders) throw new ApiError(404, "not found orders");
+    const orders = await Order.find()
+      .populate({
+        path: "customer",
+        select: "firstName lastName email", // Select Specific Fields
+      })
+      .populate({
+        path: "shipping",
+      })
+      .populate({
+        path: "items.productId",
+        select: "title price thumbnail", // Only Product Title & Price
+      })
+      .sort({ [sort]: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
-    return res.status(200).json(allOrders);
+    res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+    res.status(500).json({ message: error.message, success: false });
   }
 });
 
@@ -159,6 +175,38 @@ router.post("/", verifyJWT, async (req, res) => {
     res
       .status(201)
       .json({ order, message: "order created success", success: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+});
+
+// get user order
+router.get("/user", verifyJWT, async (req, res) => {
+  try {
+    const { _id } = req?.user;
+    const { page = 1, limit = 10, sort = "createdAt" } = req.query;
+    const skip = (page - 1) * limit;
+
+    const order = await Order.find({ customer: _id })
+      .populate({
+        path: "customer",
+        select: "firstName lastName email", // Select Specific Fields
+      })
+      .populate({
+        path: "shipping",
+      })
+      .populate({
+        path: "items.productId",
+        select: "title price thumbnail", // Only Product Title & Price
+      })
+      .sort({
+        createdAt: -1,
+      })
+      .sort({ [sort]: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.status(200).json(order);
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }

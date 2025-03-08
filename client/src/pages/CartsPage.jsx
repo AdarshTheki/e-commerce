@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ArrowLeftIcon, LockIcon, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import * as svg from '../utils/Svgs';
+import * as SVG from '../utils/Svgs';
 import { Input, Loading } from '../utils';
 import errorHandler from '../helper/errorHandler';
 import instance from '../helper/axiosInstance';
@@ -73,7 +73,9 @@ const Tabs = ({ tabs, totals, items, formData }) => {
             <div className='border-t pt-4'>
               <div className='flex justify-between items-center'>
                 <span className='text-lg font-bold'>Total</span>
-                <span className='text-2xl font-bold'>${Number(totals + 5).toFixed(2)}</span>
+                <span className='text-2xl font-bold'>
+                  ${totals > 1 ? Number(totals + 5).toFixed(2) : 0}
+                </span>
               </div>
             </div>
 
@@ -100,10 +102,10 @@ const Tabs = ({ tabs, totals, items, formData }) => {
         <div className='mt-6 bg-white rounded-lg shadow-sm p-6'>
           <h3 className='font-semibold mb-4'>Accepted Payment Methods</h3>
           <div className='flex space-x-4'>
-            <svg.AmexCard />
-            <svg.MasterCard />
-            <svg.PaypalCard />
-            <svg.VistaCard />
+            <SVG.AmexCard />
+            <SVG.MasterCard />
+            <SVG.PaypalCard />
+            <SVG.VistaCard />
           </div>
         </div>
       </div>

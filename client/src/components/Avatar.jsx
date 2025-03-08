@@ -31,45 +31,24 @@ const Avatar = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center max-sm:w-full'>
+    <div className='flex items-center gap-5 justify-center'>
       <div className='w-32 h-32 rounded-full border-4 border-neutral-600/30 overflow-hidden'>
-        {preview ? (
-          <img
-            src={preview}
-            alt='Profile'
-            className='w-full h-full object-cover transition-opacity duration-300 opacity-100'
-            loading='lazy'
-          />
-        ) : (
-          <img
-            src={avatar || 'https://avatar.iran.liara.run/public'}
-            alt='Profile'
-            className='w-full h-full object-cover transition-opacity duration-300 opacity-100'
-            loading='lazy'
-          />
-        )}
+        <img
+          src={avatar || 'https://avatar.iran.liara.run/public'}
+          alt='Profile'
+          className='w-full h-full object-cover transition-opacity duration-300 opacity-100'
+          loading='lazy'
+        />
       </div>
-      {preview ? (
-        <div className='flex gap-4'>
-          <button
-            onClick={handleUploadAvatar}
-            className='mt-4 cursor-pointer px-4 py-2 bg-green-700 hover:bg-green-600 transition-colors duration-300 rounded-md text-white text-sm'>
-            Submit
-          </button>
-          <button
-            onClick={() => setPreview(null)}
-            className='mt-4 cursor-pointer px-4 py-2 bg-red-700 hover:bg-red-600 transition-colors duration-300 rounded-md text-white text-sm'>
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <label
-          htmlFor='avatar'
-          className='mt-4 cursor-pointer px-4 py-2 bg-gray-700 hover:bg-gray-600 transition-colors duration-300 rounded-md text-white text-sm'>
-          Change Avatar
-        </label>
-      )}
-      <input id='avatar' onChange={handleImageChange} type='file' className=' opacity-0' />
+
+      <label className='mt-4 flex flex-col gap-4 cursor-pointer px-4 py-2 rounded-md'>
+        <small>JPG, GIF and PNG Max Size of 2MB</small>
+        <input
+          onChange={handleImageChange}
+          type='file'
+          className='w-fit p-2 border border-gray-300 rounded-lg text-sm'
+        />
+      </label>
     </div>
   );
 };
