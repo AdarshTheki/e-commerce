@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
-import instance from '../helper/axiosInstance';
+import { useState, useEffect } from "react";
+import instance from "../helper/axiosInstance";
 
 const useFetch = (url) => {
   const [data, setData] = useState(null);

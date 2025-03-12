@@ -1,4 +1,4 @@
-import Label from './Label';
+import Label from "./Label";
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
@@ -8,7 +8,13 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 const Select: React.FC<SelectProps> = (
-  { label, name, options, className = 'block  w-full text-base px-4 py-2 ', ...rest },
+  {
+    label,
+    name,
+    options,
+    className = "block  w-full text-base px-4 py-2 ",
+    ...rest
+  },
   props
 ) => {
   return (

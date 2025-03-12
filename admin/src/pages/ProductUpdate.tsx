@@ -1,7 +1,7 @@
-import { ProductForm } from '../components';
-import useFetch from '../hooks/useFetch';
-import { useParams } from 'react-router-dom';
-import { Loading } from '../utils';
+import { ProductForm } from "../components";
+import useFetch from "../hooks/useFetch";
+import { useParams } from "react-router-dom";
+import { Loading } from "../utils";
 
 const ProductUpdate = () => {
   const { id } = useParams();

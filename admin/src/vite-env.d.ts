@@ -23,7 +23,7 @@ interface UserType {
   username: string;
   email: string;
   password: string;
-  role: 'customer' | 'admin' | 'user';
+  role: "customer" | "admin" | "user";
   favorite: [string];
   avatar: string;
   refreshToke: string;
@@ -52,7 +52,7 @@ interface PromiseResponseType {
 
 interface ProductType {
   _id: string;
-  status: 'active' | 'inactive';
+  status: "active" | "inactive";
   title: string;
   category: string;
   brand: string;
@@ -69,8 +69,8 @@ interface ProductType {
 
 interface BrandType {
   _id: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  top_brand?: 'YES' | 'NO';
+  status: "ACTIVE" | "INACTIVE";
+  top_brand?: "YES" | "NO";
   title: string;
   sequence?: number;
   thumbnail?: string;
@@ -80,7 +80,7 @@ interface BrandType {
 
 interface CategoryType {
   _id: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   title: string;
   thumbnail?: string;
   createdAt?: string;
@@ -89,7 +89,7 @@ interface CategoryType {
 
 interface VariantType {
   _id: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   size?: string;
   color?: string;
   quantity?: number;

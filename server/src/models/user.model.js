@@ -45,14 +45,14 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 // Method to generate an access token on short time for the user
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign({ _id: this._id }, process.env.SECRET_TOKEN, {
-    expiresIn: "7d",
+    expiresIn: "1d",
   });
 };
 
 // Method to generate a refresh token on long time for the user
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({ _id: this._id }, process.env.SECRET_TOKEN, {
-    expiresIn: "30d",
+    expiresIn: "7d",
   });
 };
 

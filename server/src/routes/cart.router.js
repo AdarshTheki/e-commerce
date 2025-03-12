@@ -1,7 +1,8 @@
-import { Cart } from "../models/cart.model.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Router } from "express";
 import mongoose from "mongoose";
+import { Cart } from "../models/cart.model.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { success, error } from "../utils/ApiResponse.js";
 
 const router = Router();
 
@@ -9,15 +10,23 @@ const router = Router();
 router.get("/", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
+
     const carts = await Cart.findOne({ userId }).populate(
       "items.productId",
       "thumbnail title price category brand discount"
     );
+
     if (!carts)
-      return res.status(401).json({ message: "user carts not exits" });
-    res.status(200).json(carts);
-  } catch (error) {
-    res.status(500).json({ message: error?.message });
+      return res.status(404).json(error("get user carts not exists", 404));
+
+    if (carts.items.length === 0)
+      return res
+        .status(200)
+        .json(success(carts, "get user carts is empty", 200));
+
+    res.status(200).json(success(carts, "get user carts success", 200));
+  } catch (err) {
+    res.status(500).json(error(err.message));
   }
 });
 
@@ -28,9 +37,7 @@ router.post("/", verifyJWT, async (req, res) => {
     const { productId, quantity } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
-      return res
-        .status(404)
-        .json({ message: "productId is invalid", status: false });
+      return res.status(404).json(error("productId is invalid", 404));
 
     let cart = await Cart.findOne({ userId });
 
@@ -49,35 +56,37 @@ router.post("/", verifyJWT, async (req, res) => {
     }
 
     await cart.save();
-    res.status(200).json(cart);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding to cart", error });
+
+    res.status(201).json(success(cart, "add to user cart", 201));
+  } catch (err) {
+    res.status(500).json(error(err.message));
   }
 });
 
 // Remove item from cart
 router.delete("/:id", verifyJWT, async (req, res) => {
   try {
+    const userId = req.user._id;
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id))
-      return res
-        .status(404)
-        .json({ message: "productId is invalid", status: false });
+      return res.status(404).json(error("invalid productId", 405));
+    5;
 
-    const userId = req?.user?._id;
     const cart = await Cart.findOne({ userId });
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
+    if (!cart) return res.status(404).json(error("User Cart not found", 404));
+
+    if (cart.items.length === 0)
+      return res.status(404).json(error("User Cart is empty", 404));
 
     cart.items = cart.items.filter((item) => item.productId.toString() !== id);
 
     await cart.save();
-    res.status(200).json(cart);
-  } catch (error) {
-    res.status(500).json({ message: "Error removing from cart", error });
+
+    res.status(202).json(success(cart, "user cart deleted", 202));
+  } catch (err) {
+    res.status(500).json(error(err.message));
   }
 });
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 type HandleProp = {
   handlePageChange: (value: number) => void;
@@ -6,7 +6,11 @@ type HandleProp = {
   totalPages: number;
 };
 
-const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handlePageChange }) => {
+const RenderPaginationButtons: React.FC<HandleProp> = ({
+  page,
+  totalPages,
+  handlePageChange,
+}) => {
   const buttons = [];
 
   // Always show the first page
@@ -14,7 +18,9 @@ const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handl
     <button
       key={1}
       className={`btn text-xs !py-1 !px-2 ${
-        page === 1 ? 'bg-indigo-600 text-white' : 'border border-neutral-200 hover:bg-gray-50'
+        page === 1
+          ? "bg-indigo-600 text-white"
+          : "border border-neutral-200 hover:bg-gray-50"
       } rounded-lg`}
       onClick={() => handlePageChange(1)}>
       1
@@ -27,7 +33,9 @@ const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handl
       <button
         key={2}
         className={`btn text-xs !py-1 !px-2 ${
-          page === 2 ? 'bg-indigo-600 text-white' : 'border border-neutral-200 hover:bg-gray-50'
+          page === 2
+            ? "bg-indigo-600 text-white"
+            : "border border-neutral-200 hover:bg-gray-50"
         } rounded-lg`}
         onClick={() => handlePageChange(2)}>
         2
@@ -38,7 +46,9 @@ const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handl
   // Show "..." if there are more pages between the second and last page
   if (totalPages > 2 && page > 3) {
     buttons.push(
-      <span key='ellipsis' className='btn text-xs !py-1 !px-2 border border-neutral-200 rounded-lg'>
+      <span
+        key="ellipsis"
+        className="btn text-xs !py-1 !px-2 border border-neutral-200 rounded-lg">
         ...
       </span>
     );
@@ -49,7 +59,7 @@ const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handl
     buttons.push(
       <button
         key={page}
-        className='btn text-xs !py-1 !px-2 bg-indigo-600 text-white rounded-lg'
+        className="btn text-xs !py-1 !px-2 bg-indigo-600 text-white rounded-lg"
         onClick={() => handlePageChange(page)}>
         {page}
       </button>
@@ -63,8 +73,8 @@ const RenderPaginationButtons: React.FC<HandleProp> = ({ page, totalPages, handl
         key={totalPages}
         className={`btn text-xs !py-1 !px-2 ${
           page === totalPages
-            ? 'bg-indigo-600 text-white'
-            : 'border border-neutral-200 hover:bg-gray-50'
+            ? "bg-indigo-600 text-white"
+            : "border border-neutral-200 hover:bg-gray-50"
         } rounded-lg`}
         onClick={() => handlePageChange(totalPages)}>
         {totalPages}

@@ -8,23 +8,19 @@ export class ApiResponse {
 }
 
 export const success = (
-  data = {},
-  message = "get data success",
+  data,
+  message = "get fetch data success",
   statusCode = 200
 ) => {
   return {
-    message,
-    error: false,
-    code: statusCode,
     data,
+    message,
+    statusCode,
+    success: true,
   };
 };
 
-export const error = (
-  message = "something want wrong!",
-  statusCode = 500,
-  data = {}
-) => {
+export const error = (message = "something want wrong!", statusCode = 500) => {
   // List of common HTTP request code
   const codes = [200, 201, 400, 401, 404, 403, 422, 500];
 
@@ -36,8 +32,7 @@ export const error = (
 
   return {
     message,
-    code: statusCode,
-    error: true,
-    data: data,
+    statusCode,
+    success: false,
   };
 };

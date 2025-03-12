@@ -1,11 +1,11 @@
-import Label from './Label';
+import Label from "./Label";
 
 const Select = (
   {
     label,
     name,
-    options = [{ id: '', title: '' }],
-    className = 'block  w-full text-base px-4 py-2 ',
+    options = [{ id: "", title: "" }],
+    className = "block  w-full text-base px-4 py-2 ",
     ...rest
   },
   props

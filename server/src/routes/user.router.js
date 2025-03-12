@@ -10,9 +10,8 @@ import { User } from "../models/user.model.js";
 const router = Router();
 
 const cookiePayload = {
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 2 * 24 * 60 * 60 * 1000, // 7 days
   httpOnly: true,
-  sameSite: "Strict",
   secure: process.env.NODE_ENV === "production",
 };
 
@@ -117,8 +116,8 @@ router.post("/logout", verifyJWT, async (req, res) => {
 
     return res
       .status(200)
-      .clearCookie("refreshToken", cookiePayload)
-      .clearCookie("accessToken", cookiePayload)
+      .clearCookie("refreshToken")
+      .clearCookie("accessToken")
       .json({ message: "user logged out success", status: true });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });

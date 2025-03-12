@@ -5,7 +5,7 @@ import twilio from "twilio";
 const router = express.Router();
 
 const openai = new OpenAI({
-  apiKey: process.env.openai_api_key,
+  apiKey: process.env.openai_api_key || "",
 });
 
 const client = twilio(process.env.accountSid, process.env.authToken);

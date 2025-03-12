@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import axios from 'axios';
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
 
-import { Input, SpinnerBtn } from '../utils';
+import { Input, SpinnerBtn } from "../utils";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -11,75 +11,94 @@ const Login: React.FC = () => {
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
-    const email = (form.elements.namedItem('email') as HTMLInputElement).value;
-    const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement)
+      .value;
 
     if (!email || !password) {
-      return toast.error('please fill the valid inputs');
+      return toast.error("please fill the valid inputs");
     }
 
     try {
       setLoading(true);
       const { data } = await axios.post(
-        '/api/v1/user/sign-in',
+        "/api/v1/user/sign-in",
         { email, password },
         { withCredentials: true }
       );
       if (data) {
-        toast.success('user login succeeded');
-        window.location.href = '/';
+        toast.success("user login succeeded");
+        window.location.href = "/";
       }
     } catch (err) {
-      toast.error('user login failed, Try again!', err?.message);
+      toast.error("user login failed, Try again!", err?.message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section className='bg-gray-100 flex items-center justify-center p-4 py-20'>
-      <div className='w-full max-w-md space-y-8'>
+    <section className="bg-gray-100 flex items-center justify-center p-4 py-20">
+      <div className="w-full max-w-md space-y-8">
         {/* <!-- Login Form --> */}
-        <div className='bg-white p-8 rounded-lg border border-gray-200'>
-          <div className='text-center mb-8'>
-            <h2 className='text-2xl font-bold text-gray-900'>Welcome back</h2>
-            <p className='text-gray-600 mt-2'>Sign in to your account</p>
+        <div className="bg-white p-8 rounded-lg border border-gray-200">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
+            <p className="text-gray-600 mt-2">Sign in to your account</p>
           </div>
 
           <form onSubmit={handelSubmit}>
-            <Input name='email' type='email' label='Email' autoComplete='off' required />
-            <Input name='password' type='password' label='Password' autoComplete='off' required />
+            <Input
+              name="email"
+              type="email"
+              label="Email"
+              autoComplete="off"
+              required
+            />
+            <Input
+              name="password"
+              type="password"
+              label="Password"
+              autoComplete="off"
+              required
+            />
 
-            <div className='flex my-2 items-center justify-between'>
-              <div className='flex items-center'>
+            <div className="flex my-2 items-center justify-between">
+              <div className="flex items-center">
                 <input
-                  id='checkbox'
-                  type='checkbox'
-                  className='h-4 w-4 text-indigo-600 border-gray-300 rounded'
+                  id="checkbox"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   required
                 />
-                <label htmlFor='checkbox' className='ml-2 cursor-pointer text-sm text-gray-600'>
+                <label
+                  htmlFor="checkbox"
+                  className="ml-2 cursor-pointer text-sm text-gray-600">
                   Remember me
                 </label>
               </div>
-              <NavLink to='/' className='text-sm text-indigo-600 hover:text-indigo-500'>
+              <NavLink
+                to="/"
+                className="text-sm text-indigo-600 hover:text-indigo-500">
                 Forgot password?
               </NavLink>
             </div>
 
-            <div className='flex my-4 items-center w-full justify-center'>
+            <div className="flex my-4 items-center w-full justify-center">
               <SpinnerBtn
                 loading={loading}
-                className='w-full'
-                primaryName='Sign in'
-                props={{ type: 'submit' }}
+                className="w-full"
+                primaryName="Sign in"
+                props={{ type: "submit" }}
               />
             </div>
           </form>
 
-          <p className='mt-6 text-center text-sm text-gray-600'>
+          <p className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?
-            <NavLink to={'/register'} className='text-indigo-600 mx-2 hover:text-indigo-500'>
+            <NavLink
+              to={"/register"}
+              className="text-indigo-600 mx-2 hover:text-indigo-500">
               Sign up
             </NavLink>
           </p>

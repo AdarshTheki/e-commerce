@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
-    "start": "node -r dotenv/config --experimental-json-modules src/index.js"
+    "start": "node -r dotenv/config --experimental-json-modules src/index.js",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "author": "Adarsh Verma",
   "license": "ISC",

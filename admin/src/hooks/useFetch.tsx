@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 interface UseFetchResult<T> {
   data: T | null;

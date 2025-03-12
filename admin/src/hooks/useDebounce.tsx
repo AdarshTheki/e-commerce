@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Custom useDebounce Hook
 const useDebounce = (value: string, delay: number) => {

@@ -1,7 +1,7 @@
 import connectDB from "./connectDB.js";
 import { app } from "./app.js";
 
-const port = 3000;
+const port = 4000;
 const host = "0.0.0.0";
 
 connectDB()
