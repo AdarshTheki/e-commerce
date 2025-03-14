@@ -20,6 +20,7 @@ import { Footer, Header, MenuBar, PrivateRoute, TopBar } from "./components";
 import { Loading } from "./utils";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
+import { fetchCategories } from "./redux/categorySlice";
 
 const App = () => {
   const { data, loading } = useFetch("/api/v1/user/current-user");
@@ -31,6 +32,10 @@ const App = () => {
       dispatch(login(data));
     }
   }, [data, auth, dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   if (loading) return <Loading />;
 

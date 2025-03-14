@@ -3,9 +3,10 @@ import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
 import { NavLink } from "react-router-dom";
 import { HeartFavorite } from "../components";
-import { categories } from "../helper/constant";
+import { useSelector } from "react-redux";
 
 const ProductListing = () => {
+  const { list } = useSelector((state) => state.categories);
   const [limit, setLimit] = useState(10);
   const [category, setCategory] = useState("");
   const [minPrice, setMinPrice] = useState(0);
@@ -66,21 +67,23 @@ const ProductListing = () => {
             <div className="my-2">
               <h3 className="font-medium">Category</h3>
               <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                {categories.map((it) => (
+                {list?.map((it) => (
                   <label
-                    htmlFor={it}
-                    key={it}
+                    htmlFor={it.title}
+                    key={it.title}
                     className="flex items-center capitalize text-sm mb-1 cursor-pointer">
                     <input
-                      onChange={(e) => setCategory(e.target.checked ? it : "")}
+                      onChange={(e) =>
+                        setCategory(e.target.checked ? it.title : "")
+                      }
                       value={category}
-                      checked={category === it}
-                      id={it}
-                      name={it}
+                      checked={category === it.title}
+                      id={it.title}
+                      name={it.title}
                       type="checkbox"
                       className="form-checkbox text-blue-600"
                     />
-                    <span className="ml-2">{it.replace("-", " ")}</span>
+                    <span className="ml-2">{it.title.replace("-", " ")}</span>
                   </label>
                 ))}
               </ul>

@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { Typewriter } from "../utils";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 const HomePage = () => {
   return (
@@ -53,54 +54,41 @@ const HomePage = () => {
 export default HomePage;
 
 const FeaturedCategory = () => {
-  const { data, error, loading } = useFetch("/api/v1/category?limit=30");
-  const [limit, setLimit] = useState(6);
+  const { list, error, loading } = useSelector((state) => state.categories);
 
-  if (error || loading) return <h2>loading...</h2>;
+  if (error || loading || !list?.length) return <h2>loading...</h2>;
 
   return (
     <section className="bg-white py-5">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold px-4">Shop by Category</h2>
-
         <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
-          {data?.totalDocs
-            ? data?.docs?.slice(0, limit)?.map((item) => (
-                <div
-                  key={item._id}
-                  className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group">
-                  <img
-                    src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg"
-                    alt="Sports Collection"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-opacity duration-300 opacity-100"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                    <h3 className="text-2xl font-bold text-white mb-3 capitalize">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-200 mb-4">
-                      Performance wear for every athlete
-                    </p>
-                    <NavLink
-                      to={`/category/${item._id}`}
-                      className="bg-white text-black px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300">
-                      Explore
-                    </NavLink>
-                  </div>
-                </div>
-              ))
-            : null}
-          {limit !== 30 && (
-            <div className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] shadow-lg rounded-lg flex items-center justify-center">
-              <button
-                onClick={() => setLimit(30)}
-                className="text-blue-500 cursor-pointer hover:text-blue-700 font-medium">
-                View All
-              </button>
+          {list?.map((item) => (
+            <div
+              key={item._id}
+              className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group">
+              <img
+                src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg"
+                alt="Sports Collection"
+                className="w-full h-full object-cover group-hover:scale-110 transition-opacity duration-300 opacity-100"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300"></div>
+              <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-2xl font-bold text-white mb-3 capitalize">
+                  {item.title}
+                </h3>
+                <p className="text-gray-200 mb-4">
+                  Performance wear for every athlete
+                </p>
+                <NavLink
+                  to={`/category/${item._id}`}
+                  className="bg-white text-black px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300">
+                  Explore
+                </NavLink>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </section>
@@ -108,50 +96,38 @@ const FeaturedCategory = () => {
 };
 
 const FeaturedBrand = () => {
-  const { data, error, loading } = useFetch("/api/v1/brand?limit=30");
-  const [limit, setLimit] = useState(6);
+  const { list, error, loading } = useSelector((state) => state.brands);
 
-  if (error || loading) return <h2>loading...</h2>;
+  if (error || loading || !list?.length) return <h2>loading...</h2>;
 
   return (
     <section className="bg-gray-50">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold px-4">Featured Products</h2>
         <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
-          {data?.totalDocs
-            ? data?.docs?.slice(0, limit)?.map((item) => (
-                <div className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp">
-                  <img
-                    src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_610,c_limit/0ebd455c-1c7e-4958-8c64-20eacc1d760d/image.png"
-                    alt="New Release 1"
-                    className="w-full h-[150px] object-cover transition-opacity duration-300 opacity-100"
-                    loading="lazy"
-                  />
-                  <div className="p-4">
-                    <h3 className="text-xl font-bold text-black mb-2 line-clamp-1">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-4 font-futura">
-                      Latest innovation in comfort
-                    </p>
-                    <NavLink
-                      to={"/product"}
-                      className="bg-black text-white px-5 py-2 hover:bg-black/80 rounded-md hover:shadow-glow hover:scale-105 transition-all duration-300">
-                      Shop Now
-                    </NavLink>
-                  </div>
-                </div>
-              ))
-            : null}
-          {limit !== 30 && (
-            <div className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] shadow-lg rounded-lg flex items-center justify-center">
-              <button
-                onClick={() => setLimit(30)}
-                className="text-blue-500 cursor-pointer hover:text-blue-700 font-medium">
-                View All
-              </button>
+          {list?.map((item) => (
+            <div className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp">
+              <img
+                src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_610,c_limit/0ebd455c-1c7e-4958-8c64-20eacc1d760d/image.png"
+                alt="New Release 1"
+                className="w-full h-[150px] object-cover transition-opacity duration-300 opacity-100"
+                loading="lazy"
+              />
+              <div className="p-4">
+                <h3 className="text-xl font-bold text-black mb-2 line-clamp-1">
+                  {item.title}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4 font-futura">
+                  Latest innovation in comfort
+                </p>
+                <NavLink
+                  to={"/product"}
+                  className="bg-black text-white px-5 py-2 hover:bg-black/80 rounded-md hover:shadow-glow hover:scale-105 transition-all duration-300">
+                  Shop Now
+                </NavLink>
+              </div>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </section>
