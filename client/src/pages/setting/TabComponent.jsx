@@ -1,31 +1,4 @@
-import React, { ReactNode, useState } from "react";
-
-import { Address, Avatar, General, Preference, Security } from "../components";
-
-const ProfileSettings = () => {
-  return (
-    <div className="w-full">
-      {/* Tab Sections */}
-      <Tabs>
-        <div label="General">
-          {/* Profile Avatar */}
-          <Avatar />
-          <General />
-        </div>
-        <div label="Address">
-          <Address />
-        </div>
-        <div label="Security">
-          <Security />
-        </div>
-        <div label="Preferences">
-          <Preference />
-        </div>
-      </Tabs>
-    </div>
-  );
-};
-export default ProfileSettings;
+import React, { useState } from "react";
 
 const Tabs = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -35,9 +8,9 @@ const Tabs = ({ children }) => {
   };
 
   return (
-    <div className="p-2 bg-gray-100">
+    <div className="p-2 w-full h-full">
       {/* Tab Header */}
-      <div className="flex w-full bg-white p-4 rounded-lg overflow-x-auto scrollbar-hidden">
+      <div className="flex w-full bg-gray-100 p-4 rounded-lg overflow-x-auto scrollbar-hidden">
         {React.Children.map(children, (child, index) => (
           <button
             key={index}
@@ -59,3 +32,5 @@ const Tabs = ({ children }) => {
     </div>
   );
 };
+
+export default Tabs;

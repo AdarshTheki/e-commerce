@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Input } from "../utils";
+import { Input } from "../../utils";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { baseUrl } from "../helper/constant";
+import { baseUrl } from "../../helper/constant";
 
 const Security = () => {
   const [formData, setFormData] = useState({

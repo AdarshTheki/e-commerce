@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
   LoginPage,
   Notfound,
@@ -47,13 +42,13 @@ const App = () => {
         <MenuBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/setting" element={<SettingPage />} />
           <Route path="/product" element={<ProductsPage />} />
           <Route path="/product/:id" element={<SingleProductPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route element={<PrivateRoute isAuth={auth} />}>
             <Route path="/cart" element={<CartsPage />} />
+            <Route path="/setting" element={<SettingPage />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>

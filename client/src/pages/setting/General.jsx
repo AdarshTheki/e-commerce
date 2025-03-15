@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
-import { Input } from "../utils";
-import instance from "../helper/axiosInstance";
+import { Input } from "../../utils";
+import instance from "../../helper/axiosInstance";
 
 const General = () => {
   const user = useSelector((state) => state.auth.user);
