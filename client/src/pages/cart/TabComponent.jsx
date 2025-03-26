@@ -3,11 +3,17 @@ import { useSelector } from "react-redux";
 import * as SVG from "../../utils/Svgs";
 
 const Tabs = ({ tabs, totals, items }) => {
-  const { steps } = useSelector((state) => state.checkout);
+  const { steps, shippingMethod, payment } = useSelector(
+    (state) => state.checkout
+  );
+
+  console.log(shippingMethod, payment);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
-      <div className="lg:w-2/3">{tabs[steps]?.content}</div>
+      <div className="lg:w-2/3 sm:p-6 p-3 space-y-6 bg-white shadow-lg rounded-lg">
+        {tabs[steps]?.content}
+      </div>
 
       {/* <!-- Order Summary --> */}
       <div className="lg:w-1/3">
@@ -22,11 +28,13 @@ const Tabs = ({ tabs, totals, items }) => {
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Shipping</span>
-              <span className="font-semibold">Free</span>
+              <span className="font-semibold">{payment || "COD"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Tax</span>
-              <span className="font-semibold">$5.00</span>
+              <span className="font-semibold">
+                {shippingMethod ? `$ ${shippingMethod}` : "Free"}
+              </span>
             </div>
 
             {/* <!-- Total --> */}
@@ -34,7 +42,12 @@ const Tabs = ({ tabs, totals, items }) => {
               <div className="flex justify-between items-center">
                 <span className="text-lg font-bold">Total</span>
                 <span className="text-2xl font-bold">
-                  ${totals > 1 ? Number(totals + 5).toFixed(2) : 0}
+                  $
+                  {totals > 1
+                    ? parseInt(
+                        shippingMethod ? totals + shippingMethod : totals
+                      ).toFixed(2)
+                    : 0}
                 </span>
               </div>
             </div>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD:client/src/pages/SettingPage.jsx
 import React, {  useState } from "react";
 
 import { Address, Avatar, General, Preference, Security } from "../components";
@@ -26,6 +27,9 @@ const ProfileSettings = () => {
   );
 };
 export default ProfileSettings;
+=======
+import React, { useState } from "react";
+>>>>>>> 9127755fd5eaba351ee93232c2bcf0798fbbbccd:client/src/pages/setting/TabComponent.jsx
 
 const Tabs = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -35,11 +39,15 @@ const Tabs = ({ children }) => {
   };
 
   return (
+<<<<<<< HEAD:client/src/pages/SettingPage.jsx
     <div className="p-2 bg-gray-100">
       <div className="  mx-auto max-w-4xl">
 
+=======
+    <div className="p-2 w-full h-full">
+>>>>>>> 9127755fd5eaba351ee93232c2bcf0798fbbbccd:client/src/pages/setting/TabComponent.jsx
       {/* Tab Header */}
-      <div className="flex w-full bg-white p-4 rounded-lg overflow-x-auto scrollbar-hidden">
+      <div className="flex w-full bg-gray-100 p-4 rounded-lg overflow-x-auto scrollbar-hidden">
         {React.Children.map(children, (child, index) => (
           <button
             key={index}
@@ -62,3 +70,5 @@ const Tabs = ({ children }) => {
     </div>
   );
 };
+
+export default Tabs;

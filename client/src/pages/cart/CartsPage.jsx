@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import errorHandler from "../helper/errorHandler";
-import instance from "../helper/axiosInstance";
-import ShippingAddress from "./cart/ShippingAddress";
-import ShippingMethod from "./cart/ShippingMethod";
-import ShippingPayment from "./cart/ShippingPayment";
-import OrderCheckout from "./cart/OrderCheckout";
-import CartItems from "./cart/CartItems";
-import Tabs from "./cart/Tabs";
-import { Loading } from "../utils";
+import { Loading } from "../../utils";
+import errorHandler from "../../helper/errorHandler";
+import instance from "../../helper/axiosInstance";
+import ShippingAddress from "./ShippingAddress";
+import ShippingMethod from "./ShippingMethod";
+import ShippingPayment from "./ShippingPayment";
+import OrderCheckout from "./OrderCheckout";
+import CartItems from "./CartItems";
+import Tabs from "./TabComponent";
 
 const CartComponent = () => {
   const [carts, setCarts] = useState({ items: [], wishlist: [] });

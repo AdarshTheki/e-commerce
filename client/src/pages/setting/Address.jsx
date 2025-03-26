@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import useFetch from "../hooks/useFetch";
-import axios from "axios";
+import useFetch from "../../hooks/useFetch";
 import { toast } from "react-toastify";
-import { Input } from "../utils";
-import errorHandler from "../helper/errorHandler";
-import { baseUrl } from "../helper/constant";
-import instance from "../helper/axiosInstance";
+import { Input } from "../../utils";
+import errorHandler from "../../helper/errorHandler";
+import instance from "../../helper/axiosInstance";
 
 const Address = () => {
   const { data } = useFetch("/api/v1/address");

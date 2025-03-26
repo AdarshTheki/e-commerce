@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import instance from "../helper/axiosInstance";
+import instance from "../../helper/axiosInstance";
 
 const Preference = () => {
   const logoutHandler = async () => {

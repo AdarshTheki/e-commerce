@@ -37,7 +37,7 @@ const ShippingAddress = () => {
   };
 
   return (
-    <form className="p-6 space-y-4" onSubmit={handleSubmit}>
+    <form className="p-4 space-y-4" onSubmit={handleSubmit}>
       <h2 className="text-xl font-medium">Shipping Information</h2>
       <div className="flex gap-4 sm:flex-row flex-col">
         <Input
@@ -68,7 +68,7 @@ const ShippingAddress = () => {
         onChange={handleChange}
       />
       <Input
-        label="Address"
+        label="Street Address"
         name="addressLine1"
         value={formData.addressLine1}
         onChange={handleChange}
@@ -101,18 +101,18 @@ const ShippingAddress = () => {
         />
       </div>
 
-      <div className="flex gap-5 w-[250px] font-semibold">
+      <div className="flex mt-10 gap-5 w-[250px] font-semibold">
         <button
           type="button"
           className="w-full border py-2 !border-red-600 text-red-500"
           onClick={() => dispatch(setSteps(0))}>
-          Back
+          Go Back
         </button>
         <button
           type="submit"
           className="w-full py-2 text-white bg-indigo-600"
           onClick={handleSubmit}>
-          Next
+          Save Next
         </button>
       </div>
     </form>

@@ -23,7 +23,7 @@ const CartItems = ({ items, getAllCarts }) => {
   };
 
   return (
-    <div className="min-h-[70vh]">
+    <>
       <div className="flex justify-between p-6 items-center border-b border-gray-300">
         <h1 className="text-xl font-medium">Shopping Cart</h1>
         <button className="text-gray-600 hover:text-red-600">Clear Cart</button>
@@ -74,15 +74,19 @@ const CartItems = ({ items, getAllCarts }) => {
       })}
 
       <div className="flex gap-5 w-[250px] font-semibold">
-        <NavLink className="w-full text-center border py-2">Go Product</NavLink>
+        <NavLink
+          to={"/product"}
+          className="w-full text-red-600 text-center border py-2">
+          Go Product
+        </NavLink>
         <button
           type="submit"
           className="w-full py-2 text-white bg-indigo-600"
           onClick={() => dispatch(setSteps(1))}>
-          Next
+          Checkout
         </button>
       </div>
-    </div>
+    </>
   );
 };
 

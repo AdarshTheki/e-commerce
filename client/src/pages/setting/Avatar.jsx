@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { baseUrl } from "../helper/constant";
+import { baseUrl } from "../../helper/constant";
 
 const Avatar = () => {
   const user = useSelector((state) => state.auth.user);
@@ -34,7 +34,7 @@ const Avatar = () => {
   };
 
   return (
-    <div className="flex items-center gap-5 justify-center">
+    <div className="flex items-center gap-5 justify-center p-4 sm:w-1/2">
       <div className="w-32 h-32 rounded-full border-4 border-neutral-600/30 overflow-hidden">
         <img
           src={avatar || "https://avatar.iran.liara.run/public"}
@@ -49,7 +49,8 @@ const Avatar = () => {
         <input
           onChange={handleImageChange}
           type="file"
-          className="w-fit p-2 border border-gray-300 rounded-lg text-sm"
+          name="images"
+          className="w-[180px] p-2 cursor-pointer hover:bg-indigo-200 border border-gray-300 rounded-lg text-sm"
         />
       </label>
     </div>

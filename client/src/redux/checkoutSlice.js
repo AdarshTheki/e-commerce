@@ -5,6 +5,8 @@ const initialState = {
   shippingMethod: null,
   paymentMethod: null,
   steps: 0,
+  tax: null,
+  payment: null,
 };
 
 const checkoutSlice = createSlice({
@@ -23,6 +25,12 @@ const checkoutSlice = createSlice({
     setSteps: (state, action) => {
       state.steps = action.payload;
     },
+    setTax: (state, action) => {
+      state.tax = action.payload;
+    },
+    setPayment: (state, action) => {
+      state.payment = action.payload;
+    },
     resetCheckout: () => initialState,
   },
 });
@@ -33,6 +41,8 @@ export const {
   setPaymentMethod,
   resetCheckout,
   setSteps,
+  setTax,
+  setPayment,
 } = checkoutSlice.actions;
 
 export default checkoutSlice.reducer;
