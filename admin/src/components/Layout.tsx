@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { BellDotIcon, Menu, Settings, X } from "lucide-react";
-import { Input, menuItems } from "../utils";
+import { Input } from "../utils";
+import menuItems from "../constant/menuItems";
 
 const Layout: React.FC = () => {
   const [open, setOpen] = useState(false);

@@ -21,7 +21,7 @@ const ShippingMethod = ({ items = data }) => {
     if (select) {
       dispatch(setSteps(3));
     } else {
-      toast.error("please select shipping method");
+      toast.error("Please Select Shipping Method");
     }
   };
 
@@ -46,7 +46,7 @@ const ShippingMethod = ({ items = data }) => {
         </div>
       ))}
 
-      <div className="flex gap-5 w-[250px] font-semibold">
+      <div className="flex gap-5 w-[250px] font-semibold mt-10">
         <button
           className="w-full border py-2 !border-red-600 text-red-500"
           onClick={() => dispatch(setSteps(1))}>

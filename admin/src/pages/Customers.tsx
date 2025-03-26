@@ -1,7 +1,8 @@
 import { EllipsisVertical, Plus } from "lucide-react";
 import useFetch from "../hooks/useFetch";
-import { Breadcrumb, Loading, formatDate } from "../utils";
+import { Breadcrumb, Loading } from "../utils";
 import { NavLink, useLocation } from "react-router-dom";
+import { format } from "date-fns";
 
 const Customers = () => {
   const { pathname } = useLocation();
@@ -62,7 +63,7 @@ const Card = ({ user }: { user: UserType }) => {
       <div className="space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Member Since</span>
-          <span>{formatDate(user?.createdAt) || "Nov 28, 2023"}</span>
+          <span>{format(new Date(user.createdAt), "MM DD YYYY")}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Total Orders</span>

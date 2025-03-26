@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { menuItems } from "../utils";
+import menuItems from "../constant/menuItems";
 
 const Sidebar: React.FC = () => {
   return (

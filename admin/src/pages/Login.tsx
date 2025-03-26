@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
 
 import { Input, SpinnerBtn } from "../utils";
+import axiosInstance from "../constant/axiosInstance";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -21,12 +21,12 @@ const Login: React.FC = () => {
 
     try {
       setLoading(true);
-      const { data } = await axios.post(
-        "/api/v1/user/sign-in",
-        { email, password },
-        { withCredentials: true }
-      );
+      const { data } = await axiosInstance.post("/user/sign-in", {
+        email,
+        password,
+      });
       if (data) {
+        localStorage.setItem("token", data.accessToken);
         toast.success("user login succeeded");
         window.location.href = "/";
       }

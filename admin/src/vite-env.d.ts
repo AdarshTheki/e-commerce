@@ -31,6 +31,8 @@ interface UserType {
   lastName?: string;
   countryCode?: string;
   phoneNumber?: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface AddressType {

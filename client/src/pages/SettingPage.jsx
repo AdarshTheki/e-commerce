@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from "react";
+import React, {  useState } from "react";
 
 import { Address, Avatar, General, Preference, Security } from "../components";
 
@@ -36,6 +36,8 @@ const Tabs = ({ children }) => {
 
   return (
     <div className="p-2 bg-gray-100">
+      <div className="  mx-auto max-w-4xl">
+
       {/* Tab Header */}
       <div className="flex w-full bg-white p-4 rounded-lg overflow-x-auto scrollbar-hidden">
         {React.Children.map(children, (child, index) => (
@@ -56,6 +58,7 @@ const Tabs = ({ children }) => {
       <div className="p-4 bg-white rounded-lg mt-4">
         {React.Children.toArray(children)[activeTab].props.children}
       </div>
+        </div>
     </div>
   );
 };

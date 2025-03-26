@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import axios from "axios";
 import { useState, useEffect } from "react";
+import axiosInstance from "../constant/axiosInstance";
 
 interface UseFetchResult<T> {
   data: T | null;
@@ -18,7 +17,7 @@ const useFetch = <T,>(url: string): UseFetchResult<T> => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(url, { withCredentials: true });
+      const res = await axiosInstance.get(url);
       if (res.data) setData(res.data);
     } catch (err) {
       setError((err as Error).message);

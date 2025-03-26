@@ -14,6 +14,7 @@ import {
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
 import { NavLink, useLocation } from "react-router-dom";
+import { format } from "date-fns";
 
 const sortByOptions = [
   { label: "Title by asc ", value: "title-asc" },
@@ -222,7 +223,7 @@ const CategoryItem = ({
           {title?.split("-")?.join(" ")}
         </h3>
         <div className="flex gap-2 flex-wrap justify-between items-center text-sm">
-          <span>{formatDate(createdAt)}</span>
+          <span>{format(createdAt, "MM DD, YYYY")}</span>
           <span
             className={
               status.toLowerCase() !== "active"

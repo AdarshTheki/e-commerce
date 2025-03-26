@@ -20,10 +20,13 @@ import useFetch from "./hooks/useFetch";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { login } from "./redux/authSlice";
+import { fetchCategories } from "./redux/categorySlice";
+import { fetchBrands } from "./redux/brandSlice";
+import { AppDispatch } from "./redux/store";
 
 const App: React.FC = () => {
-  const { data, loading } = useFetch("/api/v1/user/current-user");
-  const dispatch = useDispatch();
+  const { data, loading } = useFetch("/user/current-user");
+  const dispatch = useDispatch<AppDispatch>();
 
   const isAuth = data?._id;
 
@@ -31,7 +34,12 @@ const App: React.FC = () => {
     if (isAuth) {
       dispatch(login(data));
     }
-  }, [data]);
+  }, [data, dispatch, isAuth]);
+
+  useEffect(() => {
+    dispatch(fetchBrands());
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   if (loading) return <Loading />;
 
