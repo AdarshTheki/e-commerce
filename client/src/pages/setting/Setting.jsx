@@ -1,6 +1,6 @@
 import React from "react";
 
-import Tabs from "./TabComponent";
+import Tabs from "./Tabs";
 import Avatar from "./Avatar";
 import General from "./General";
 import Address from "./Address";
@@ -9,9 +9,9 @@ import Preference from "./Preference";
 
 const ProfileSettings = () => {
   return (
-    <div className="w-full sm:flex min-h-screen">
-      {/* Tab Sections */}
+    <div className="w-full max-w-2xl mx-auto py-5">
       <Avatar />
+      {/* Tab Sections */}
       <Tabs>
         <div label="General">
           {/* Profile Avatar */}

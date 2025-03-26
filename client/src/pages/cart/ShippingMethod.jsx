@@ -18,7 +18,7 @@ const ShippingMethod = () => {
   const [select, setSelect] = useState(null);
 
   const handleMethod = () => {
-    if (select) {
+    if (parseInt(select) || select === 0) {
       dispatch(setShippingMethod(select));
       dispatch(setSteps(3));
     } else {

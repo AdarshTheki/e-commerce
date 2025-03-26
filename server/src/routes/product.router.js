@@ -257,25 +257,43 @@ router.get("/reviews/:productId", async (req, res) => {
   }
 });
 
-router.get("/category/:name", async (req, res) => {
+router.get("/:query/:name", async (req, res) => {
   try {
-    const { name } = req.params;
-    const products = await Product.find({
-      category: { $regex: name, $options: "i" },
-    });
+    const { name, query } = req.params;
+    if (!name || !query) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Please provide name and query" });
+    }
+
+    const regex = new RegExp(name, "i");
+
+    let products;
+    if (query === "category") {
+      products = await Product.find({ category: regex });
+    } else {
+      products = await Product.find({ brand: regex });
+    }
+
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-router.get("/brand/:name", async (req, res) => {
+router.get("/category-list", async (req, res) => {
   try {
-    const { name } = req.params;
-    const products = await Product.find({
-      brand: { $regex: name, $options: "i" },
-    });
-    res.status(200).json(products);
+    const categories = await Product.find().distinct("category");
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get("/brand-list", async (req, res) => {
+  try {
+    const categories = await Product.find().distinct("brand");
+    res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

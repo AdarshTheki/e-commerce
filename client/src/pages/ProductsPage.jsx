@@ -2,13 +2,15 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
 import { NavLink } from "react-router-dom";
-import { HeartFavorite } from "../components";
+import { HeartFavorite, ProductItem } from "../components";
 import { useSelector } from "react-redux";
 
 const ProductListing = () => {
-  const { list } = useSelector((state) => state.categories);
+  const { list: categories } = useSelector((state) => state.categories);
+  const { list: brands } = useSelector((state) => state.brands);
   const [limit, setLimit] = useState(10);
   const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
   const [rating, setRating] = useState(0);
@@ -16,6 +18,7 @@ const ProductListing = () => {
   const queryParams = new URLSearchParams({
     limit: limit.toString(), // Ensure limit is included correctly
     ...(category && { category }),
+    ...(brand && { brand }),
     minPrice: minPrice.toString(),
     maxPrice: maxPrice.toString(),
     ...(rating && {
@@ -64,30 +67,62 @@ const ProductListing = () => {
             </div>
 
             {/* <!-- Category Filter --> */}
-            <div className="my-2">
-              <h3 className="font-medium">Category</h3>
-              <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                {list?.map((it) => (
-                  <label
-                    htmlFor={it.title}
-                    key={it.title}
-                    className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                    <input
-                      onChange={(e) =>
-                        setCategory(e.target.checked ? it.title : "")
-                      }
-                      value={category}
-                      checked={category === it.title}
-                      id={it.title}
-                      name={it.title}
-                      type="checkbox"
-                      className="form-checkbox text-blue-600"
-                    />
-                    <span className="ml-2">{it.title.replace("-", " ")}</span>
-                  </label>
-                ))}
-              </ul>
-            </div>
+            {categories?.length > 1 && (
+              <div className="my-2">
+                <h3 className="font-medium">Category</h3>
+                <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
+                  {categories?.map((it) => (
+                    <label
+                      htmlFor={it}
+                      key={it}
+                      className="flex items-center capitalize text-sm mb-1 cursor-pointer">
+                      <input
+                        onChange={(e) => {
+                          setCategory(e.target.checked ? it : "");
+                          setBrand("");
+                        }}
+                        value={category}
+                        checked={category === it}
+                        id={it}
+                        name={it}
+                        type="checkbox"
+                        className="form-checkbox text-blue-600"
+                      />
+                      <span className="ml-2">{it?.replace("-", " ")}</span>
+                    </label>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Brand Filter */}
+            {brands?.length > 1 && (
+              <div className="my-2">
+                <h3 className="font-medium">Brand</h3>
+                <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
+                  {brands?.map((it) => (
+                    <label
+                      htmlFor={it}
+                      key={it}
+                      className="flex items-center capitalize text-sm mb-1 cursor-pointer">
+                      <input
+                        onChange={(e) => {
+                          setBrand(e.target.checked ? it : "");
+                          setCategory("");
+                        }}
+                        value={brand}
+                        checked={brand === it}
+                        id={it}
+                        name={it}
+                        type="checkbox"
+                        className="form-checkbox text-blue-600"
+                      />
+                      <span className="ml-2">{it?.replace("-", " ")}</span>
+                    </label>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* <!-- Rating Filter --> */}
             <div className="my-2">
@@ -176,57 +211,7 @@ const ProductListing = () => {
             className={`grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.totalDocs
-              ? data?.docs?.map((item) => (
-                  <div
-                    key={item._id}
-                    className={`bg-white overflow-hidden group`}>
-                    <div className="relative min-h-[200px] bg-black/20">
-                      <NavLink to={`/product/${item._id}`}>
-                        <img
-                          src={
-                            item.thumbnail ||
-                            item.images[0] ||
-                            "https://placehold.co/200x140"
-                          }
-                          alt="Product"
-                          className="w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100"
-                          loading="lazy"
-                        />
-                      </NavLink>
-                      <div className="absolute top-2 right-2 space-y-2">
-                        <HeartFavorite id={item._id} />
-                      </div>
-                      <div className="absolute top-2 left-2">
-                        <span className="bg-red-500 text-white px-2 py-1 text-sm rounded">
-                          {item.discount}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-4 space-y-2 capitalize">
-                      <p className="space-x-3">
-                        <span className="text-gray-600 text-sm">
-                          {item.brand}
-                        </span>
-                        <span className="bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit">
-                          {item.category}
-                        </span>
-                      </p>
-                      <h3 className="font-semibold mb-2 text-gray-700 line-clamp-2">
-                        {item.title}
-                      </h3>
-
-                      <p className="flex justify-between">
-                        <span className="text-gray-600 text-xl">
-                          ${item.price}
-                        </span>{" "}
-                        <span>
-                          {item.rating}{" "}
-                          <span className="text-xl text-yellow-400">★</span>
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                ))
+              ? data?.docs?.map((item) => <ProductItem {...item} />)
               : null}
           </div>
         </div>

@@ -5,7 +5,8 @@ import ProductsPage from "./ProductsPage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import Notfound from "./Notfound";
-import SettingPage from "./setting/SettingPage";
+import SettingPage from "./setting/Setting";
+import WishlistPage from "./WishlistPage";
 
 export {
   CartsPage,
@@ -16,4 +17,5 @@ export {
   RegisterPage,
   Notfound,
   SettingPage,
+  WishlistPage,
 };

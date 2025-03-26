@@ -34,7 +34,7 @@ const Avatar = () => {
   };
 
   return (
-    <div className="flex items-center gap-5 justify-center p-4 sm:w-1/2">
+    <div className="flex items-center gap-5 justify-center p-4 border border-gray-200 rounded-lg my-5">
       <div className="w-32 h-32 rounded-full border-4 border-neutral-600/30 overflow-hidden">
         <img
           src={avatar || "https://avatar.iran.liara.run/public"}

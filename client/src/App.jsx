@@ -9,13 +9,15 @@ import {
   HomePage,
   ProductsPage,
   SingleProductPage,
+  WishlistPage,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
-import { Footer, Header, MenuBar, PrivateRoute, TopBar } from "./components";
+import { Footer, Header, PrivateRoute, TopBar } from "./components";
 import { Loading } from "./utils";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
 import { fetchCategories } from "./redux/categorySlice";
+import { fetchBrands } from "./redux/brandSlice";
 
 const App = () => {
   const { data, loading } = useFetch("/api/v1/user/current-user");
@@ -30,6 +32,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchBrands());
   }, [dispatch]);
 
   if (loading) return <Loading />;
@@ -39,7 +42,6 @@ const App = () => {
       <Router>
         <TopBar />
         <Header />
-        <MenuBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product" element={<ProductsPage />} />
@@ -49,6 +51,7 @@ const App = () => {
           <Route element={<PrivateRoute isAuth={auth} />}>
             <Route path="/cart" element={<CartsPage />} />
             <Route path="/setting" element={<SettingPage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>

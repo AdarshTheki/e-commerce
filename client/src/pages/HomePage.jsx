@@ -65,7 +65,7 @@ const FeaturedCategory = () => {
         <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
           {list?.map((item) => (
             <div
-              key={item._id}
+              key={item}
               className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group">
               <img
                 src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg"
@@ -76,13 +76,13 @@ const FeaturedCategory = () => {
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300"></div>
               <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                 <h3 className="text-2xl font-bold text-white mb-3 capitalize">
-                  {item.title}
+                  {item}
                 </h3>
                 <p className="text-gray-200 mb-4">
                   Performance wear for every athlete
                 </p>
                 <NavLink
-                  to={`/category/${item._id}`}
+                  to={`/product`}
                   className="bg-white text-black px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300">
                   Explore
                 </NavLink>
@@ -106,7 +106,9 @@ const FeaturedBrand = () => {
         <h2 className="text-2xl font-bold px-4">Featured Products</h2>
         <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
           {list?.map((item) => (
-            <div className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp">
+            <div
+              key={item}
+              className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp">
               <img
                 src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_610,c_limit/0ebd455c-1c7e-4958-8c64-20eacc1d760d/image.png"
                 alt="New Release 1"
@@ -115,7 +117,7 @@ const FeaturedBrand = () => {
               />
               <div className="p-4">
                 <h3 className="text-xl font-bold text-black mb-2 line-clamp-1">
-                  {item.title}
+                  {item}
                 </h3>
                 <p className="text-gray-600 text-sm mb-4 font-futura">
                   Latest innovation in comfort

@@ -22,6 +22,17 @@ const CartItems = ({ items, getAllCarts }) => {
     }
   };
 
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[50vh] gap-5">
+        <h2>Empty cart items</h2>
+        <NavLink to="/product" className="border p-2 text-indigo-600">
+          Go to Products
+        </NavLink>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex justify-between p-6 items-center border-b border-gray-300">

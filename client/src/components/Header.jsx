@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { ShoppingCart, CakeSlice, Search, User } from "lucide-react";
+import { ShoppingCart, CakeSlice, Search, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import useFetch from "../hooks/useFetch";
 
@@ -8,7 +8,6 @@ const Header = () => {
   const user = useSelector((state) => state.auth.user);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
 
@@ -33,20 +32,12 @@ const Header = () => {
 
   // Handle input blur
   const handleBlur = () => {
-    // Delay closing the dropdown to allow dropdown item clicks to be processed
     setTimeout(() => {
       if (!dropdownRef.current?.contains(document.activeElement)) {
         setIsDropdownOpen(false);
       }
     }, 100);
   };
-
-  // Handle item selection
-  // const handleItemSelect = (item) => {
-  //   setSearchTerm(item);
-  //   setIsDropdownOpen(false);
-  //   inputRef.current?.focus(); // Optionally refocus the input after selection
-  // };
 
   return (
     <header className="sticky top-0 left-0 w-full bg-white z-20 text-gray-700">
@@ -71,31 +62,36 @@ const Header = () => {
             {isDropdownOpen && (
               <ul
                 onClick={handleBlur}
-                className="w-full list-none min-w-[350px] max-w-[400px] absolute top-12 border border-gray-300 min-h-32 h-fit bg-white py-2 rounded-lg shadow-lg">
-                {searchTerm?.length > 1 && <SearchResults query={searchTerm} />}
+                className="w-full list-none min-w-[350px] max-w-[400px] absolute top-12 border border-gray-300 h-fit bg-white py-2 rounded-lg shadow-lg">
+                <X
+                  className=" absolute right-2 top-2 cursor-pointer"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setIsDropdownOpen(false);
+                  }}
+                />
+                <SearchResults query={searchTerm} />
               </ul>
             )}
           </div>
 
           {/* Right Actions*/}
           <div className="flex items-center gap-4">
-            <NavLink to={"/cart"} className="relative hover:text-indigo-600">
+            <NavLink
+              to={"/cart"}
+              className="hover:text-indigo-600"
+              title="cart items">
               <ShoppingCart size={26} />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                0
-              </span>
             </NavLink>
 
             <NavLink
+              title="favorite items"
               to={"/wishlist"}
-              className="relative hover:text-indigo-600">
+              className="hover:text-indigo-600">
               <CakeSlice size={26} />
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                0
-              </span>
             </NavLink>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1" title="user profile">
               {user?.email ? (
                 <NavLink to={"/setting"}>
                   <img
@@ -123,17 +119,23 @@ const Header = () => {
 export default Header;
 
 const SearchResults = ({ query = "" }) => {
-  const { data } = useFetch(`/api/v1/product?title=${query}&limit=10`);
-  return (
-    <>
-      {data?.docs?.map((item) => (
-        <NavLink
-          to={`/product/${item._id}`}
-          key={item?._id}
-          className="py-1.5 block cursor-pointer pl-5 text-sm hover:bg-gray-200">
-          {item?.title}
-        </NavLink>
-      ))}
-    </>
-  );
+  const { data, loading } = useFetch(`/api/v1/product?title=${query}&limit=10`);
+
+  const boldQuery = (str) => {
+    const regex = new RegExp(`(${query})`, "gi");
+    return str.replace(regex, "<b>$1</b>");
+  };
+
+  if (loading || data?.docs?.length === 0) {
+    return <li className="py-1.5 block pl-5 text-sm">No results found</li>;
+  }
+
+  return data?.docs?.map((item) => (
+    <NavLink
+      to={`/product/${item?._id}`}
+      key={item?._id}
+      className="py-1.5 block cursor-pointer pl-5 text-sm hover:bg-gray-200"
+      dangerouslySetInnerHTML={{ __html: boldQuery(item?.title) }}
+    />
+  ));
 };

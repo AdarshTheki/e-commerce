@@ -1,8 +1,7 @@
 import axios from "axios";
-import { baseUrl } from "./constant";
 
 const instance = axios.create({
-  baseURL: baseUrl,
+  baseURL: "http://localhost:8000",
   timeout: 3000,
   headers: { Authorization: ` Bearer ${localStorage.getItem("token")}` },
 });

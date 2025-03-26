@@ -9,6 +9,7 @@ import ShippingPayment from "./ShippingPayment";
 import OrderCheckout from "./OrderCheckout";
 import CartItems from "./CartItems";
 import Tabs from "./TabComponent";
+import OrderSuccess from "./OrderSuccess";
 
 const CartComponent = () => {
   const [carts, setCarts] = useState({ items: [], wishlist: [] });
@@ -62,12 +63,18 @@ const CartComponent = () => {
       label: "order checkout",
       content: <OrderCheckout items={items} />,
     },
+    {
+      label: "order success",
+      content: <OrderSuccess />,
+    },
   ];
 
   if (loading) return <Loading />;
 
   return (
-    <section id="cart" className="py-8 px-2 bg-gray-50 text-gray-700">
+    <section
+      id="cart"
+      className="py-8 px-2 bg-gray-50 text-gray-700 overflow-hidden">
       <Tabs tabs={tabData} items={items} totals={totals} />
     </section>
   );

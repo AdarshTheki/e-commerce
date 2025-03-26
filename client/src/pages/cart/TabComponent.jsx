@@ -7,8 +7,6 @@ const Tabs = ({ tabs, totals, items }) => {
     (state) => state.checkout
   );
 
-  console.log(shippingMethod, payment);
-
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       <div className="lg:w-2/3 sm:p-6 p-3 space-y-6 bg-white shadow-lg rounded-lg">
@@ -27,7 +25,7 @@ const Tabs = ({ tabs, totals, items }) => {
               <span className="font-semibold">${totals}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Shipping</span>
+              <span className="text-gray-600">Payment</span>
               <span className="font-semibold">{payment || "COD"}</span>
             </div>
             <div className="flex justify-between">

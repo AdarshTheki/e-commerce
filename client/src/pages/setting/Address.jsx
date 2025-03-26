@@ -58,7 +58,7 @@ const Address = () => {
   };
 
   return (
-    <form className="pt-5 grid sm:grid-cols-2 gap-5" onSubmit={onSubmitHandle}>
+    <form className="pt-5 space-y-5" onSubmit={onSubmitHandle}>
       <Input
         onChange={handleChange}
         value={address.addressLine1}
@@ -72,35 +72,37 @@ const Address = () => {
         name="addressLine2"
         label="address Line 2"
       />
-      <Input
-        onChange={handleChange}
-        value={address.city}
-        name="city"
-        label="city"
-        required
-      />
-      <Input
-        onChange={handleChange}
-        value={address.pinCode}
-        name="pinCode"
-        label="pincode"
-        type="number"
-        required
-      />
-      <Input
-        onChange={handleChange}
-        value={address.state}
-        name="state"
-        label="state"
-        required
-      />
-      <Input
-        onChange={handleChange}
-        value={address.country}
-        name="country"
-        label="country"
-        required
-      />
+      <div className="grid sm:grid-cols-2 gap-5">
+        <Input
+          onChange={handleChange}
+          value={address.city}
+          name="city"
+          label="city"
+          required
+        />
+        <Input
+          onChange={handleChange}
+          value={address.pinCode}
+          name="pinCode"
+          label="pincode"
+          type="number"
+          required
+        />
+        <Input
+          onChange={handleChange}
+          value={address.state}
+          name="state"
+          label="state"
+          required
+        />
+        <Input
+          onChange={handleChange}
+          value={address.country}
+          name="country"
+          label="country"
+          required
+        />
+      </div>
       <button
         type="submit"
         className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors duration-300 rounded-md text-white">
