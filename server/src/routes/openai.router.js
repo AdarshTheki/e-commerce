@@ -1,24 +1,8 @@
-import axios from "axios";
 import express from "express";
 import twilio from "twilio";
+import { openaiInstance, haggingaiInstance } from "../utils/api.js";
 
 const router = express.Router();
-
-const openaiInstance = axios.create({
-  baseURL: "https://api.openai.com/v1",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-  },
-});
-
-const haggingaiInstance = axios.create({
-  baseURL: "https://router.huggingface.co/together/v1",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.HUGGINGFACE_TOKEN}`,
-  },
-});
 
 router.post("/description-ai", async (req, res) => {
   try {

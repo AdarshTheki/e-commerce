@@ -19,7 +19,8 @@ router.get("/:productId", async (req, res) => {
     const reviews = await Review.find({ productId })
       .populate("userId", "username avatar")
       .populate("replies.userId", "username avatar")
-      .populate("reports.userId", "username avatar");
+      .populate("reports.userId", "username avatar")
+      .sort({ createdAt: -1 });
 
     if (!reviews)
       return res
@@ -43,25 +44,9 @@ router.delete("/:reviewId", verifyJWT, async (req, res) => {
         .status(404)
         .json({ message: "reviewId is invalid", status: false });
 
-    const review = await Review.findOneAndDelete({ _id: reviewId, userId });
+    const review = await Review.findOneAndDelete(reviewId, { userId });
 
     if (!review) return res.status(404).json({ message: "Review not found" });
-
-    // Update product's review list and rating
-    const product = await Product.findById(review.productId);
-    product.reviews = product.reviews.filter(
-      (rId) => rId.toString() !== reviewId
-    );
-    const totalRatings = product.reviews.length;
-    if (totalRatings > 0) {
-      const avgRating =
-        (product.rating * (totalRatings + 1) - review.rating) / totalRatings;
-      product.rating = avgRating;
-    } else {
-      product.rating = 0;
-    }
-
-    await product.save();
 
     res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
@@ -72,8 +57,13 @@ router.delete("/:reviewId", verifyJWT, async (req, res) => {
 // create review by productId, comment & rating
 router.post("/", verifyJWT, async (req, res) => {
   try {
-    const userId = req.user._id;
     const { productId, comment, rating } = req.body;
+    const userId = req.user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(productId))
+      return res
+        .status(404)
+        .json({ message: "productId is invalid", status: false });
 
     const newReview = await Review.create({
       productId,
@@ -82,26 +72,19 @@ router.post("/", verifyJWT, async (req, res) => {
       rating,
     });
 
-    const product = await Product.findById(productId);
-    if (!product) {
-      throw new Error("Product not found");
-    }
+    if (!newReview)
+      return res
+        .status(401)
+        .json({ status: false, message: "review not created" });
 
-    // Add the new review to the reviews list
-    product.reviews.push(newReview._id);
+    const reviews = await Review.find({ productId })
+      .populate("userId", "username avatar")
+      .populate("replies.userId", "username avatar")
+      .populate("reports.userId", "username avatar")
+      .sort({ createdAt: -1 })
+      .limit(20);
 
-    // Update average rating
-    // const totalRatings = product.reviews.length;
-    // const avgRating =
-    //   (product.rating * (totalRatings - 1) + rating) / totalRatings;
-    // product.rating = avgRating.toFixed(1); // Optional: Limit to 2 decimals
-
-    // // Save the product
-    await product.save();
-
-    res
-      .status(201)
-      .json({ message: "Review added successfully", review: newReview });
+    res.status(201).json({ message: "Review added successfully", reviews });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

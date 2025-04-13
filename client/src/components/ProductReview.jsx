@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../helper/axiosInstance";
 import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
+import { X } from "lucide-react";
+import { useSelector } from "react-redux";
+import { SpinnerBtn } from "../utils";
 
 const tempData = [
   {
-    _id: "67eff14dc66410dec06dbda1",
+    _id: "67eff14dc66410dec0",
     productId: "67b063b6c9bd3905e2a2e8d6",
     userId: {
-      _id: "67ee359789dcf847c2b2fba4",
+      _id: "67ee359789dcf847c2b2",
       username: "temp user",
     },
     comment:
@@ -24,10 +27,10 @@ const tempData = [
     __v: 0,
   },
   {
-    _id: "67eff14dc66410dec06dbda0",
+    _id: "67eff14dc66410dec0432",
     productId: "67b063b6c9bd3905e2a2e8d6",
     userId: {
-      _id: "67ee359789dcf847c2b2fba4",
+      _id: "67ee359789dcf847c2b2",
       username: "temp user",
     },
     comment:
@@ -44,31 +47,34 @@ const tempData = [
 
 const ProductReview = () => {
   const { id } = useParams();
+  const { data, loading, refetch } = useFetch(`/api/v1/review/${id}`);
+  const [reviews, setReviews] = React.useState();
+  const [isLoading, seIsLoading] = useState(false);
 
-  let moreData = 10;
-
-  const { data, loading } = useFetch(`/api/v1/review/${id}`);
-
-  const [reviewData, setReviewData] = React.useState(tempData);
+  useEffect(() => {
+    if (data?.length > 0) {
+      setReviews(data);
+    } else {
+      setReviews(tempData);
+    }
+  }, [data]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    if (!data.comment || !data.rating) {
+    const formObject = Object.fromEntries(formData.entries());
+    if (!formObject.comment || !formObject.rating) {
       return;
     }
-    setReviewData((pre) => [
-      ...pre,
-      { ...tempData[0], ...data, _id: Date.now(), createdAt: new Date() },
-    ]);
 
     try {
+      seIsLoading(true);
       const res = await axiosInstance.post(`/api/v1/review`, {
         productId: id,
-        ...data,
+        ...formObject,
       });
       if (res.data) {
+        setReviews(res.data.reviews);
         e.target.reset();
       }
     } catch (error) {
@@ -76,18 +82,22 @@ const ProductReview = () => {
         error.response?.data?.message ||
           "Something went wrong while submitting the review"
       );
+    } finally {
+      seIsLoading(false);
     }
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-5">Product Reviews</h2>
+      <h2 className="text-2xl font-semibold mb-5" id="product-review">
+        Product Reviews
+      </h2>
       <div className="grid gap-4 sm:grid-cols-2">
-        {!loading && data?.length > 1
-          ? data?.map((review) => <ReviewItem key={review._id} {...review} />)
-          : tempData?.map((review) => (
-              <ReviewItem key={review._id} {...review} />
-            ))}
+        {!loading &&
+          reviews?.length > 0 &&
+          reviews?.map((review) => (
+            <ReviewItem key={review._id} {...review} refetch={refetch} />
+          ))}
       </div>
 
       <form
@@ -119,9 +129,13 @@ const ProductReview = () => {
             <option value="5">5</option>
           </select>
         </div>
-        <button type="submit" className="btn bg-gray-800 block mt-5 text-white">
-          Submit Review
-        </button>
+
+        <SpinnerBtn
+          className="bg-gray-600 mt-5 text-white"
+          type="submit"
+          primaryName="Submit Review"
+          loading={isLoading}
+        />
       </form>
     </div>
   );
@@ -129,10 +143,19 @@ const ProductReview = () => {
 
 export default ProductReview;
 
-const ReviewItem = ({ ...review }) => {
+const ReviewItem = ({ refetch, ...review }) => {
+  const userId = useSelector((state) => state?.auth?.user?._id);
+
+  const handleDeleteReview = async () => {
+    const res = await axiosInstance.delete(`/api/v1/review/${review._id}`);
+    if (res.data) {
+      refetch();
+    }
+  };
+
   return (
     <div className="p-4 bg-white shadow-md rounded-lg" key={review._id}>
-      <div className="flex items-center mb-2">
+      <div className="flex items-center mb-2 relative">
         <img
           src={review?.userId?.avatar || "https://avatar.iran.liara.run/public"}
           alt="User Avatar"
@@ -145,6 +168,12 @@ const ReviewItem = ({ ...review }) => {
             {"☆".repeat(5 - review.rating)}
           </span>
         </div>
+        {review?.userId?._id === userId && (
+          <X
+            className="absolute top-2 right-2 cursor-pointer svg-btn p-2"
+            onClick={handleDeleteReview}
+          />
+        )}
       </div>
       <p className="text-gray-700 mb-2 line-clamp-4 sm:line-clamp-2">
         {review.comment}
