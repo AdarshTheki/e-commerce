@@ -15,6 +15,11 @@ const cookiePayload = {
   secure: process.env.NODE_ENV === "production",
 };
 
+const generateUsername = (username) => {
+  const newUsername = username?.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase();
+  return newUsername;
+};
+
 // get all user
 router.get("/", async (req, res) => {
   try {
@@ -32,11 +37,13 @@ router.post("/sign-up", async (req, res) => {
   try {
     const { email, password, username, role } = req.body;
 
-    if ([email, password, username].some((field) => field?.trim() === "")) {
-      throw new Error("user all fields are required");
+    if (
+      [email, password, username, role].some((field) => field?.trim() === "")
+    ) {
+      throw new Error("User all fields are required");
     }
 
-    const newUsername = username?.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase();
+    const newUsername = generateUsername(username);
 
     const exitsUser = await User.findOne({
       $or: [{ username: newUsername }, { email }],
@@ -69,7 +76,9 @@ router.post("/sign-in", async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
-    const tempUser = await User.findOne({ $or: [{ email }, { username }] });
+    const tempUser = await User.findOne({
+      $or: [{ email }, { username: generateUsername(username) }],
+    });
     if (!tempUser) {
       throw new Error("user does not exist on database");
     }
@@ -250,10 +259,10 @@ router.patch("/role", verifyJWT, async (req, res) => {
 router.patch(
   "/update-avatar",
   verifyJWT,
-  upload.single("avatar"),
+  upload.fields([{ name: "avatar", maxCount: 1 }]),
   async (req, res) => {
     try {
-      const filePath = req.file?.path;
+      const filePath = req.files["avatar"][0].path;
       if (!filePath) throw Error("invalid file type of avatar");
 
       const avatar = await uploadSingleImg(filePath);
@@ -328,6 +337,19 @@ router.patch("/favorite/:id", verifyJWT, async (req, res) => {
       status: true,
       favorites: updatedUser.favorite,
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+router.get("/favorite", verifyJWT, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate("favorite");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.favorite);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

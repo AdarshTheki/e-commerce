@@ -22,9 +22,6 @@ const OrderCheckout = ({ items = [] }) => {
 
   return (
     <>
-      <h2 className="text-xl font-medium mt-4">
-        Paying with pay on Delivery/Cash on Delivery
-      </h2>
       <p>
         Scan and pay at delivery with cartify pay UPI and win reword up to 500
       </p>
@@ -72,13 +69,13 @@ const OrderCheckout = ({ items = [] }) => {
       <div className="flex mt-10 gap-5 w-[250px] font-semibold">
         <button
           type="button"
-          className="w-full border py-2 !border-red-600 text-red-500"
+          className="text-red-600 btn text-nowrap border"
           onClick={() => dispatch(setSteps(3))}>
           Go Back
         </button>
         <button
           type="submit"
-          className="w-full py-2 text-white bg-indigo-600"
+          className="btn text-white bg-indigo-600"
           onClick={() => dispatch(setSteps(0))}>
           Place Order
         </button>

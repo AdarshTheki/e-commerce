@@ -24,7 +24,9 @@ const Register = () => {
         email,
         password,
         username,
+        role: "user",
       });
+
       if (register.data) {
         toast.success("User register succeeded");
         navigate("/login");
@@ -79,10 +81,18 @@ const Register = () => {
               required
             />
 
-            <p className="text-sm flex gap-2 items-center text-gray-500">
-              <Check size={16} color="green" />
-              <span>I agree to the Terms and Privacy Policy</span>
-            </p>
+            <div className="text-sm flex gap-2 items-center text-gray-500">
+              <input
+                type="checkbox"
+                name="privacy"
+                id="privacy"
+                checked
+                readOnly
+              />
+              <label htmlFor="privacy">
+                I agree to the Terms and Privacy Policy
+              </label>
+            </div>
 
             <button
               type="submit"

@@ -3,7 +3,7 @@ import { Phone, MapPin, Store, Mail } from "lucide-react";
 
 const TopBar = () => {
   return (
-    <div className=" border-b border-gray-200 bg-white hidden sm:block">
+    <div className=" border-b border-gray-600 bg-gray-900 text-gray-300 hidden sm:block">
       {/* Top Bar*/}
       <div className="flex mx-auto sm:px-4 px-2 justify-between items-center py-2 text-sm">
         <div className="flex items-center gap-4">

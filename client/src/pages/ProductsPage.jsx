@@ -1,8 +1,7 @@
 import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
-import { NavLink } from "react-router-dom";
-import { HeartFavorite, ProductItem } from "../components";
+import { ProductItem } from "../components";
 import { useSelector } from "react-redux";
 
 const ProductListing = () => {
@@ -211,7 +210,9 @@ const ProductListing = () => {
             className={`grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.totalDocs
-              ? data?.docs?.map((item) => <ProductItem {...item} />)
+              ? data?.docs?.map((item) => (
+                  <ProductItem key={item._id} {...item} />
+                ))
               : null}
           </div>
         </div>

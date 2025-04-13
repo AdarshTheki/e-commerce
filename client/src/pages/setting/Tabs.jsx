@@ -8,13 +8,13 @@ const Tabs = ({ children }) => {
   };
 
   return (
-    <>
+    <div className="p-4 min-h-[400px] my-6 bg-white shadow-md rounded-lg">
       {/* Tab Header */}
-      <div className="flex w-full p-4 rounded-lg overflow-x-auto scrollbar-hidden border border-gray-200">
+      <div className="flex w-full overflow-x-auto scrollbar-hidden">
         {React.Children.map(children, (child, index) => (
           <button
             key={index}
-            className={`mr-8 border-b-2 hover:text-gray-700 focus:outline-none ${
+            className={`mr-8 border-b-2 font-medium hover:text-gray-700 focus:outline-none ${
               index === activeTab
                 ? "!border-indigo-500 text-indigo-700"
                 : "!border-transparent"
@@ -26,10 +26,8 @@ const Tabs = ({ children }) => {
       </div>
 
       {/* Tab content */}
-      <div className="p-4 bg-white rounded-lg min-h-[400px] border border-gray-200">
-        {React.Children.toArray(children)[activeTab].props.children}
-      </div>
-    </>
+      {React.Children.toArray(children)[activeTab].props.children}
+    </div>
   );
 };
 

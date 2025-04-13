@@ -1,12 +1,10 @@
-import axios from "axios";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import useFetch from "../hooks/useFetch";
-import { HeartFavorite } from "../components";
-import { baseUrl } from "../helper/constant";
+import { HeartFavorite, ProductReview } from "../components";
 import { Loading } from "../utils";
 import errorHandler from "../helper/errorHandler";
 import instance from "../helper/axiosInstance";
@@ -199,6 +197,9 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+
+      {/* <!-- Product Reviews --> */}
+      <ProductReview />
 
       {/* <!-- Related Products --> */}
       <RelatedProduct url={product?.category} />

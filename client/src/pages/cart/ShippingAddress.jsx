@@ -37,8 +37,7 @@ const ShippingAddress = () => {
   };
 
   return (
-    <form className="p-4 space-y-4" onSubmit={handleSubmit}>
-      <h2 className="text-xl font-medium">Shipping Information</h2>
+    <form className="space-y-4" onSubmit={handleSubmit}>
       <div className="flex gap-4 sm:flex-row flex-col">
         <Input
           label="first name"
@@ -104,13 +103,13 @@ const ShippingAddress = () => {
       <div className="flex mt-10 gap-5 w-[250px] font-semibold">
         <button
           type="button"
-          className="w-full border py-2 !border-red-600 text-red-500"
+          className="text-red-600 btn text-nowrap border"
           onClick={() => dispatch(setSteps(0))}>
           Go Back
         </button>
         <button
           type="submit"
-          className="w-full py-2 text-white bg-indigo-600"
+          className="btn text-white bg-indigo-600"
           onClick={handleSubmit}>
           Save Next
         </button>

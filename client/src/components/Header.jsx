@@ -40,13 +40,19 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 left-0 w-full bg-white z-20 text-gray-700">
-      <div className="px-4 ">
+    <header className="sticky top-0 left-0 w-full bg-gray-900 text-gray-300 z-20">
+      <div className="px-4 flex justify-between">
         {/* Main Header*/}
-        <div className="flex items-center justify-end gap-4 py-2">
+        <div className="hidden text-sm font-bold sm:flex items-center gap-4 justify-center py-2 flex-1/2">
+          <NavLink to={"/"}>Home</NavLink>
+          <NavLink to={"/product"}>Product</NavLink>
+          <NavLink to={"/favorite"}>Favorite</NavLink>
+          <NavLink to={"/setting"}>Profile</NavLink>
+        </div>
+        <div className="flex items-center justify-end gap-4 py-2 flex-1/2">
           {/* Desktop Search Bar */}
           <div
-            className={`w-full relative max-w-[400px] flex items-center border rounded-md border-gray-300 ${
+            className={`w-full relative max-w-[400px] flex items-center border rounded-md border-gray-500 ${
               isDropdownOpen && "outline outline-indigo-600"
             }`}>
             <Search size={20} className="mx-3" />
@@ -60,9 +66,7 @@ const Header = () => {
               ref={inputRef}
             />
             {isDropdownOpen && (
-              <ul
-                onClick={handleBlur}
-                className="w-full list-none min-w-[350px] max-w-[400px] absolute top-12 border border-gray-300 h-fit bg-white py-2 rounded-lg shadow-lg">
+              <>
                 <X
                   className=" absolute right-2 top-2 cursor-pointer"
                   onClick={() => {
@@ -70,8 +74,12 @@ const Header = () => {
                     setIsDropdownOpen(false);
                   }}
                 />
-                <SearchResults query={searchTerm} />
-              </ul>
+                <ul
+                  onClick={handleBlur}
+                  className="w-full list-none min-w-[350px] max-w-[400px] absolute top-12 border border-gray-300 h-fit bg-white py-2 rounded-lg shadow-lg">
+                  <SearchResults query={searchTerm} />
+                </ul>
+              </>
             )}
           </div>
 
@@ -81,23 +89,16 @@ const Header = () => {
               to={"/cart"}
               className="hover:text-indigo-600"
               title="cart items">
-              <ShoppingCart size={26} />
-            </NavLink>
-
-            <NavLink
-              title="favorite items"
-              to={"/wishlist"}
-              className="hover:text-indigo-600">
-              <CakeSlice size={26} />
+              <ShoppingCart size={28} />
             </NavLink>
 
             <div className="flex items-center gap-1" title="user profile">
               {user?.email ? (
                 <NavLink to={"/setting"}>
                   <img
-                    src="https://avatar.iran.liara.run/public"
+                    src={user?.avatar || "https://avatar.iran.liara.run/public"}
                     alt="User"
-                    className="min-w-9 min-h-9 h-9 w-9 rounded-full transition-opacity duration-300 opacity-100"
+                    className="min-w-9 min-h-9 h-9 w-9 rounded-full object-cover"
                     loading="lazy"
                   />
                 </NavLink>
@@ -134,7 +135,7 @@ const SearchResults = ({ query = "" }) => {
     <NavLink
       to={`/product/${item?._id}`}
       key={item?._id}
-      className="py-1.5 block cursor-pointer pl-5 text-sm hover:bg-gray-200"
+      className="py-1.5 block cursor-pointer text-gray-700 pl-5 text-sm hover:bg-gray-200"
       dangerouslySetInnerHTML={{ __html: boldQuery(item?.title) }}
     />
   ));

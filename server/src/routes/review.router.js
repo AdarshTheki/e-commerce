@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 const router = Router();
 
 // get all reviews by productId
-router.get("/:productId", verifyJWT, async (req, res) => {
+router.get("/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
 
@@ -17,9 +17,9 @@ router.get("/:productId", verifyJWT, async (req, res) => {
         .json({ message: "productId is invalid", status: false });
 
     const reviews = await Review.find({ productId })
-      .populate("userId", "username")
-      .populate("replies.userId", "username")
-      .populate("reports.userId", "username");
+      .populate("userId", "username avatar")
+      .populate("replies.userId", "username avatar")
+      .populate("reports.userId", "username avatar");
 
     if (!reviews)
       return res
@@ -91,12 +91,12 @@ router.post("/", verifyJWT, async (req, res) => {
     product.reviews.push(newReview._id);
 
     // Update average rating
-    const totalRatings = product.reviews.length;
-    const avgRating =
-      (product.rating * (totalRatings - 1) + rating) / totalRatings;
-    product.rating = avgRating.toFixed(1); // Optional: Limit to 2 decimals
+    // const totalRatings = product.reviews.length;
+    // const avgRating =
+    //   (product.rating * (totalRatings - 1) + rating) / totalRatings;
+    // product.rating = avgRating.toFixed(1); // Optional: Limit to 2 decimals
 
-    // Save the product
+    // // Save the product
     await product.save();
 
     res

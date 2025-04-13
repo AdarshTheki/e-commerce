@@ -1,14 +1,24 @@
+import axios from "axios";
 import express from "express";
-import OpenAI from "openai";
 import twilio from "twilio";
 
 const router = express.Router();
 
-const openai = new OpenAI({
-  apiKey: process.env.openai_api_key || "",
+const openaiInstance = axios.create({
+  baseURL: "https://api.openai.com/v1",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  },
 });
 
-const client = twilio(process.env.accountSid, process.env.authToken);
+const haggingaiInstance = axios.create({
+  baseURL: "https://router.huggingface.co/together/v1",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${process.env.HUGGINGFACE_TOKEN}`,
+  },
+});
 
 router.post("/description-ai", async (req, res) => {
   try {
@@ -21,8 +31,8 @@ router.post("/description-ai", async (req, res) => {
       });
     }
 
-    const result = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+    const response = await openaiInstance.post("/chat/completions", {
+      model: "gpt-4",
       messages: [
         {
           role: "system",
@@ -36,50 +46,60 @@ router.post("/description-ai", async (req, res) => {
       ],
     });
 
-    res.status(200).json({ result, status: true });
+    res.status(200).json({
+      message: "Description generated with OpenAI",
+      result: response.data.choices[0].message.content,
+      status: true,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
 });
 
-router.post("/prompt", async (req, res) => {
+// This endpoint generates an image based on the prompt provided in the request body
+router.post("/image-ai", async (req, res) => {
   try {
-    const { messages } = req.body;
-
-    if (!messages.length) {
-      return res.status(404).json({
-        message: "messages with role and content are required",
-        status: false,
-      });
+    const { prompt, size = "512x512" } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ message: "Prompt is required" });
     }
 
-    const result = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages,
+    const response = await openaiInstance.post("/images/generations", {
+      prompt,
+      size,
+      n: 1,
     });
 
-    res.status(200).json({ result, status: true });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
-  }
-});
-
-router.post("/image", async (req, res) => {
-  try {
-    const image = await openai.images.generate({
-      prompt: "A cute baby sea otter",
-    });
-
-    res.status(200).json({
-      message: "Image generated successfully",
-      url: image.data[0].url,
-      success: true,
+    res.status(201).json({
+      message: "Image generated with OpenAI",
+      image: response.data.data[0].url,
     });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }
 });
 
+// prompt for chat gpt
+router.post("/prompt", async (req, res) => {
+  try {
+    const { message } = req.body;
+    const response = await openaiInstance.post("/chat/completions", {
+      model: "gpt-4",
+      messages: [{ role: "user", content: message }],
+    });
+
+    res.status(201).json({
+      message: "Prompt generated with OpenAI",
+      result: response.data.choices[0].message.content,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+});
+
+const client = twilio(process.env.accountSid, process.env.authToken);
+
+// twilio sms
 router.post("/sms", async (req, res) => {
   try {
     const { message } = req.body;
@@ -94,6 +114,21 @@ router.post("/sms", async (req, res) => {
     });
 
     res.status(200).json({ message: "Message sent successfully", result });
+  } catch (error) {
+    res.status(500).json({ message: error.message, success: false });
+  }
+});
+
+router.post("/hugging-ai", async (req, res) => {
+  try {
+    const {
+      prompt = "a cute dog with eating a food with owner gives with phone",
+    } = req.body;
+    const response = await haggingaiInstance.post("/images/generations", {
+      prompt,
+    });
+
+    res.status(201).json({ image: response.data });
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }

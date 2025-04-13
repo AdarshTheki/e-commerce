@@ -1,8 +1,5 @@
-import React, { useEffect, useState } from "react";
-
+import useFetch from "../../hooks/useFetch";
 import { Loading } from "../../utils";
-import errorHandler from "../../helper/errorHandler";
-import instance from "../../helper/axiosInstance";
 import ShippingAddress from "./ShippingAddress";
 import ShippingMethod from "./ShippingMethod";
 import ShippingPayment from "./ShippingPayment";
@@ -12,31 +9,9 @@ import Tabs from "./TabComponent";
 import OrderSuccess from "./OrderSuccess";
 
 const CartComponent = () => {
-  const [carts, setCarts] = useState({ items: [], wishlist: [] });
-  const [loading, setLoading] = useState(false);
+  const { data: cartData, loading, refetch } = useFetch("/api/v1/cart");
 
-  const getAllCarts = async () => {
-    setLoading(true);
-    try {
-      const res = await instance.get(`/api/v1/cart`);
-      if (res.data) {
-        setCarts({
-          items: res.data?.data?.items,
-          wishlist: res.data?.data?.wishlist,
-        });
-      }
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getAllCarts();
-  }, []);
-
-  const { items, wishlist } = carts;
+  const { items, wishlist } = cartData?.data || {};
 
   const totals = items
     ?.reduce((acc, curr) => curr?.productId?.price * curr?.quantity + acc, 0)
@@ -45,7 +20,7 @@ const CartComponent = () => {
   const tabData = [
     {
       label: "Proceed to Checkout",
-      content: <CartItems items={items} getAllCarts={getAllCarts} />,
+      content: <CartItems items={items} getAllCarts={refetch} />,
     },
     {
       label: "Shipping Address",
@@ -69,12 +44,10 @@ const CartComponent = () => {
     },
   ];
 
-  if (loading) return <Loading />;
+  if (loading || !items) return <Loading />;
 
   return (
-    <section
-      id="cart"
-      className="py-8 px-2 bg-gray-50 text-gray-700 overflow-hidden">
+    <section id="cart" className="py-10 mx-auto text-gray-700">
       <Tabs tabs={tabData} items={items} totals={totals} />
     </section>
   );

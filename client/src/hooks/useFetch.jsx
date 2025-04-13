@@ -14,7 +14,8 @@ const useFetch = (url) => {
       const res = await instance.get(url);
       if (res.data) setData(res.data);
     } catch (err) {
-      setError(err?.message);
+      setError(err?.toJson());
+      console.warn(err?.response?.data?.message || err?.message);
     } finally {
       setLoading(false);
     }

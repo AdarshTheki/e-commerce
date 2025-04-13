@@ -27,7 +27,6 @@ const ShippingPayment = () => {
 
   return (
     <>
-      <h2 className="text-xl font-medium">Shipping Payment</h2>
       {/* Shipping Method Listing */}
       {items.map((method) => (
         <div
@@ -47,15 +46,15 @@ const ShippingPayment = () => {
       <div className="flex gap-5 w-[250px] font-semibold">
         <button
           type="button"
-          className="w-full border py-2 !border-red-600 text-red-500"
+          className="text-red-600 btn text-nowrap border"
           onClick={() => dispatch(setSteps(2))}>
           Back
         </button>
         <button
           type="submit"
-          className="w-full py-2 text-white bg-indigo-600"
+          className="btn text-white bg-indigo-600"
           onClick={handleNext}>
-          Next
+          Payment Next
         </button>
       </div>
     </>

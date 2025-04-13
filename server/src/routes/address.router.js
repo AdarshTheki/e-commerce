@@ -47,14 +47,17 @@ router.post("/", verifyJWT, async (req, res) => {
   try {
     const { addressLine1, addressLine2, city, state, pinCode, country } =
       req.body;
-    const owner = req.user._id; // Assuming you have authentication middleware that adds user info to req.user
+    const owner = req.user._id;
 
-    // Server-side validation (you can use a library like Joi for more complex validation)
     if (!addressLine1 || !city || !state || !pinCode || !country) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    if (typeof pinCode !== "number" || pinCode < 100000 || pinCode > 999999) {
+    if (
+      typeof parseInt(pinCode) !== "number" ||
+      pinCode < 100000 ||
+      pinCode > 999999
+    ) {
       return res.status(400).json({ message: "Invalid PIN code" });
     }
 
@@ -64,7 +67,7 @@ router.post("/", verifyJWT, async (req, res) => {
       addressLine2,
       city,
       state,
-      pinCode,
+      pinCode: parseInt(pinCode),
       country,
     });
 

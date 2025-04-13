@@ -9,7 +9,8 @@ import Preference from "./Preference";
 
 const ProfileSettings = () => {
   return (
-    <div className="w-full max-w-2xl mx-auto py-5">
+    <div className="w-full max-w-2xl mx-auto">
+      {/* Profile Avatar */}
       <Avatar />
       {/* Tab Sections */}
       <Tabs>

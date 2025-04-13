@@ -19,11 +19,6 @@ router.get("/", verifyJWT, async (req, res) => {
     if (!carts)
       return res.status(404).json(error("get user carts not exists", 404));
 
-    if (carts.items.length === 0)
-      return res
-        .status(200)
-        .json(success(carts, "get user carts is empty", 200));
-
     res.status(200).json(success(carts, "get user carts success", 200));
   } catch (err) {
     res.status(500).json(error(err.message));

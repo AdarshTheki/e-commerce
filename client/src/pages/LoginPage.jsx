@@ -45,7 +45,7 @@ const Login = () => {
 
           <form onSubmit={handelSubmit} className="space-y-4">
             <Input
-              defaultValue="adarsh12@gmail.com"
+              defaultValue="demo-user@gmail.com"
               name="email"
               type="email"
               label="Email"
@@ -53,6 +53,7 @@ const Login = () => {
               required
             />
             <Input
+              defaultValue="12345"
               name="password"
               type="text"
               label="Password"
@@ -60,10 +61,18 @@ const Login = () => {
               required
             />
 
-            <p className="text-sm flex gap-2 items-center text-gray-500">
-              <Check size={16} color="green" />
-              <span>I agree to the Terms and Privacy Policy</span>
-            </p>
+            <div className="text-sm flex gap-2 items-center text-gray-500">
+              <input
+                type="checkbox"
+                name="privacy"
+                id="privacy"
+                checked
+                readOnly
+              />
+              <label htmlFor="privacy">
+                I agree to the Terms and Privacy Policy
+              </label>
+            </div>
 
             <button
               type="submit"

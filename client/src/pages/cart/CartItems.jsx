@@ -1,7 +1,5 @@
 import React from "react";
 import instance from "../../helper/axiosInstance";
-import { toast } from "react-toastify";
-import errorHandler from "../../helper/errorHandler";
 import { NavLink } from "react-router-dom";
 import { X } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -15,10 +13,9 @@ const CartItems = ({ items, getAllCarts }) => {
       const res = await instance.delete(`/api/v1/cart/${id}`);
       if (res.data) {
         getAllCarts();
-        toast.success("Delete cart successfully");
       }
     } catch (error) {
-      errorHandler(error);
+      console.warn(error.message);
     }
   };
 
@@ -26,7 +23,7 @@ const CartItems = ({ items, getAllCarts }) => {
     return (
       <div className="flex flex-col justify-center items-center h-[50vh] gap-5">
         <h2>Empty cart items</h2>
-        <NavLink to="/product" className="border p-2 text-indigo-600">
+        <NavLink to="/product" className="btn border text-indigo-600">
           Go to Products
         </NavLink>
       </div>
@@ -35,15 +32,11 @@ const CartItems = ({ items, getAllCarts }) => {
 
   return (
     <>
-      <div className="flex justify-between p-6 items-center border-b border-gray-300">
-        <h1 className="text-xl font-medium">Shopping Cart</h1>
-        <button className="text-gray-600 hover:text-red-600">Clear Cart</button>
-      </div>
       {items?.map((item) => {
         const { _id, thumbnail, title, price, category, brand } =
           item.productId;
         return (
-          <div key={item._id} className="sm:p-6 p-2 border-b border-gray-300">
+          <div key={item._id} className="border-b border-gray-300 py-4">
             <div className="flex items-start">
               <NavLink to={`/product/${_id}`} className="bg-gray-300">
                 <img
@@ -87,12 +80,12 @@ const CartItems = ({ items, getAllCarts }) => {
       <div className="flex gap-5 w-[250px] font-semibold">
         <NavLink
           to={"/product"}
-          className="w-full text-red-600 text-center border py-2">
+          className="text-red-600 btn text-nowrap border">
           Go Product
         </NavLink>
         <button
           type="submit"
-          className="w-full py-2 text-white bg-indigo-600"
+          className="bg-indigo-600 text-white btn"
           onClick={() => dispatch(setSteps(1))}>
           Checkout
         </button>

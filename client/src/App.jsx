@@ -9,7 +9,7 @@ import {
   HomePage,
   ProductsPage,
   SingleProductPage,
-  WishlistPage,
+  FavoritePage,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { Footer, Header, PrivateRoute, TopBar } from "./components";
@@ -38,7 +38,7 @@ const App = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-gray-200">
       <Router>
         <TopBar />
         <Header />
@@ -51,7 +51,7 @@ const App = () => {
           <Route element={<PrivateRoute isAuth={auth} />}>
             <Route path="/cart" element={<CartsPage />} />
             <Route path="/setting" element={<SettingPage />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
+            <Route path="/favorite" element={<FavoritePage />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>
