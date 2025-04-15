@@ -38,7 +38,7 @@ const App = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="w-full bg-gray-200">
+    <div className="w-full bg-gray-100 ">
       <Router>
         <TopBar />
         <Header />

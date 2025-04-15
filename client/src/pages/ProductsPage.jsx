@@ -34,7 +34,44 @@ const ProductListing = () => {
         {/* <!-- Filters Sidebar --> */}
         <div className="w-[300px] max-lg:hidden sticky h-full top-[54px] overflow-y-auto scrollbar">
           <div className="bg-white text-gray-700 shadow-sm px-6 py-3">
-            <h2 className="font-bold text-lg mb-4">Filters</h2>
+            <div className="flex justify-between">
+              <h2 className="font-bold text-lg">Filters</h2>
+              <button
+                className="text-sm text-red-600 font-bold"
+                onClick={() => {
+                  setLimit(10);
+                  setCategory("");
+                  setBrand("");
+                  setMaxPrice(100000);
+                  setMinPrice(0);
+                  setRating(0);
+                }}>
+                Clear All
+              </button>
+            </div>
+            <div className="flex gap-1 flex-wrap py-2">
+              {category && (
+                <button
+                  onClick={() => setCategory("")}
+                  className="status-inactive">
+                  {category} x
+                </button>
+              )}
+              {brand && (
+                <button
+                  onClick={() => setBrand("")}
+                  className="status-inactive">
+                  {brand} x
+                </button>
+              )}
+              {!!rating && (
+                <button
+                  onClick={() => setRating(0)}
+                  className="status-inactive">
+                  rating {rating} x
+                </button>
+              )}
+            </div>
 
             {/* <!-- Price Range --> */}
             <div>
@@ -78,7 +115,6 @@ const ProductListing = () => {
                       <input
                         onChange={(e) => {
                           setCategory(e.target.checked ? it : "");
-                          setBrand("");
                         }}
                         value={category}
                         checked={category === it}
@@ -107,7 +143,6 @@ const ProductListing = () => {
                       <input
                         onChange={(e) => {
                           setBrand(e.target.checked ? it : "");
-                          setCategory("");
                         }}
                         value={brand}
                         checked={brand === it}
@@ -152,19 +187,6 @@ const ProductListing = () => {
                 ))}
               </ul>
             </div>
-
-            {/* <!-- Apply Filters Button --> */}
-            <button
-              onClick={() => {
-                setLimit(10);
-                setCategory("");
-                setMaxPrice(100000);
-                setMinPrice(0);
-                setRating(0);
-              }}
-              className="mt-3 bg-red-600 text-white py-2 px-6 rounded hover:bg-red-700 transition-colors">
-              Reset Filters
-            </button>
           </div>
         </div>
 

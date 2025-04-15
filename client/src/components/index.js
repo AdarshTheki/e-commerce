@@ -6,6 +6,7 @@ import PrivateRoute from "./PrivateRoute";
 import HeartFavorite from "./HeartFavorite";
 import ProductItem from "./ProductItem";
 import ProductReview from "./ProductReview";
+import Card from "./Card";
 
 export {
   PrivateRoute,
@@ -16,4 +17,5 @@ export {
   MenuBar,
   ProductItem,
   ProductReview,
+  Card,
 };

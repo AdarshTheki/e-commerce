@@ -49,7 +49,8 @@ const ProductReview = () => {
   const { id } = useParams();
   const { data, loading, refetch } = useFetch(`/api/v1/review/${id}`);
   const [reviews, setReviews] = React.useState();
-  const [isLoading, seIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const userId = useSelector((state) => state?.auth?.user?._id);
 
   useEffect(() => {
     if (data?.length > 0) {
@@ -64,11 +65,13 @@ const ProductReview = () => {
     const formData = new FormData(e.target);
     const formObject = Object.fromEntries(formData.entries());
     if (!formObject.comment || !formObject.rating) {
-      return;
+      return toast.error("Please fill all the fields");
     }
 
+    if (!userId) return toast.error("Please login to submit a review");
+
     try {
-      seIsLoading(true);
+      setIsLoading(true);
       const res = await axiosInstance.post(`/api/v1/review`, {
         productId: id,
         ...formObject,
@@ -76,62 +79,75 @@ const ProductReview = () => {
       if (res.data) {
         setReviews(res.data.reviews);
         e.target.reset();
+        toast.success("Review submitted successfully");
       }
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Something went wrong while submitting the review"
-      );
+      console.log(error);
+      toast.error("Something went wrong while submitting the review");
     } finally {
-      seIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-semibold mb-5" id="product-review">
+    <div className="p-4 bg-gray-50 min-h-screen">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800" id="product-review">
         Product Reviews
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {!loading &&
-          reviews?.length > 0 &&
-          reviews?.map((review) => (
+
+      {/* Review List */}
+      <div className="grid gap-6 sm:grid-cols-2 mb-10">
+        {!loading && reviews?.length > 0 ? (
+          reviews.map((review) => (
             <ReviewItem key={review._id} {...review} refetch={refetch} />
-          ))}
+          ))
+        ) : (
+          <p className="text-gray-500 col-span-2">No reviews yet.</p>
+        )}
       </div>
 
-      <form
-        className="p-4 bg-white shadow-md rounded-lg mt-4"
-        onSubmit={handleReviewSubmit}>
-        <p className="font-medium mb-4">
-          You are looking to structure reviews with rating, mood, and comments
+      {/* Review Form */}
+      <form className="" onSubmit={handleReviewSubmit}>
+        <p className="text-lg font-medium mb-4 text-gray-900">
+          Share your thoughts — leave a review!
         </p>
-        <div>
-          <label htmlFor="comment" className="block cursor-pointer">
-            Comment:
+
+        {/* Comment */}
+        <div className="mb-4">
+          <label
+            htmlFor="comment"
+            className="block text-gray-600 font-semibold mb-2">
+            Comment
           </label>
           <textarea
-            className="border max-w-sm w-full border-gray-400 p-4 rounded-lg"
+            className="w-full max-w-xl border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
             id="comment"
             name="comment"
-            rows="2"></textarea>
+            rows="3"
+            placeholder="Write something about the product..."
+          />
         </div>
-        <div>
-          <label htmlFor="rating">Rating:</label>
+
+        {/* Rating */}
+        <div className="mb-4 flex items-center gap-4">
+          <label htmlFor="rating" className="text-gray-600 font-semibold">
+            Rating
+          </label>
           <select
             id="rating"
             name="rating"
-            className="w-18 ml-5 rounded-lg border border-gray-400 text-center py-1 cursor-pointer">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            className="rounded-lg border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-gray-400">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <option key={num} value={num}>
+                {num} ⭐
+              </option>
+            ))}
           </select>
         </div>
 
+        {/* Submit Button */}
         <SpinnerBtn
-          className="bg-gray-600 mt-5 text-white"
+          className="bg-gray-700 hover:bg-gray-800 transition text-white px-6 py-2 rounded-lg"
           type="submit"
           primaryName="Submit Review"
           loading={isLoading}

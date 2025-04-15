@@ -2,8 +2,12 @@ import { Star } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Typewriter } from "../utils";
 import { useSelector } from "react-redux";
+import { Card } from "../components";
 
 const HomePage = () => {
+  const { list: categories } = useSelector((state) => state.categories);
+  const { list: brands } = useSelector((state) => state.brands);
+
   return (
     <main id="homepage" className="min-h-screen">
       {/* <!-- Hero Section --> */}
@@ -37,11 +41,17 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* <!-- Featured Categories --> */}
-      <FeaturedCategory />
+      <Card
+        cardData={categories}
+        title={
+          categories?.length > 1 ? "Featured Categories" : "Feature Category"
+        }
+      />
 
-      {/* <!-- Featured Products --> */}
-      <FeaturedBrand />
+      <Card
+        cardData={brands}
+        title={brands?.length > 1 ? "Featured Brands" : "Feature Brand"}
+      />
 
       {/* <!-- Testimonials --> */}
       <Testimonials />
@@ -51,94 +61,15 @@ const HomePage = () => {
 
 export default HomePage;
 
-const FeaturedCategory = () => {
-  const { list, error, loading } = useSelector((state) => state.categories);
-
-  if (error || loading || !list?.length) return <h2>loading...</h2>;
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold px-4">Shop by Category</h2>
-      <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
-        {list?.map((item) => (
-          <div
-            key={item}
-            className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] relative overflow-hidden rounded-lg group">
-            <img
-              src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg"
-              alt="Sports Collection"
-              className="w-full h-full object-cover group-hover:scale-110 transition-opacity duration-300 opacity-100"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/60 transition-colors duration-300"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-              <h3 className="text-2xl font-bold text-white mb-3 capitalize">
-                {item}
-              </h3>
-              <p className="text-gray-200 mb-4">
-                Performance wear for every athlete
-              </p>
-              <NavLink
-                to={`/product`}
-                className="bg-white text-black px-6 py-2 rounded-lg hover:scale-105 transition-transform duration-300">
-                Explore
-              </NavLink>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const FeaturedBrand = () => {
-  const { list, error, loading } = useSelector((state) => state.brands);
-
-  if (error || loading || !list?.length) return <h2>loading...</h2>;
-
-  return (
-    <div className="max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold px-4">Featured Products</h2>
-      <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
-        {list?.map((item) => (
-          <div
-            key={item}
-            className="min-w-[200px] mx-2 max-w-[200px] min-h-[300px] bg-white shadow-lg rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300 animate__animated animate__fadeIn animate__fadeInUp">
-            <img
-              src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/h_610,c_limit/0ebd455c-1c7e-4958-8c64-20eacc1d760d/image.png"
-              alt="New Release 1"
-              className="w-full h-[150px] object-cover transition-opacity duration-300 opacity-100"
-              loading="lazy"
-            />
-            <div className="p-4">
-              <h3 className="text-xl font-bold text-black mb-2 line-clamp-1">
-                {item}
-              </h3>
-              <p className="text-gray-600 text-sm mb-4 font-futura">
-                Latest innovation in comfort
-              </p>
-              <NavLink
-                to={"/product"}
-                className="bg-black text-white px-5 py-2 hover:bg-black/80 rounded-md hover:shadow-glow hover:scale-105 transition-all duration-300">
-                Shop Now
-              </NavLink>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const Testimonials = () => {
   return (
-    <div className="max-w-7xl mx-auto">
-      <h2 className="text-2xl font-bold px-4">What Our Customers Say</h2>
-      <div className="flex w-full py-5 overflow-x-auto scrollbar-hidden">
+    <div className="max-w-6xl mx-auto px-2">
+      <h2 className="text-2xl font-bold">What Our Customers Say</h2>
+      <div className="flex sm:gap-4 gap-2 w-full py-5 overflow-x-auto scrollbar-hidden">
         {Array.from({ length: 4 }, (_, index) => (
           <div
             key={index}
-            className="bg-white min-w-[300px] max-w-[300px] p-4 rounded-lg shadow-sm mx-2">
+            className="bg-white min-w-[200px] p-4 rounded-lg shadow-sm">
             <div className="flex items-center mb-4">
               <img
                 src="https://avatar.iran.liara.run/public"
