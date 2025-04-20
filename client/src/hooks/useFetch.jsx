@@ -14,8 +14,9 @@ const useFetch = (url) => {
       const res = await instance.get(url);
       if (res.data) setData(res.data);
     } catch (err) {
-      setError(err?.toJson());
-      console.warn(err?.response?.data?.message || err?.message);
+      setError(
+        err?.response?.data?.message || err?.message || "enternal error"
+      );
     } finally {
       setLoading(false);
     }

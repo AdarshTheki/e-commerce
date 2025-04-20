@@ -9,8 +9,12 @@ import Select from "./Select";
 import SpinnerBtn from "./SpinnerBtn";
 import Textarea from "./Textarea";
 import Typewriter from "./Typewriter";
+import StarRating from "./StarRating";
+import StarSelected from "./StarSelected";
 
 export {
+  StarSelected,
+  StarRating,
   MegaMenu,
   Breadcrumb,
   Dropdown,

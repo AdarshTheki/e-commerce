@@ -1,202 +1,232 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../helper/axiosInstance";
-import { toast } from "react-toastify";
-import useFetch from "../hooks/useFetch";
-import { X } from "lucide-react";
 import { useSelector } from "react-redux";
-import { SpinnerBtn } from "../utils";
 
-const tempData = [
-  {
-    _id: "67eff14dc66410dec0",
-    productId: "67b063b6c9bd3905e2a2e8d6",
-    userId: {
-      _id: "67ee359789dcf847c2b2",
-      username: "temp user",
-    },
-    comment:
-      "Data Review is the process of collecting data, reflecting on it, and distilling it into actionable insights. This process is how you can turn data into knowledge and knowledge into action.",
-    rating: 4,
-    likes: [],
-    replies: [],
-    reports: [],
-    createdAt: "2025-04-04T14:48:45.055Z",
-    updatedAt: "2025-04-04T14:48:45.062Z",
-    __v: 0,
-  },
-  {
-    _id: "67eff14dc66410dec0432",
-    productId: "67b063b6c9bd3905e2a2e8d6",
-    userId: {
-      _id: "67ee359789dcf847c2b2",
-      username: "temp user",
-    },
-    comment:
-      "Creating a regular routine for Data Review helps your program institutionalize a focus on learning This is a two comment on the static",
-    rating: 2,
-    likes: [],
-    replies: [],
-    reports: [],
-    createdAt: "2025-04-04T14:48:45.055Z",
-    updatedAt: "2025-04-04T14:48:45.062Z",
-    __v: 0,
-  },
-];
+import axiosInstance from "../helper/axiosInstance";
+import useFetch from "../hooks/useFetch";
+import { toast } from "react-toastify";
+import { SpinnerBtn, StarSelected, StarRating } from "../utils";
+import { format } from "date-fns";
+import { X, MessageSquare, ThumbsUp } from "lucide-react";
 
 const ProductReview = () => {
-  const { id } = useParams();
-  const { data, loading, refetch } = useFetch(`/api/v1/review/${id}`);
+  const { id: productId } = useParams();
+  const { data, refetch } = useFetch(`/api/v1/review/${productId}`);
   const [reviews, setReviews] = React.useState();
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [newReview, setNewReview] = useState({ comment: "", rating: 0 });
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState("");
+  const [like, setLike] = useState(false);
+
   const userId = useSelector((state) => state?.auth?.user?._id);
 
   useEffect(() => {
     if (data?.length > 0) {
       setReviews(data);
-    } else {
-      setReviews(tempData);
     }
   }, [data]);
 
-  const handleReviewSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const formObject = Object.fromEntries(formData.entries());
-    if (!formObject.comment || !formObject.rating) {
+  const handleDeleteReview = async (id) => {
+    const res = await axiosInstance.delete(`/api/v1/review/${id}`);
+    if (res.data) {
+      refetch();
+    }
+  };
+
+  const addReplyHandler = async (id) => {
+    if (replyText.trim()) {
+      const res = await axiosInstance.post(`/api/v1/review/reply`, {
+        reviewId: id,
+        comment: replyText,
+      });
+      if (res?.data) {
+        setReviews(
+          reviews.map((r) =>
+            r._id == id
+              ? {
+                  ...r,
+                  replies: [
+                    ...r.replies,
+                    {
+                      username: "You",
+                      comment: replyText,
+                      createdAt: Date.now(),
+                    },
+                  ],
+                }
+              : r
+          )
+        );
+        setReplyText("");
+      }
+    }
+  };
+
+  const addReviewHandler = async () => {
+    if (!userId) return toast.error("Please login to submit a review");
+    if (newReview.rating === 0 || !newReview.comment.trim()) {
       return toast.error("Please fill all the fields");
     }
-
-    if (!userId) return toast.error("Please login to submit a review");
-
     try {
-      setIsLoading(true);
       const res = await axiosInstance.post(`/api/v1/review`, {
-        productId: id,
-        ...formObject,
+        productId,
+        ...newReview,
       });
       if (res.data) {
         setReviews(res.data.reviews);
-        e.target.reset();
+        setNewReview({ comment: "", rating: 0 });
         toast.success("Review submitted successfully");
       }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong while submitting the review");
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800" id="product-review">
+    <div className=" max-w-3xl mx-auto px-2 py-6">
+      <h2 className="text-xl font-bold mb-6 text-gray-800" id="product-review">
         Product Reviews
       </h2>
 
-      {/* Review List */}
-      <div className="grid gap-6 sm:grid-cols-2 mb-10">
-        {!loading && reviews?.length > 0 ? (
-          reviews.map((review) => (
-            <ReviewItem key={review._id} {...review} refetch={refetch} />
-          ))
-        ) : (
-          <p className="text-gray-500 col-span-2">No reviews yet.</p>
-        )}
-      </div>
-
       {/* Review Form */}
-      <form className="" onSubmit={handleReviewSubmit}>
-        <p className="text-lg font-medium mb-4 text-gray-900">
-          Share your thoughts — leave a review!
-        </p>
+      <div className="mb-4 flex flex-col">
+        <textarea
+          className="border p-2 rounded-lg outline-none"
+          placeholder="Write your review..."
+          value={newReview.comment}
+          onChange={(e) =>
+            setNewReview({ ...newReview, comment: e.target.value })
+          }
+        />
 
-        {/* Comment */}
-        <div className="mb-4">
-          <label
-            htmlFor="comment"
-            className="block text-gray-600 font-semibold mb-2">
-            Comment
-          </label>
-          <textarea
-            className="w-full max-w-xl border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
-            id="comment"
-            name="comment"
-            rows="3"
-            placeholder="Write something about the product..."
+        <div className="flex items-center gap-2 mt-2">
+          <p>choose star:</p>
+          <StarSelected
+            defaultRating={newReview.rating}
+            onChange={(val) => setNewReview({ ...newReview, rating: val })}
           />
         </div>
 
-        {/* Rating */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="rating" className="text-gray-600 font-semibold">
-            Rating
-          </label>
-          <select
-            id="rating"
-            name="rating"
-            className="rounded-lg border border-gray-300 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-gray-400">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <option key={num} value={num}>
-                {num} ⭐
-              </option>
-            ))}
-          </select>
-        </div>
+        <button
+          disabled={!newReview.comment.trim() || newReview.rating === 0}
+          onClick={addReviewHandler}
+          className="mt-2 w-fit text-sm btn bg-gray-900 text-white disabled:opacity-50">
+          Post Review
+        </button>
+      </div>
 
-        {/* Submit Button */}
-        <SpinnerBtn
-          className="bg-gray-700 hover:bg-gray-800 transition text-white px-6 py-2 rounded-lg"
-          type="submit"
-          primaryName="Submit Review"
-          loading={isLoading}
-        />
-      </form>
+      {/* Review List */}
+      {reviews?.map((item) => (
+        <div
+          key={item?._id}
+          className="bg-white w-full p-4 rounded-lg shadow-sm mb-5">
+          <div className="flex relative items-center mb-4">
+            <img
+              src={
+                item?.userId?.avatar || "https://avatar.iran.liara.run/public"
+              }
+              alt="Customer"
+              className="w-10 h-10 rounded-full object-cover transition-opacity duration-300 opacity-100"
+              loading="lazy"
+            />
+            <div className="ml-4">
+              <h4 className="font-semibold">{item.userId.username}</h4>
+              <StarRating rating={item?.rating} />
+            </div>
+            {item?.userId?._id === userId && (
+              <X
+                className="absolute top-2 right-2 cursor-pointer svg-btn p-2"
+                onClick={() => handleDeleteReview(item?._id)}
+              />
+            )}
+          </div>
+          <p>{item?.comment}</p>
+          <p className="text-gray-500 text-xs mt-2">
+            {format(new Date(item?.createdAt), "dd MMM yyyy, h:mm a")}
+          </p>
+
+          {/* like and reply button */}
+          <div className="flex items-center space-x-4 mt-2">
+            <ReviewLike reviewId={item?._id} likes={item?.likes} />
+            <button
+              className="svg-btn !w-fit px-4 !py-1 bg-gray-200 text-xs"
+              onClick={() =>
+                setReplyingTo(replyingTo === item._id ? null : item._id)
+              }>
+              <MessageSquare className="h-4 w-4 mr-1" />
+              {item.replies?.length ? item.replies?.length : "replay"}
+            </button>
+          </div>
+
+          {/* create review replay */}
+          {replyingTo === item._id && (
+            <div className="items-center flex gap-2 mt-2">
+              <input
+                className="border px-4 py-2 outline-none rounded-lg text-sm"
+                placeholder="Write a reply..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+              />
+              <button
+                disabled={!replyText.trim()}
+                onClick={() => addReplyHandler(item._id)}
+                className="w-fit text-sm btn bg-gray-900 text-white disabled:opacity-50">
+                Reply
+              </button>
+            </div>
+          )}
+
+          {/* display review replay */}
+          {item?.replies?.length > 0 && replyingTo === item?._id && (
+            <div className="mt-2 space-y-2">
+              {item?.replies?.map((reply, index) => (
+                <div
+                  key={index}
+                  className="text-sm flex gap-2 px-2 rounded-lg py-1 bg-gray-100">
+                  <p className="flex flex-col">
+                    <span className="font-semibold">
+                      {reply?.userId?.username || reply?.username}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {format(new Date(reply?.createdAt), "dd MMM, h:mm a")}
+                    </span>
+                  </p>
+                  <p className="flex-1/2">{reply?.comment}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
 export default ProductReview;
 
-const ReviewItem = ({ refetch, ...review }) => {
+const ReviewLike = ({ reviewId, likes }) => {
   const userId = useSelector((state) => state?.auth?.user?._id);
+  const [like, setLike] = useState(userId ? likes?.includes(userId) : false);
+  const [totalLike, setTotalLike] = useState(likes?.length);
 
-  const handleDeleteReview = async () => {
-    const res = await axiosInstance.delete(`/api/v1/review/${review._id}`);
+  const handleLike = async () => {
+    const res = await axiosInstance.patch(`/api/v1/review/like`, { reviewId });
     if (res.data) {
-      refetch();
+      setLike(!like);
+      console.log(res);
+      setTotalLike(res.data.likes);
     }
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg" key={review._id}>
-      <div className="flex items-center mb-2 relative">
-        <img
-          src={review?.userId?.avatar || "https://avatar.iran.liara.run/public"}
-          alt="User Avatar"
-          className="min-w-9 min-h-9 h-9 w-9 rounded-full object-cover mr-3"
-        />
-        <div>
-          <p className="font-semibold capitalize">{review.userId.username}</p>
-          <span className="text-yellow-500">
-            {"★".repeat(review.rating)}
-            {"☆".repeat(5 - review.rating)}
-          </span>
-        </div>
-        {review?.userId?._id === userId && (
-          <X
-            className="absolute top-2 right-2 cursor-pointer svg-btn p-2"
-            onClick={handleDeleteReview}
-          />
-        )}
-      </div>
-      <p className="text-gray-700 mb-2 line-clamp-4 sm:line-clamp-2">
-        {review.comment}
-      </p>
-      <span className="text-gray-500 text-sm">
-        {format(new Date(review.createdAt), "dd MMM yyyy, h:mm a")}
-      </span>
-    </div>
+    reviewId && (
+      <button
+        onClick={handleLike}
+        className={`svg-btn !w-fit px-4 !py-1 bg-gray-200 text-xs ${like && "!bg-blue-600"}`}>
+        <ThumbsUp className="h-4 w-4 mr-1" /> {totalLike}
+      </button>
+    )
   );
 };

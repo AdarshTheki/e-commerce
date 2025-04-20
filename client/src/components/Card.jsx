@@ -8,7 +8,7 @@ const Card = ({ title = "", cardData = [] }) => {
   if (cardData?.length === 0) return <h2>loading...</h2>;
 
   return (
-    <div className="max-w-6xl mx-auto px-2">
+    <div className="max-w-6xl mx-auto px-2 relative">
       <section className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-bold">{title}</h2>
@@ -21,7 +21,7 @@ const Card = ({ title = "", cardData = [] }) => {
         </button>
       </section>
       <div
-        className={`w-full py-5 sm:gap-4 gap-2 ${view ? "grid lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 grid-cols-2" : "flex overflow-x-auto scrollbar-hidden"}`}>
+        className={`w-full relative py-5 sm:gap-4 gap-2 ${view ? "grid lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 grid-cols-2" : "flex overflow-x-auto scrollbar-hidden"}`}>
         {cardData?.map((item) => (
           <div
             key={item}
@@ -48,6 +48,7 @@ const Card = ({ title = "", cardData = [] }) => {
           </div>
         ))}
       </div>
+      <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-r to-gray-100"></div>
     </div>
   );
 };

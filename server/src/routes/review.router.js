@@ -118,12 +118,11 @@ router.patch("/", async (req, res) => {
     res.status(500).json({ message: error.message, status: false });
   }
 });
-
 // like a review
-router.get("/like/:reviewId", verifyJWT, async (req, res) => {
+router.patch("/like", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
-    const { reviewId } = req.params;
+    const { reviewId } = req.body;
     const review = await Review.findById(reviewId);
 
     if (!review) return res.status(404).json({ message: "Review not found" });
