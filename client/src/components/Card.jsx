@@ -48,7 +48,7 @@ const Card = ({ title = "", cardData = [] }) => {
           </div>
         ))}
       </div>
-      <div className="absolute top-0 right-0 w-24 h-full bg-gradient-to-r to-gray-100"></div>
+      <div className="absolute top-10 bottom-0 right-0 w-14 bg-gradient-to-r to-gray-100"></div>
     </div>
   );
 };

@@ -4,7 +4,6 @@ import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Input } from "../utils";
 import { baseUrl } from "../helper/constant";
-import { Check } from "lucide-react";
 
 const Login = () => {
   const handelSubmit = async (e) => {
