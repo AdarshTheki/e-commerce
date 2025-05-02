@@ -5,9 +5,9 @@ import { Loading } from "../utils";
 
 const ProductUpdate = () => {
   const { id } = useParams();
-  const { data, loading, error } = useFetch(`/api/v1/product/${id}`);
+  const { data, loading } = useFetch<ProductType>(`/product/${id}`);
 
-  if (loading || error || !data?._id) return <Loading />;
+  if (loading || !data?._id) return <Loading />;
 
   return <ProductForm data={data} />;
 };

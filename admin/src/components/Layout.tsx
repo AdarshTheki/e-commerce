@@ -4,9 +4,14 @@ import Sidebar from "./Sidebar";
 import { BellDotIcon, Menu, Settings, X } from "lucide-react";
 import { Input } from "../utils";
 import menuItems from "../constant/menuItems";
+import useDebounce from "../hooks/useDebounce";
+import useFetch from "../hooks/useFetch";
 
 const Layout: React.FC = () => {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+
   return (
     <div id="root" className="bg-[#E5E7EB]">
       <div className="flex">
@@ -47,7 +52,29 @@ const Layout: React.FC = () => {
         <main className="h-full sm:overflow-y-auto w-[100vw]">
           <div className="sticky top-0 z-10 bg-white border-b border-neutral-200/30">
             <div className="flex items-center justify-end gap-4 py-4 pl-4 pr-14">
-              <Input name="search" placeholder="Search..." />
+              {/* Inputs Search */}
+              <div className="relative">
+                <Input
+                  name="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search..."
+                />
+                {debouncedSearch.length > 1 && (
+                  <>
+                    <X
+                      className=" absolute right-2 top-2 cursor-pointer"
+                      onClick={() => {
+                        setSearch("");
+                      }}
+                    />
+                    <SearchResults
+                      query={debouncedSearch}
+                      setClose={setSearch}
+                    />
+                  </>
+                )}
+              </div>
               <NavLink
                 to={"/products"}
                 className="text-gray-600 hover:text-gray-900">
@@ -72,3 +99,40 @@ const Layout: React.FC = () => {
 };
 
 export default Layout;
+
+const SearchResults = ({
+  query = "",
+  setClose,
+}: {
+  query: string;
+  setClose: React.Dispatch<React.SetStateAction<string>>;
+}) => {
+  const { data } = useFetch<{ docs: ProductType[] }>(
+    `/product?title=${query}&limit=10`
+  );
+
+  const boldQuery = (str: string) => {
+    const regex = new RegExp(`(${query})`, "gi");
+    return str.replace(regex, "<b>$1</b>");
+  };
+
+  return (
+    <ul className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+      {data?.docs?.length === 0 && (
+        <li className="py-1.5 block px-4 text-sm h-20">No results found</li>
+      )}
+      {data?.docs?.map((item) => (
+        <li
+          key={item._id}
+          className="py-1.5 block px-4 text-sm hover:bg-gray-100 ">
+          <NavLink
+            onClick={() => setClose("")}
+            to={`/product?title=${item.title}`}
+            className="!text-gray-700 line-clamp-1">
+            <span dangerouslySetInnerHTML={{ __html: boldQuery(item.title) }} />
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  );
+};

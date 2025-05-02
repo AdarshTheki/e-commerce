@@ -5,14 +5,12 @@ import {
   Login,
   Register,
   Notfound,
-  Analytics,
   Dashboard,
   Customers,
-  Inventory,
+  ProfileSettings,
   Products,
   ProductUpdate,
   ProductCreate,
-  ProfileSettings,
   Categories,
   CategoryCreate,
 } from "./pages";
@@ -49,9 +47,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="" element={<PrivateRoute isAuth={isAuth} />}>
             <Route index element={<Dashboard />} />
-            <Route path="/analytic" element={<Analytics />} />
             <Route path="/customer" element={<Customers />} />
-            <Route path="/inventory" element={<Inventory />} />
             <Route path="/product" element={<Products />} />
             <Route path="/product/:id" element={<ProductUpdate />} />
             <Route path="/product/create" element={<ProductCreate />} />
@@ -59,7 +55,7 @@ const App: React.FC = () => {
             <Route path="/brand" element={<Categories />} />
             <Route path="/brand/create" element={<CategoryCreate />} />
             <Route path="/category/create" element={<CategoryCreate />} />
-            <Route path="/setting" element={<ProfileSettings />} />
+            <Route path="/profile" element={<ProfileSettings />} />
             <Route path="*" element={<Notfound />} />
           </Route>
           <Route path="/register" element={<Register />} />

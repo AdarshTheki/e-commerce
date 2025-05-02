@@ -2,7 +2,7 @@ import Label from "./Label";
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
-  options: [{ id: string; title: string }];
+  options: { id: string; title: string }[];
   label?: string;
   className?: string;
 }

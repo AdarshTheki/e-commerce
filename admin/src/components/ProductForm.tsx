@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 import { Input, Select, SpinnerBtn, Textarea } from "../utils";
 import { toast } from "react-toastify";
+import axiosInstance from "../constant/axiosInstance";
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>(
-    data?.images.length ? data.images : []
+    data?.images.length ? data?.images : []
   );
-  const [thumbnail, setThumbnail] = useState<string | null>(
-    data?.thumbnail || ""
-  );
-  const [preview, setPreview] = useState<string | null>(null);
+
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(data?.thumbnail || "");
 
   const [formData, setFormData] = useState({
     title: data?.title || "",
@@ -68,16 +69,71 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     setDescription(e.target.value.replace(/[^a-zA-Z0-9\s]|\s{2,}/g, ""));
   };
 
-  const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!thumbnail) return toast.error("please select product thumbnail");
-    if (!images.length)
-      return toast.error("please select product gallery images");
     setLoading(true);
-
-    setTimeout(() => {
+    // Validation
+    if (!thumbnail && !preview) {
+      toast.error("Upload the product thumbnail");
       setLoading(false);
-    }, 3000);
+      return;
+    }
+    if (!images.length && !(previews.length > 1)) {
+      toast.error("Upload the product gallery images");
+      setLoading(false);
+      return;
+    }
+    if (
+      !formData.title ||
+      !formData.category ||
+      !formData.brand ||
+      !description ||
+      !status ||
+      !formData.discount ||
+      !formData.price ||
+      !formData.rating ||
+      !formData.stock
+    ) {
+      setLoading(false);
+      toast.error("Please fill all the fields");
+      return;
+    }
+
+    // Prepare FormData
+    const uploadData = new FormData();
+    uploadData.append("title", formData.title);
+    uploadData.append("category", formData.category);
+    uploadData.append("brand", formData.brand);
+    uploadData.append("description", description);
+    uploadData.append("discount", formData.discount.toString());
+    uploadData.append("price", formData.price.toString());
+    uploadData.append("rating", formData.rating.toString());
+    uploadData.append("stock", formData.stock.toString());
+    uploadData.append("status", status);
+    if (thumbnail) uploadData.append("thumbnail", thumbnail);
+    images.forEach((image) => uploadData.append("images", image));
+
+    // API Call
+    try {
+      const endpoint = data?._id ? `/product/${data._id}` : "/product";
+      const method = data?._id ? "patch" : "post";
+      const res = await axiosInstance[method](endpoint, uploadData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.data) {
+        toast.success(
+          data?._id
+            ? "Product updated successfully"
+            : "Product added successfully"
+        );
+      }
+      navigate("/product");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to save the product. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -225,7 +281,9 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
                     alt={`Image ${index + 1}`}
                     width={200}
                   />
-                  <button className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
+                  <button
+                    type="button"
+                    className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
                     <Trash2
                       size={18}
                       strokeWidth={2}
@@ -247,13 +305,15 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             {preview ? (
               <div className="border p-1 relative rounded-md w-fit">
                 <img src={preview} alt="thumbnail" width={200} />
-                <button className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
+                <button
+                  type="button"
+                  className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
                   <Trash2
                     size={18}
                     strokeWidth={2}
                     onClick={() => {
                       setPreview(null);
-                      setThumbnail("");
+                      setThumbnail(null);
                     }}
                   />
                 </button>

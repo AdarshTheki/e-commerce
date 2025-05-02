@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/express-session": "^1.18.1",
+    "@types/node": "^22.15.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.4.2"
   }

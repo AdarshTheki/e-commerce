@@ -6,7 +6,7 @@ import { format } from "date-fns";
 
 const Customers = () => {
   const { pathname } = useLocation();
-  const { data, loading, error } = useFetch("/api/v1/user");
+  const { data, loading, error } = useFetch("/user");
 
   if (loading || error) return <Loading />;
 
@@ -26,7 +26,7 @@ const Customers = () => {
         </NavLink>
       </div>
 
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5">
+      <div className="grid sm:grid-cols-2 gap-5">
         {data?.map((i: UserType) => <Card key={i?._id} user={i} />)}
       </div>
     </>
@@ -44,7 +44,7 @@ const Card = ({ user }: { user: UserType }) => {
           <img
             src={url}
             alt="Customer"
-            className="w-12 h-12 rounded-full transition-opacity duration-300 opacity-100"
+            className="w-12 object-cover h-12 rounded-full transition-opacity duration-300 opacity-100"
             loading="lazy"
           />
           <div>
@@ -54,16 +54,13 @@ const Card = ({ user }: { user: UserType }) => {
             </p>
           </div>
         </div>
-        <div className="flex space-x-2">
-          <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg">
-            <EllipsisVertical size={18} />
-          </button>
-        </div>
       </div>
       <div className="space-y-3">
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Member Since</span>
-          <span>{format(new Date(user.createdAt), "MM DD YYYY")}</span>
+          <span>
+            {format(new Date(user?.createdAt || Date.now()), "dd MMM yyyy")}
+          </span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Total Orders</span>
@@ -79,14 +76,6 @@ const Card = ({ user }: { user: UserType }) => {
             Active
           </span>
         </div>
-      </div>
-      <div className="mt-6 flex space-x-3">
-        <button className="flex-1 px-4 py-2 text-sm text-indigo-600 border border-indigo-600 rounded-lg hover:bg-indigo-50">
-          View Profile
-        </button>
-        <button className="flex-1 px-4 py-2 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
-          Message
-        </button>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
 
 import {
   Input,
@@ -32,6 +32,7 @@ export default function Product() {
   const [sortBy, setSortBy] = useState<string>("title-asc");
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
 
@@ -41,9 +42,14 @@ export default function Product() {
     }
   };
 
+  useEffect(() => {
+    const title = searchParams.get("title");
+    if (title) setSearch(title);
+  }, [searchParams]);
+
   // GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
   const { data, loading } = useFetch<FetchResponseProp>(
-    `/api/v1/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
+    `/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
   );
@@ -154,10 +160,10 @@ export default function Product() {
         </div>
       </div>
 
-      {!loading ? (
+      {!loading && data?.docs?.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {data?.docs?.map((item: ProductType) => (
-            <ProductMobile key={item._id} item={item} />
+            <ProductCard key={item._id} item={item} />
           ))}
         </div>
       ) : (
@@ -167,11 +173,7 @@ export default function Product() {
   );
 }
 
-const ProductMobile = ({ item }: { item: ProductType }) => {
-  const [status, setStatus] = useState<string>(
-    item?.status === "active" ? "active" : "inactive"
-  );
-
+const ProductCard = ({ item }: { item: ProductType }) => {
   const handleDelete = async (id: string) => {
     try {
       const res = await axios.delete(`/api/v1/product/${id}`);
@@ -179,7 +181,8 @@ const ProductMobile = ({ item }: { item: ProductType }) => {
         toast.success("Product deleted success");
       }
     } catch (err) {
-      toast.error(err.response.data.message);
+      toast.error("Something went wrong");
+      console.log(err);
     }
   };
 
@@ -195,7 +198,7 @@ const ProductMobile = ({ item }: { item: ProductType }) => {
       <button className="svg-btn text-red-600 hover:text-red-900 cursor-pointer absolute top-1 right-2">
         <Trash2 size={18} onClick={() => handleDelete(item._id)} />
       </button>
-      <div>
+      <div className="w-full h-[200px] overflow-hidden">
         <img
           alt={item._id}
           src={item.thumbnail || "https://placehold.co/600x500"}
@@ -216,11 +219,9 @@ const ProductMobile = ({ item }: { item: ProductType }) => {
           </h3>
           <span
             className={
-              status.toLowerCase() !== "active"
-                ? "status-inactive"
-                : "status-active"
+              item?.status !== "active" ? "status-inactive" : "status-active"
             }>
-            {status}
+            {item?.status}
           </span>
         </div>
       </div>

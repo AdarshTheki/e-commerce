@@ -49,6 +49,7 @@ const Login: React.FC = () => {
 
           <form onSubmit={handelSubmit}>
             <Input
+              defaultValue="demo-user@gmail.com"
               name="email"
               type="email"
               label="Email"
@@ -56,8 +57,9 @@ const Login: React.FC = () => {
               required
             />
             <Input
+              defaultValue={"12345"}
               name="password"
-              type="password"
+              type="text"
               label="Password"
               autoComplete="off"
               required
@@ -70,6 +72,7 @@ const Login: React.FC = () => {
                   type="checkbox"
                   className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   required
+                  checked
                 />
                 <label
                   htmlFor="checkbox"
@@ -89,7 +92,7 @@ const Login: React.FC = () => {
                 loading={loading}
                 className="w-full"
                 primaryName="Sign in"
-                props={{ type: "submit" }}
+                type="submit"
               />
             </div>
           </form>

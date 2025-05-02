@@ -4,7 +4,6 @@ import { Pen, Plus, Trash2 } from "lucide-react";
 import axios from "axios";
 
 import {
-  formatDate,
   Input,
   Loading,
   DropdownMenu,
@@ -39,7 +38,7 @@ const CategoryListing = () => {
   const query = useDebounce(search, 500);
 
   const { data, refetch } = useFetch(
-    `/api/v1${pathname}?limit=${limit}&page=${page}&title=${query}&sortBy=${
+    `/category?limit=${limit}&page=${page}&title=${query}&sortBy=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
   );
@@ -223,7 +222,9 @@ const CategoryItem = ({
           {title?.split("-")?.join(" ")}
         </h3>
         <div className="flex gap-2 flex-wrap justify-between items-center text-sm">
-          <span>{format(createdAt, "MM DD, YYYY")}</span>
+          <span>
+            {format(new Date(createdAt || Date.now()), "dd MMM yyyy")}
+          </span>
           <span
             className={
               status.toLowerCase() !== "active"

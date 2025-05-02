@@ -137,59 +137,66 @@ router.post(
 );
 
 // Update Product by productId params
-router.patch("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      title,
-      category,
-      brand,
-      description,
-      price,
-      rating,
-      stock,
-      discount,
-    } = req.body;
+router.patch(
+  "/:id",
+  upload.fields([
+    { name: "thumbnail", maxCount: 1 },
+    { name: "images", maxCount: 5 },
+  ]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        title,
+        category,
+        brand,
+        description,
+        price,
+        rating,
+        stock,
+        discount,
+      } = req.body;
 
-    const product = await Product.findById(id);
-    if (!product)
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
+      const product = await Product.findById(id);
+      if (!product)
+        return res
+          .status(404)
+          .json({ success: false, message: "Product not found" });
 
-    // Update thumbnail if provided
-    if (req.files?.thumbnail) {
-      if (product.thumbnail) {
-        await removeSingleImg(product.thumbnail); // Remove old thumbnail
+      // Update thumbnail if provided
+      if (req.files?.thumbnail) {
+        if (product.thumbnail) {
+          await removeSingleImg(product.thumbnail); // Remove old thumbnail
+        }
+        product.thumbnail = await uploadSingleImg(req.files.thumbnail[0].path);
       }
-      product.thumbnail = await uploadSingleImg(req.files.thumbnail[0].path);
-    }
 
-    // Update images if provided
-    if (req.files?.images) {
-      if (product.images.length > 0) {
-        await removeMultiImg(product.images); // Remove old images
+      // Update images if provided
+      if (req.files?.images) {
+        if (product.images.length > 0) {
+          await removeMultiImg(product.images); // Remove old images
+        }
+        product.images = await uploadMultiImg(req.files.images);
       }
-      product.images = await uploadMultiImg(req.files.images);
+
+      // Update other product details
+      product.title = title || product.title;
+      product.category = category || product.category;
+      product.brand = brand || product.brand;
+      product.description = description || product.description;
+      product.price = price || product.price;
+      product.rating = rating || product.rating;
+      product.stock = stock || product.stock;
+      product.discount = discount || product.discount;
+
+      await product.save();
+
+      res.status(200).json(product);
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
     }
-
-    // Update other product details
-    product.title = title || product.title;
-    product.category = category || product.category;
-    product.brand = brand || product.brand;
-    product.description = description || product.description;
-    product.price = price || product.price;
-    product.rating = rating || product.rating;
-    product.stock = stock || product.stock;
-    product.discount = discount || product.discount;
-
-    await product.save();
-
-    res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
   }
-});
+);
 
 // Delete Product
 router.delete("/:id", async (req, res) => {
