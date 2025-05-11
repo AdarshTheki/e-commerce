@@ -19,11 +19,7 @@ const useFetch = (url) => {
       const res = await instance.get(url, { signal });
       if (res.data) setData(res.data);
     } catch (err) {
-      if (err.name !== "CanceledError") {
-        setError(
-          err?.response?.data?.message || err?.message || DEFAULT_ERROR_MESSAGE
-        );
-      }
+      setError(err?.response?.data?.message || DEFAULT_ERROR_MESSAGE);
     } finally {
       setLoading(false);
     }
