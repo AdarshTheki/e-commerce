@@ -18,6 +18,11 @@ const userSchema = new Schema(
       enum: ["customer", "admin", "user"],
       default: "customer",
     },
+    status: {
+      type: String,
+      enum: ["active", "inactive", "pending"],
+      default: "pending",
+    },
     favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     countryCode: String,
     firstName: String,

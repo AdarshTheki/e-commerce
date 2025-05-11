@@ -4,7 +4,7 @@ import { ProductItem } from "../components";
 import { NavLink } from "react-router-dom";
 
 const FavoritePage = () => {
-  const { data, loading } = useFetch("/api/v1/user/favorite");
+  const { data, loading } = useFetch("/user/favorite");
 
   return (
     <div className="py-5 px-2 bg-gray-100 text-gray-700 min-h-screen">

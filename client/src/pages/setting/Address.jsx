@@ -6,7 +6,7 @@ import errorHandler from "../../helper/errorHandler";
 import instance from "../../helper/axiosInstance";
 
 const Address = () => {
-  const { data } = useFetch("/api/v1/address");
+  const { data } = useFetch("/address");
   const [address, setAddress] = useState({
     addressLine1: "",
     addressLine2: "",
@@ -38,13 +38,13 @@ const Address = () => {
     e.preventDefault();
     try {
       if (!data?._id) {
-        const res = await instance.post("/api/v1/address", { ...address });
+        const res = await instance.post("/address", { ...address });
         if (res.data) {
           toast.success("address crated success");
           setAddress(res.data);
         }
       } else {
-        const res = await instance.patch(`/api/v1/address/${data?._id}`, {
+        const res = await instance.patch(`/address/${data?._id}`, {
           ...address,
         });
         if (res.data) {

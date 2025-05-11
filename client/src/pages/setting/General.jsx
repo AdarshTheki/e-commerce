@@ -36,7 +36,7 @@ const General = () => {
     const { firstName, lastName, phoneNumber } = formData;
     try {
       setLoading(true);
-      const response = await instance.patch("/api/v1/user/update", {
+      const response = await instance.patch("/user/update", {
         firstName,
         lastName,
         phoneNumber,

@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /// <reference types="vite/client" />
 
-interface FetchResponseProp {
+interface PromiseResponseType<T = any> {
   message: string;
-  status: boolean;
-  [key?: string]: any;
+  data?: T;
+  statusCode?: number;
+  status?: boolean;
+  success?: boolean;
 }
 
-interface PaginationProp {
+interface PaginationType {
   docs: [any];
   totalDocs: number;
   limit: number;
@@ -20,10 +22,12 @@ interface PaginationProp {
 }
 
 interface UserType {
+  _id: string;
   username: string;
   email: string;
   password: string;
   role: "customer" | "admin" | "user";
+  status: "active" | "inactive" | "pending";
   favorite: [string];
   avatar: string;
   refreshToke: string;
@@ -36,7 +40,9 @@ interface UserType {
 }
 
 interface AddressType {
+  _id: string;
   owner: string;
+  status: "active" | "inactive" | "pending";
   addressLine1: string;
   addressLine2: string;
   city: string;
@@ -45,16 +51,9 @@ interface AddressType {
   country: string;
 }
 
-interface PromiseResponseType {
-  data?: any;
-  statusCode: number;
-  message: string;
-  success: boolean;
-}
-
 interface ProductType {
   _id: string;
-  status: "active" | "inactive";
+  status: "active" | "inactive" | "pending";
   title: string;
   category: string;
   brand: string;
@@ -71,18 +70,18 @@ interface ProductType {
 
 interface BrandType {
   _id: string;
-  status: "ACTIVE" | "INACTIVE";
-  top_brand?: "YES" | "NO";
+  status: "active" | "inactive" | "pending";
   title: string;
   sequence?: number;
-  thumbnail?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  thumbnail: string;
+  createdAt: string;
+  updatedAt: string;
+  top_brand?: "YES" | "NO";
 }
 
 interface CategoryType {
   _id: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: "active" | "inactive" | "pending";
   title: string;
   thumbnail?: string;
   createdAt?: string;
@@ -91,13 +90,13 @@ interface CategoryType {
 
 interface VariantType {
   _id: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: "active" | "inactive" | "pending";
   size?: string;
   color?: string;
-  quantity?: number;
+  quantity: number;
   images?: [string];
   original_price?: number;
   discount_price?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }

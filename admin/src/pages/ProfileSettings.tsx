@@ -1,11 +1,11 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { Breadcrumb, Input } from "../utils";
 import { RootState } from "../redux/store";
 import useFetch from "../hooks/useFetch";
+import axiosInstance from "../constant/axiosInstance";
 
 const ProfileSettings = () => {
   return (
@@ -45,7 +45,7 @@ const ProfileSettings = () => {
 };
 export default ProfileSettings;
 
-const Tabs = ({ children }) => {
+const Tabs: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleTabClick = (index: number) => {
@@ -64,27 +64,38 @@ const Tabs = ({ children }) => {
                 : "border-transparent"
             }`}
             onClick={() => handleTabClick(index)}>
-            {child.props.label}
+            {React.isValidElement(child) && child.props.label}
           </button>
         ))}
       </div>
-      <>{React.Children.toArray(children)[activeTab].props.children}</>
+      <>
+        {React.isValidElement(React.Children.toArray(children)[activeTab]) &&
+          (React.Children.toArray(children)[activeTab] as React.ReactElement)
+            .props.children}
+      </>
     </>
   );
 };
 
-const Tab = ({ label, children }) => {
+interface TabProps {
+  label: string;
+  children?: React.ReactNode;
+}
+
+const Tab: React.FC<TabProps> = () => {
   return null; // This component doesn't render anything directly
 };
 
 const AvatarComponent = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [avatar, setAvatar] = useState(user?.avatar || "");
-  const [preview, setPreview] = useState<File | null>(null);
+  const [avatar, setAvatar] = useState<string | File>(user?.avatar || "");
+  const [preview, setPreview] = useState<string | null>(null);
 
-  const handleImageChange = (e) => {
-    setAvatar(e.target.files[0]);
-    setPreview(URL.createObjectURL(e.target.files[0]));
+  const handleImageChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (e.target.files) {
+      setAvatar(e.target.files[0]);
+      setPreview(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   const handleUploadAvatar = async () => {
@@ -92,14 +103,15 @@ const AvatarComponent = () => {
       const formData = new FormData();
       formData.append("avatar", avatar); // 'image' is the name expected by your server
 
-      const res = await axios.patch("/api/v1/user/update-avatar", formData);
+      const res = await axiosInstance.patch("/user/update-avatar", formData);
       if (res.data) {
         toast.success("upload avatar image succeed");
         setPreview("");
         setAvatar(res.data.avatar);
       }
     } catch (error) {
-      toast.error(error.res.data.message);
+      console.log(error);
+      toast.error("image upload failed");
     }
   };
 
@@ -115,7 +127,7 @@ const AvatarComponent = () => {
           />
         ) : (
           <img
-            src={avatar || "https://avatar.iran.liara.run/public"}
+            src={avatar.toString() || "https://avatar.iran.liara.run/public"}
             alt="Profile"
             className="w-full h-full object-cover transition-opacity duration-300 opacity-100"
             loading="lazy"
@@ -154,24 +166,13 @@ const AvatarComponent = () => {
 
 const SectionsComponent = () => {
   const user = useSelector((state: RootState) => state.auth.user);
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    countryCode: "",
-    phoneNumber: "",
-  });
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (user?._id) {
-      setFormData({
-        firstName: user?.firstName,
-        lastName: user?.lastName,
-        countryCode: user?.countryCode,
-        phoneNumber: user?.phoneNumber,
-      });
-    }
-  }, [user?._id]);
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    phoneNumber: user?.phoneNumber,
+    countryCode: user?.countryCode,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -180,18 +181,16 @@ const SectionsComponent = () => {
 
   const onSettingsSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { firstName, lastName, phoneNumber } = formData;
     try {
       setLoading(true);
-      const response = await axios.patch("/api/v1/user/update", {
-        firstName,
-        lastName,
-        phoneNumber,
+      const response = await axiosInstance.patch("/user/update", {
+        ...formData,
         countryCode: "+91",
       });
-      if (response.data) toast.success("user update success please refresh");
+      if (response.data) toast.success("user update success");
     } catch (error) {
-      toast.error(error?.response.data.message);
+      console.log(error);
+      toast.error("user update failed");
     } finally {
       setLoading(false);
     }
@@ -204,12 +203,14 @@ const SectionsComponent = () => {
         onChange={handleChange}
         name="firstName"
         label="First Name"
+        required
       />
       <Input
         value={formData.lastName}
         onChange={handleChange}
         name="lastName"
         label="Last Name"
+        required
       />
       <Input
         value={formData.phoneNumber}
@@ -217,6 +218,9 @@ const SectionsComponent = () => {
         onChange={handleChange}
         name="phoneNumber"
         label="Phone"
+        required
+        minLength={10}
+        maxLength={10}
       />
       <button
         type="submit"
@@ -248,7 +252,7 @@ const SecurityComponent = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post("/api/v1/user/change-password", {
+      const response = await axiosInstance.post("/user/change-password", {
         oldPassword,
         newPassword,
       });
@@ -257,7 +261,8 @@ const SecurityComponent = () => {
         toast.success("your password change succeed");
       }
     } catch (error) {
-      toast.error(error?.response.data.message);
+      console.log(error);
+      toast.error("password change failed");
     } finally {
       setLoading(false);
     }
@@ -287,7 +292,7 @@ const SecurityComponent = () => {
 };
 
 const AddressComponent = () => {
-  const { data } = useFetch("/api/v1/address");
+  const { data } = useFetch<AddressType>("/address");
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState({
     addressLine1: "",
@@ -297,19 +302,6 @@ const AddressComponent = () => {
     pinCode: "",
     country: "",
   });
-
-  useEffect(() => {
-    if (data?._id) {
-      setAddress({
-        addressLine1: data?.addressLine1 || "",
-        addressLine2: data?.addressLine2 || "",
-        city: data?.city || "",
-        state: data?.state || "",
-        pinCode: data?.pinCode || "",
-        country: data?.country || "",
-      });
-    }
-  }, [data?._id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -321,8 +313,8 @@ const AddressComponent = () => {
     try {
       setLoading(true);
       if (!data?._id) {
-        const res = await axios.post(
-          "/api/v1/address",
+        const res = await axiosInstance.post(
+          "/address",
           { ...address, pinCode: parseInt(address.pinCode) },
           { withCredentials: true }
         );
@@ -331,8 +323,8 @@ const AddressComponent = () => {
           setAddress(res.data);
         }
       } else {
-        const res = await axios.patch(
-          "/api/v1/address/" + data?._id,
+        const res = await axiosInstance.patch(
+          "/address/" + data?._id,
           { ...address, pinCode: parseInt(address.pinCode) },
           { withCredentials: true }
         );
@@ -343,7 +335,7 @@ const AddressComponent = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.res.data.message);
+      toast.error("address update failed");
     } finally {
       setLoading(false);
     }
@@ -406,7 +398,7 @@ const AddressComponent = () => {
 const PreferencesComponent = () => {
   const logoutHandler = async () => {
     try {
-      const res = await axios.post("/api/v1/user/logout", {
+      const res = await axiosInstance.post("/user/logout", {
         withCredentials: true,
       });
       if (res.data) {
@@ -414,9 +406,11 @@ const PreferencesComponent = () => {
         window.location.href = "/";
       }
     } catch (error) {
-      toast.error(error.res.data.message);
+      console.log(error);
+      toast.error("something went wrong");
     }
   };
+
   return (
     <div id="preference">
       <div className="space-y-4 pt-5">

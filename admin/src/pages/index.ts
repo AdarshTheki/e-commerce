@@ -11,8 +11,12 @@ import ProductCreate from "./ProductCreate";
 import ProfileSettings from "./ProfileSettings";
 import Categories from "./Categories";
 import CategoryCreate from "./CategoryCreate";
+import CustomerCreate from "./CustomerCreate";
+import CustomerUpdate from "./CustomerUpdate";
 
 export {
+  CustomerUpdate,
+  CustomerCreate,
   CategoryCreate,
   Categories,
   Login,

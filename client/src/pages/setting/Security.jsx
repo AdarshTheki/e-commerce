@@ -25,13 +25,10 @@ const Security = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        baseUrl + "/api/v1/user/change-password",
-        {
-          oldPassword,
-          newPassword,
-        }
-      );
+      const response = await axios.post(baseUrl + "/user/change-password", {
+        oldPassword,
+        newPassword,
+      });
       if (response.data) {
         setFormData({ ...formData, oldPassword: "", newPassword: "" });
         toast.success("your password change succeed");

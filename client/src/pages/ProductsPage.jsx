@@ -26,7 +26,7 @@ const ProductListing = () => {
     }),
   }).toString();
 
-  const { data } = useFetch(`/api/v1/product?${queryParams}`);
+  const { data } = useFetch(`/product?${queryParams}`);
 
   return (
     <section id="productListing" className="py-2 bg-gray-100">

@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   Breadcrumb,
   PaginationBtn,
+  LazyImage,
 } from "../utils";
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
@@ -16,17 +17,17 @@ import { NavLink, useLocation } from "react-router-dom";
 import { format } from "date-fns";
 
 const sortByOptions = [
-  { label: "Title by asc ", value: "title-asc" },
-  { label: "Title by desc ", value: "title-desc" },
-  { label: "Created at asc ", value: "createdAt-asc" },
-  { label: "Created at desc ", value: "createdAt-desc" },
+  { label: "Title (A to Z)", value: "title-asc" },
+  { label: "Title (Z to A)", value: "title-desc" },
+  { label: "Date (Oldest)", value: "createdAt-asc" },
+  { label: "Date (Newest)", value: "createdAt-desc" },
 ];
 
 const pageSizeOptions = [
-  { label: "10 per page", value: 10 },
-  { label: "30 per page", value: 30 },
-  { label: "50 per page", value: 50 },
-  { label: "100 per page", value: 100 },
+  { label: "10 items per page", value: 10 },
+  { label: "30 items per page", value: 30 },
+  { label: "50 items per page", value: 50 },
+  { label: "100 items per page", value: 100 },
 ];
 
 const CategoryListing = () => {
@@ -37,14 +38,14 @@ const CategoryListing = () => {
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
 
-  const { data, refetch } = useFetch(
+  const { data, refetch } = useFetch<PaginationType>(
     `/category?limit=${limit}&page=${page}&title=${query}&sortBy=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
   );
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= data?.totalPages) {
+    if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
       setPage(newPage);
     }
   };
@@ -72,7 +73,7 @@ const CategoryListing = () => {
         {sortByOptions.map((i) => (
           <button
             onClick={() => setSortBy(i.value)}
-            className={`w-full hover:bg-gray-50 py-1.5 text-sm ${
+            className={`w-full text-left pl-4 hover:bg-gray-50 py-1.5 text-sm ${
               i.value === sortBy && "text-indigo-600"
             }`}
             key={i.label}>
@@ -126,7 +127,7 @@ const CategoryListing = () => {
         <div className="sm:flex-row flex gap-2 flex-col sm:justify-between text-sm">
           <p className="text-sm text-gray-500">
             Showing {(page - 1) * limit + 1} to{" "}
-            {Math.min(page * limit, data?.totalDocs)} of {data?.totalDocs}{" "}
+            {Math.min(page * limit, data?.totalDocs || 0)} of {data?.totalDocs}{" "}
             products
           </p>
           <div className="flex gap-2 items-center">
@@ -140,8 +141,8 @@ const CategoryListing = () => {
 
             <PaginationBtn
               handlePageChange={handlePageChange}
-              page={data?.page}
-              totalPages={data?.totalPages}
+              page={data?.page || 1}
+              totalPages={data?.totalPages || 1}
             />
 
             <button
@@ -192,7 +193,8 @@ const CategoryItem = ({
         toast.success(`${path} deleted success`);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.log(error);
+      toast.error("Something went wrong");
     }
   };
 
@@ -200,10 +202,12 @@ const CategoryItem = ({
     <div className="bg-white rounded-lg border border-neutral-200/20">
       <div className="flex items-center justify-between relative rounded-t-lg overflow-hidden">
         <div className="w-full">
-          <img
-            alt={title}
-            src={thumbnail || "https://placehold.co/600x500/png"}
-            className="min-h-40"
+          <LazyImage
+            alt={`${title}_Image`}
+            src={
+              thumbnail || "https://placehold.co/600x400?text=Image+not+found"
+            }
+            placeholder="https://placehold.co/600x400?text=Image+not+found"
           />
         </div>
         <NavLink

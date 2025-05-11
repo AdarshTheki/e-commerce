@@ -120,7 +120,7 @@ const Header = () => {
 export default Header;
 
 const SearchResults = ({ query = "" }) => {
-  const { data, loading } = useFetch(`/api/v1/product?title=${query}&limit=10`);
+  const { data, loading } = useFetch(`/product?title=${query}&limit=10`);
 
   const boldQuery = (str) => {
     const regex = new RegExp(`(${query})`, "gi");

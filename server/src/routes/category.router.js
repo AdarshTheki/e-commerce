@@ -83,26 +83,9 @@ router.post("/", upload.single("thumbnail"), async (req, res) => {
     });
     if (!category) throw Error("category create failed");
 
-    res.status(201).json(category);
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
-  }
-});
-
-router.patch("/status/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const { id } = req.params;
-    if (!isValidObjectId(id)) throw Error("invalid category ID");
-    if (!status) throw Error("please enter a status active & inactive");
-
-    const category = await Category.findByIdAndUpdate(
-      id,
-      { status: status },
-      { new: true }
-    );
-
-    res.status(203).json({ category, message: "status updated success" });
+    res
+      .status(201)
+      .json({ category, message: "category created success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

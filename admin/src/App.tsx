@@ -13,6 +13,8 @@ import {
   ProductCreate,
   Categories,
   CategoryCreate,
+  CustomerCreate,
+  CustomerUpdate,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { useDispatch } from "react-redux";
@@ -23,10 +25,10 @@ import { fetchBrands } from "./redux/brandSlice";
 import { AppDispatch } from "./redux/store";
 
 const App: React.FC = () => {
-  const { data, loading } = useFetch("/user/current-user");
+  const { data, loading } = useFetch<UserType>("/user/current-user");
   const dispatch = useDispatch<AppDispatch>();
 
-  const isAuth = data?._id;
+  const isAuth = data?.email;
 
   useEffect(() => {
     if (isAuth) {
@@ -45,9 +47,11 @@ const App: React.FC = () => {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="" element={<PrivateRoute isAuth={isAuth} />}>
+          <Route path="" element={<PrivateRoute isAuth={!!isAuth} />}>
             <Route index element={<Dashboard />} />
             <Route path="/customer" element={<Customers />} />
+            <Route path="/customer/create" element={<CustomerCreate />} />
+            <Route path="/customer/:username" element={<CustomerUpdate />} />
             <Route path="/product" element={<Products />} />
             <Route path="/product/:id" element={<ProductUpdate />} />
             <Route path="/product/create" element={<ProductCreate />} />

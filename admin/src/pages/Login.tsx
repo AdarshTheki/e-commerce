@@ -31,7 +31,8 @@ const Login: React.FC = () => {
         window.location.href = "/";
       }
     } catch (err) {
-      toast.error("user login failed, Try again!", err?.message);
+      console.log(err);
+      toast.error("user login failed, Try again!");
     } finally {
       setLoading(false);
     }
@@ -65,27 +66,11 @@ const Login: React.FC = () => {
               required
             />
 
-            <div className="flex my-2 items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="checkbox"
-                  type="checkbox"
-                  className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                  required
-                  checked
-                />
-                <label
-                  htmlFor="checkbox"
-                  className="ml-2 cursor-pointer text-sm text-gray-600">
-                  Remember me
-                </label>
-              </div>
-              <NavLink
-                to="/"
-                className="text-sm text-indigo-600 hover:text-indigo-500">
-                Forgot password?
-              </NavLink>
-            </div>
+            {/* <NavLink
+              to="/"
+              className="text-sm btn pt-5 text-indigo-600 hover:text-indigo-500">
+              Forgot password?
+            </NavLink> */}
 
             <div className="flex my-4 items-center w-full justify-center">
               <SpinnerBtn

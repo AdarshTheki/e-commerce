@@ -20,7 +20,7 @@ const ProductDetail = () => {
     const getProduct = async () => {
       try {
         setLoading(true);
-        const res = await instance.get(`/api/v1/product/${id}`);
+        const res = await instance.get(`/product/${id}`);
         if (res.data) {
           setProduct(res.data);
         }
@@ -35,7 +35,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = async (productId, quantity) => {
     try {
-      const res = await instance.post(`/api/v1/cart`, { productId, quantity });
+      const res = await instance.post(`/cart`, { productId, quantity });
       if (res.data) {
         toast.success("Add to cart success");
       }
@@ -211,7 +211,7 @@ export default ProductDetail;
 
 const RelatedProduct = ({ url }) => {
   const { data, error, loading } = useFetch(
-    `/api/v1/product?category=${url}&limit=30&sortBy=asc`
+    `/product?category=${url}&limit=30&sortBy=asc`
   );
 
   if (error || loading) return <h2>loading...</h2>;

@@ -4,7 +4,7 @@ import instance from "../helper/axiosInstance";
 export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
-    const response = await instance.get(`/api/v1/product/category-list`);
+    const response = await instance.get(`/product/category-list`);
     return response.data;
   }
 );

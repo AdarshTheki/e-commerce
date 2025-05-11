@@ -21,7 +21,7 @@ const HeartFavorite = ({ id, className }) => {
         router("/login");
         return;
       } else {
-        const res = await instance.patch(`/api/v1/user/favorite/${id}`);
+        const res = await instance.patch(`/user/favorite/${id}`);
         if (res.data) {
           const check = res.data.favorites.includes(id);
           setIsLiked(check);

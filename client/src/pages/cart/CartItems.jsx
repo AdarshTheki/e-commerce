@@ -10,7 +10,7 @@ const CartItems = ({ items, getAllCarts }) => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await instance.delete(`/api/v1/cart/${id}`);
+      const res = await instance.delete(`/cart/${id}`);
       if (res.data) {
         getAllCarts();
       }

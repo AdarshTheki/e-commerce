@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
@@ -9,12 +9,14 @@ import { User } from "../models/user.model.js";
 
 const router = Router();
 
+// cookie payload
 const cookiePayload = {
   maxAge: 2 * 24 * 60 * 60 * 1000, // 7 days
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
 };
 
+// generate username
 const generateUsername = (username) => {
   const newUsername = username?.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase();
   return newUsername;
@@ -33,9 +35,83 @@ router.get("/", async (req, res) => {
   }
 });
 
+// get single user
+router.get("/admin/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    if (!username)
+      return res
+        .status(404)
+        .json({ message: "username not define", status: false });
+
+    const user = await User.findOne({ username }).select(
+      "-password -refreshToken"
+    );
+
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: "user not find on this username", status: false });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(501).json({ message: error.message, status: false });
+  }
+});
+
+// delete user
+router.delete("/admin/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    if (!username)
+      return res
+        .status(501)
+        .json({ message: "delete username not define", status: false });
+
+    const user = await User.findOneAndDelete({ username });
+
+    if (!user)
+      return res
+        .status(502)
+        .json({ message: "user not deleted on this username", status: false });
+
+    res.status(200).json({ message: "user deleted succeeded", status: true });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+// get current user
+router.get("/current-user", verifyJWT, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select(
+      "-refreshToken -password"
+    );
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "user not exits on database", status: false });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+// sign up create new user
 router.post("/sign-up", async (req, res) => {
   try {
-    const { email, password, username, role } = req.body;
+    const {
+      countryCode,
+      firstName,
+      lastName,
+      phoneNumber,
+      status,
+      role,
+      email,
+      password,
+      username,
+    } = req.body;
 
     if (
       [email, password, username, role].some((field) => field?.trim() === "")
@@ -57,6 +133,11 @@ router.post("/sign-up", async (req, res) => {
       password,
       role,
       username: newUsername,
+      countryCode,
+      firstName,
+      lastName,
+      phoneNumber,
+      status,
     });
 
     const createdUser = await User.findById(user?._id).select(
@@ -72,6 +153,7 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
+// sign in user
 router.post("/sign-in", async (req, res) => {
   try {
     const { email, username, password } = req.body;
@@ -111,12 +193,11 @@ router.post("/sign-in", async (req, res) => {
   }
 });
 
+// logout current user
 router.post("/logout", verifyJWT, async (req, res) => {
   try {
-    const userId = req.user._id;
-
     const user = await User.findByIdAndUpdate(
-      userId,
+      req.user._id,
       { $unset: { refreshToken: 1 } },
       { new: true }
     );
@@ -133,20 +214,7 @@ router.post("/logout", verifyJWT, async (req, res) => {
   }
 });
 
-router.get("/current-user", verifyJWT, async (req, res) => {
-  try {
-    const user = await User.findById(req?.user._id).select(
-      "-password -refreshToken"
-    );
-    if (!user) {
-      throw new Error("get Me user not found");
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    res.status(501).json({ message: error.message, status: false });
-  }
-});
-
+// change password current user
 router.post("/change-password", verifyJWT, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -171,10 +239,47 @@ router.post("/change-password", verifyJWT, async (req, res) => {
   }
 });
 
+router.post("/update", verifyJWT, async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      countryCode,
+      phoneNumber,
+      email,
+      status,
+      role,
+    } = req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.countryCode = countryCode || user.countryCode;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.email = email || user.email;
+    user.status = status || user.status;
+    user.role = role || user.role;
+
+    await user.save();
+
+    res.status(201).json({
+      message: "User updated successfully",
+      status: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+// refresh token when access token expired
 router.post("/refresh-token", verifyJWT, async (req, res) => {
   try {
-    const token = req.cookies.refreshToken;
-
+    const token = req.cookies?.refreshToken;
     if (!token)
       return res.status(401).json({
         message: "unauthorized: Missing refresh token",
@@ -182,7 +287,6 @@ router.post("/refresh-token", verifyJWT, async (req, res) => {
       });
 
     const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
-
     const user = await User.findById(decodedToken?._id).select(
       "-password -refreshToken"
     );
@@ -207,6 +311,7 @@ router.post("/refresh-token", verifyJWT, async (req, res) => {
   }
 });
 
+// google auth callback route for Google to redirect to after authentication
 router.post("/google", async (req, res) => {
   const scope = ["profile", "email"]; // Request user's profile and email information
 
@@ -219,45 +324,9 @@ router.post("/google", async (req, res) => {
   res.redirect(authUrl);
 });
 
-router.patch("/update", verifyJWT, async (req, res) => {
-  try {
-    const { countryCode, firstName, lastName, phoneNumber } = req.body;
-
-    const user = await User.findById(req.user._id).select(
-      "-refreshToken -password"
-    );
-
-    user.countryCode = countryCode || user.countryCode;
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
-
-    await user.save({ validateBeforeSave: false });
-
-    res.status(200).json({ message: "update user success", status: false });
-  } catch (error) {
-    res.status(501).json({ message: error.message, status: false });
-  }
-});
-
-router.patch("/role", verifyJWT, async (req, res) => {
-  try {
-    const { role } = req.body;
-    const user = await User.findById(req.user._id);
-
-    if (!user) throw Error("user not founded on db");
-
-    user.role = role;
-    await user.save({ validateBeforeSave: false });
-
-    res.status(201).json({ message: "update role success", status: true });
-  } catch (error) {
-    res.status(501).json({ message: error.message, status: false });
-  }
-});
-
-router.patch(
-  "/update-avatar",
+// add user avatar
+router.post(
+  "/avatar",
   verifyJWT,
   upload.fields([{ name: "avatar", maxCount: 1 }]),
   async (req, res) => {
@@ -286,7 +355,8 @@ router.patch(
   }
 );
 
-router.delete("/remove-avatar", verifyJWT, async (req, res) => {
+// only remove user avatar
+router.delete("/avatar", verifyJWT, async (req, res) => {
   try {
     const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
     if (!publicId) throw Error("avatar publicId is not founded");
@@ -308,6 +378,7 @@ router.delete("/remove-avatar", verifyJWT, async (req, res) => {
   }
 });
 
+// add or remove favorite product
 router.patch("/favorite/:id", verifyJWT, async (req, res) => {
   try {
     const userId = req.user._id;
@@ -342,6 +413,7 @@ router.patch("/favorite/:id", verifyJWT, async (req, res) => {
   }
 });
 
+// get all favorite products
 router.get("/favorite", verifyJWT, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("favorite");

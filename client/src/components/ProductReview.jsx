@@ -11,13 +11,12 @@ import { X, MessageSquare, ThumbsUp } from "lucide-react";
 
 const ProductReview = () => {
   const { id: productId } = useParams();
-  const { data, refetch } = useFetch(`/api/v1/review/${productId}`);
+  const { data, refetch } = useFetch(`/review/${productId}`);
   const [reviews, setReviews] = React.useState();
 
   const [newReview, setNewReview] = useState({ comment: "", rating: 0 });
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
-  const [like, setLike] = useState(false);
 
   const userId = useSelector((state) => state?.auth?.user?._id);
 
@@ -28,7 +27,7 @@ const ProductReview = () => {
   }, [data]);
 
   const handleDeleteReview = async (id) => {
-    const res = await axiosInstance.delete(`/api/v1/review/${id}`);
+    const res = await axiosInstance.delete(`/review/${id}`);
     if (res.data) {
       refetch();
     }
@@ -36,7 +35,7 @@ const ProductReview = () => {
 
   const addReplyHandler = async (id) => {
     if (replyText.trim()) {
-      const res = await axiosInstance.post(`/api/v1/review/reply`, {
+      const res = await axiosInstance.post(`/review/reply`, {
         reviewId: id,
         comment: replyText,
       });
@@ -69,7 +68,7 @@ const ProductReview = () => {
       return toast.error("Please fill all the fields");
     }
     try {
-      const res = await axiosInstance.post(`/api/v1/review`, {
+      const res = await axiosInstance.post(`/review`, {
         productId,
         ...newReview,
       });
@@ -212,7 +211,7 @@ const ReviewLike = ({ reviewId, likes }) => {
   const [totalLike, setTotalLike] = useState(likes?.length);
 
   const handleLike = async () => {
-    const res = await axiosInstance.patch(`/api/v1/review/like`, { reviewId });
+    const res = await axiosInstance.patch(`/review/like`, { reviewId });
     if (res.data) {
       setLike(!like);
       console.log(res);

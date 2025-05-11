@@ -5,9 +5,7 @@ import { Loading } from "../utils";
 
 const CategoriesPage = () => {
   const [loadMore, setLoadMore] = useState(10);
-  const { data, error, loading } = useFetch(
-    "/api/v1/category?limit=" + loadMore
-  );
+  const { data, error, loading } = useFetch(`/category?limit=${loadMore}`);
 
   if (error || loading) return <Loading />;
 

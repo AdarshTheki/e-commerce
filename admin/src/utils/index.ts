@@ -6,8 +6,12 @@ import Textarea from "./Textarea";
 import DropdownMenu from "./Dropdown";
 import Breadcrumb from "./Breadcrumb";
 import PaginationBtn from "./PaginationBtn";
+import LazyImage from "./LazyImage";
+import DeleteBtn from "./DeleteBtn";
 
 export {
+  DeleteBtn,
+  LazyImage,
   Loading,
   PaginationBtn,
   Breadcrumb,

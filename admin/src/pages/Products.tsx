@@ -2,7 +2,6 @@ import { NavLink, useSearchParams } from "react-router-dom";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 
 import {
   Input,
@@ -10,22 +9,24 @@ import {
   DropdownMenu,
   Breadcrumb,
   PaginationBtn,
+  LazyImage,
 } from "../utils";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
+import axiosInstance from "../constant/axiosInstance";
 
 const sortByOptions = [
-  { label: "title by asc ", value: "title-asc" },
-  { label: "title by desc ", value: "title-desc" },
-  { label: "price by asc ", value: "price-asc" },
-  { label: "price by desc ", value: "price-desc" },
+  { label: "Title (A-Z)", value: "title-asc" },
+  { label: "Title (Z-A)", value: "title-desc" },
+  { label: "Price (Low to High)", value: "price-asc" },
+  { label: "Price (High to Low)", value: "price-desc" },
 ];
 
 const pageSizeOptions = [
-  { label: "10 per page", value: 10 },
-  { label: "30 per page", value: 30 },
-  { label: "50 per page", value: 50 },
-  { label: "100 per page", value: 100 },
+  { label: "10 items per page", value: 10 },
+  { label: "30 items per page", value: 30 },
+  { label: "50 items per page", value: 50 },
+  { label: "100 items per page", value: 100 },
 ];
 
 export default function Product() {
@@ -36,23 +37,22 @@ export default function Product() {
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
 
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= data?.totalPages) {
-      setPage(newPage);
-    }
-  };
+  const { data, loading } = useFetch<PaginationType>(
+    `/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
+      sortBy.split("-")[0]
+    }&order=${sortBy.split("-")[1]}`
+  );
 
   useEffect(() => {
     const title = searchParams.get("title");
     if (title) setSearch(title);
   }, [searchParams]);
 
-  // GET /products?title=laptop&category=Electronics&minPrice=1000&sortBy=rating&order=desc&page=1&limit=5
-  const { data, loading } = useFetch<FetchResponseProp>(
-    `/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
-      sortBy.split("-")[0]
-    }&order=${sortBy.split("-")[1]}`
-  );
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
+      setPage(newPage);
+    }
+  };
 
   const pageItem = () => {
     return (
@@ -77,7 +77,7 @@ export default function Product() {
         {sortByOptions.map((i) => (
           <button
             onClick={() => setSortBy(i.value)}
-            className={`w-full hover:bg-gray-50 py-1.5 text-sm ${
+            className={`w-full text-left pl-4 hover:bg-gray-50 py-1.5 text-sm ${
               i.value === sortBy && "text-indigo-600"
             }`}
             key={i.label}>
@@ -131,7 +131,7 @@ export default function Product() {
         <div className="sm:flex-row flex gap-2 flex-col sm:justify-between text-sm">
           <p className="text-sm text-gray-500">
             Showing {(page - 1) * limit + 1} to{" "}
-            {Math.min(page * limit, data?.totalDocs)} of {data?.totalDocs}{" "}
+            {Math.min(page * limit, data?.totalDocs || 0)} of {data?.totalDocs}{" "}
             products
           </p>
           <div className="flex gap-2 items-center">
@@ -145,8 +145,8 @@ export default function Product() {
 
             <PaginationBtn
               handlePageChange={handlePageChange}
-              page={data?.page}
-              totalPages={data?.totalPages}
+              page={data?.page || 1}
+              totalPages={data?.totalPages || 1}
             />
 
             <button
@@ -160,7 +160,7 @@ export default function Product() {
         </div>
       </div>
 
-      {!loading && data?.docs?.length > 0 ? (
+      {!loading && data?.docs && data?.docs.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {data?.docs?.map((item: ProductType) => (
             <ProductCard key={item._id} item={item} />
@@ -176,7 +176,7 @@ export default function Product() {
 const ProductCard = ({ item }: { item: ProductType }) => {
   const handleDelete = async (id: string) => {
     try {
-      const res = await axios.delete(`/api/v1/product/${id}`);
+      const res = await axiosInstance.delete(`/product/${id}`);
       if (res.data) {
         toast.success("Product deleted success");
       }
@@ -199,10 +199,13 @@ const ProductCard = ({ item }: { item: ProductType }) => {
         <Trash2 size={18} onClick={() => handleDelete(item._id)} />
       </button>
       <div className="w-full h-[200px] overflow-hidden">
-        <img
-          alt={item._id}
-          src={item.thumbnail || "https://placehold.co/600x500"}
-          loading="lazy"
+        <LazyImage
+          alt={`${item?.title}_Image`}
+          src={
+            item?.thumbnail ||
+            "https://placehold.co/600x600?text=Image+not+found"
+          }
+          placeholder="https://placehold.co/600x600?text=Image+not+found"
         />
       </div>
       <div className="p-4 capitalize space-y-1">

@@ -14,10 +14,7 @@ const Avatar = () => {
       const formData = new FormData();
       formData.append("avatar", e.target.files[0]); // 'image' is the name expected by your server
 
-      const res = await axiosInstance.patch(
-        "/api/v1/user/update-avatar",
-        formData
-      );
+      const res = await axiosInstance.patch("/user/update-avatar", formData);
 
       if (res.data) {
         toast.success("upload avatar image succeed");

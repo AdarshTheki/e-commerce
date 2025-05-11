@@ -235,7 +235,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             Product Gallery Images
             {previews?.length ? (
               <label htmlFor="image-uploads">
-                <span className="ml-6 text-xs text-indigo-600 hover:bg-gray-100 p-2 rounded cursor-pointer">
+                <span className="ml-6 border text-xs text-indigo-600 hover:bg-gray-100 p-2 rounded cursor-pointer">
                   Another Upload files
                 </span>
                 <input

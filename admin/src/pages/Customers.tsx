@@ -1,14 +1,16 @@
-import { EllipsisVertical, Plus } from "lucide-react";
-import useFetch from "../hooks/useFetch";
-import { Breadcrumb, Loading } from "../utils";
+import { Plus } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { format } from "date-fns";
+import { useState } from "react";
+import useFetch from "../hooks/useFetch";
+import axiosInstance from "../constant/axiosInstance";
+import { Breadcrumb, DeleteBtn, Loading } from "../utils";
 
 const Customers = () => {
   const { pathname } = useLocation();
-  const { data, loading, error } = useFetch("/user");
+  const { data, loading, error, refetch } = useFetch<UserType[]>("/user");
 
-  if (loading || error) return <Loading />;
+  if (loading || error || !data?.length) return <Loading />;
 
   return (
     <>
@@ -27,7 +29,9 @@ const Customers = () => {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">
-        {data?.map((i: UserType) => <Card key={i?._id} user={i} />)}
+        {data.map((i: UserType) => (
+          <Card key={i?.username} user={i} refresh={refetch} />
+        ))}
       </div>
     </>
   );
@@ -35,8 +39,22 @@ const Customers = () => {
 
 export default Customers;
 
-const Card = ({ user }: { user: UserType }) => {
+const Card = ({ user, refresh }: { user: UserType; refresh: () => void }) => {
+  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
   const url = user?.avatar || "https://avatar.iran.liara.run/public";
+
+  const handleDelete = async () => {
+    try {
+      const response = await axiosInstance.delete(
+        `/user/admin/${user?.username}`
+      );
+      refresh();
+      console.log("delete user", response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg border border-neutral-200/30 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -76,6 +94,26 @@ const Card = ({ user }: { user: UserType }) => {
             Active
           </span>
         </div>
+        <div className="flex items-center gap-5">
+          <NavLink
+            to={`/customer/${user.username}`}
+            className="btn text-white bg-indigo-600 text-sm">
+            Edit
+          </NavLink>
+          <button
+            onClick={() => setDeleteIsOpen(true)}
+            className="btn text-white bg-red-600 text-sm">
+            Delete
+          </button>
+        </div>
+
+        <DeleteBtn
+          isOpen={deleteIsOpen}
+          onClose={() => setDeleteIsOpen(false)}
+          onConfirm={handleDelete}
+          title="Confirm Deletion"
+          message="Do you really want to delete this User permanently?"
+        />
       </div>
     </div>
   );

@@ -20,7 +20,7 @@ import { fetchCategories } from "./redux/categorySlice";
 import { fetchBrands } from "./redux/brandSlice";
 
 const App = () => {
-  const { data, loading } = useFetch("/api/v1/user/current-user");
+  const { data, loading } = useFetch("/user/current-user");
   const dispatch = useDispatch();
   let auth = data?._id;
 

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Breadcrumb, Input, Select, SpinnerBtn, Textarea } from "../utils";
 import { Trash2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import axiosInstance from "../constant/axiosInstance";
 
 const statusOptions = [
   { id: "active", title: "active" },
@@ -17,28 +18,36 @@ const CategoryCreate = () => {
     description: "",
     status: "",
   });
-  const [image, setImage] = useState();
-  const [preview, setPreview] = useState();
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange: React.ChangeEventHandler<
+    HTMLInputElement & HTMLSelectElement
+  > = (e) => {
+    const { name, value, files } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (files && files.length > 0) {
+      setImage(files[0]);
+      setPreview(URL.createObjectURL(files[0]));
+    }
   };
 
-  const handleImage = (e) => {
-    const path = e.target.files[0];
-    setImage(path);
-    setPreview(URL.createObjectURL(path));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await axiosInstance.post("/category", {
+        ...formData,
+        thumbnail: image,
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
-      console.log(formData);
-    }, 3000);
+    }
   };
 
   return (
@@ -87,15 +96,15 @@ const CategoryCreate = () => {
           rows={4}
         />
 
-        <Input type="file" name="thumbnail" onChange={handleImage} />
+        <Input type="file" name="thumbnail" onChange={handleChange} />
         {preview && (
           <div className="relative">
             <img src={preview} alt="preview" width={300} />
             <button
               type="button"
               onClick={() => {
-                setImage();
-                setPreview();
+                setImage(null);
+                setPreview("");
               }}
               className="svg-btn text-red-600 absolute top-2 left-2">
               <Trash2 size={18} />

@@ -20,7 +20,7 @@ const Register = () => {
       if (password !== confirmPassword) {
         return toast.error("please check your password");
       }
-      const register = await axios.post(baseUrl + "/api/v1/user/sign-up", {
+      const register = await axios.post(baseUrl + "/user/sign-up", {
         email,
         password,
         username,

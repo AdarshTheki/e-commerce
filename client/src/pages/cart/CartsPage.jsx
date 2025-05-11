@@ -9,7 +9,7 @@ import Tabs from "./TabComponent";
 import OrderSuccess from "./OrderSuccess";
 
 const CartComponent = () => {
-  const { data: cartData, loading, refetch } = useFetch("/api/v1/cart");
+  const { data: cartData, loading, refetch } = useFetch("/cart");
 
   const { items, wishlist } = cartData?.data || {};
 

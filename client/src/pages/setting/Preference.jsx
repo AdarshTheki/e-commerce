@@ -4,7 +4,7 @@ import instance from "../../helper/axiosInstance";
 const Preference = () => {
   const logoutHandler = async () => {
     try {
-      const res = await instance.post("/api/v1/user/logout");
+      const res = await instance.post("/user/logout");
       if (res.data) {
         toast.success("user logout success", { toastId: "logout-success" });
         setTimeout(() => {
