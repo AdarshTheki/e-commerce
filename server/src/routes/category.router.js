@@ -1,60 +1,44 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Category } from "../models/category.model.js";
+import { pagination } from "../utils/pagination.js";
 
 const router = Router();
 
+// get all filter category
 router.get("/", async (req, res) => {
   try {
     const {
       title = "",
       page = 1,
-      limit = 20,
-      sortBy = "title",
+      limit = 10,
+      sort = "title",
       order = "asc",
     } = req.query;
 
-    const pipeline = [];
-
-    if (title) {
-      pipeline.push({
-        $match: {
-          title: { $regex: title, $options: "i" },
-        },
-      });
-    }
-
-    pipeline.push({
-      $sort: { [sortBy]: order === "asc" ? 1 : -1 },
-    });
-
-    pipeline.push({
-      $project: {
-        products: 0,
-        description: 0,
-      },
-    });
-
-    const docs = Category.aggregate(pipeline);
-    const results = await Category.aggregatePaginate(docs, {
-      page: Number(page),
-      limit: Number(limit),
-    });
-
-    res.status(200).json(results);
+    const results = await Category.aggregate(
+      pagination(
+        { $match: { title: RegExp(title, "i") } },
+        parseInt(page),
+        parseInt(limit),
+        sort,
+        order === "asc" ? 1 : -1
+      )
+    );
+    res.status(200).json(results[0]);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
 });
 
+// get single category
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      throw Error("categoryId is invalid");
+    if (!isValidObjectId(id)) throw Error("categoryId is invalid");
     const category = await Category.findById(id);
 
     res.status(200).json(category);
@@ -63,10 +47,12 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// create category
 router.post("/", upload.single("thumbnail"), async (req, res) => {
   try {
     const filePath = req?.file?.path;
     const { title, status, description } = req.body;
+    console.log(title, status, description);
     if (!title || !filePath || !status || !description)
       throw Error(
         "please fill the form data are file thumbnail, title & status"
@@ -91,11 +77,11 @@ router.post("/", upload.single("thumbnail"), async (req, res) => {
   }
 });
 
+// update category
 router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      throw Error("categoryId is invalid");
+    if (!isValidObjectId(id)) throw Error("categoryId is invalid");
 
     const filePath = req?.file?.path;
     const { title, status, description } = req.body;
@@ -114,10 +100,10 @@ router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
     category.title = title || category.title;
     category.thumbnail = thumbnail || category.thumbnail;
 
-    await category.save({ validateBeforeSave: false });
+    await category.save();
 
     res
-      .status(201)
+      .status(202)
       .json({ category, message: "category updated success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
@@ -127,8 +113,7 @@ router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id))
-      throw Error("categoryId is invalid");
+    if (!isValidObjectId(id)) throw Error("categoryId is invalid");
 
     const category = await Category.findByIdAndDelete(id);
 
@@ -136,7 +121,7 @@ router.delete("/:id", async (req, res) => {
       await removeSingleImg(category.thumbnail);
     }
 
-    res.status(202).json({ message: "category deleted success", status: true });
+    res.status(203).json({ message: "category deleted success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

@@ -1,6 +1,6 @@
 import React from "react";
 
-interface DeleteBtnProps {
+interface DeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -8,13 +8,25 @@ interface DeleteBtnProps {
   message?: string;
 }
 
-const DeleteBtn: React.FC<DeleteBtnProps> = ({
+const DeleteModal: React.FC<DeleteModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
   title = "Delete Item",
   message = "Are you sure you want to delete this item? This action cannot be undone.",
 }) => {
+  const [Loading, setLoading] = React.useState(false);
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      onConfirm();
+    } finally {
+      onClose();
+      setLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -29,12 +41,9 @@ const DeleteBtn: React.FC<DeleteBtnProps> = ({
             Cancel
           </button>
           <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
+            onClick={handleDelete}
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-            Delete
+            {Loading ? "Deleting..." : "Delete"}
           </button>
         </div>
       </div>
@@ -42,4 +51,4 @@ const DeleteBtn: React.FC<DeleteBtnProps> = ({
   );
 };
 
-export default DeleteBtn;
+export default DeleteModal;

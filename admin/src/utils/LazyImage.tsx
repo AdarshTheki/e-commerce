@@ -44,7 +44,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   return (
     <img
       ref={imgRef}
-      src={isVisible ? src : placeholder}
+      src={isVisible && src ? src : placeholder}
       alt={alt}
       className={className}
       {...rest}

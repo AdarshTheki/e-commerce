@@ -11,23 +11,25 @@ import ProductCreate from "./ProductCreate";
 import ProfileSettings from "./ProfileSettings";
 import Categories from "./Categories";
 import CategoryCreate from "./CategoryCreate";
+import CategoryUpdate from "./CategoryUpdate";
 import CustomerCreate from "./CustomerCreate";
 import CustomerUpdate from "./CustomerUpdate";
 
 export {
   CustomerUpdate,
   CustomerCreate,
+  Customers,
+  CategoryUpdate,
   CategoryCreate,
   Categories,
-  Login,
-  Products,
   ProductUpdate,
   ProductCreate,
+  Products,
   ProfileSettings,
+  Login,
   Register,
   Notfound,
   Analytics,
-  Customers,
   Dashboard,
   Inventory,
 };

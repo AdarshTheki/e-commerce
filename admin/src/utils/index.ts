@@ -7,10 +7,10 @@ import DropdownMenu from "./Dropdown";
 import Breadcrumb from "./Breadcrumb";
 import PaginationBtn from "./PaginationBtn";
 import LazyImage from "./LazyImage";
-import DeleteBtn from "./DeleteBtn";
+import DeleteModal from "./DeleteModal";
 
 export {
-  DeleteBtn,
+  DeleteModal,
   LazyImage,
   Loading,
   PaginationBtn,

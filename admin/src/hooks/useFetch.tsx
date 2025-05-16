@@ -22,7 +22,9 @@ const useFetch = <T,>(url: string): UseFetchResult<T> => {
     } catch (err) {
       setError((err as Error).message);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1500);
     }
   };
 

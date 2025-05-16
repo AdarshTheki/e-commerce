@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import axiosInstance from "../constant/axiosInstance";
 import { Input, Select, SpinnerBtn } from "../utils";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { countries } from "../constant/countries";
+import axiosInstance from "../constant/axiosInstance";
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
     email: userData?.email || "",
     password: userData?.password || "",
-    phoneNumber: userData?.phoneNumber || "",
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
-    countryCode: userData?.countryCode || "+91",
     role: userData?.role || "customer",
     status: userData?.status || "active",
+    code: userData?.phoneNumber?.split("-")[0] || "",
+    phone: userData?.phoneNumber?.split("-")[1] || "",
   });
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +31,15 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
     setLoading(true);
     let response;
     try {
-      if (userData?.username) {
-        response = await axiosInstance.post("/user/update", user);
-      } else {
-        response = await axiosInstance.post("/user/sign-up", {
+      if (userData?._id) {
+        response = await axiosInstance.patch(`/user/admin/${userData._id}`, {
           ...user,
-          username: (user.firstName + user.lastName).toLowerCase(),
+          phoneNumber: `${user.code}-${user.phone}`,
+        });
+      } else {
+        response = await axiosInstance.post("/user/admin", {
+          ...user,
+          phoneNumber: `${user.code}-${user.phone}`,
         });
       }
       if (response.data) {
@@ -92,13 +95,17 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
             label="username (auto generate)"
             placeholder="auto create username"
             type="text"
-            value={(user.firstName + user.lastName).toLowerCase()}
+            value={
+              userData?._id
+                ? userData?.username
+                : user.email?.replace("@gmail.com", "").toLowerCase()
+            }
             readOnly
             required
           />
         </div>
 
-        {!userData?.username && (
+        {!userData?._id && (
           <Input
             name="password"
             label="Password"
@@ -111,26 +118,21 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
         )}
 
         <Input
-          name="phoneNumber"
+          name="phone"
           label="Phone number"
           placeholder="please enter a phoneNumber"
           type="number"
           onChange={handleChange}
-          value={user.phoneNumber}
+          value={user.phone}
           required
         />
         <div className="flex gap-2">
           <Select
             onChange={handleChange}
-            value={user.countryCode}
-            name="countryCode"
+            value={user.code}
+            name="code"
             label="Country"
-            options={[
-              { id: "+91", title: "India" },
-              { id: "+234", title: "Pakistan" },
-              { id: "+1", title: "USA" },
-              { id: "+44", title: "UK" },
-            ]}
+            options={countries}
           />
           <Select
             onChange={handleChange}
@@ -159,7 +161,7 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
             className="w-fit"
             type="submit"
             loading={loading}
-            primaryName={userData?.username ? "Update User" : "Create User"}
+            primaryName={userData?._id ? "Update User" : "Create User"}
           />
           <NavLink
             to={"/customer"}

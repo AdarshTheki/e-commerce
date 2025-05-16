@@ -1,11 +1,10 @@
 import { ChevronRight } from "lucide-react";
+import React from "react";
 import { Link } from "react-router-dom";
 
-interface BreadcrumbProps {
-  paths: { label: string; to: string }[];
-}
-
-const Breadcrumb = ({ paths }: BreadcrumbProps) => {
+const Breadcrumb: React.FC<{ paths: { label: string; to: string }[] }> = ({
+  paths,
+}) => {
   return (
     <nav className="text-gray-600 text-sm">
       <ul className="flex items-center space-x-2">

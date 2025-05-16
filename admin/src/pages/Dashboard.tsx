@@ -1,16 +1,21 @@
 import { Box, CircleDollarSign, ShoppingBag, Users } from "lucide-react";
+import { AnimatedCounter } from "../components";
 
 const Dashboard = () => {
   return (
     <>
       {/* <!-- Stats Grid --> */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg border border-neutral-200/30">
+        <div className="p-6 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500">Total Revenue</p>
-              <h3 className="text-2xl font-semibold">$54,239</h3>
-              <p className="text-green-500 text-sm">+8.4% from last month</p>
+              <h3 className="text-2xl font-semibold">
+                $<AnimatedCounter target={54239} />
+              </h3>
+              <p className="text-green-500 text-sm">
+                +<AnimatedCounter target={8.4} />% from last month
+              </p>
             </div>
             <div className="p-3 bg-indigo-100 rounded-lg">
               <CircleDollarSign className="text-indigo-600" size={18} />
@@ -18,12 +23,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200/30">
+        <div className="p-6 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500">Total Orders</p>
-              <h3 className="text-2xl font-semibold">1,245</h3>
-              <p className="text-green-500 text-sm">+12% from last month</p>
+              <h3 className="text-2xl font-semibold">
+                <AnimatedCounter target={1245} />
+              </h3>
+              <p className="text-green-500 text-sm">
+                +<AnimatedCounter target={12} />% from last month
+              </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
               <ShoppingBag className="text-blue-600" size={18} />
@@ -31,12 +40,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200/30">
+        <div className="p-6 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500">Total Products</p>
-              <h3 className="text-2xl font-semibold">384</h3>
-              <p className="text-red-500 text-sm">-2.3% from last month</p>
+              <h3 className="text-2xl font-semibold">
+                <AnimatedCounter target={384} />
+              </h3>
+              <p className="text-red-500 text-sm">
+                -<AnimatedCounter target={2.3} />% from last month
+              </p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg">
               <Box className="text-green-600" size={18} />
@@ -44,12 +57,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200/30">
+        <div className="p-6 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm text-gray-500">Total Customers</p>
-              <h3 className="text-2xl font-semibold">2,874</h3>
-              <p className="text-green-500 text-sm">+4.6% from last month</p>
+              <h3 className="text-2xl font-semibold">
+                <AnimatedCounter target={2874} />
+              </h3>
+              <p className="text-green-500 text-sm">
+                +<AnimatedCounter target={4.6} />% from last month
+              </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-lg">
               <Users className="text-purple-600" size={18} />
@@ -59,17 +76,17 @@ const Dashboard = () => {
       </div>
 
       {/* <!-- Recent Orders and Top Products --> */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* <!-- Recent Orders --> */}
-        <div className="bg-white rounded-lg border border-neutral-200/30">
-          <div className="p-6 border-b border-neutral-200/30">
+        <div className="bg-white rounded-lg border">
+          <div className="p-6 border-b">
             <h2 className="text-lg font-semibold">Recent Orders</h2>
           </div>
           <div className="p-6">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-left border-b border-neutral-200/30">
+                  <tr className="text-left border-b">
                     <th className="pb-3 pr-4 text-nowrap">Order ID</th>
                     <th className="pb-3 pr-4 text-nowrap">Customer</th>
                     <th className="pb-3 pr-4 text-nowrap">Status</th>
@@ -77,7 +94,7 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-neutral-200/30">
+                  <tr className="border-b">
                     <td className="py-3">#45672</td>
                     <td className="py-3">John Doe</td>
                     <td className="py-3">
@@ -87,7 +104,7 @@ const Dashboard = () => {
                     </td>
                     <td className="py-3">$125.00</td>
                   </tr>
-                  <tr className="border-b border-neutral-200/30">
+                  <tr className="border-b">
                     <td className="py-3">#45673</td>
                     <td className="py-3">Jane Smith</td>
                     <td className="py-3">
@@ -97,7 +114,7 @@ const Dashboard = () => {
                     </td>
                     <td className="py-3">$243.00</td>
                   </tr>
-                  <tr className="border-b border-neutral-200/30">
+                  <tr className="border-b">
                     <td className="py-3">#45674</td>
                     <td className="py-3">Robert Johnson</td>
                     <td className="py-3">
@@ -114,8 +131,8 @@ const Dashboard = () => {
         </div>
 
         {/* <!-- Top Products --> */}
-        <div className="bg-white rounded-lg border border-neutral-200/30">
-          <div className="p-6 border-b border-neutral-200/30">
+        <div className="bg-white rounded-lg border">
+          <div className="p-6 border-b">
             <h2 className="text-lg font-semibold">Top Products</h2>
           </div>
           <div className="p-6">
@@ -141,8 +158,12 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">$239.00</p>
-                  <p className="text-sm text-green-500">+12 sold</p>
+                  <p className="font-medium">
+                    $<AnimatedCounter target={239} />
+                  </p>
+                  <p className="text-sm text-green-500">
+                    +<AnimatedCounter target={12} /> sold
+                  </p>
                 </div>
               </div>
 
@@ -167,8 +188,13 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">$49.00</p>
-                  <p className="text-sm text-green-500">+8 sold</p>
+                  <p className="font-medium">
+                    $<AnimatedCounter target={49} />
+                    .00
+                  </p>
+                  <p className="text-sm text-green-500">
+                    +<AnimatedCounter target={8} /> sold
+                  </p>
                 </div>
               </div>
 
@@ -193,8 +219,13 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">$199.00</p>
-                  <p className="text-sm text-green-500">+6 sold</p>
+                  <p className="font-medium">
+                    $<AnimatedCounter target={199} />
+                    .00
+                  </p>
+                  <p className="text-sm text-green-500">
+                    +<AnimatedCounter target={6} /> sold
+                  </p>
                 </div>
               </div>
             </div>

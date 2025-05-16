@@ -11,7 +11,13 @@ const userSchema = new Schema(
       lowercase: true,
       index: true,
     },
-    email: { type: String, lowercase: true, required: true },
+    email: {
+      type: String,
+      lowercase: true,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     password: { type: String, required: true },
     role: {
       type: String,
@@ -24,10 +30,22 @@ const userSchema = new Schema(
       default: "pending",
     },
     favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-    countryCode: String,
-    firstName: String,
-    lastName: String,
-    phoneNumber: Number,
+    firstName: {
+      type: String,
+      lowercase: true,
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      lowercase: true,
+      required: true,
+      trim: true,
+    },
+    phoneNumber: {
+      type: String,
+      trim: true,
+    },
     avatar: String, // cloudinary url
     refreshToken: String,
   },

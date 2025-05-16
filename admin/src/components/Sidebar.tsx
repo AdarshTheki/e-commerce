@@ -8,7 +8,7 @@ const Sidebar: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth?.user);
 
   return (
-    <nav className="h-screen sticky top-0 flex-shrink-0 w-64 bg-white border-r border-neutral-200/30 hidden lg:block">
+    <nav className="h-screen sticky top-0 flex-shrink-0 w-64 border-r hidden lg:block">
       <div className="flex flex-col h-full">
         <div className="p-6">
           <div className="flex items-center space-x-2">

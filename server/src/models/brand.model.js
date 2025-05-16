@@ -1,21 +1,25 @@
 import mongoose, { Schema } from "mongoose";
-import paginate from "mongoose-aggregate-paginate-v2";
 
-const brandSchema = new Schema({
-  status: {
-    type: String,
-    required: true,
-    default: "inactive",
-    enum: ["active", "inactive"],
+const brandSchema = new Schema(
+  {
+    status: {
+      type: String,
+      default: "inactive",
+      enum: ["active", "inactive", "pending"],
+    },
+    title: {
+      type: String,
+      required: true,
+      index: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 200,
+    },
+    thumbnail: String,
+    description: { type: String, minlength: 100, maxlength: 1000, trim: true },
   },
-  title: { type: String, required: true, index: true },
-  thumbnail: { type: String, required: true },
-  description: { type: String, minlength: 100, maxlength: 1000, trim: true },
-  products: [{ type: Schema.Types.ObjectId, ref: "Product" }],
-  createdAt: { type: Date, default: Date.now },
-});
-
-brandSchema.plugin(paginate);
+  { timestamps: true }
+);
 
 brandSchema.index({ title: "text" });
 

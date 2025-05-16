@@ -1,50 +1,35 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Brand } from "../models/brand.model.js";
+import { pagination } from "../utils/pagination.js";
 
 const router = Router();
 
+// get all filter category
 router.get("/", async (req, res) => {
   try {
     const {
       title = "",
       page = 1,
-      limit = 20,
-      sortBy = "title",
+      limit = 10,
+      sort = "title",
       order = "asc",
     } = req.query;
 
-    const pipeline = [];
+    const results = await Brand.aggregate(
+      pagination(
+        { $match: { title: RegExp(title, "i") } },
+        parseInt(page),
+        parseInt(limit),
+        sort,
+        order === "asc" ? 1 : -1
+      )
+    );
 
-    if (title) {
-      pipeline.push({
-        $match: {
-          title: { $regex: title, $options: "i" },
-        },
-      });
-    }
-
-    pipeline.push({
-      $sort: { [sortBy]: order === "asc" ? 1 : -1 },
-    });
-
-    pipeline.push({
-      $project: {
-        products: 0,
-        description: 0,
-      },
-    });
-
-    const docs = Brand.aggregate(pipeline);
-    const results = await Brand.aggregatePaginate(docs, {
-      page: Number(page),
-      limit: Number(limit),
-    });
-
-    res.status(200).json(results);
+    res.status(200).json(results[0]);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -53,9 +38,9 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) throw Error("brandId is invalid");
+    if (!isValidObjectId(id)) throw Error("brandId is invalid");
     const result = await Brand.findById(id);
-
+    if (!result) throw Error("brand not found");
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
@@ -88,29 +73,10 @@ router.post("/", upload.single("thumbnail"), async (req, res) => {
   }
 });
 
-router.patch("/status/:id", async (req, res) => {
-  try {
-    const { status } = req.body;
-    const { id } = req.params;
-    if (!isValidObjectId(id)) throw Error("invalid brand ID");
-    if (!status) throw Error("please enter a status active & inactive");
-
-    const brand = await Brand.findByIdAndUpdate(
-      id,
-      { status: status },
-      { new: true }
-    );
-
-    res.status(203).json({ brand, message: "status updated success" });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
-  }
-});
-
 router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) throw Error("brandId is invalid");
+    if (!isValidObjectId(id)) throw Error("brandId is invalid");
 
     const filePath = req?.file?.path;
     const { title, status, description } = req.body;
@@ -132,7 +98,7 @@ router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
     await result.save({ validateBeforeSave: false });
 
     res
-      .status(201)
+      .status(202)
       .json({ result, message: "brand updated success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
@@ -142,7 +108,7 @@ router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) throw Error("brandId is invalid");
+    if (!isValidObjectId(id)) throw Error("brandId is invalid");
 
     const result = await Brand.findByIdAndDelete(id);
 
@@ -150,7 +116,7 @@ router.delete("/:id", async (req, res) => {
       await removeSingleImg(result.thumbnail);
     }
 
-    res.status(202).json({ message: "brand deleted success", status: true });
+    res.status(203).json({ message: "brand deleted success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

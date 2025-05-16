@@ -10,7 +10,7 @@ export const pagination = (
   const skip = (Number(page) - 1) * limit;
 
   return [
-    ...filter,
+    filter,
     {
       $sort: {
         [sortBy]: orderBy,
@@ -53,6 +53,9 @@ export const pagination = (
         },
         hasNextPage: {
           $lt: [{ $multiply: [limit, Number(page)] }, "$total.count"],
+        },
+        hasPreviousPage: {
+          $gt: [skip, 0],
         },
         totalPages: {
           $ceil: {

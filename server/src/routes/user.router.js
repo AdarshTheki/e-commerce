@@ -3,7 +3,7 @@ import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
-import { verifyJWT } from "../middlewares/auth.middleware.js";
+import { adminVerifyJWT, verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { User } from "../models/user.model.js";
 
@@ -22,8 +22,8 @@ const generateUsername = (username) => {
   return newUsername;
 };
 
-// get all user
-router.get("/", async (req, res) => {
+// get all user by admin
+router.get("/admin", async (req, res) => {
   try {
     const users = await User.find()
       .select("-password -refreshToken")
@@ -35,23 +35,19 @@ router.get("/", async (req, res) => {
   }
 });
 
-// get single user
-router.get("/admin/:username", async (req, res) => {
+// get single user by admin
+router.get("/admin/:id", async (req, res) => {
   try {
-    const { username } = req.params;
-    if (!username)
-      return res
-        .status(404)
-        .json({ message: "username not define", status: false });
+    const { id } = req.params;
+    if (!isValidObjectId(id))
+      return res.status(404).json({ message: "id not define", status: false });
 
-    const user = await User.findOne({ username }).select(
-      "-password -refreshToken"
-    );
+    const user = await User.findById(id).select("-password -refreshToken");
 
     if (!user)
       return res
         .status(404)
-        .json({ message: "user not find on this username", status: false });
+        .json({ message: "user not find on this id", status: false });
 
     res.status(200).json(user);
   } catch (error) {
@@ -59,23 +55,85 @@ router.get("/admin/:username", async (req, res) => {
   }
 });
 
-// delete user
-router.delete("/admin/:username", async (req, res) => {
+// create user by admin
+router.post("/admin", adminVerifyJWT, async (req, res) => {
   try {
-    const { username } = req.params;
-    if (!username)
+    const { firstName, lastName, phoneNumber, email, status, role, password } =
+      req.body;
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      phoneNumber,
+      email,
+      status,
+      role,
+      password,
+      username: email?.replace("@gmail.com", ""),
+    });
+
+    res.status(201).json({
+      message: "User created successfully",
+      status: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+// update user by admin
+router.patch("/admin/:id", adminVerifyJWT, async (req, res) => {
+  try {
+    const { firstName, lastName, phoneNumber, email, status, role } = req.body;
+    const { id } = req.params;
+    if (!isValidObjectId(id)) {
       return res
         .status(501)
-        .json({ message: "delete username not define", status: false });
+        .json({ message: "update user id not define", status: false });
+    }
 
-    const user = await User.findOneAndDelete({ username });
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.email = email || user.email;
+    user.status = status || user.status;
+    user.role = role || user.role;
+
+    await user.save();
+
+    res.status(202).json({
+      message: "User updated successfully",
+      status: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
+// delete user by admin
+router.delete("/admin/:id", adminVerifyJWT, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!isValidObjectId(id))
+      return res
+        .status(404)
+        .json({ message: "delete id not define", status: false });
+
+    const user = await User.findByIdAndDelete(id);
 
     if (!user)
       return res
-        .status(502)
+        .status(404)
         .json({ message: "user not deleted on this username", status: false });
 
-    res.status(200).json({ message: "user deleted succeeded", status: true });
+    res.status(203).json({ message: "user deleted succeeded", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -89,9 +147,10 @@ router.get("/current-user", verifyJWT, async (req, res) => {
     );
     if (!user) {
       return res
-        .status(401)
+        .status(404)
         .json({ message: "user not exits on database", status: false });
     }
+
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
@@ -101,28 +160,17 @@ router.get("/current-user", verifyJWT, async (req, res) => {
 // sign up create new user
 router.post("/sign-up", async (req, res) => {
   try {
-    const {
-      countryCode,
-      firstName,
-      lastName,
-      phoneNumber,
-      status,
-      role,
-      email,
-      password,
-      username,
-    } = req.body;
+    const { firstName, lastName, phoneNumber, status, role, email, password } =
+      req.body;
 
-    if (
-      [email, password, username, role].some((field) => field?.trim() === "")
-    ) {
+    if ([email, password, role].some((field) => field?.trim() === "")) {
       throw new Error("User all fields are required");
     }
 
-    const newUsername = generateUsername(username);
+    const username = generateUsername(email);
 
     const exitsUser = await User.findOne({
-      $or: [{ username: newUsername }, { email }],
+      $or: [{ username }, { email }],
     });
     if (exitsUser) {
       throw new Error("user Email or Username already exists");
@@ -132,8 +180,7 @@ router.post("/sign-up", async (req, res) => {
       email,
       password,
       role,
-      username: newUsername,
-      countryCode,
+      username,
       firstName,
       lastName,
       phoneNumber,
@@ -143,6 +190,7 @@ router.post("/sign-up", async (req, res) => {
     const createdUser = await User.findById(user?._id).select(
       "-password -refreshToken"
     );
+
     if (!createdUser) {
       throw new Error("creating new user failed");
     }
@@ -159,7 +207,7 @@ router.post("/sign-in", async (req, res) => {
     const { email, username, password } = req.body;
 
     const tempUser = await User.findOne({
-      $or: [{ email }, { username: generateUsername(username) }],
+      $or: [{ email }, { username }],
     });
     if (!tempUser) {
       throw new Error("user does not exist on database");

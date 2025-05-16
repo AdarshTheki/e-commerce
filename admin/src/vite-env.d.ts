@@ -21,6 +21,15 @@ interface PaginationType {
   prevPage: number | null;
 }
 
+interface PaginationTypeWithDocs<T> {
+  items: T[];
+  page: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  totalPages: number;
+  totalItems: number;
+}
+
 interface UserType {
   _id: string;
   username: string;
@@ -29,12 +38,11 @@ interface UserType {
   role: "customer" | "admin" | "user";
   status: "active" | "inactive" | "pending";
   favorite: [string];
-  avatar: string;
   refreshToke: string;
+  avatar?: string;
   firstName?: string;
   lastName?: string;
-  countryCode?: string;
-  phoneNumber?: number;
+  phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -72,17 +80,17 @@ interface BrandType {
   _id: string;
   status: "active" | "inactive" | "pending";
   title: string;
-  sequence?: number;
+  description: string;
   thumbnail: string;
   createdAt: string;
   updatedAt: string;
-  top_brand?: "YES" | "NO";
 }
 
 interface CategoryType {
   _id: string;
   status: "active" | "inactive" | "pending";
   title: string;
+  description: string;
   thumbnail?: string;
   createdAt?: string;
   updatedAt?: string;

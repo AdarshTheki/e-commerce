@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Pen, Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
+import { format } from "date-fns";
 import axios from "axios";
 
 import {
   Input,
   Loading,
   DropdownMenu,
-  Breadcrumb,
   PaginationBtn,
   LazyImage,
+  DeleteModal,
 } from "../utils";
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
-import { NavLink, useLocation } from "react-router-dom";
-import { format } from "date-fns";
 
 const sortByOptions = [
   { label: "Title (A to Z)", value: "title-asc" },
@@ -38,8 +38,10 @@ const CategoryListing = () => {
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
 
-  const { data, refetch } = useFetch<PaginationType>(
-    `/category?limit=${limit}&page=${page}&title=${query}&sortBy=${
+  const path = pathname.split("/").join("");
+
+  const { data, refetch } = useFetch<PaginationTypeWithDocs<CategoryType>>(
+    `/${path}?limit=${limit}&page=${page}&title=${query}&sort=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
   );
@@ -85,80 +87,70 @@ const CategoryListing = () => {
   };
 
   return (
-    <>
-      <div className="flex items-center justify-between p-2">
-        <Breadcrumb
-          paths={[
-            { label: "Home", to: "/" },
-            { label: pathname.split("/").join(""), to: `${pathname}` },
-          ]}
-        />
+    <div>
+      <div className="flex items-center justify-between pb-5">
+        <h2 className="text-xl font-bold text-gray-700 capitalize">{path}</h2>
         <NavLink
           to={`${pathname}/create`}
           className="btn bg-[--primary] text-white text-sm flex items-center gap-2 capitalize">
-          <Plus size={16} /> <span>Add {pathname.split("/").join("")}</span>
+          <Plus size={16} /> <span>Add {path}</span>
         </NavLink>
       </div>
 
-      <div className="p-4 rounded-lg bg-white">
-        {/* Filter products */}
-        <div className="flex sm:gap-4 gap-2 items-center justify-between">
-          <Input
-            name="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            type="text"
-            className="text-sm py-1.5 pl-4 w-36 sm:w-full"
-            placeholder="Search products..."
-          />
-          <div className="flex items-center justify-between sm:gap-4 gap-2">
-            <DropdownMenu name="sort" position="right">
-              {sortByItem()}
-            </DropdownMenu>
-            <DropdownMenu name="page" position="right">
-              {pageItem()}
-            </DropdownMenu>
-          </div>
-        </div>
-
-        <hr className="border my-4 border-gray-100" />
-
-        {/* Pagination */}
-        <div className="sm:flex-row flex gap-2 flex-col sm:justify-between text-sm">
-          <p className="text-sm text-gray-500">
-            Showing {(page - 1) * limit + 1} to{" "}
-            {Math.min(page * limit, data?.totalDocs || 0)} of {data?.totalDocs}{" "}
-            products
-          </p>
-          <div className="flex gap-2 items-center">
-            <button
-              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
-                page === 1 && "hidden"
-              }`}
-              onClick={() => handlePageChange(page - 1)}>
-              Prev
-            </button>
-
-            <PaginationBtn
-              handlePageChange={handlePageChange}
-              page={data?.page || 1}
-              totalPages={data?.totalPages || 1}
-            />
-
-            <button
-              className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
-                page === data?.totalPages && "hidden"
-              }`}
-              onClick={() => handlePageChange(page + 1)}>
-              Next
-            </button>
-          </div>
+      {/* Filter */}
+      <div className="flex sm:gap-4 gap-2 items-center justify-between">
+        <Input
+          name="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          type="text"
+          className="text-sm py-1.5 pl-4"
+          placeholder="Search products..."
+        />
+        <div className="flex items-center justify-between sm:gap-4 gap-2">
+          <DropdownMenu name="sort" position="right">
+            {sortByItem()}
+          </DropdownMenu>
+          <DropdownMenu name="page" position="right">
+            {pageItem()}
+          </DropdownMenu>
         </div>
       </div>
 
-      {data?.totalDocs ? (
+      {/* Pagination */}
+      <div className="pt-2 pb-5 flex gap-2 justify-between text-sm">
+        <p className="text-sm text-gray-500">
+          Showing {(page - 1) * limit + 1} to{" "}
+          {Math.min(page * limit, data?.totalItems || 0)} of {data?.totalItems}
+        </p>
+        <div className="flex gap-2 items-center">
+          <button
+            className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+              page === 1 && "hidden"
+            }`}
+            onClick={() => handlePageChange(page - 1)}>
+            Prev
+          </button>
+
+          <PaginationBtn
+            handlePageChange={handlePageChange}
+            page={data?.page || 1}
+            totalPages={data?.totalPages || 1}
+          />
+          <button
+            className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+              page === data?.totalPages && "hidden"
+            }`}
+            onClick={() => handlePageChange(page + 1)}>
+            Next
+          </button>
+        </div>
+      </div>
+
+      {/* Show results */}
+      {data?.totalItems ? (
         <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2">
-          {data?.docs?.map((item: BrandType) => (
+          {data?.items?.map((item: CategoryType) => (
             <CategoryItem
               key={item._id}
               path={pathname}
@@ -170,10 +162,9 @@ const CategoryListing = () => {
       ) : (
         <Loading className="h-[50vh]" />
       )}
-    </>
+    </div>
   );
 };
-
 export default CategoryListing;
 
 const CategoryItem = ({
@@ -184,7 +175,9 @@ const CategoryItem = ({
   thumbnail,
   refetch,
   path,
-}: BrandType & { refetch: () => void; path: string }) => {
+}: CategoryType & { refetch: () => void; path: string }) => {
+  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
+
   const handleDelete = async () => {
     try {
       const res = await axios.delete(`/api/v1${path}/${_id}`);
@@ -199,46 +192,56 @@ const CategoryItem = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-neutral-200/20">
-      <div className="flex items-center justify-between relative rounded-t-lg overflow-hidden">
-        <div className="w-full">
-          <LazyImage
-            alt={`${title}_Image`}
-            src={
-              thumbnail || "https://placehold.co/600x400?text=Image+not+found"
-            }
-            placeholder="https://placehold.co/600x400?text=Image+not+found"
-          />
-        </div>
-        <NavLink
-          to={`${path}/${_id}`}
-          className="svg-btn text-indigo-600 absolute top-1 right-10">
-          <Pen size={16} />
-        </NavLink>
-        <button
-          onClick={handleDelete}
-          className="svg-btn text-red-600  absolute top-1 right-1">
-          <Trash2 size={16} />
-        </button>
+    <div className="rounded-lg border group relative">
+      <div className="h-36">
+        <LazyImage
+          className="h-full w-full"
+          alt={`${title}_Image`}
+          src={thumbnail || "/placeholder.png"}
+        />
       </div>
       <div className="p-3 text-gray-700">
-        <h3 className="mb-2 font-medium capitalize line-clamp-1">
-          {title?.split("-")?.join(" ")}
-        </h3>
+        <h3 className="mb-2 font-medium capitalize line-clamp-1">{title}</h3>
         <div className="flex gap-2 flex-wrap justify-between items-center text-sm">
-          <span>
-            {format(new Date(createdAt || Date.now()), "dd MMM yyyy")}
+          <span className="text-xs">
+            {format(new Date(createdAt || Date.now()), "dd MMM yyyy h:mma")}
           </span>
           <span
             className={
-              status.toLowerCase() !== "active"
-                ? "status-inactive"
-                : "status-active"
+              status !== "active" ? "status-inactive" : "status-active"
             }>
-            {status.toLowerCase()}
+            {status}
           </span>
         </div>
       </div>
+
+      {/* Hover Modal */}
+      <div className="absolute right-0 top-0 mt-2 mr-2 w-fit opacity-0 group-hover:opacity-100">
+        <div className="flex items-center">
+          <NavLink
+            to={`${path}/${_id}`}
+            className="svg-btn p-2 text-blue-600 cursor-pointer">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24px"
+              viewBox="0 -960 960 960"
+              width="24px"
+              fill="#2563eb">
+              <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+            </svg>
+          </NavLink>
+          <Trash2
+            onClick={() => setDeleteIsOpen(true)}
+            className="svg-btn p-2 text-red-600 cursor-pointer"
+          />
+        </div>
+      </div>
+
+      <DeleteModal
+        isOpen={deleteIsOpen}
+        onClose={() => setDeleteIsOpen(false)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };
