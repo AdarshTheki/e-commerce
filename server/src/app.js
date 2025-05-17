@@ -13,6 +13,7 @@ import brandRoute from "./routes/brand.router.js";
 import cartRoute from "./routes/cart.router.js";
 import addressRoute from "./routes/address.router.js";
 import openaiRoute from "./routes/openai.router.js";
+import dashboardRoute from "./routes/dashboard.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/v1/brand", brandRoute);
 app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/openai", openaiRoute);
+app.use("/api/v1/dashboard", dashboardRoute);
 
 app.get("/api/v1", async (req, res) => {
   res

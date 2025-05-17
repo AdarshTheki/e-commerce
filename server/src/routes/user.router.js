@@ -285,7 +285,7 @@ router.post("/logout", verifyJWT, async (req, res) => {
 });
 
 // change password current user
-router.post("/change-password", verifyJWT, async (req, res) => {
+router.post("/password", verifyJWT, async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
@@ -294,8 +294,16 @@ router.post("/change-password", verifyJWT, async (req, res) => {
 
     const user = await User.findById(req.user._id);
 
-    if (user.email === "demo_user@gmail.com")
-      throw Error("This demo user will not be password change");
+    if (
+      [
+        "demo_user@gmail.com",
+        "guest-user@gmail.com",
+        "useradmin@gmail.com",
+      ].includes(user.email)
+    )
+      return res
+        .status(401)
+        .json({ message: "Access denied this user not password change" });
 
     const check = await user.isPasswordCorrect(oldPassword);
     if (!check) throw Error("your old password is wrong");
@@ -311,7 +319,8 @@ router.post("/change-password", verifyJWT, async (req, res) => {
 
 router.patch("/update", verifyJWT, async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, email, status, role } = req.body;
+    const { firstName, lastName, phoneNumber, email, status, role, username } =
+      req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -324,6 +333,7 @@ router.patch("/update", verifyJWT, async (req, res) => {
     user.email = email || user.email;
     user.status = status || user.status;
     user.role = role || user.role;
+    user.username = username || user.username;
 
     await user.save();
 
@@ -385,36 +395,31 @@ router.post("/google", async (req, res) => {
   res.redirect(authUrl);
 });
 
-// add user avatar
-router.post(
-  "/avatar",
-  verifyJWT,
-  upload.fields([{ name: "avatar", maxCount: 1 }]),
-  async (req, res) => {
-    try {
-      const filePath = req.files["avatar"][0].path;
-      if (!filePath) throw Error("invalid file type of avatar");
+// add or update user avatar
+router.post("/avatar", verifyJWT, upload.single("avatar"), async (req, res) => {
+  try {
+    const filePath = req?.file?.path;
+    if (!filePath) throw Error("invalid file type of avatar");
 
-      const avatar = await uploadSingleImg(filePath);
-      if (!avatar) throw Error("Avatar not create on cloudinary");
+    const avatar = await uploadSingleImg(filePath);
+    if (!avatar) throw Error("Avatar not create on cloudinary");
 
-      const user = await User.findByIdAndUpdate(
-        req.user._id,
-        { $set: { avatar: avatar } },
-        { new: true }
-      ).select("-password -refreshToken");
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { avatar } },
+      { new: true }
+    ).select("-password -refreshToken");
 
-      if (req?.user?.avatar) {
-        const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
-        await removeSingleImg(publicId);
-      }
-
-      return res.status(200).json(user);
-    } catch (error) {
-      res.status(501).json({ message: error.message, status: false });
+    if (req?.user?.avatar) {
+      const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
+      await removeSingleImg(publicId);
     }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    res.status(501).json({ message: error.message, status: false });
   }
-);
+});
 
 // only remove user avatar
 router.delete("/avatar", verifyJWT, async (req, res) => {

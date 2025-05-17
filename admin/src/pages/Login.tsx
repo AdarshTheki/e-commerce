@@ -50,7 +50,7 @@ const Login: React.FC = () => {
 
           <form onSubmit={handelSubmit}>
             <Input
-              defaultValue="demo-user@gmail.com"
+              defaultValue="guest-user@gmail.com"
               name="email"
               type="email"
               label="Email"

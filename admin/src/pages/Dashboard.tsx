@@ -1,13 +1,31 @@
 import { Box, CircleDollarSign, ShoppingBag, Users } from "lucide-react";
 import { AnimatedCounter } from "../components";
 import useTitle from "../hooks/useTitle";
+import useFetch from "../hooks/useFetch";
+import { Loading } from "../utils";
+
+interface DashboardData {
+  totalUsers: number;
+  lastMonthUser: number;
+  totalProducts: number;
+  lastMonthProduct: number;
+}
 
 const Dashboard = () => {
+  const { data, loading } = useFetch<DashboardData>("/dashboard/totals");
   useTitle(`Cartify: admin dashboard`);
+
+  if (loading || !data) return <Loading />;
+
+  const percentageCalculate = (min: number, max: number) => {
+    return parseFloat(((min / max) * 100).toFixed(2)) || 4.6;
+  };
+
   return (
     <>
       {/* <!-- Stats Grid --> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <h2 className="text-lg font-semibold">Dashboard</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="p-6 rounded-lg border">
           <div className="flex justify-between items-center">
             <div>
@@ -20,7 +38,7 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="p-3 bg-indigo-100 rounded-lg">
-              <CircleDollarSign className="text-indigo-600" size={18} />
+              <CircleDollarSign className="text-indigo-600" size={28} />
             </div>
           </div>
         </div>
@@ -37,7 +55,7 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
-              <ShoppingBag className="text-blue-600" size={18} />
+              <ShoppingBag className="text-blue-600" size={28} />
             </div>
           </div>
         </div>
@@ -47,14 +65,20 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Products</p>
               <h3 className="text-2xl font-semibold">
-                <AnimatedCounter target={384} />
+                <AnimatedCounter target={data?.totalProducts || 384} />
               </h3>
-              <p className="text-red-500 text-sm">
-                -<AnimatedCounter target={2.3} />% from last month
+              <p className="text-green-500 text-sm">
+                <AnimatedCounter
+                  target={percentageCalculate(
+                    data?.lastMonthProduct,
+                    data?.totalProducts
+                  )}
+                />
+                % from last month
               </p>
             </div>
             <div className="p-3 bg-green-100 rounded-lg">
-              <Box className="text-green-600" size={18} />
+              <Box className="text-green-600" size={28} />
             </div>
           </div>
         </div>
@@ -64,14 +88,21 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Customers</p>
               <h3 className="text-2xl font-semibold">
-                <AnimatedCounter target={2874} />
+                <AnimatedCounter target={data?.totalUsers || 1234} />
               </h3>
               <p className="text-green-500 text-sm">
-                +<AnimatedCounter target={4.6} />% from last month
+                +
+                <AnimatedCounter
+                  target={percentageCalculate(
+                    data?.lastMonthUser,
+                    data?.totalUsers
+                  )}
+                />
+                % from last month
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-lg">
-              <Users className="text-purple-600" size={18} />
+              <Users className="text-purple-600" size={28} />
             </div>
           </div>
         </div>
@@ -80,7 +111,7 @@ const Dashboard = () => {
       {/* <!-- Recent Orders and Top Products --> */}
       <div className="grid grid-cols-1 gap-6">
         {/* <!-- Recent Orders --> */}
-        <div className="bg-white rounded-lg border">
+        <div className="rounded-lg border">
           <div className="p-6 border-b">
             <h2 className="text-lg font-semibold">Recent Orders</h2>
           </div>

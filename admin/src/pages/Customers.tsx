@@ -93,8 +93,12 @@ const Card = ({ user, refresh }: { user: UserType; refresh: () => void }) => {
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Status</span>
           <span className="px-3 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-            Active
+            {user?.status}
           </span>
+        </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Role</span>
+          <span>{user?.role}</span>
         </div>
 
         {/* Hover Modal */}

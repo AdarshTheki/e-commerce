@@ -32,8 +32,8 @@ const Sidebar: React.FC = () => {
             to={user?.email ? "/profile" : "/login"}
             className="flex items-center space-x-3">
             <img
-              src="https://avatar.iran.liara.run/public"
-              className="w-10 h-10 rounded-full transition-opacity duration-300 opacity-100"
+              src={user?.avatar || "https://avatar.iran.liara.run/public"}
+              className="w-14 h-14 rounded-full object-cover border-2"
               loading="lazy"
             />
             <div>
