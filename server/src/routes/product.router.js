@@ -1,5 +1,5 @@
 import { Router } from "express";
-import mongoose from "mongoose";
+import { isValidObjectId } from "mongoose";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Product } from "../models/product.model.js";
 import { Review } from "../models/review.model.js";
@@ -9,6 +9,8 @@ import {
   uploadMultiImg,
   uploadSingleImg,
 } from "../utils/cloudinary.js";
+import { roleVerifyJWT } from "../middlewares/auth.middleware.js";
+import { pagination } from "../utils/pagination.js";
 
 const router = Router();
 
@@ -16,56 +18,35 @@ router.get("/", async (req, res) => {
   try {
     const {
       title,
-      brand,
-      category,
       minPrice,
       maxPrice,
       minRating,
       maxRating,
-      sortBy,
+      sortBy = "title",
       order = "asc", // default ascending order
       page = 1,
       limit = 10,
     } = req.query;
 
-    const pipeline = [];
-
-    const matchQuery = {};
-
-    if (title) matchQuery.title = { $regex: title, $options: "i" };
-
-    if (brand) matchQuery.brand = { $regex: brand, $options: "i" };
-
-    if (category) matchQuery.category = category;
-
-    if (minPrice || maxPrice) {
-      matchQuery.price = {};
-      if (minPrice) matchQuery.price.$gte = Number(minPrice);
-      if (maxPrice) matchQuery.price.$lte = Number(maxPrice);
-    }
-
-    if (minRating || maxRating) {
-      matchQuery.rating = {};
-      if (minRating) matchQuery.rating.$gte = Number(minRating);
-      if (maxRating) matchQuery.rating.$lte = Number(maxRating);
-    }
-
-    if (Object.keys(matchQuery).length > 0) {
-      pipeline.push({ $match: matchQuery });
-    }
-
-    if (sortBy) {
-      const sortOptions = {};
-      sortOptions[sortBy] = order === "desc" ? -1 : 1; // -1 for descending, 1 for ascending
-      pipeline.push({ $sort: sortOptions });
-    }
-
-    const result = await Product.aggregatePaginate(
-      Product.aggregate(pipeline),
-      { page: Number(page), limit: Number(limit) }
+    const result = await Product.aggregate(
+      pagination(
+        {
+          $match: {
+            $or: [
+              { title: { $regex: title, $options: "i" } },
+              { price: { $gte: minPrice, $lte: maxPrice } },
+              { rating: { $gte: minRating, $lte: maxRating } },
+            ],
+          },
+        },
+        parseInt(page),
+        parseInt(limit),
+        sortBy,
+        order === "asc" ? 1 : -1
+      )
     );
 
-    res.status(200).json(result);
+    res.status(200).json(result[0]);
   } catch (error) {
     res.status(500).json({ error: error.message, status: false });
   }
@@ -78,6 +59,7 @@ router.post(
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 5 },
   ]),
+  roleVerifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const {
@@ -143,6 +125,7 @@ router.patch(
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 5 },
   ]),
+  roleVerifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -199,7 +182,7 @@ router.patch(
 );
 
 // Delete Product
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -226,30 +209,6 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-// toggle update Status
-router.post("/status/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const product = await Product.findById(id);
-    if (!product)
-      return res
-        .status(404)
-        .json({ success: false, message: "Product not found" });
-
-    product.status = status;
-
-    await product.save();
-
-    res
-      .status(200)
-      .json({ success: true, message: "Product status updated success" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
 router.get("/reviews/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
@@ -264,6 +223,7 @@ router.get("/reviews/:productId", async (req, res) => {
   }
 });
 
+// get products filter by category or brand with name
 router.get("/:query/:name", async (req, res) => {
   try {
     const { name, query } = req.params;
@@ -288,49 +248,42 @@ router.get("/:query/:name", async (req, res) => {
   }
 });
 
-router.get("/category-list", async (req, res) => {
+// get all categories and brands
+router.get("/list/:type", async (req, res) => {
   try {
-    const categories = await Product.find().distinct("category");
-    res.status(200).json(categories);
+    const { type } = req.params;
+    if (type === "category" || type === "brand") {
+      const categories = await Product.find().distinct(type);
+      res.status(200).json(categories);
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, message: "Please provide valid list type" });
+    }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
-router.get("/brand-list", async (req, res) => {
-  try {
-    const categories = await Product.find().distinct("brand");
-    res.status(200).json(categories);
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
+// search products by title, category, brand
 router.get("/search", async (req, res) => {
   try {
     const { q } = req.query;
     const regex = new RegExp(q, "i");
 
-    const searchResult = await Product.aggregate([
-      {
-        $match: {
-          $or: [{ title: regex }, { category: regex }, { brand: regex }],
+    const searchResult = await Product.aggregate(
+      pagination(
+        {
+          $match: {
+            $or: [{ title: regex }, { category: regex }, { brand: regex }],
+          },
         },
-      },
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          category: 1,
-          brand: 1,
-          price: 1,
-          thumbnail: 1,
-        },
-      },
-      { $limit: 10 },
-    ]);
+        1,
+        10
+      )
+    );
 
-    res.status(200).json(searchResult);
+    res.status(200).json(searchResult[0]);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -341,12 +294,12 @@ router.get("/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(productId))
+    if (!isValidObjectId(productId))
       return res
         .status(404)
         .json({ message: "productId is invalid", status: false });
 
-    const products = await Product.findById(productId).select("-reviews");
+    const products = await Product.findById(productId);
 
     return res.status(200).json(products);
   } catch (error) {

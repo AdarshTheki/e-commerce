@@ -21,13 +21,13 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ["customer", "admin", "user"],
+      enum: ["customer", "admin", "seller"],
       default: "customer",
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "pending"],
-      default: "pending",
+      enum: ["active", "inactive"],
+      default: "active",
     },
     favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     firstName: {

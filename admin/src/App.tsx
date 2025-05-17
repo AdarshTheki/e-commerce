@@ -30,8 +30,10 @@ const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (data?.email) {
+    if (data?.role === "admin" || data?.role === "seller") {
       dispatch(login(data));
+    } else if (data?.role === "customer") {
+      alert("You are not authorized to access this page");
     }
   }, [dispatch, data]);
 
@@ -46,7 +48,13 @@ const App: React.FC = () => {
     <div>
       <BrowserRouter>
         <Routes>
-          <Route path="" element={<PrivateRoute isAuth={!!data?.email} />}>
+          <Route
+            path=""
+            element={
+              <PrivateRoute
+                isAuth={data?.role === "admin" || data?.role === "seller"}
+              />
+            }>
             <Route index element={<Dashboard />} />
             <Route path="/customer" element={<Customers />} />
             <Route path="/customer/create" element={<CustomerCreate />} />

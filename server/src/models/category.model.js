@@ -4,8 +4,8 @@ const categorySchema = new Schema(
   {
     status: {
       type: String,
-      default: "inactive",
-      enum: ["active", "inactive", "pending"],
+      default: "active",
+      enum: ["active", "inactive"],
     },
     title: {
       type: String,
@@ -15,8 +15,8 @@ const categorySchema = new Schema(
       minlength: 3,
       maxlength: 200,
     },
-    thumbnail: String,
     description: { type: String, minlength: 100, maxlength: 1000, trim: true },
+    thumbnail: String,
   },
   { timestamps: true }
 );

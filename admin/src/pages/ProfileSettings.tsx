@@ -2,45 +2,37 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import { Breadcrumb, Input } from "../utils";
+import { Input, Select } from "../utils";
 import { RootState } from "../redux/store";
 import useFetch from "../hooks/useFetch";
 import axiosInstance from "../constant/axiosInstance";
+import useTitle from "../hooks/useTitle";
+import { countries } from "../constant/countries";
 
 const ProfileSettings = () => {
+  useTitle(`Cartify: profile details`);
   return (
-    <>
-      <div className="flex items-center justify-between p-2">
-        <Breadcrumb
-          paths={[
-            { label: "Home", to: "/" },
-            { label: "Setting", to: "/setting" },
-          ]}
-        />
+    <div className="bg-white min-h-screen sm:p-6 p-2 sm:flex justify-evenly overflow-hidden rounded-lg">
+      {/* Profile Avatar */}
+      <AvatarComponent />
+      {/* Tab Sections */}
+      <div className="sm:w-1/2 mt-5">
+        <Tabs>
+          <Tab label={"General"}>
+            <SectionsComponent />
+          </Tab>
+          <Tab label="Address">
+            <AddressComponent />
+          </Tab>
+          <Tab label="Security">
+            <SecurityComponent />
+          </Tab>
+          <Tab label="Preferences">
+            <PreferencesComponent />
+          </Tab>
+        </Tabs>
       </div>
-
-      <div className="bg-white min-h-screen sm:p-6 p-2 sm:flex justify-evenly overflow-hidden rounded-lg">
-        {/* Profile Avatar */}
-        <AvatarComponent />
-        {/* Tab Sections */}
-        <div className="sm:w-1/2 mt-5">
-          <Tabs>
-            <Tab label={"General"}>
-              <SectionsComponent />
-            </Tab>
-            <Tab label="Address">
-              <AddressComponent />
-            </Tab>
-            <Tab label="Security">
-              <SecurityComponent />
-            </Tab>
-            <Tab label="Preferences">
-              <PreferencesComponent />
-            </Tab>
-          </Tabs>
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 export default ProfileSettings;
@@ -170,8 +162,8 @@ const SectionsComponent = () => {
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
-    phoneNumber: user?.phoneNumber,
-    countryCode: user?.countryCode,
+    phone: user?.phoneNumber?.split("-")[1] || "",
+    code: user?.phoneNumber?.split("-")[0] || "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,9 +175,10 @@ const SectionsComponent = () => {
     e.preventDefault();
     try {
       setLoading(true);
+      console.log(formData);
       const response = await axiosInstance.patch("/user/update", {
         ...formData,
-        countryCode: "+91",
+        phoneNumber: `${formData.code}-${formData.phone}`,
       });
       if (response.data) toast.success("user update success");
     } catch (error) {
@@ -213,14 +206,22 @@ const SectionsComponent = () => {
         required
       />
       <Input
-        value={formData.phoneNumber}
+        value={formData.phone}
         type="number"
         onChange={handleChange}
-        name="phoneNumber"
+        name="phone"
         label="Phone"
         required
         minLength={10}
         maxLength={10}
+      />
+      <Select
+        required
+        options={countries}
+        name="code"
+        label="country code"
+        value={formData.code}
+        onChange={(e) => setFormData({ ...formData, code: e.target.value })}
       />
       <button
         type="submit"
@@ -398,11 +399,10 @@ const AddressComponent = () => {
 const PreferencesComponent = () => {
   const logoutHandler = async () => {
     try {
-      const res = await axiosInstance.post("/user/logout", {
-        withCredentials: true,
-      });
+      const res = await axiosInstance.post("/user/logout");
       if (res.data) {
         toast.success("user logout success");
+        localStorage.removeItem("token");
         window.location.href = "/";
       }
     } catch (error) {

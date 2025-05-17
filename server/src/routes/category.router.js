@@ -5,6 +5,7 @@ import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Category } from "../models/category.model.js";
 import { pagination } from "../utils/pagination.js";
+import { roleVerifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -48,69 +49,79 @@ router.get("/:id", async (req, res) => {
 });
 
 // create category
-router.post("/", upload.single("thumbnail"), async (req, res) => {
-  try {
-    const filePath = req?.file?.path;
-    const { title, status, description } = req.body;
-    console.log(title, status, description);
-    if (!title || !filePath || !status || !description)
-      throw Error(
-        "please fill the form data are file thumbnail, title & status"
-      );
+router.post(
+  "/",
+  upload.single("thumbnail"),
+  roleVerifyJWT(["admin", "seller"]),
+  async (req, res) => {
+    try {
+      const filePath = req?.file?.path;
+      const { title, status, description } = req.body;
+      console.log(title, status, description);
+      if (!title || !filePath || !status || !description)
+        throw Error(
+          "please fill the form data are file thumbnail, title & status"
+        );
 
-    const thumbnail = await uploadSingleImg(filePath);
-    if (!thumbnail) throw Error("thumbnail file upload failed");
+      const thumbnail = await uploadSingleImg(filePath);
+      if (!thumbnail) throw Error("thumbnail file upload failed");
 
-    const category = await Category.create({
-      title,
-      status,
-      thumbnail,
-      description,
-    });
-    if (!category) throw Error("category create failed");
+      const category = await Category.create({
+        title,
+        status,
+        thumbnail,
+        description,
+      });
+      if (!category) throw Error("category create failed");
 
-    res
-      .status(201)
-      .json({ category, message: "category created success", status: true });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+      res
+        .status(201)
+        .json({ category, message: "category created success", status: true });
+    } catch (error) {
+      res.status(500).json({ message: error.message, status: false });
+    }
   }
-});
+);
 
 // update category
-router.patch("/:id", upload.single("thumbnail"), async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!isValidObjectId(id)) throw Error("categoryId is invalid");
+router.patch(
+  "/:id",
+  roleVerifyJWT(["admin", "seller"]),
+  upload.single("thumbnail"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!isValidObjectId(id)) throw Error("categoryId is invalid");
 
-    const filePath = req?.file?.path;
-    const { title, status, description } = req.body;
+      const filePath = req?.file?.path;
+      const { title, status, description } = req.body;
 
-    const category = await Category.findById(id);
+      const category = await Category.findById(id);
 
-    let thumbnail;
-    if (filePath) {
-      await removeSingleImg(category?.thumbnail);
-      thumbnail = await uploadSingleImg(filePath);
-      if (!thumbnail) throw Error("thumbnail file upload failed");
+      let thumbnail;
+      if (filePath) {
+        await removeSingleImg(category?.thumbnail);
+        thumbnail = await uploadSingleImg(filePath);
+        if (!thumbnail) throw Error("thumbnail file upload failed");
+      }
+
+      category.status = status || category.status;
+      category.description = description || category.description;
+      category.title = title || category.title;
+      category.thumbnail = thumbnail || category.thumbnail;
+
+      await category.save();
+
+      res
+        .status(202)
+        .json({ category, message: "category updated success", status: true });
+    } catch (error) {
+      res.status(500).json({ message: error.message, status: false });
     }
-
-    category.status = status || category.status;
-    category.description = description || category.description;
-    category.title = title || category.title;
-    category.thumbnail = thumbnail || category.thumbnail;
-
-    await category.save();
-
-    res
-      .status(202)
-      .json({ category, message: "category updated success", status: true });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
   }
-});
+);
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", roleVerifyJWT(["admin"]), async (req, res) => {
   try {
     const { id } = req.params;
     if (!isValidObjectId(id)) throw Error("categoryId is invalid");

@@ -102,7 +102,7 @@ const SearchResults = ({
   query: string;
   setClose: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-  const { data } = useFetch<{ docs: ProductType[] }>(
+  const { data } = useFetch<PaginationTypeWithDocs<ProductType>>(
     `/product?title=${query}&limit=10`
   );
 
@@ -113,10 +113,10 @@ const SearchResults = ({
 
   return (
     <ul className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-      {data?.docs?.length === 0 && (
+      {data && data?.items?.length === 0 && (
         <li className="py-1.5 block px-4 text-sm h-20">No results found</li>
       )}
-      {data?.docs?.map((item) => (
+      {data?.items?.map((item) => (
         <li
           key={item._id}
           className="py-1.5 block px-4 text-sm hover:bg-gray-100 ">

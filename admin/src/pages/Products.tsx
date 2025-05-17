@@ -37,7 +37,7 @@ export default function Product() {
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
 
-  const { data, loading } = useFetch<PaginationType>(
+  const { data, loading } = useFetch<PaginationTypeWithDocs<ProductType>>(
     `/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
@@ -123,8 +123,7 @@ export default function Product() {
       <div className="pt-2 pb-5 flex gap-2 justify-between text-sm">
         <p className="text-sm text-gray-500">
           Showing {(page - 1) * limit + 1} to{" "}
-          {Math.min(page * limit, data?.totalDocs || 0)} of {data?.totalDocs}{" "}
-          products
+          {Math.min(page * limit, data?.totalItems || 0)} of {data?.totalItems}
         </p>
         <div className="flex gap-2 items-center">
           <button
@@ -151,9 +150,9 @@ export default function Product() {
         </div>
       </div>
 
-      {!loading && data?.docs && data?.docs.length > 0 ? (
+      {!loading && data && data?.items.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {data?.docs?.map((item: ProductType) => (
+          {data?.items?.map((item) => (
             <ProductCard key={item._id} item={item} />
           ))}
         </div>

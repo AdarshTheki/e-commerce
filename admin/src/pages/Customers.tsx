@@ -2,13 +2,17 @@ import { Plus, Trash2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { format } from "date-fns";
 import { useState } from "react";
+
 import useFetch from "../hooks/useFetch";
+import useTitle from "../hooks/useTitle";
 import axiosInstance from "../constant/axiosInstance";
 import { DeleteModal, Loading } from "../utils";
 import { AnimatedCounter } from "../components";
 
 const Customers = () => {
-  const { data, loading, refetch } = useFetch<UserType[]>("/user/admin");
+  const { data, loading, refetch } =
+    useFetch<PaginationTypeWithDocs<UserType>>("/user/admin");
+  useTitle("cartify: user information");
 
   return (
     <>
@@ -23,12 +27,11 @@ const Customers = () => {
         </NavLink>
       </div>
 
-      {loading || !data?.length ? (
-        <Loading />
-      ) : (
+      {loading && <Loading />}
+      {data && data?.items?.length > 0 && (
         <div className="grid sm:grid-cols-2 gap-5">
-          {data.map((i: UserType) => (
-            <Card key={i?.username} user={i} refresh={refetch} />
+          {data?.items.map((user) => (
+            <Card key={user?.username} user={user} refresh={refetch} />
           ))}
         </div>
       )}

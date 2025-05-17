@@ -4,8 +4,8 @@ const brandSchema = new Schema(
   {
     status: {
       type: String,
-      default: "inactive",
-      enum: ["active", "inactive", "pending"],
+      default: "active",
+      enum: ["active", "inactive"],
     },
     title: {
       type: String,

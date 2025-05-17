@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { Input, Select, SpinnerBtn, Textarea } from "../utils";
 import { toast } from "react-toastify";
 import axiosInstance from "../constant/axiosInstance";
+import useTitle from "../hooks/useTitle";
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
   const [previews, setPreviews] = useState<string[]>(
     data?.images.length ? data?.images : []
   );
-
+  useTitle(`Cartify: ${data?._id ? "Update Product" : "Add New Product"}`);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(data?.thumbnail || "");
 
@@ -21,15 +22,13 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     title: data?.title || "",
     category: data?.category || "",
     brand: data?.brand || "",
+    status: data?.status || "",
+    description: data?.description || "",
     discount: data?.discount || 0,
     price: data?.price || 0,
     rating: data?.rating || 0,
     stock: data?.stock || 0,
   });
-  const [description, setDescription] = useState(data?.description || "");
-  const [status, setStatus] = useState(
-    data?.status === "active" ? "active" : "inactive"
-  );
 
   interface ImageChangeEvent extends React.ChangeEvent<HTMLInputElement> {
     target: HTMLInputElement & EventTarget;
@@ -61,14 +60,6 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setStatus(e.target.value);
-  };
-
-  const handleTextAreaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(e.target.value.replace(/[^a-zA-Z0-9\s]|\s{2,}/g, ""));
-  };
-
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -87,8 +78,8 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
       !formData.title ||
       !formData.category ||
       !formData.brand ||
-      !description ||
-      !status ||
+      !formData.description ||
+      !formData.status ||
       !formData.discount ||
       !formData.price ||
       !formData.rating ||
@@ -104,12 +95,12 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     uploadData.append("title", formData.title);
     uploadData.append("category", formData.category);
     uploadData.append("brand", formData.brand);
-    uploadData.append("description", description);
+    uploadData.append("description", formData.description);
     uploadData.append("discount", formData.discount.toString());
     uploadData.append("price", formData.price.toString());
     uploadData.append("rating", formData.rating.toString());
     uploadData.append("stock", formData.stock.toString());
-    uploadData.append("status", status);
+    uploadData.append("status", formData.status);
     if (thumbnail) uploadData.append("thumbnail", thumbnail);
     images.forEach((image) => uploadData.append("images", image));
 
@@ -121,16 +112,10 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (res.data) {
-        toast.success(
-          data?._id
-            ? "Product updated successfully"
-            : "Product added successfully"
-        );
+        navigate("/product");
       }
-      navigate("/product");
     } catch (error) {
       console.log(error);
-      toast.error("Failed to save the product. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -175,9 +160,13 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               options={[
                 { id: "active", title: "Active" },
                 { id: "inactive", title: "Inactive" },
+                { id: "out-of-stock", title: "out of stock" },
+                { id: "pending", title: "pending" },
               ]}
-              onChange={handleSelectChange}
-              value={status}
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
+              }
+              value={formData.status}
             />
           </div>
           <div className="grid sm:grid-cols-4 grid-cols-2 gap-5">
@@ -222,8 +211,10 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
           <Textarea
             optionals="(required & not allowed special char)"
             label="description"
-            onChange={handleTextAreaChange}
-            value={description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            value={formData.description}
             name="description"
             rows={5}
             maxLength={1000}

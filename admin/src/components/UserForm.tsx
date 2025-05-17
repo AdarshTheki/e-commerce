@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { countries } from "../constant/countries";
 import axiosInstance from "../constant/axiosInstance";
+import useTitle from "../hooks/useTitle";
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
@@ -11,13 +12,14 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
     password: userData?.password || "",
     firstName: userData?.firstName || "",
     lastName: userData?.lastName || "",
-    role: userData?.role || "customer",
-    status: userData?.status || "active",
+    role: userData?.role || "",
+    status: userData?.status || "",
     code: userData?.phoneNumber?.split("-")[0] || "",
     phone: userData?.phoneNumber?.split("-")[1] || "",
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  useTitle(`Cartify: ${userData?._id ? "Update User" : "Add New User"}`);
 
   const handleChange: React.ChangeEventHandler<
     HTMLInputElement | HTMLSelectElement
@@ -54,7 +56,7 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto py-10">
+    <div className="">
       <h2 className="text-2xl text-center pb-5 font-semibold text-gray-800">
         {userData?.username ? "Update User" : "Create User"}
       </h2>
@@ -142,7 +144,6 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
             options={[
               { id: "active", title: "active" },
               { id: "inactive", title: "in-active" },
-              { id: "pending", title: "pending" },
             ]}
           />
           <Select
@@ -152,7 +153,7 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
             label="role"
             options={[
               { id: "customer", title: "customer" },
-              { id: "user", title: "user" },
+              { id: "seller", title: "seller" },
             ]}
           />
         </div>

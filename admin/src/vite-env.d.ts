@@ -35,14 +35,14 @@ interface UserType {
   username: string;
   email: string;
   password: string;
-  role: "customer" | "admin" | "user";
-  status: "active" | "inactive" | "pending";
+  role: "customer" | "admin" | "seller";
+  status: "active" | "inactive";
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
   favorite: [string];
   refreshToke: string;
-  avatar?: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,7 +50,7 @@ interface UserType {
 interface AddressType {
   _id: string;
   owner: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   addressLine1: string;
   addressLine2: string;
   city: string;
@@ -61,7 +61,7 @@ interface AddressType {
 
 interface ProductType {
   _id: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive" | "out-of-stock" | "pending";
   title: string;
   category: string;
   brand: string;
@@ -72,13 +72,14 @@ interface ProductType {
   stock: number;
   thumbnail: string;
   images: [string];
+  createdBy: UserType | string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface BrandType {
   _id: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   title: string;
   description: string;
   thumbnail: string;
@@ -88,23 +89,10 @@ interface BrandType {
 
 interface CategoryType {
   _id: string;
-  status: "active" | "inactive" | "pending";
+  status: "active" | "inactive";
   title: string;
   description: string;
-  thumbnail?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface VariantType {
-  _id: string;
-  status: "active" | "inactive" | "pending";
-  size?: string;
-  color?: string;
-  quantity: number;
-  images?: [string];
-  original_price?: number;
-  discount_price?: number;
+  thumbnail: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -1,7 +1,9 @@
 import { Box, CircleDollarSign, ShoppingBag, Users } from "lucide-react";
 import { AnimatedCounter } from "../components";
+import useTitle from "../hooks/useTitle";
 
 const Dashboard = () => {
+  useTitle(`Cartify: admin dashboard`);
   return (
     <>
       {/* <!-- Stats Grid --> */}

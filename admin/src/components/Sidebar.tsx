@@ -12,12 +12,7 @@ const Sidebar: React.FC = () => {
       <div className="flex flex-col h-full">
         <div className="p-6">
           <div className="flex items-center space-x-2">
-            <svg
-              className="w-8 h-8 text-indigo-600"
-              fill="currentColor"
-              viewBox="0 0 24 24">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-            </svg>
+            <img src="/logo.png" alt="logo" className="w-8 h-8" />
             <span className="text-xl font-semibold">Admin</span>
           </div>
         </div>

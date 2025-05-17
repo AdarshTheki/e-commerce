@@ -3,9 +3,10 @@ import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
-import { adminVerifyJWT, verifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT, roleVerifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { User } from "../models/user.model.js";
+import { pagination } from "../utils/pagination.js";
 
 const router = Router();
 
@@ -25,11 +26,22 @@ const generateUsername = (username) => {
 // get all user by admin
 router.get("/admin", async (req, res) => {
   try {
-    const users = await User.find()
-      .select("-password -refreshToken")
-      .sort({ createdAt: -1 })
-      .limit(20);
-    res.status(200).json(users);
+    const { page = 1, limit = 20 } = req.query;
+    const users = await User.aggregate(
+      pagination(
+        {
+          $match: {
+            $nor: [{ role: "admin" }],
+          },
+        },
+        parseInt(page),
+        parseInt(limit),
+        "createdAt",
+        -1
+      )
+    );
+
+    res.status(200).json(users[0]);
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
   }
@@ -56,7 +68,7 @@ router.get("/admin/:id", async (req, res) => {
 });
 
 // create user by admin
-router.post("/admin", adminVerifyJWT, async (req, res) => {
+router.post("/admin", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
   try {
     const { firstName, lastName, phoneNumber, email, status, role, password } =
       req.body;
@@ -83,61 +95,71 @@ router.post("/admin", adminVerifyJWT, async (req, res) => {
 });
 
 // update user by admin
-router.patch("/admin/:id", adminVerifyJWT, async (req, res) => {
-  try {
-    const { firstName, lastName, phoneNumber, email, status, role } = req.body;
-    const { id } = req.params;
-    if (!isValidObjectId(id)) {
-      return res
-        .status(501)
-        .json({ message: "update user id not define", status: false });
+router.patch(
+  "/admin/:id",
+  roleVerifyJWT(["admin", "seller"]),
+  async (req, res) => {
+    try {
+      const { firstName, lastName, phoneNumber, email, status, role } =
+        req.body;
+      const { id } = req.params;
+      if (!isValidObjectId(id)) {
+        return res
+          .status(501)
+          .json({ message: "update user id not define", status: false });
+      }
+
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      user.firstName = firstName || user.firstName;
+      user.lastName = lastName || user.lastName;
+      user.phoneNumber = phoneNumber || user.phoneNumber;
+      user.email = email || user.email;
+      user.status = status || user.status;
+      user.role = role || user.role;
+
+      await user.save();
+
+      res.status(202).json({
+        message: "User updated successfully",
+        status: true,
+        user,
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message, status: false });
     }
-
-    const user = await User.findById(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
-    user.email = email || user.email;
-    user.status = status || user.status;
-    user.role = role || user.role;
-
-    await user.save();
-
-    res.status(202).json({
-      message: "User updated successfully",
-      status: true,
-      user,
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
   }
-});
+);
 
 // delete user by admin
-router.delete("/admin/:id", adminVerifyJWT, async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (!isValidObjectId(id))
-      return res
-        .status(404)
-        .json({ message: "delete id not define", status: false });
+router.delete(
+  "/admin/:id",
+  roleVerifyJWT(["admin", "seller"]),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!isValidObjectId(id))
+        return res
+          .status(404)
+          .json({ message: "delete id not define", status: false });
 
-    const user = await User.findByIdAndDelete(id);
+      const user = await User.findByIdAndDelete(id);
 
-    if (!user)
-      return res
-        .status(404)
-        .json({ message: "user not deleted on this username", status: false });
+      if (!user)
+        return res.status(404).json({
+          message: "user not deleted on this username",
+          status: false,
+        });
 
-    res.status(203).json({ message: "user deleted succeeded", status: true });
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+      res.status(203).json({ message: "user deleted succeeded", status: true });
+    } catch (error) {
+      res.status(500).json({ message: error.message, status: false });
+    }
   }
-});
+);
 
 // get current user
 router.get("/current-user", verifyJWT, async (req, res) => {
@@ -287,17 +309,9 @@ router.post("/change-password", verifyJWT, async (req, res) => {
   }
 });
 
-router.post("/update", verifyJWT, async (req, res) => {
+router.patch("/update", verifyJWT, async (req, res) => {
   try {
-    const {
-      firstName,
-      lastName,
-      countryCode,
-      phoneNumber,
-      email,
-      status,
-      role,
-    } = req.body;
+    const { firstName, lastName, phoneNumber, email, status, role } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -306,7 +320,6 @@ router.post("/update", verifyJWT, async (req, res) => {
 
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
-    user.countryCode = countryCode || user.countryCode;
     user.phoneNumber = phoneNumber || user.phoneNumber;
     user.email = email || user.email;
     user.status = status || user.status;

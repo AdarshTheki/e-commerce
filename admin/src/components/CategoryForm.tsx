@@ -4,12 +4,13 @@ import { Input, Select, SpinnerBtn, Textarea } from "../utils";
 import { Trash2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import axiosInstance from "../constant/axiosInstance";
+import useTitle from "../hooks/useTitle";
 
 const CategoryForm = ({ item }: { item?: CategoryType }) => {
   const { pathname } = useLocation();
   const path = pathname.split("/")[1];
   const navigate = useNavigate();
-
+  useTitle(`Cartify: ${path} form`);
   const [formData, setFormData] = useState({
     title: item?.title || "",
     description: item?.description || "",
@@ -93,7 +94,6 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
             options={[
               { id: "active", title: "active" },
               { id: "inactive", title: "inactive" },
-              { id: "pending", title: "pending" },
             ]}
           />
         </div>

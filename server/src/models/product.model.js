@@ -7,6 +7,7 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      minlength: 3,
       maxlength: 100,
     },
     category: {
@@ -16,7 +17,7 @@ const productSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "pending"],
+      enum: ["active", "inactive", "out-of-stock", "pending"],
       default: "pending",
     },
     brand: {
@@ -29,6 +30,7 @@ const productSchema = new mongoose.Schema(
     description: {
       type: String,
       trim: true,
+      minlength: 50,
       maxlength: 1000,
     },
     price: {

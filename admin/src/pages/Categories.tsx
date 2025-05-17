@@ -15,6 +15,7 @@ import {
 } from "../utils";
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
+import useTitle from "../hooks/useTitle";
 
 const sortByOptions = [
   { label: "Title (A to Z)", value: "title-asc" },
@@ -37,8 +38,8 @@ const CategoryListing = () => {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
-
   const path = pathname.split("/").join("");
+  useTitle(`Cartify: ${path} listing`);
 
   const { data, refetch } = useFetch<PaginationTypeWithDocs<CategoryType>>(
     `/${path}?limit=${limit}&page=${page}&title=${query}&sort=${
