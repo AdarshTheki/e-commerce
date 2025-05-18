@@ -1,4 +1,4 @@
-# E-commerce Store with AI Integration (MERN Stack)
+# E-commerce Store with AI Integration
 
 Welcome to the E-commerce Store project! This application is built using the MERN stack (MongoDB, Express.js, React, Node.js) and integrates AI features to enhance user experience and operational efficiency.
 
