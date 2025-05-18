@@ -60,12 +60,19 @@ Welcome to the E-commerce Store project! This application is built using the MER
 - Mobile-friendly layout for easy navigation on smartphones and tablets.
 - Fast loading times and optimized user experience.
 
+### Admin Panel
+
+<img src="./thumbnail/admin.png" alt="admin" width="45%"/>
+<img src="./thumbnail/category.png" alt="category" width="45%"/>
+<img src="./thumbnail/profile.png" alt="profile" width="45%"/>
+<img src="./thumbnail/delete.png" alt="delete" width="45%"/>
+
+### E-Cartify Store
+
+<img src="./thumbnail/home.png" alt="delete" width="45%"/>
+<img src="./thumbnail/login.png" alt="delete" width="45%"/>
+
 ## Getting Started
-
-### Prerequisites
-
-- Node.js and npm installed.
-- MongoDB database (local or cloud).
 
 ### Installation
 

@@ -40,7 +40,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 left-0 w-full bg-gray-900 text-gray-300 z-20">
+    <header className="sticky top-0 left-0 w-full bg-white/70 !text-gray-700 z-20">
       <div className="px-4 flex justify-between">
         {/* Main Header*/}
         <div className="hidden text-sm font-bold sm:flex items-center gap-4 justify-center py-2 flex-1/2">

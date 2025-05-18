@@ -26,7 +26,9 @@ const ProductListing = () => {
     }),
   }).toString();
 
-  const { data } = useFetch(`/product?${queryParams}`);
+  const { data } = useFetch(`/product?title=$${queryParams}`);
+
+  console.log(data);
 
   return (
     <section id="productListing" className="py-2 bg-gray-100">
@@ -103,57 +105,61 @@ const ProductListing = () => {
             </div>
 
             {/* <!-- Category Filter --> */}
-            {categories?.length > 1 && (
+            {categories?.items?.length > 1 && (
               <div className="my-2">
                 <h3 className="font-medium">Category</h3>
                 <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                  {categories?.map((it) => (
-                    <label
-                      htmlFor={it}
-                      key={it}
-                      className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                      <input
-                        onChange={(e) => {
-                          setCategory(e.target.checked ? it : "");
-                        }}
-                        value={category}
-                        checked={category === it}
-                        id={it}
-                        name={it}
-                        type="checkbox"
-                        className="form-checkbox text-blue-600"
-                      />
-                      <span className="ml-2">{it?.replace("-", " ")}</span>
-                    </label>
-                  ))}
+                  {categories.items
+                    .map((i) => i.title)
+                    ?.map((it) => (
+                      <label
+                        htmlFor={it}
+                        key={it}
+                        className="flex items-center capitalize text-sm mb-1 cursor-pointer">
+                        <input
+                          onChange={(e) => {
+                            setCategory(e.target.checked ? it : "");
+                          }}
+                          value={category}
+                          checked={category === it}
+                          id={it}
+                          name={it}
+                          type="checkbox"
+                          className="form-checkbox text-blue-600"
+                        />
+                        <span className="ml-2">{it?.replace("-", " ")}</span>
+                      </label>
+                    ))}
                 </ul>
               </div>
             )}
 
             {/* Brand Filter */}
-            {brands?.length > 1 && (
+            {brands?.items?.length > 1 && (
               <div className="my-2">
                 <h3 className="font-medium">Brand</h3>
                 <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                  {brands?.map((it) => (
-                    <label
-                      htmlFor={it}
-                      key={it}
-                      className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                      <input
-                        onChange={(e) => {
-                          setBrand(e.target.checked ? it : "");
-                        }}
-                        value={brand}
-                        checked={brand === it}
-                        id={it}
-                        name={it}
-                        type="checkbox"
-                        className="form-checkbox text-blue-600"
-                      />
-                      <span className="ml-2">{it?.replace("-", " ")}</span>
-                    </label>
-                  ))}
+                  {brands.items
+                    .map((i) => i.title)
+                    ?.map((it) => (
+                      <label
+                        htmlFor={it}
+                        key={it}
+                        className="flex items-center capitalize text-sm mb-1 cursor-pointer">
+                        <input
+                          onChange={(e) => {
+                            setBrand(e.target.checked ? it : "");
+                          }}
+                          value={brand}
+                          checked={brand === it}
+                          id={it}
+                          name={it}
+                          type="checkbox"
+                          className="form-checkbox text-blue-600"
+                        />
+                        <span className="ml-2">{it?.replace("-", " ")}</span>
+                      </label>
+                    ))}
                 </ul>
               </div>
             )}
@@ -196,7 +202,8 @@ const ProductListing = () => {
           <div className="bg-white sticky h-fit top-[54px] z-10 p-4 mb-4 flex flex-wrap items-center justify-between">
             <div>
               <span className="text-sm capitalize">
-                products show {data?.page} to {data?.limit} of {data?.totalDocs}
+                products show {data?.page} to {data?.totalPages} of{" "}
+                {data?.totalItems}
               </span>
             </div>
             <div className="flex text-sm items-center space-x-2">
@@ -227,15 +234,14 @@ const ProductListing = () => {
           </div>
 
           {/* <!-- Products Grid --> */}
-          {!data?.totalDocs && <Loading className="h-[70vh]" />}
+          {!data?.totalItems && <Loading className="h-[70vh]" />}
           <div
             className={`grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
-            {data?.totalDocs
-              ? data?.docs?.map((item) => (
-                  <ProductItem key={item._id} {...item} />
-                ))
-              : null}
+            {data?.items?.length &&
+              data?.items?.map((item) => (
+                <ProductItem key={item?._id} {...item} />
+              ))}
           </div>
         </div>
       </div>

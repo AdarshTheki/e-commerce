@@ -34,8 +34,12 @@ router.get("/", async (req, res) => {
           $match: {
             $or: [
               { title: { $regex: title, $options: "i" } },
-              { price: { $gte: minPrice, $lte: maxPrice } },
-              { rating: { $gte: minRating, $lte: maxRating } },
+              {
+                $and: [
+                  { price: { $gte: minPrice, $lte: maxPrice } },
+                  { rating: { $gte: minRating, $lte: maxRating } },
+                ],
+              },
             ],
           },
         },
@@ -243,23 +247,6 @@ router.get("/:query/:name", async (req, res) => {
     }
 
     res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
-
-// get all categories and brands
-router.get("/list/:type", async (req, res) => {
-  try {
-    const { type } = req.params;
-    if (type === "category" || type === "brand") {
-      const categories = await Product.find().distinct(type);
-      res.status(200).json(categories);
-    } else {
-      return res
-        .status(404)
-        .json({ success: false, message: "Please provide valid list type" });
-    }
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

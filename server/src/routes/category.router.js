@@ -35,6 +35,15 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/list", async (req, res) => {
+  try {
+    const result = await Category.find().distinct("title");
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
+  }
+});
+
 // get single category
 router.get("/:id", async (req, res) => {
   try {

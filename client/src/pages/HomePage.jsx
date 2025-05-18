@@ -110,16 +110,20 @@ const HomePage = () => {
 
       {/* Category Listing */}
       <Card
-        cardData={categories}
-        title={
-          categories?.length > 1 ? "Featured Categories" : "Feature Category"
+        items={categories?.items}
+        heading={
+          categories?.items?.length > 1
+            ? "Featured Categories"
+            : "Feature Category"
         }
       />
 
       {/* Brand Listing */}
       <Card
-        cardData={brands}
-        title={brands?.length > 1 ? "Featured Brands" : "Feature Brand"}
+        items={brands?.items}
+        heading={
+          brands?.items?.length > 1 ? "Featured Brands" : "Feature Brand"
+        }
       />
     </main>
   );
