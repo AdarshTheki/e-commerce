@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -6,7 +7,6 @@ import { Input } from "../utils";
 import { RootState } from "../redux/store";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
-import { AxiosError } from "axios";
 
 const ProfileSettings = () => {
   useTitle(`Cartify: profile details`);
@@ -97,9 +97,9 @@ const AvatarComponent = () => {
             </svg>
           </span>
         )}
-        {avatar ? (
+        {avatar?.toString()?.length ? (
           <img
-            src={avatar}
+            src={avatar.toString()}
             alt="Profile"
             className="w-full h-full object-cover"
             loading="lazy"
@@ -171,7 +171,7 @@ const SectionsComponent = () => {
         ...password,
       });
       if (response.data) toast.success("password update success");
-    } catch (error) {
+    } catch (error: any) {
       toast.error(JSON.stringify(error.response.data.message));
     } finally {
       setIsLoading(false);
