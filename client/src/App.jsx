@@ -12,7 +12,7 @@ import {
   FavoritePage,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
-import { Footer, Header, PrivateRoute, TopBar } from "./components";
+import { Footer, Header, PrivateRoute } from "./components";
 import { Loading } from "./utils";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
@@ -38,9 +38,8 @@ const App = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="w-full bg-gray-100 ">
+    <div>
       <Router>
-        <TopBar />
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />

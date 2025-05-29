@@ -9,8 +9,7 @@ const OrderCheckout = ({ items = [] }) => {
   );
 
   const {
-    firstName,
-    lastName,
+    fullName,
     email,
     addressLine1,
     city,
@@ -28,9 +27,7 @@ const OrderCheckout = ({ items = [] }) => {
       <h2 className="text-xl font-medium mt-4">Delivering:</h2>
       <div className="capitalize gap-x-3 grid grid-cols-2">
         <p className="capitalize">full Name</p>
-        <p>
-          {firstName} {lastName}
-        </p>
+        <p>{fullName}</p>
         <p>Shipping Address</p>
         <p>
           {addressLine1}, {city} - {pinCode}, {state}, {country}

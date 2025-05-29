@@ -72,7 +72,9 @@ Welcome to the E-commerce Store project! This application is built using the MER
 <img src="./thumbnail/home.png" alt="delete" width="45%"/>
 <img src="./thumbnail/login.png" alt="delete" width="45%"/>
 
-## Getting Started
+### Database Management
+
+![Database](/thumbnail/database.png)
 
 ### Installation
 
@@ -82,7 +84,7 @@ Welcome to the E-commerce Store project! This application is built using the MER
 4. Start the development server: `npm run dev`
 5. Open the website in your browser: `http://localhost:3000`
 
-### License
+### MIT License
 
 This project is licensed under the [MIT License]().
 

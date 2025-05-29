@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Card } from "../components";
+import { CategoryCard } from "../components";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -78,7 +78,7 @@ const HomePage = () => {
   };
 
   return (
-    <main id="homepage" className="min-h-screen">
+    <main className="min-h-screen">
       {/* offer valid */}
       <p className="max-w-6xl mx-auto py-2 my-2 bg-pink-200 text-center text-xs">
         Sale ends in <span className="font-bold">{formatTimeLeft()}</span>
@@ -109,21 +109,23 @@ const HomePage = () => {
       </div>
 
       {/* Category Listing */}
-      <Card
+      <CategoryCard
         items={categories?.items}
         heading={
           categories?.items?.length > 1
             ? "Featured Categories"
             : "Feature Category"
         }
+        slug="category"
       />
 
       {/* Brand Listing */}
-      <Card
+      <CategoryCard
         items={brands?.items}
         heading={
           brands?.items?.length > 1 ? "Featured Brands" : "Feature Brand"
         }
+        slug="brand"
       />
     </main>
   );

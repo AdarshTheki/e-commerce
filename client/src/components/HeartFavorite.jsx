@@ -17,18 +17,13 @@ const HeartFavorite = ({ id, className }) => {
     e.preventDefault();
     try {
       setLoading(true);
-      if (!user?._id) {
-        router("/login");
-        return;
-      } else {
-        const res = await instance.patch(`/user/favorite/${id}`);
-        if (res.data) {
-          const check = res.data.favorites.includes(id);
-          setIsLiked(check);
-          toast.success(
-            `${check ? "👍 Added to favorites" : "👎 removed to favorites"}`
-          );
-        }
+      if (!user?._id) return router("/login");
+
+      const res = await instance.patch(`/user/favorite/${id}`);
+      if (res.data) {
+        const check = res.data.favorites.includes(id);
+        setIsLiked(check);
+        toast.success(`${check ? "Add Liked" : "Remove Liked"}`);
       }
     } catch (error) {
       errorHandler(error);

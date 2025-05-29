@@ -7,14 +7,18 @@ import OrderCheckout from "./OrderCheckout";
 import CartItems from "./CartItems";
 import Tabs from "./TabComponent";
 import OrderSuccess from "./OrderSuccess";
+import { NavLink } from "react-router-dom";
 
 const CartComponent = () => {
   const { data: cartData, loading, refetch } = useFetch("/cart");
-
-  const { items, wishlist } = cartData?.data || {};
+  const items = cartData?.data?.items || [];
 
   const totals = items
-    ?.reduce((acc, curr) => curr?.productId?.price * curr?.quantity + acc, 0)
+    .reduce(
+      (acc, curr) =>
+        acc + (curr?.productId?.price || 0) * (curr?.quantity || 0),
+      0
+    )
     .toFixed(2);
 
   const tabData = [
@@ -31,23 +35,34 @@ const CartComponent = () => {
       content: <ShippingMethod />,
     },
     {
-      label: "shipping Payment",
+      label: "Shipping Payment",
       content: <ShippingPayment />,
     },
     {
-      label: "order checkout",
+      label: "Order Checkout",
       content: <OrderCheckout items={items} />,
     },
     {
-      label: "order success",
+      label: "Order Success",
       content: <OrderSuccess />,
     },
   ];
 
-  if (loading || !items) return <Loading />;
+  if (loading) return <Loading />;
+
+  if (items.length === 0) {
+    return (
+      <div className="flex flex-col justify-center items-center h-[50vh] gap-5">
+        <h2>Empty cart items</h2>
+        <NavLink to="/product" className="btn border text-indigo-600">
+          Go to Products
+        </NavLink>
+      </div>
+    );
+  }
 
   return (
-    <section id="cart" className="py-10 mx-auto text-gray-700">
+    <section id="cart" className="p-2 max-w-6xl mx-auto">
       <Tabs tabs={tabData} items={items} totals={totals} />
     </section>
   );

@@ -2,19 +2,19 @@ import React from "react";
 import useFetch from "../hooks/useFetch";
 import { ProductItem } from "../components";
 import { NavLink } from "react-router-dom";
+import { Loading } from "../utils";
 
 const FavoritePage = () => {
   const { data, loading } = useFetch("/user/favorite");
 
-  return (
-    <div className="py-5 px-2 bg-gray-100 text-gray-700 min-h-screen">
-      <h2 className="text-3xl text-center font-bold mb-10">
-        Favorite Item Gallery
-      </h2>
-      {loading && <p className="text-center">Loading...</p>}
+  if (loading) return <Loading />;
 
-      {!loading && data?.length > 0 ? (
-        <div className="grid sm:grid-cols-3 grid-cols-2 gap-2 mx-auto max-w-3xl">
+  return (
+    <div className="min-h-screen max-w-3xl w-full mx-auto p-2">
+      <h2 className="text-2xl font-bold my-5">Favorite Item Gallery</h2>
+
+      {data?.length > 0 ? (
+        <div className="grid sm:grid-cols-3 grid-cols-2 gap-2 w-full">
           {data?.map((item) => (
             <ProductItem key={item.id} {...item} />
           ))}

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
 const Typewriter = ({
-  text,
+  text = "",
+  className = "",
   speed = 100,
   name = "demo",
-  className,
   infinite = false,
 }) => {
   const [displayText, setDisplayText] = useState("");

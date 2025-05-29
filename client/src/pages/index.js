@@ -5,7 +5,7 @@ import ProductsPage from "./ProductsPage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
 import Notfound from "./Notfound";
-import SettingPage from "./setting/Setting";
+import SettingPage from "./Setting";
 import FavoritePage from "./FavoritePage";
 
 export {

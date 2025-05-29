@@ -7,9 +7,9 @@ const Tabs = ({ tabs, totals, items }) => {
   );
 
   return (
-    <div className="w-full flex gap-5">
-      <div className="space-y-4 w-full p-4 bg-white shadow-md rounded-lg">
-        <h2 className="text-3xl font-bold mb-6">Order Summary</h2>
+    <div className="w-full flex max-lg:flex-col gap-5">
+      <div className="space-y-4 card w-full">
+        <h2 className="text-xl font-bold mb-6">Order Summary</h2>
         <div className="flex justify-between">
           <span className="text-gray-600">
             Subtotal ({items.length || 0} items)
@@ -44,8 +44,8 @@ const Tabs = ({ tabs, totals, items }) => {
       </div>
 
       {/* Content */}
-      <div className="space-y-4 sm:flex-3/2 p-4 bg-white shadow-md rounded-lg">
-        <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
+      <div className="space-y-4 sm:flex-3/2 card">
+        <h1 className="text-xl font-bold mb-6">{tabs[steps]?.label}</h1>
         {tabs[steps]?.content}
       </div>
     </div>

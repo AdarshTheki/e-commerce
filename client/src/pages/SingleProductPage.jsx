@@ -47,8 +47,8 @@ const ProductDetail = () => {
   if (loading) return <Loading />;
 
   return (
-    <section id="ProductDetail" className="py-8 bg-gray-50">
-      <div className="bg-white rounded-lg shadow-sm p-6">
+    <section>
+      <div className="mx-auto max-w-screen-lg p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* <!-- Product Images --> */}
           <div className="space-y-4">

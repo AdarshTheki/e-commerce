@@ -1,120 +1,186 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { useState } from "react";
 
-import { setShippingAddress, setSteps } from "../../redux/checkoutSlice";
-import { Input } from "../../utils";
+import { Input, Loading, Select } from "../../utils";
+import useFetch from "../../hooks/useFetch";
+import { Edit2, Trash2Icon } from "lucide-react";
+import errorHandler from "../../helper/errorHandler";
+import axiosInstance from "../../helper/axiosInstance";
 
 const ShippingAddress = () => {
-  const dispatch = useDispatch();
-  const { shippingAddress } = useSelector((state) => state.checkout);
+  const { data, refetch, loading: isLoad } = useFetch("/address");
+  const [loading, setLoading] = useState(false);
+  const address = data?.find((i) => i?.isDefault);
 
   const [formData, setFormData] = useState({
-    firstName: shippingAddress?.firstName || "",
-    lastName: shippingAddress?.lastName || "",
-    email: shippingAddress?.email || "",
-    addressLine1: shippingAddress?.addressLine1 || "",
-    city: shippingAddress?.city || "",
-    pinCode: shippingAddress?.pinCode || "",
-    state: shippingAddress?.state || "",
-    country: shippingAddress?.country || "",
-    phone: shippingAddress?.phone || "",
+    addressLine: address?.addressLine || "",
+    city: address?.city || "",
+    postalCode: address?.postalCode || "",
+    countryCode: address?.countryCode || "IN",
+    isDefault: address?.isDefault || false,
+    isEdit: false,
   });
 
-  const handleSubmit = (e) => {
+  const handleAddressSubmit = async (e) => {
     e.preventDefault();
+    try {
+      setLoading(true);
+      if (!formData.addressLine || !formData.city || !formData.postalCode) {
+        throw new Error("please fill all filed");
+      }
+      const method = formData?._id ? "patch" : "post";
+      const url = formData?._id ? `/address/${formData._id}` : "/address";
+      const res = await axiosInstance[method](url, {
+        ...formData,
+        countryCode: "IN",
+      });
+      if (res.data) {
+        setFormData({ isEdit: false });
+        refetch();
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (Object.values(formData).every((i) => i.toString().trim() !== "")) {
-      dispatch(setShippingAddress(formData));
-      dispatch(setSteps(2));
-    } else {
-      toast.error("please fill the shipping address");
+  const handleDeleteAddress = async (id) => {
+    try {
+      const res = await axiosInstance.delete(`/address/${id}`);
+      if (res.data) {
+        refetch();
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      console.log(formData);
+    } catch (error) {
+      errorHandler(error);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { type, name, value, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
-  return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
-      <div className="flex gap-4 sm:flex-row flex-col">
-        <Input
-          label="first name"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleChange}
-        />
-        <Input
-          label="last name"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleChange}
-        />
-      </div>
-      <Input
-        type="email"
-        label="Email Address"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-      />
-      <Input
-        type="number"
-        label="Phone Number"
-        name="phone"
-        value={formData.phone}
-        onChange={handleChange}
-      />
-      <Input
-        label="Street Address"
-        name="addressLine1"
-        value={formData.addressLine1}
-        onChange={handleChange}
-      />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Input
-          label="city"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-        />
-        <Input
-          type="number"
-          label="ZIP Code"
-          name="pinCode"
-          value={formData.pinCode}
-          onChange={handleChange}
-        />
-        <Input
-          label="state"
-          name="state"
-          value={formData.state}
-          onChange={handleChange}
-        />
-        <Input
-          label="country"
-          name="country"
-          value={formData.country}
-          onChange={handleChange}
-        />
-      </div>
+  if (isLoad) return <Loading />;
 
-      <div className="flex mt-10 gap-5 w-[250px] font-semibold">
-        <button
-          type="button"
-          className="text-red-600 btn text-nowrap border"
-          onClick={() => dispatch(setSteps(0))}>
-          Go Back
-        </button>
-        <button
-          type="submit"
-          className="btn text-white bg-indigo-600"
-          onClick={handleSubmit}>
-          Save Next
-        </button>
-      </div>
-    </form>
+  return (
+    <div className="p-4 min-h-screen">
+      {!formData.isEdit && (
+        <div
+          className="border border-gray-300 cursor-pointer card mb-5"
+          onClick={() => setFormData({ isEdit: true })}>
+          <h2 className="font-semibold pl-2">Add New Address</h2>
+        </div>
+      )}
+
+      {!formData.isEdit &&
+        data?.map((item) => (
+          <div key={item._id} className="relative mb-5">
+            <div
+              onClick={() => setFormData(item)}
+              className={`capitalize !pl-5 border border-gray-300 cursor-pointer card ${item._id === formData._id && "!bg-indigo-100 border !border-indigo-300"}`}>
+              <h4 className="font-semibold">{item.addressLine}</h4>
+              <p>
+                {item.city}, {item.postalCode}, India
+              </p>
+            </div>
+            <button
+              onClick={() => setFormData({ ...formData, isEdit: true })}
+              className="svg-btn p-2 absolute right-10 top-5">
+              <Edit2 />
+            </button>
+            <button
+              onClick={() => handleDeleteAddress(item._id)}
+              className="svg-btn p-2 absolute right-0 top-5 text-red-600">
+              <Trash2Icon />
+            </button>
+          </div>
+        ))}
+
+      {!formData.isEdit && formData?._id && (
+        <div className="flex gap-5 mt-5">
+          <button className="bg-red-600 btn text-nowrap text-white">
+            Go Back
+          </button>
+          <button
+            className="bg-indigo-600 btn text-nowrap text-white"
+            onClick={handleCheckout}>
+            {"Save & Checkout"}
+          </button>
+        </div>
+      )}
+
+      {formData.isEdit && (
+        <form className="space-y-4" onSubmit={handleAddressSubmit}>
+          <Input
+            label="AddressLine"
+            name="addressLine"
+            value={formData.addressLine}
+            onChange={handleChange}
+          />
+          <Input
+            label="City"
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
+          />
+          <div className="flex gap-4">
+            <Input
+              label="Postal code"
+              name="postalCode"
+              type="number"
+              min={6}
+              max={6}
+              value={formData.postalCode}
+              onChange={handleChange}
+            />
+            <Select
+              label="Country"
+              name="countryCode"
+              options={[{ value: "IN", label: " India " }]}
+              value={formData.countryCode}
+              onChange={handleChange}
+            />
+          </div>
+          <label htmlFor="address default" className="flex gap-2">
+            <input
+              type="checkbox"
+              name="isDefault"
+              id="address default"
+              value={formData.isDefault}
+              checked={formData.isDefault}
+              onChange={handleChange}
+            />
+            <span>Default Address</span>
+          </label>
+
+          <div className="flex gap-5 mt-5">
+            <button
+              onClick={() => setFormData({ isEdit: false })}
+              type="button"
+              className="bg-red-600 btn text-nowrap text-white">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-indigo-600 btn text-nowrap text-white"
+              onClick={handleAddressSubmit}>
+              {loading ? "Loading..." : "Save Address"}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
   );
 };
 

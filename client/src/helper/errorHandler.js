@@ -4,7 +4,7 @@ const errorHandler = (error) => {
   const { response, request, message } = error;
   if (response) {
     toast.error(
-      `${response.status} - ${response.data.message || response.statusText}`
+      `${response.data.message || response.statusText} - ${response.status}`
     );
   } else if (request) {
     toast.error("No response received from server");

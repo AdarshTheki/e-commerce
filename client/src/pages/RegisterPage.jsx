@@ -1,10 +1,7 @@
-import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { Input } from "../utils";
-import { baseUrl } from "../helper/constant";
-import { Check } from "lucide-react";
+import axios from "../helper/axiosInstance";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -14,17 +11,17 @@ const Register = () => {
     const email = e.target.email.value;
     const password = e.target.password.value;
     const confirmPassword = e.target.confirmPassword.value;
-    const username = e.target.username.value;
+    const fullName = e.target.fullName.value;
 
     try {
       if (password !== confirmPassword) {
         return toast.error("please check your password");
       }
-      const register = await axios.post(baseUrl + "/user/sign-up", {
+      const register = await axios.post("/user/sign-up", {
         email,
         password,
-        username,
-        role: "user",
+        fullName,
+        role: "customer",
       });
 
       if (register.data) {
@@ -37,62 +34,24 @@ const Register = () => {
   };
 
   return (
-    <section
-      id="auth"
-      className="bg-gray-100 flex items-center justify-center p-4">
+    <section className="flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
         {/* <!-- Register Form --> */}
-        <div
-          className="bg-white p-8 rounded-lg border border-gray-200"
-          x-show="isRegister"
-          x-cloak="">
+        <div className="bg-white p-8 rounded-lg border border-gray-200">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900">Create account</h2>
             <p className="text-gray-600 mt-2">Sign up for a new account</p>
           </div>
 
           <form onSubmit={handelSubmit} className="space-y-4">
-            <Input
-              name="username"
-              type="text"
-              label="Username"
-              autoComplete="off"
-              required
-            />
-            <Input
-              name="email"
-              type="email"
-              label="Email"
-              autoComplete="off"
-              required
-            />
-            <Input
-              name="password"
-              type="text"
-              label="Password"
-              autoComplete="off"
-              required
-            />
+            <Input name="fullName" type="text" label="fullName" />
+            <Input name="email" type="email" label="Email" />
+            <Input name="password" type="text" label="Password" />
             <Input
               name="confirmPassword"
               type="text"
               label="Confirm Password"
-              autoComplete="off"
-              required
             />
-
-            <div className="text-sm flex gap-2 items-center text-gray-500">
-              <input
-                type="checkbox"
-                name="privacy"
-                id="privacy"
-                checked
-                readOnly
-              />
-              <label htmlFor="privacy">
-                I agree to the Terms and Privacy Policy
-              </label>
-            </div>
 
             <button
               type="submit"

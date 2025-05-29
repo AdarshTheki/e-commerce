@@ -1,31 +1,41 @@
-import Label from "./Label";
+import React, { useId } from "react";
 
-const Select = (
-  {
-    label,
-    name,
-    options = [{ id: "", title: "" }],
-    className = "block  w-full text-base px-4 py-2 ",
-    ...rest
-  },
-  props
-) => {
-  return (
-    <div {...props}>
-      {label && <Label text={label} htmlFor={name} />}
-      <select
-        {...rest}
-        id={name}
-        name={name}
-        className={`cursor-pointer capitalize border bg-white rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}>
-        {options.map((option) => (
-          <option key={option.id} value={option.id}>
-            {option.title}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-};
+const Select = React.forwardRef(
+  (
+    {
+      label,
+      name,
+      options = [{ value: "", label: "" }],
+      className = "",
+      ...rest
+    },
+    ref
+  ) => {
+    const reactId = useId();
+    return (
+      <div>
+        {label && (
+          <label
+            htmlFor={`${reactId}-input`}
+            className={`block text-sm capitalize my-1`}>
+            {label}
+          </label>
+        )}
+        <select
+          id={`${reactId}-input`}
+          name={name}
+          className={`peer border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-full px-4 py-1.5 ${className}`}
+          ref={ref}
+          {...rest}>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+);
 
 export default Select;

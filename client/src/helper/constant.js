@@ -22,8 +22,6 @@ export const menuItems = [
   { id: 7, title: "Settings", path: "/setting", icon: Settings },
 ];
 
-export const baseUrl = "http://localhost:8000/api/v1";
-
 export const formatDate = (dateString = "") => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {

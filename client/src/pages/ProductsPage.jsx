@@ -1,21 +1,57 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
-import { Loading } from "../utils";
+import useDebounce from "../hooks/useDebounce";
+import { Loading, PaginationBtn, Input } from "../utils";
 import { ProductItem } from "../components";
 import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import useDropdown from "../hooks/useDropdown";
+import {
+  ListFilterPlus,
+  Scaling,
+  Settings,
+  TrainFrontTunnel,
+} from "lucide-react";
+
+const sortByOptions = [
+  { label: "Title (A-Z)", value: "title-asc" },
+  { label: "Title (Z-A)", value: "title-desc" },
+  { label: "Price (Low to High)", value: "price-asc" },
+  { label: "Price (High to Low)", value: "price-desc" },
+];
+
+const pageSizeOptions = [
+  { label: "10 items per page", value: 10 },
+  { label: "30 items per page", value: 30 },
+  { label: "50 items per page", value: 50 },
+  { label: "100 items per page", value: 100 },
+];
+
+const ratingOptions = [
+  { _id: 1, title: "1.0 ★ below 2 to 1" },
+  { _id: 2, title: "2.0 ★ below 3 to 2" },
+  { _id: 3, title: "3.0 ★ below 4 to 3" },
+  { _id: 4, title: "4.0 ★ below 5 to 4" },
+  { _id: 5, title: "5.0 ★ below 5 to 4.5" },
+];
 
 const ProductListing = () => {
+  const [params] = useSearchParams();
   const { list: categories } = useSelector((state) => state.categories);
   const { list: brands } = useSelector((state) => state.brands);
   const [limit, setLimit] = useState(10);
-  const [category, setCategory] = useState("");
-  const [brand, setBrand] = useState("");
+  const [category, setCategory] = useState(params.get("category") || "");
+  const [brand, setBrand] = useState(params.get("brand") || "");
+  const [rating, setRating] = useState(0);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
-  const [rating, setRating] = useState(0);
+  const [sortBy, setSortBy] = useState("title-asc");
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const query = useDebounce(search, 500);
+  const { isOpen, setIsOpen, dropdownRef } = useDropdown();
 
   const queryParams = new URLSearchParams({
-    limit: limit.toString(), // Ensure limit is included correctly
     ...(category && { category }),
     ...(brand && { brand }),
     minPrice: minPrice.toString(),
@@ -24,18 +60,125 @@ const ProductListing = () => {
       minRating: (rating === 5 ? rating - 0.5 : rating).toString(),
       maxRating: (rating === 5 ? rating : rating + 1).toString(),
     }),
+    sortBy: sortBy.split("-")[0],
+    order: sortBy.split("-")[1],
+    page,
+    limit,
+    title: query,
   }).toString();
 
-  const { data } = useFetch(`/product?title=$${queryParams}`);
+  const { data } = useFetch(`/product?${queryParams}`);
 
-  console.log(data);
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
+      setPage(newPage);
+    }
+  };
+
+  const PageItem = () => {
+    const { isOpen, setIsOpen, dropdownRef } = useDropdown();
+    return (
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setIsOpen(true)}
+          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm !font-medium">
+          {limit} Page <Scaling size={16} />
+        </button>
+        {isOpen && (
+          <div className="absolute right-0 top-full mt-1 z-10 card">
+            {pageSizeOptions.map((i) => (
+              <button
+                onClick={() => setLimit(i.value)}
+                className={`w-full hover:bg-gray-50 text-nowrap px-3 py-1.5 text-sm ${
+                  i.value == Number(limit) && "text-indigo-600"
+                }`}
+                key={i.label}>
+                {i.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const SortByItem = () => {
+    const { isOpen, setIsOpen, dropdownRef } = useDropdown();
+    return (
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setIsOpen(true)}
+          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm !font-medium">
+          Sort <ListFilterPlus size={16} />
+        </button>
+        {isOpen && (
+          <div className="absolute right-0 top-full mt-1 z-10 card">
+            {sortByOptions.map((i) => (
+              <button
+                onClick={() => setSortBy(i.value)}
+                className={`w-full text-left pl-4 text-nowrap hover:bg-gray-50 px-3 py-1.5 text-sm ${
+                  i.value === sortBy && "text-indigo-600"
+                }`}
+                key={i.label}>
+                {i.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const categoryFilter = React.useCallback(
+    (items = [], heading = "", value = "", setValue) => {
+      return (
+        items?.length > 1 && (
+          <div>
+            <h3 className="font-medium">{heading}</h3>
+            <ul>
+              {items.map((it) => (
+                <label
+                  htmlFor={it.title}
+                  key={it._id}
+                  className="flex items-center capitalize text-sm mb-1 cursor-pointer">
+                  <input
+                    onChange={(e) => setValue(e.target.checked ? it.title : "")}
+                    value={value}
+                    checked={value === it.title}
+                    id={it.title}
+                    name={it.title}
+                    type="checkbox"
+                    className="form-checkbox text-blue-600"
+                  />
+                  <span className="ml-2">{it.title.replace("-", " ")}</span>
+                </label>
+              ))}
+            </ul>
+          </div>
+        )
+      );
+    },
+    []
+  );
 
   return (
-    <section id="productListing" className="py-2 bg-gray-100">
-      <div className="flex flex-col lg:flex-row gap-2">
+    <section className="p-2 max-w-6xl mx-auto">
+      <div className="flex flex-col lg:flex-row gap-5">
         {/* <!-- Filters Sidebar --> */}
-        <div className="w-[300px] max-lg:hidden sticky h-full top-[54px] overflow-y-auto scrollbar">
-          <div className="bg-white text-gray-700 shadow-sm px-6 py-3">
+        <div
+          className={
+            isOpen
+              ? "fixed inset-0 bg-black/50 z-30 pt-20"
+              : "w-[300px] max-lg:hidden sticky h-fit top-[54px]"
+          }>
+          <div
+            ref={dropdownRef}
+            className={
+              isOpen
+                ? "!p-5 h-full !rounded-2xl bg-white overflow-auto card text-gray-700 flex flex-col gap-4"
+                : "overflow-y-auto scrollbar card text-gray-700 flex flex-col gap-4"
+            }>
+            {/* <!-- Clear Filters --> */}
             <div className="flex justify-between">
               <h2 className="font-bold text-lg">Filters</h2>
               <button
@@ -47,32 +190,11 @@ const ProductListing = () => {
                   setMaxPrice(100000);
                   setMinPrice(0);
                   setRating(0);
+                  setSearch("");
+                  setPage(1);
                 }}>
                 Clear All
               </button>
-            </div>
-            <div className="flex gap-1 flex-wrap py-2">
-              {category && (
-                <button
-                  onClick={() => setCategory("")}
-                  className="status-inactive">
-                  {category} x
-                </button>
-              )}
-              {brand && (
-                <button
-                  onClick={() => setBrand("")}
-                  className="status-inactive">
-                  {brand} x
-                </button>
-              )}
-              {!!rating && (
-                <button
-                  onClick={() => setRating(0)}
-                  className="status-inactive">
-                  rating {rating} x
-                </button>
-              )}
             </div>
 
             {/* <!-- Price Range --> */}
@@ -105,90 +227,35 @@ const ProductListing = () => {
             </div>
 
             {/* <!-- Category Filter --> */}
-            {categories?.items?.length > 1 && (
-              <div className="my-2">
-                <h3 className="font-medium">Category</h3>
-                <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                  {categories.items
-                    .map((i) => i.title)
-                    ?.map((it) => (
-                      <label
-                        htmlFor={it}
-                        key={it}
-                        className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                        <input
-                          onChange={(e) => {
-                            setCategory(e.target.checked ? it : "");
-                          }}
-                          value={category}
-                          checked={category === it}
-                          id={it}
-                          name={it}
-                          type="checkbox"
-                          className="form-checkbox text-blue-600"
-                        />
-                        <span className="ml-2">{it?.replace("-", " ")}</span>
-                      </label>
-                    ))}
-                </ul>
-              </div>
+            {categoryFilter(
+              categories?.items,
+              "Category",
+              category,
+              setCategory
             )}
 
             {/* Brand Filter */}
-            {brands?.items?.length > 1 && (
-              <div className="my-2">
-                <h3 className="font-medium">Brand</h3>
-                <ul className="max-h-[150px] overflow-y-auto w-full scrollbar-hidden">
-                  {brands.items
-                    .map((i) => i.title)
-                    ?.map((it) => (
-                      <label
-                        htmlFor={it}
-                        key={it}
-                        className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                        <input
-                          onChange={(e) => {
-                            setBrand(e.target.checked ? it : "");
-                          }}
-                          value={brand}
-                          checked={brand === it}
-                          id={it}
-                          name={it}
-                          type="checkbox"
-                          className="form-checkbox text-blue-600"
-                        />
-                        <span className="ml-2">{it?.replace("-", " ")}</span>
-                      </label>
-                    ))}
-                </ul>
-              </div>
-            )}
+            {categoryFilter(brands?.items, "Brand", brand, setBrand)}
 
             {/* <!-- Rating Filter --> */}
-            <div className="my-2">
+            <div>
               <h3 className="font-medium">Rating</h3>
               <ul className="max-h-[200px] overflow-y-auto w-full scrollbar-hidden">
-                {[3, 4, 5].map((it) => (
+                {ratingOptions.map((it) => (
                   <label
-                    htmlFor={it}
-                    key={it}
+                    htmlFor={it._id}
+                    key={it._id}
                     className="flex items-center gap-2 capitalize text-sm cursor-pointer">
                     <input
-                      onChange={(e) => setRating(e.target.checked ? it : 0)}
+                      onChange={(e) => setRating(e.target.checked ? it._id : 0)}
                       value={rating}
-                      checked={rating === it}
-                      id={it}
-                      name={it}
+                      checked={rating === it._id}
+                      id={it._id}
+                      name={it._id}
                       type="checkbox"
                       className="form-checkbox text-blue-600"
                     />
-                    <span className="flex items-center">
-                      {[...Array(5)].map((_, index) => (
-                        <span key={index} className="text-yellow-400 text-xl">
-                          {index < it ? "★" : "☆"}
-                        </span>
-                      ))}
-                    </span>
+                    <span className="ml-2">{it.title}</span>
                   </label>
                 ))}
               </ul>
@@ -196,52 +263,68 @@ const ProductListing = () => {
           </div>
         </div>
 
-        {/* <!-- Product Grid --> */}
-        <div className="w-full">
-          {/* <!-- Sort and View Options --> */}
-          <div className="bg-white sticky h-fit top-[54px] z-10 p-4 mb-4 flex flex-wrap items-center justify-between">
-            <div>
-              <span className="text-sm capitalize">
-                products show {data?.page} to {data?.totalPages} of{" "}
-                {data?.totalItems}
-              </span>
-            </div>
-            <div className="flex text-sm items-center space-x-2">
-              <label htmlFor="sortBy" className="text-gray-600">
-                Sort by:
-              </label>
-              <select
-                id="sortBy"
-                className="border border-gray-300 rounded px-2 py-1">
-                <option>Featured</option>
-                <option>Price: Low to High</option>
-                <option>Price: High to Low</option>
-                <option>Customer Rating</option>
-              </select>
-              <label htmlFor="page" className="text-gray-600">
-                Limit:
-              </label>
-              <select
-                id="page"
-                onClick={(e) => setLimit(e.target.value)}
-                className="border border-gray-300 rounded px-2 py-1">
-                <option value={10}>10 / page</option>
-                <option value={30}>30 / page</option>
-                <option value={50}>50 / page</option>
-                <option value={100}>100 / page</option>
-              </select>
-            </div>
+        <div className="flex-1 flex flex-col gap-4">
+          {/* search products */}
+          <div className="flex sm:gap-4 gap-1 flex-wrap items-center ">
+            <Input
+              name="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="text"
+              className="w-full text-sm min-w-[300px] py-1.5 pl-4"
+              placeholder="Search..."
+            />
+            {/* mobile filters */}
+            <button
+              onClick={() => setIsOpen(isOpen ? false : true)}
+              className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm sm:hidden !font-medium">
+              Filter
+              <Settings size={16} />
+            </button>
+            <SortByItem />
+            <PageItem />
           </div>
 
           {/* <!-- Products Grid --> */}
           {!data?.totalItems && <Loading className="h-[70vh]" />}
-          <div
-            className={`grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
+          <div className={`grid sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.items?.length &&
               data?.items?.map((item) => (
                 <ProductItem key={item?._id} {...item} />
               ))}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex gap-2 justify-between card">
+            <p className="text-sm text-gray-500">
+              Showing {(page - 1) * limit + 1} to{" "}
+              {Math.min(page * limit, data?.totalItems || 0)} of{" "}
+              {data?.totalItems}
+            </p>
+            <div className="flex gap-2 items-center">
+              <button
+                className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                  page === 1 && "hidden"
+                }`}
+                onClick={() => handlePageChange(page - 1)}>
+                Prev
+              </button>
+
+              <PaginationBtn
+                handlePageChange={handlePageChange}
+                page={data?.page || 1}
+                totalPages={data?.totalPages || 1}
+              />
+
+              <button
+                className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                  page === data?.totalPages && "hidden"
+                }`}
+                onClick={() => handlePageChange(page + 1)}>
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ const CategoriesPage = () => {
             ? data?.docs?.map((item) => (
                 <div
                   key={item._id}
-                  className="relative min-h-[280px] overflow-hidden rounded-lg group animate__animated animate__fadeInUp animate__fadeIn">
+                  className="relative min-h-[280px] overflow-hidden rounded-lg group">
                   <img
                     src="https://static.nike.com/a/images/f_auto/dpr_2.0,cs_srgb/w_1680,c_limit/73c4a613-c354-4bd5-9df8-e0cc7705c467/nike-just-do-it.jpg"
                     alt="Sports Collection"

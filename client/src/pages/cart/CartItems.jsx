@@ -19,17 +19,6 @@ const CartItems = ({ items, getAllCarts }) => {
     }
   };
 
-  if (items.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center h-[50vh] gap-5">
-        <h2>Empty cart items</h2>
-        <NavLink to="/product" className="btn border text-indigo-600">
-          Go to Products
-        </NavLink>
-      </div>
-    );
-  }
-
   return (
     <>
       {items?.map((item) => {

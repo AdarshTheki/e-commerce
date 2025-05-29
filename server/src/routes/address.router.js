@@ -105,16 +105,16 @@ router.delete("/:id", verifyJWT(), async (req, res) => {
   try {
     const addressId = req.params.id;
 
-    const address = await Address.findById(addressId, {
-      createdBy: req.user._id,
-    });
+    const address = await Address.findOneAndDelete(
+      { _id: addressId },
+      { createdBy: req.user._id }
+    );
+
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }
 
-    await Address.findByIdAndDelete(addressId);
-
-    res.status(204).json({ message: "address delete succeed" }); // 204 No Content (successful deletion)
+    res.status(200).json({ message: "address delete succeed" }); // 204 No Content (successful deletion)
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

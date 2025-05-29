@@ -6,7 +6,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* <!-- Company Info --> */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white mb-4">ShopEase</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Cartify</h3>
             <p className="text-sm">
               Your one-stop destination for all your shopping needs. Quality
               products, great prices, and excellent service.
@@ -211,7 +211,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="md:flex md:items-center md:justify-between">
             <div className="text-sm">
-              <p>© 2024 ShopEase. All rights reserved.</p>
+              <p>© 2024 Cartify. All rights reserved.</p>
             </div>
             <div className="mt-4 md:mt-0">
               <div className="flex space-x-6">
