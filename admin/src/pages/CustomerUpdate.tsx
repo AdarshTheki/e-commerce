@@ -4,10 +4,10 @@ import { Loading } from "../utils";
 import { UserForm } from "../components";
 
 const CustomerUpdate = () => {
-  const { username } = useParams();
-  const { data, loading } = useFetch<UserType>(`/user/admin/${username}`);
+  const { id } = useParams();
+  const { data, loading } = useFetch<UserType>(`/user/admin/${id}`);
 
-  if (loading || !data?.username) return <Loading />;
+  if (loading || !data?._id) return <Loading />;
 
   return (
     <div>

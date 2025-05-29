@@ -1,5 +1,5 @@
 import { Box, CircleDollarSign, ShoppingBag, Users } from "lucide-react";
-import { AnimatedCounter } from "../components";
+import { Counter } from "../components";
 import useTitle from "../hooks/useTitle";
 import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
@@ -31,10 +31,10 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Revenue</p>
               <h3 className="text-2xl font-semibold">
-                $<AnimatedCounter target={54239} />
+                $<Counter target={54239} />
               </h3>
               <p className="text-green-500 text-sm">
-                +<AnimatedCounter target={8.4} />% from last month
+                +<Counter target={8.4} />% from last month
               </p>
             </div>
             <div className="p-3 bg-indigo-100 rounded-lg">
@@ -48,10 +48,10 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Orders</p>
               <h3 className="text-2xl font-semibold">
-                <AnimatedCounter target={1245} />
+                <Counter target={1245} />
               </h3>
               <p className="text-green-500 text-sm">
-                +<AnimatedCounter target={12} />% from last month
+                +<Counter target={12} />% from last month
               </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
@@ -65,10 +65,10 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Products</p>
               <h3 className="text-2xl font-semibold">
-                <AnimatedCounter target={data?.totalProducts || 384} />
+                <Counter target={data?.totalProducts || 384} />
               </h3>
               <p className="text-green-500 text-sm">
-                <AnimatedCounter
+                <Counter
                   target={percentageCalculate(
                     data?.lastMonthProduct,
                     data?.totalProducts
@@ -88,11 +88,11 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-gray-500">Total Customers</p>
               <h3 className="text-2xl font-semibold">
-                <AnimatedCounter target={data?.totalUsers || 1234} />
+                <Counter target={data?.totalUsers || 1234} />
               </h3>
               <p className="text-green-500 text-sm">
                 +
-                <AnimatedCounter
+                <Counter
                   target={percentageCalculate(
                     data?.lastMonthUser,
                     data?.totalUsers
@@ -192,10 +192,10 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-medium">
-                    $<AnimatedCounter target={239} />
+                    $<Counter target={239} />
                   </p>
                   <p className="text-sm text-green-500">
-                    +<AnimatedCounter target={12} /> sold
+                    +<Counter target={12} /> sold
                   </p>
                 </div>
               </div>
@@ -222,11 +222,11 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-medium">
-                    $<AnimatedCounter target={49} />
+                    $<Counter target={49} />
                     .00
                   </p>
                   <p className="text-sm text-green-500">
-                    +<AnimatedCounter target={8} /> sold
+                    +<Counter target={8} /> sold
                   </p>
                 </div>
               </div>
@@ -253,11 +253,11 @@ const Dashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-medium">
-                    $<AnimatedCounter target={199} />
+                    $<Counter target={199} />
                     .00
                   </p>
                   <p className="text-sm text-green-500">
-                    +<AnimatedCounter target={6} /> sold
+                    +<Counter target={6} /> sold
                   </p>
                 </div>
               </div>

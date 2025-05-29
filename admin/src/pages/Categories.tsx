@@ -2,20 +2,22 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { Plus, Trash2 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
-import { format } from "date-fns";
-import axios from "axios";
+import axiosInstance from "@/constant/axiosInstance";
+import { RootState } from "@/redux/store";
 
 import {
   Input,
   Loading,
   DropdownMenu,
   PaginationBtn,
-  LazyImage,
   DeleteModal,
 } from "../utils";
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
 import useTitle from "../hooks/useTitle";
+import { AxiosError } from "axios";
+import { useSelector } from "react-redux";
+import { CategoryCard } from "@/components";
 
 const sortByOptions = [
   { label: "Title (A to Z)", value: "title-asc" },
@@ -32,6 +34,7 @@ const pageSizeOptions = [
 ];
 
 const CategoryListing = () => {
+  const user = useSelector((state: RootState) => state.auth.user);
   const { pathname } = useLocation();
   const [sortBy, setSortBy] = useState<string>("title-asc");
   const [limit, setLimit] = useState<number>(10);
@@ -40,6 +43,7 @@ const CategoryListing = () => {
   const query = useDebounce(search, 500);
   const path = pathname.split("/").join("");
   useTitle(`Cartify: ${path} listing`);
+  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
 
   const { data, refetch } = useFetch<PaginationTypeWithDocs<CategoryType>>(
     `/${path}?limit=${limit}&page=${page}&title=${query}&sort=${
@@ -50,6 +54,23 @@ const CategoryListing = () => {
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
       setPage(newPage);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await axiosInstance.delete(`/${path}/${id}`);
+      if (res.data) {
+        refetch();
+        toast.success(`${path} deleted success`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Something went wrong"
+      );
     }
   };
 
@@ -152,12 +173,39 @@ const CategoryListing = () => {
       {data?.totalItems ? (
         <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2">
           {data?.items?.map((item: CategoryType) => (
-            <CategoryItem
-              key={item._id}
-              path={pathname}
-              {...item}
-              refetch={refetch}
-            />
+            <div key={item._id} className="group relative">
+              <CategoryCard key={item._id} {...item} />
+
+              {/* Hover Modal */}
+              {(user?.role === "admin" || user?._id === item?.createdBy) && (
+                <div className="absolute right-0 top-0 mt-2 mr-2 w-fit opacity-0 group-hover:opacity-100">
+                  <div className="flex items-center">
+                    <NavLink
+                      to={`/${path}/${item._id}`}
+                      className="svg-btn p-2 text-blue-600 cursor-pointer">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 -960 960 960"
+                        width="24px"
+                        fill="#2563eb">
+                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
+                      </svg>
+                    </NavLink>
+                    <Trash2
+                      onClick={() => setDeleteIsOpen(true)}
+                      className="svg-btn p-2 text-red-600 cursor-pointer"
+                    />
+                  </div>
+
+                  <DeleteModal
+                    isOpen={deleteIsOpen}
+                    onClose={() => setDeleteIsOpen(false)}
+                    onConfirm={() => handleDelete(item._id)}
+                  />
+                </div>
+              )}
+            </div>
           ))}
         </div>
       ) : (
@@ -167,82 +215,3 @@ const CategoryListing = () => {
   );
 };
 export default CategoryListing;
-
-const CategoryItem = ({
-  _id,
-  status,
-  title,
-  createdAt,
-  thumbnail,
-  refetch,
-  path,
-}: CategoryType & { refetch: () => void; path: string }) => {
-  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
-
-  const handleDelete = async () => {
-    try {
-      const res = await axios.delete(`/api/v1${path}/${_id}`);
-      if (res.data) {
-        refetch();
-        toast.success(`${path} deleted success`);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong");
-    }
-  };
-
-  return (
-    <div className="rounded-lg border group relative">
-      <div className="h-36">
-        <LazyImage
-          className="h-full w-full"
-          alt={`${title}_Image`}
-          src={thumbnail || "/placeholder.png"}
-        />
-      </div>
-      <div className="p-3 text-gray-700">
-        <h3 className="mb-2 font-medium capitalize line-clamp-1">{title}</h3>
-        <div className="flex gap-2 flex-wrap justify-between items-center text-sm">
-          <span className="text-xs">
-            {format(new Date(createdAt || Date.now()), "dd MMM yyyy h:mma")}
-          </span>
-          <span
-            className={
-              status !== "active" ? "status-inactive" : "status-active"
-            }>
-            {status}
-          </span>
-        </div>
-      </div>
-
-      {/* Hover Modal */}
-      <div className="absolute right-0 top-0 mt-2 mr-2 w-fit opacity-0 group-hover:opacity-100">
-        <div className="flex items-center">
-          <NavLink
-            to={`${path}/${_id}`}
-            className="svg-btn p-2 text-blue-600 cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#2563eb">
-              <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
-            </svg>
-          </NavLink>
-          <Trash2
-            onClick={() => setDeleteIsOpen(true)}
-            className="svg-btn p-2 text-red-600 cursor-pointer"
-          />
-        </div>
-      </div>
-
-      <DeleteModal
-        isOpen={deleteIsOpen}
-        onClose={() => setDeleteIsOpen(false)}
-        onConfirm={handleDelete}
-      />
-    </div>
-  );
-};

@@ -32,24 +32,23 @@ interface PaginationTypeWithDocs<T> {
 
 interface UserType {
   _id: string;
-  username: string;
+  fullName: string;
   email: string;
   password: string;
   role: "customer" | "admin" | "seller";
   status: "active" | "inactive";
   avatar: string;
-  firstName: string;
-  lastName: string;
   phoneNumber: string;
   favorite: [string];
   refreshToke: string;
   createdAt: Date;
   updatedAt: Date;
+  createdBy: string;
 }
 
 interface AddressType {
   _id: string;
-  owner: string;
+  createdBy: UserType | string;
   status: "active" | "inactive";
   addressLine1: string;
   addressLine2: string;
@@ -85,6 +84,7 @@ interface BrandType {
   thumbnail: string;
   createdAt: string;
   updatedAt: string;
+  createdBy: UserType | string;
 }
 
 interface CategoryType {
@@ -95,4 +95,5 @@ interface CategoryType {
   thumbnail: string;
   createdAt: string;
   updatedAt: string;
+  createdBy: UserType | string;
 }

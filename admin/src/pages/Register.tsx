@@ -17,7 +17,7 @@ const Register: React.FC = () => {
     const conPassword = (
       form.elements.namedItem("confirm-password") as HTMLInputElement
     ).value;
-    const username = (form.elements.namedItem("username") as HTMLInputElement)
+    const fullName = (form.elements.namedItem("fullName") as HTMLInputElement)
       .value;
 
     try {
@@ -27,7 +27,7 @@ const Register: React.FC = () => {
       const register = await axiosInstance.post("/user/sign-up", {
         email,
         password,
-        username,
+        fullName,
       });
       if (register.data) {
         toast.success("User register succeeded");
@@ -56,9 +56,9 @@ const Register: React.FC = () => {
 
           <form onSubmit={handelSubmit}>
             <Input
-              name="username"
+              name="fullName"
               type="text"
-              label="Username"
+              label="fullName"
               autoComplete="off"
               required
             />

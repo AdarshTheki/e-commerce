@@ -1,6 +1,6 @@
 const Analytics = () => {
   return (
-    <div id="analytics" className="sm:p-6 p-2 bg-[#E5E7EB]">
+    <div>
       {/* <!-- Header --> */}
       <div className="mb-6 sm:flex-row flex gap-2 flex-col items-center sm:justify-between justify-center">
         <h1 className="text-2xl font-semibold">Analytics Dashboard</h1>

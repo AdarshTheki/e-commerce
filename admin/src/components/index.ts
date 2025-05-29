@@ -3,7 +3,10 @@ import Layout from "./Layout";
 import ProductForm from "./ProductForm";
 import UserForm from "./UserForm";
 import CategoryForm from "./CategoryForm";
-import AnimatedCounter from "./AnimatedCounter";
+import Counter from "./Counter";
+import UserCard from "./UserCard";
+import ProductCard from "./ProductCard";
+import CategoryCard from "./CategoryCard";
 
 export {
   PrivateRoute,
@@ -11,5 +14,8 @@ export {
   CategoryForm,
   ProductForm,
   UserForm,
-  AnimatedCounter,
+  Counter,
+  UserCard,
+  ProductCard,
+  CategoryCard,
 };

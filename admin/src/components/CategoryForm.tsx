@@ -57,7 +57,6 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
       });
 
       if (response.data) {
-        console.log(response?.data);
         navigate(`/${path}`);
       }
     } catch (error) {

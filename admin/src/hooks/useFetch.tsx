@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axiosInstance from "../constant/axiosInstance";
 
 interface UseFetchResult<T> {
@@ -13,7 +13,7 @@ const useFetch = <T,>(url: string): UseFetchResult<T> => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -22,15 +22,13 @@ const useFetch = <T,>(url: string): UseFetchResult<T> => {
     } catch (err) {
       setError((err as Error).message);
     } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 1500);
+      setLoading(false);
     }
-  };
+  }, [url]);
 
   useEffect(() => {
     fetchData();
-  }, [url]);
+  }, [url, fetchData]);
 
   return { data, loading, error, refetch: fetchData };
 };

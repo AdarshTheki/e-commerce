@@ -18,6 +18,7 @@ const Input: React.FC<InputProps> = (
       <input
         id={name}
         name={name}
+        autoComplete="off"
         className={`block w-full px-4 py-2 text-base peer border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
         {...rest}
       />

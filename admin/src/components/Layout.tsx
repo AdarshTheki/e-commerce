@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { BellDotIcon, Menu, Settings, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import { Input } from "../utils";
 import menuItems from "../constant/menuItems";
 import useDebounce from "../hooks/useDebounce";
@@ -16,16 +16,6 @@ const Layout: React.FC = () => {
     <div className="flex">
       {/* <!-- Desktop Menu --> */}
       <Sidebar />
-
-      {/* <!-- Mobile Menu Button Fixed --> */}
-      <div className="lg:hidden fixed top-3.5 right-2 z-50">
-        <button
-          onClick={() => setOpen(!open)}
-          type="button"
-          className="mobile-menu-button bg-white p-2 rounded-lg focus:outline-none">
-          {open ? <X /> : <Menu />}
-        </button>
-      </div>
 
       {/* <!-- Mobile Menu --> */}
       <div
@@ -50,9 +40,9 @@ const Layout: React.FC = () => {
       {/* Main Body */}
       <main className="h-full sm:overflow-y-auto w-[100vw]">
         <div className="sticky top-0 z-10 border-b">
-          <div className="flex items-center justify-end gap-4 py-4 pl-4 pr-14">
+          <div className="flex items-center justify-end gap-5 p-2 sm:px-4 bg-white">
             {/* Inputs Search */}
-            <div className="relative">
+            <div className="relative sm:w-[350px]">
               <Input
                 name="search"
                 value={search}
@@ -71,16 +61,16 @@ const Layout: React.FC = () => {
                 </>
               )}
             </div>
-            <NavLink
-              to={"/products"}
-              className="text-gray-600 hover:text-gray-900">
-              <BellDotIcon />
+            <NavLink to={"/profile"} className="svg-btn !scale-125 border">
+              <User size={18} />
             </NavLink>
-            <NavLink
-              to={"/settings"}
-              className="text-gray-600 hover:text-gray-900">
-              <Settings />
-            </NavLink>
+
+            <button
+              onClick={() => setOpen(!open)}
+              type="button"
+              className="svg-btn scale-125 sm:hidden">
+              {open ? <X /> : <Menu />}
+            </button>
           </div>
         </div>
 

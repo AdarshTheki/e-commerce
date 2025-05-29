@@ -1,6 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Loading } from "./utils";
-import { PrivateRoute } from "./components";
+import {
+  CategoryForm,
+  PrivateRoute,
+  ProductForm,
+  UserForm,
+} from "./components";
 import {
   Login,
   Register,
@@ -10,10 +15,7 @@ import {
   ProfileSettings,
   Products,
   ProductUpdate,
-  ProductCreate,
   Categories,
-  CategoryCreate,
-  CustomerCreate,
   CustomerUpdate,
   CategoryUpdate,
 } from "./pages";
@@ -57,16 +59,16 @@ const App: React.FC = () => {
             }>
             <Route index element={<Dashboard />} />
             <Route path="/customer" element={<Customers />} />
-            <Route path="/customer/create" element={<CustomerCreate />} />
-            <Route path="/customer/:username" element={<CustomerUpdate />} />
+            <Route path="/customer/create" element={<UserForm />} />
+            <Route path="/customer/:id" element={<CustomerUpdate />} />
             <Route path="/product" element={<Products />} />
             <Route path="/product/:id" element={<ProductUpdate />} />
-            <Route path="/product/create" element={<ProductCreate />} />
+            <Route path="/product/create" element={<ProductForm />} />
 
             <Route path="/category" element={<Categories />} />
             <Route path="/brand" element={<Categories />} />
-            <Route path="/category/create" element={<CategoryCreate />} />
-            <Route path="/brand/create" element={<CategoryCreate />} />
+            <Route path="/category/create" element={<CategoryForm />} />
+            <Route path="/brand/create" element={<CategoryForm />} />
             <Route path="/category/:id" element={<CategoryUpdate />} />
             <Route path="/brand/:id" element={<CategoryUpdate />} />
 

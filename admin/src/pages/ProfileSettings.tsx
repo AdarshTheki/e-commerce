@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import { Input } from "../utils";
 import { RootState } from "../redux/store";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const ProfileSettings = () => {
   useTitle(`Cartify: profile details`);
@@ -26,21 +27,17 @@ const ProfileSettings = () => {
   };
 
   return (
-    <div>
-      <div className="p-6 flex gap-6">
-        <AvatarComponent />
-        <div>
-          <SectionsComponent />
-          <div className="mt-5">
-            <h2 className="text-xl font-semibold text-gray-700 py-2">
-              Do you want to logout this current user ?
-            </h2>
-            <button
-              onClick={logoutHandler}
-              className="btn bg-red-600 text-white">
-              Logout
-            </button>
-          </div>
+    <div className="p-4 flex flex-col gap-10 mx-auto max-w-screen-sm">
+      <AvatarComponent />
+      <div>
+        <SectionsComponent />
+        <div className="mt-5">
+          <h2 className="text-xl font-semibold text-gray-700 py-2">
+            Do you want to logout this current user ?
+          </h2>
+          <Button variant="destructive" onClick={logoutHandler}>
+            Logout
+          </Button>
         </div>
       </div>
     </div>
@@ -62,7 +59,6 @@ const AvatarComponent = () => {
         const res = await axiosInstance.post("/user/avatar", formData);
         if (res.data) {
           toast.success("upload avatar image succeed");
-          console.log(res.data);
           setAvatar(res.data.avatar);
         }
       }
@@ -114,15 +110,11 @@ const AvatarComponent = () => {
         )}
       </div>
 
-      <label className="mt-4 flex flex-col gap-4 cursor-pointer px-4 py-2 rounded-md">
-        <small>JPG, GIF and PNG Max Size of 2MB</small>
-        <input
-          onChange={handleUploadAvatar}
-          type="file"
-          name="images"
-          className="w-[180px] p-2 cursor-pointer hover:bg-indigo-200 border border-gray-300 rounded-lg text-sm"
-        />
-      </label>
+      <Input
+        onChange={handleUploadAvatar}
+        type="file"
+        className="w-fit max-w-[200px] mt-5"
+      />
     </div>
   );
 };
@@ -131,9 +123,7 @@ const SectionsComponent = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    username: user?.username || "",
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
+    fullName: user?.fullName || "",
     email: user?.email || "",
   });
   const [password, setPassword] = useState({
@@ -181,55 +171,35 @@ const SectionsComponent = () => {
   return (
     <div>
       <form className="grid gap-4 flex-1" onSubmit={onSettingsSubmit}>
-        <div className="flex gap-4">
-          <Input
-            value={formData.firstName}
-            onChange={handleChange}
-            name="firstName"
-            label="First Name"
-            required
-          />
-          <Input
-            value={formData.lastName}
-            onChange={handleChange}
-            name="lastName"
-            label="Last Name"
-            required
-          />
-        </div>
         <Input
-          value={formData.username}
+          value={formData.fullName}
           onChange={handleChange}
-          name="username"
-          label="username"
+          name="fullName"
           required
         />
         <Input
           value={formData.email}
           onChange={handleChange}
           name="email"
-          label="email"
           required
         />
-        <button
+        <Button
+          variant="secondary"
           disabled={
             loading ||
             (user?.email === formData.email &&
-              user?.username === formData.username &&
-              user?.firstName === formData.firstName &&
-              user?.lastName === formData.lastName)
-          }
-          type="submit"
-          className="btn bg-indigo-600 text-white w-fit disabled:bg-indigo-400">
+              user?.fullName === formData.fullName)
+          }>
           {loading ? "Saving..." : "Save Changes"}
-        </button>
+        </Button>
       </form>
 
-      <form onSubmit={handlePasswordSubmit}>
-        <h2 className="text-xl font-bold pt-8 pb-2 text-gray-700">Security</h2>
+      <form
+        onSubmit={handlePasswordSubmit}
+        className="space-y-3 text-gray-700 flex flex-col">
+        <h2 className="text-xl font-bold pt-8 pb-2">Password Change</h2>
         <Input
           name="oldPassword"
-          label="old password"
           value={password.oldPassword}
           onChange={(e) =>
             setPassword({ ...password, oldPassword: e.target.value })
@@ -237,18 +207,17 @@ const SectionsComponent = () => {
         />
         <Input
           name="newPassword"
-          label="new password"
           value={password.newPassword}
           onChange={(e) =>
             setPassword({ ...password, newPassword: e.target.value })
           }
         />
-        <button
+        <Button
+          variant="secondary"
           type="submit"
-          disabled={isLoading || password.newPassword.length < 5}
-          className="mt-5 bg-indigo-600 text-white btn disabled:bg-indigo-400">
+          disabled={isLoading || password.newPassword.length < 5}>
           {isLoading ? "Saving..." : "Save Change"}
-        </button>
+        </Button>
       </form>
     </div>
   );

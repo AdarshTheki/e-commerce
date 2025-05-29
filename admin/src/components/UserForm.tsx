@@ -5,13 +5,13 @@ import { NavLink } from "react-router-dom";
 import { countries } from "../constant/countries";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
+import { toast } from "react-toastify";
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
     email: userData?.email || "",
     password: userData?.password || "",
-    firstName: userData?.firstName || "",
-    lastName: userData?.lastName || "",
+    fullName: userData?.fullName || "",
     role: userData?.role || "",
     status: userData?.status || "",
     code: userData?.phoneNumber?.split("-")[0] || "",
@@ -47,9 +47,9 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
       if (response.data) {
         navigate("/customer");
       }
-      console.log("user form", response.data);
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong, please try again.");
     } finally {
       setLoading(false);
     }
@@ -58,54 +58,28 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
   return (
     <div className="">
       <h2 className="text-2xl text-center pb-5 font-semibold text-gray-800">
-        {userData?.username ? "Update User" : "Create User"}
+        {userData?._id ? "Update User" : "Create User"}
       </h2>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <div className="sm:flex gap-2">
-          <Input
-            name="firstName"
-            label="First Name"
-            placeholder="please enter a unique firstName"
-            onChange={handleChange}
-            type="text"
-            value={user.firstName}
-            required
-          />
-          <Input
-            name="lastName"
-            label="Last Name"
-            placeholder="please enter a unique lastName"
-            onChange={handleChange}
-            type="text"
-            value={user.lastName}
-            required
-          />
-        </div>
-        <div className="sm:flex gap-2">
-          <Input
-            name="email"
-            label="Email"
-            type="email"
-            placeholder="please enter a unique email"
-            onChange={handleChange}
-            value={user.email}
-            required
-          />
-          <Input
-            name="username"
-            className="cursor-not-allowed"
-            label="username (auto generate)"
-            placeholder="auto create username"
-            type="text"
-            value={
-              userData?._id
-                ? userData?.username
-                : user.email?.replace("@gmail.com", "").toLowerCase()
-            }
-            readOnly
-            required
-          />
-        </div>
+        <Input
+          name="fullName"
+          label="fullName"
+          placeholder="please enter a unique fullName"
+          onChange={handleChange}
+          type="text"
+          value={user.fullName}
+          required
+        />
+
+        <Input
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="please enter a unique email"
+          onChange={handleChange}
+          value={user.email}
+          required
+        />
 
         {!userData?._id && (
           <Input

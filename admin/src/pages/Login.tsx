@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { Input, SpinnerBtn } from "../utils";
 import axiosInstance from "../constant/axiosInstance";
+import { AxiosError } from "axios";
 
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -30,9 +31,13 @@ const Login: React.FC = () => {
         toast.success("user login succeeded");
         window.location.href = "/";
       }
-    } catch (err) {
-      console.log(err);
-      toast.error("user login failed, Try again!");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Something went wrong"
+      );
     } finally {
       setLoading(false);
     }

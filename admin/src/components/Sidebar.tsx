@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
 const Sidebar: React.FC = () => {
-  const user = useSelector((state: RootState) => state.auth?.user);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   return (
     <nav className="h-screen sticky top-0 flex-shrink-0 w-64 border-r hidden lg:block">
@@ -38,7 +38,7 @@ const Sidebar: React.FC = () => {
             />
             <div>
               <p className="text-sm font-medium uppercase">
-                {user?.firstName || "Admin"} {user?.lastName || "User"}
+                {user?.fullName || "Admin"}
               </p>
               <p className="text-xs text-gray-500">
                 {user?.email || "admin@example.com"}

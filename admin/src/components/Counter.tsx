@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function AnimatedCounter({
+export default function Counter({
   target = 1000,
   duration = 2000, // in ms
 }: {
