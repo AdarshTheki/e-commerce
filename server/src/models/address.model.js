@@ -1,13 +1,16 @@
 import mongoose, { Schema } from "mongoose";
 
 const addressSchema = new Schema({
-  owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  addressLine1: { type: String, lowercase: true, required: true },
-  addressLine2: { type: String, lowercase: true },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  isDefault: { type: Boolean, default: false },
+  addressLine: { type: String, lowercase: true, required: true },
   city: { type: String, lowercase: true, required: true },
-  state: { type: String, lowercase: true, required: true },
-  pinCode: { type: Number, required: true },
-  country: { type: String, lowercase: true, required: true },
+  postalCode: { type: Number, required: true },
+  countryCode: { type: String, lowercase: true, required: true },
 });
 
 export const Address = mongoose.model("Address", addressSchema);

@@ -5,7 +5,7 @@ import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Category } from "../models/category.model.js";
 import { pagination } from "../utils/pagination.js";
-import { roleVerifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -61,12 +61,11 @@ router.get("/:id", async (req, res) => {
 router.post(
   "/",
   upload.single("thumbnail"),
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const filePath = req?.file?.path;
       const { title, status, description } = req.body;
-      console.log(title, status, description);
       if (!title || !filePath || !status || !description)
         throw Error(
           "please fill the form data are file thumbnail, title & status"
@@ -80,6 +79,7 @@ router.post(
         status,
         thumbnail,
         description,
+        createdBy: req.user._id,
       });
       if (!category) throw Error("category create failed");
 
@@ -95,7 +95,7 @@ router.post(
 // update category
 router.patch(
   "/:id",
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   upload.single("thumbnail"),
   async (req, res) => {
     try {
@@ -130,7 +130,7 @@ router.patch(
   }
 );
 
-router.delete("/:id", roleVerifyJWT(["admin"]), async (req, res) => {
+router.delete("/:id", verifyJWT(["admin"]), async (req, res) => {
   try {
     const { id } = req.params;
     if (!isValidObjectId(id)) throw Error("categoryId is invalid");

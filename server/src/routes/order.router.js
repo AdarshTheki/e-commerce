@@ -33,36 +33,34 @@ router.post("/stripe-webhook", async (req, res) => {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
 
-      const shipping = [
-        session?.shipping_details?.address?.line1,
-        session?.shipping_details?.address?.city,
-        session?.shipping_details?.address?.state,
-        session?.shipping_details?.address?.postal_code,
-        session?.shipping_details?.address?.country,
-      ];
-
       const retrieveSession = await stripe.checkout.sessions.retrieve(
         session.id,
         { expand: ["line_items.data.price.product"] }
       );
-      const lineItems = retrieveSession?.line_items?.data;
 
-      const orderItems = lineItems?.map((item) => {
-        return {
-          price: Math.floor(item.amount_total),
-          name: item.description,
-          quantity: item.quantity,
-        };
-      });
+      const createdBy = session.metadata?.userId;
+      if (!createdBy || !retrieveSession) {
+        return res
+          .status(200)
+          .json({ message: "order failed stripe webhook of userId" });
+      } else {
+        const cart = await Cart.findOne({ createdBy });
+        const address = await Address.findOne(
+          { createdBy },
+          { isDefault: true }
+        );
+        const order = new Order({
+          customerId: createdBy,
+          items: cart.items,
+          shippingId: address._id,
+          status: "pending",
+        });
+        await order.save();
+        cart.items = [];
+        cart.save();
 
-      await Order.create({
-        username: session?.customer_details?.name,
-        email: session?.customer_details?.email,
-        address: shipping.join(", "),
-        items: orderItems,
-      });
-
-      return res.status(200).json({ message: true });
+        res.status(200).json("order created successful");
+      }
     } else {
       return res.status(400).json({ message: "Failed Payment" });
     }
@@ -71,8 +69,11 @@ router.post("/stripe-webhook", async (req, res) => {
   }
 });
 
-router.post("/stripe-checkout", async (req, res) => {
-  const { cartItems } = req.body;
+router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
+  const cart = await Cart.findOne({ createdBy: req.user._id }).populate(
+    "items.productId"
+  );
+
   const redirect_url = process.env.ECOMMERCE_REDIRECT_URL;
   try {
     const session = await stripe.checkout.sessions.create({
@@ -84,18 +85,18 @@ router.post("/stripe-checkout", async (req, res) => {
         { shipping_rate: "shr_1PUUUQSEX6kzN9W0NTr4rNla" },
         { shipping_rate: "shr_1PUfgHSEX6kzN9W0mtantJdO" },
       ],
-      line_items: cartItems?.map((item) => ({
+      line_items: cart.items?.map((item) => ({
         price_data: {
           currency: "inr",
           product_data: {
-            name: item.title,
+            name: item.productId.title,
           },
-          unit_amount: Math.floor(item.price * 100),
+          unit_amount: Math.floor(item.productId.price * 100),
         },
         quantity: item.quantity,
       })),
       success_url: `${redirect_url}/order/success`,
-      cancel_url: `${redirect_url}/checkout`,
+      cancel_url: `${redirect_url}/order/failed`,
     });
 
     return res.status(200).json(session.url);
@@ -132,7 +133,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", verifyJWT, async (req, res) => {
+router.post("/", verifyJWT(), async (req, res) => {
   try {
     const { shipping } = req.body;
 
@@ -181,7 +182,7 @@ router.post("/", verifyJWT, async (req, res) => {
 });
 
 // get user order
-router.get("/user", verifyJWT, async (req, res) => {
+router.get("/user", verifyJWT(), async (req, res) => {
   try {
     const { _id } = req?.user;
     const { page = 1, limit = 10, sort = "createdAt" } = req.query;

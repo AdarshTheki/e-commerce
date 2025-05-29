@@ -17,9 +17,9 @@ router.get("/:productId", async (req, res) => {
         .json({ message: "productId is invalid", status: false });
 
     const reviews = await Review.find({ productId })
-      .populate("userId", "username avatar")
-      .populate("replies.userId", "username avatar")
-      .populate("reports.userId", "username avatar")
+      .populate("createdBy", "fullName avatar")
+      .populate("replies.createdBy", "fullName avatar")
+      .populate("reports.createdBy", "fullName avatar")
       .sort({ createdAt: -1 });
 
     if (!reviews)
@@ -34,17 +34,17 @@ router.get("/:productId", async (req, res) => {
 });
 
 // delete review by reviewId
-router.delete("/:reviewId", verifyJWT, async (req, res) => {
+router.delete("/:reviewId", verifyJWT(), async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const userId = req.user._id;
+    const createdBy = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(reviewId))
       return res
         .status(404)
         .json({ message: "reviewId is invalid", status: false });
 
-    const review = await Review.findOneAndDelete(reviewId, { userId });
+    const review = await Review.findOneAndDelete(reviewId, { createdBy });
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
@@ -55,10 +55,10 @@ router.delete("/:reviewId", verifyJWT, async (req, res) => {
 });
 
 // create review by productId, comment & rating
-router.post("/", verifyJWT, async (req, res) => {
+router.post("/", verifyJWT(), async (req, res) => {
   try {
     const { productId, comment, rating } = req.body;
-    const userId = req.user._id;
+    const createdBy = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
       return res
@@ -67,7 +67,7 @@ router.post("/", verifyJWT, async (req, res) => {
 
     const newReview = await Review.create({
       productId,
-      userId,
+      createdBy,
       comment,
       rating,
     });
@@ -78,9 +78,9 @@ router.post("/", verifyJWT, async (req, res) => {
         .json({ status: false, message: "review not created" });
 
     const reviews = await Review.find({ productId })
-      .populate("userId", "username avatar")
-      .populate("replies.userId", "username avatar")
-      .populate("reports.userId", "username avatar")
+      .populate("createdBy", "fullName avatar")
+      .populate("replies.createdBy", "fullName avatar")
+      .populate("reports.createdBy", "fullName avatar")
       .sort({ createdAt: -1 })
       .limit(20);
 
@@ -120,18 +120,18 @@ router.patch("/", async (req, res) => {
 });
 
 // like a review
-router.patch("/like", verifyJWT, async (req, res) => {
+router.patch("/like", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { reviewId } = req.body;
     const review = await Review.findById(reviewId);
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
-    if (!review.likes.includes(userId)) {
-      review.likes.push(userId);
+    if (!review.likes.includes(createdBy)) {
+      review.likes.push(createdBy);
     } else {
-      review.likes = review.likes.filter((id) => id.toString() !== userId);
+      review.likes = review.likes.filter((id) => id.toString() !== createdBy);
     }
 
     await review.save();
@@ -144,15 +144,15 @@ router.patch("/like", verifyJWT, async (req, res) => {
 });
 
 // reply the review
-router.post("/reply", verifyJWT, async (req, res) => {
+router.post("/reply", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { reviewId, comment } = req.body;
     const review = await Review.findById(reviewId);
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
-    review.replies.push({ userId, comment });
+    review.replies.push({ createdBy, comment });
     await review.save();
 
     res
@@ -164,15 +164,15 @@ router.post("/reply", verifyJWT, async (req, res) => {
 });
 
 // report the review
-router.post("/report", verifyJWT, async (req, res) => {
+router.post("/report", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { reviewId, reason } = req.body;
     const review = await Review.findById(reviewId);
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
-    review.reports.push({ userId, reason });
+    review.reports.push({ createdBy, reason });
     await review.save();
 
     res.status(201).json({

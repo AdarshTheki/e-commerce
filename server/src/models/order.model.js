@@ -2,17 +2,17 @@ import mongoose, { Schema } from "mongoose";
 
 const orderSchema = new Schema(
   {
-    customer: {
+    customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     status: {
       type: String,
-      enum: ["pending", "cancelled", "delivered"],
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
-    shipping: {
+    shippingId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
       required: true,

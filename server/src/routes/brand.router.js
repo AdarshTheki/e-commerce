@@ -5,7 +5,7 @@ import { uploadSingleImg, removeSingleImg } from "../utils/cloudinary.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Brand } from "../models/brand.model.js";
 import { pagination } from "../utils/pagination.js";
-import { roleVerifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
@@ -60,7 +60,7 @@ router.get("/:id", async (req, res) => {
 router.post(
   "/",
   upload.single("thumbnail"),
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const filePath = req?.file?.path;
@@ -78,6 +78,7 @@ router.post(
         status,
         thumbnail,
         description,
+        createdBy: req.user._id,
       });
       if (!result) throw Error("brand create failed");
 
@@ -90,7 +91,7 @@ router.post(
 
 router.patch(
   "/:id",
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   upload.single("thumbnail"),
   async (req, res) => {
     try {
@@ -125,7 +126,7 @@ router.patch(
   }
 );
 
-router.delete("/:id", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
+router.delete("/:id", verifyJWT(["admin", "seller"]), async (req, res) => {
   try {
     const { id } = req.params;
     if (!isValidObjectId(id)) throw Error("brandId is invalid");

@@ -15,8 +15,19 @@ const categorySchema = new Schema(
       minlength: 3,
       maxlength: 200,
     },
-    description: { type: String, minlength: 100, maxlength: 1000, trim: true },
+    description: {
+      type: String,
+      minlength: 100,
+      maxlength: 1000,
+      trim: true,
+      required: true,
+    },
     thumbnail: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

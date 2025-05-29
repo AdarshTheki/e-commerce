@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 
 const userSchema = new Schema(
   {
-    username: {
+    fullName: {
       type: String,
-      trim: true,
       required: true,
-      lowercase: true,
-      index: true,
+      trim: true,
+      minlength: 5,
+      maxlength: 50,
     },
     email: {
       type: String,
@@ -18,7 +18,7 @@ const userSchema = new Schema(
       unique: true,
       trim: true,
     },
-    password: { type: String, required: true },
+    password: { type: String, required: true, minlength: 5, trim: true },
     role: {
       type: String,
       enum: ["customer", "admin", "seller"],
@@ -30,24 +30,17 @@ const userSchema = new Schema(
       default: "active",
     },
     favorite: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-    firstName: {
-      type: String,
-      lowercase: true,
-      required: true,
-      trim: true,
-    },
-    lastName: {
-      type: String,
-      lowercase: true,
-      required: true,
-      trim: true,
-    },
     phoneNumber: {
       type: String,
       trim: true,
     },
     avatar: String, // cloudinary url
     refreshToken: String,
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   { timestamps: true }
 );

@@ -1,77 +1,56 @@
 import { Router } from "express";
 import { Address } from "../models/address.model.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { isValidObjectId } from "mongoose";
 
 const router = Router();
 
-// get all address user
-router.get("/", verifyJWT, async (req, res) => {
+// get all address by user
+router.get("/", verifyJWT(), async (req, res) => {
   try {
-    const addresses = await Address.findOne({ owner: req.user._id }).populate(
-      "owner",
-      "username email"
-    ); // Populate owner but exclude password
+    const addresses = await Address.find({
+      createdBy: req.user._id,
+    });
     res.status(200).json(addresses);
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
 });
 
-// get single address by user
-router.get("/:id", verifyJWT, async (req, res) => {
-  try {
-    const addressId = req.params.id;
-
-    if (!isValidObjectId(addressId)) {
-      return res.status(400).json({ message: "Invalid address ID" });
-    }
-
-    const address = await Address.findById(addressId);
-
-    if (!address) {
-      return res.status(404).json({ message: "Address not found" });
-    }
-    if (address.owner.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    res.status(200).json(address);
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
-  }
-});
-
 // address create by user
-router.post("/", verifyJWT, async (req, res) => {
+router.post("/", verifyJWT(), async (req, res) => {
   try {
-    const { addressLine1, addressLine2, city, state, pinCode, country } =
-      req.body;
-    const owner = req.user._id;
+    const { addressLine, isDefault, city, postalCode, countryCode } = req.body;
+    const createdBy = req.user._id;
 
-    if (!addressLine1 || !city || !state || !pinCode || !country) {
+    if (!addressLine || !city || !postalCode || !countryCode) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (
-      typeof parseInt(pinCode) !== "number" ||
-      pinCode < 100000 ||
-      pinCode > 999999
+      typeof parseInt(postalCode) !== "number" ||
+      postalCode < 100000 ||
+      postalCode > 999999
     ) {
-      return res.status(400).json({ message: "Invalid PIN code" });
+      return res.status(400).json({ message: "Invalid postal code" });
     }
 
     const newAddress = new Address({
-      owner,
-      addressLine1,
-      addressLine2,
+      createdBy,
+      addressLine,
+      isDefault: isDefault || false,
       city,
-      state,
-      pinCode: parseInt(pinCode),
-      country,
+      postalCode: parseInt(postalCode),
+      countryCode,
     });
 
     await newAddress.save();
+
+    if (isDefault) {
+      await Address.updateMany(
+        { createdBy, _id: { $ne: newAddress._id } },
+        { $set: { isDefault: false } }
+      );
+    }
 
     res.status(201).json({
       shipping: newAddress,
@@ -84,61 +63,57 @@ router.post("/", verifyJWT, async (req, res) => {
 });
 
 // address updated by user
-router.patch("/:id", verifyJWT, async (req, res) => {
+router.patch("/:id", verifyJWT(), async (req, res) => {
   try {
     const addressId = req.params.id;
-    const { addressLine1, addressLine2, city, state, pinCode, country } =
-      req.body;
+    const { addressLine, isDefault, city, postalCode, countryCode } = req.body;
 
-    if (!isValidObjectId(addressId)) {
-      return res.status(400).json({ message: "Invalid address ID" });
-    }
-
-    const address = await Address.findById(addressId);
+    const address = await Address.findOne({
+      _id: addressId,
+      createdBy: req.user._id,
+    });
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }
-    if (address.owner.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Forbidden" });
+
+    address.addressLine = addressLine || address.addressLine;
+    address.city = city || address.city;
+    address.postalCode = postalCode || address.postalCode;
+    address.countryCode = countryCode || address.countryCode;
+
+    if (isDefault !== undefined) {
+      address.isDefault = isDefault;
+      if (isDefault) {
+        await Address.updateMany(
+          { createdBy: req.user._id, _id: { $ne: address._id } },
+          { $set: { isDefault: false } }
+        );
+      }
     }
 
-    // Server-side validation (similar to createAddress)
-    if (!addressLine1 || !city || !state || !pinCode || !country) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
+    await address.save();
 
-    if (typeof pinCode !== "number" || pinCode < 100000 || pinCode > 999999) {
-      return res.status(400).json({ message: "Invalid PIN code" });
-    }
-
-    const updatedAddress = await Address.findByIdAndUpdate(
-      addressId,
-      { addressLine1, addressLine2, city, state, pinCode, country },
-      { new: true, runValidators: true } // Return the updated document and run validators
-    );
-
-    res.status(202).json(updatedAddress);
+    res
+      .status(202)
+      .json({ address, message: "address updated success", status: true });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
 });
 
-router.delete("/:id", verifyJWT, async (req, res) => {
+router.delete("/:id", verifyJWT(), async (req, res) => {
   try {
     const addressId = req.params.id;
 
-    if (!isValidObjectId(addressId)) {
-      return res.status(400).json({ message: "Invalid address ID" });
-    }
-    const address = await Address.findById(addressId);
+    const address = await Address.findById(addressId, {
+      createdBy: req.user._id,
+    });
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
     }
-    if (address.owner.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
 
     await Address.findByIdAndDelete(addressId);
+
     res.status(204).json({ message: "address delete succeed" }); // 204 No Content (successful deletion)
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });

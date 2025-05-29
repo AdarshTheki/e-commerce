@@ -3,7 +3,7 @@ import { isValidObjectId } from "mongoose";
 import { Router } from "express";
 
 import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
-import { verifyJWT, roleVerifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { User } from "../models/user.model.js";
 import { pagination } from "../utils/pagination.js";
@@ -15,12 +15,6 @@ const cookiePayload = {
   maxAge: 2 * 24 * 60 * 60 * 1000, // 7 days
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-};
-
-// generate username
-const generateUsername = (username) => {
-  const newUsername = username?.replace(/[^a-zA-Z0-9\s]/g, "").toLowerCase();
-  return newUsername;
 };
 
 // get all user by admin
@@ -68,20 +62,17 @@ router.get("/admin/:id", async (req, res) => {
 });
 
 // create user by admin
-router.post("/admin", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
+router.post("/admin", verifyJWT(["admin", "seller"]), async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, email, status, role, password } =
-      req.body;
+    const { phoneNumber, email, status, role, password, fullName } = req.body;
 
     const user = await User.create({
-      firstName,
-      lastName,
       phoneNumber,
       email,
       status,
       role,
       password,
-      username: email?.replace("@gmail.com", ""),
+      fullName,
     });
 
     res.status(201).json({
@@ -95,49 +86,43 @@ router.post("/admin", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
 });
 
 // update user by admin
-router.patch(
-  "/admin/:id",
-  roleVerifyJWT(["admin", "seller"]),
-  async (req, res) => {
-    try {
-      const { firstName, lastName, phoneNumber, email, status, role } =
-        req.body;
-      const { id } = req.params;
-      if (!isValidObjectId(id)) {
-        return res
-          .status(501)
-          .json({ message: "update user id not define", status: false });
-      }
-
-      const user = await User.findById(id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      user.firstName = firstName || user.firstName;
-      user.lastName = lastName || user.lastName;
-      user.phoneNumber = phoneNumber || user.phoneNumber;
-      user.email = email || user.email;
-      user.status = status || user.status;
-      user.role = role || user.role;
-
-      await user.save();
-
-      res.status(202).json({
-        message: "User updated successfully",
-        status: true,
-        user,
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message, status: false });
+router.patch("/admin/:id", verifyJWT(["admin", "seller"]), async (req, res) => {
+  try {
+    const { phoneNumber, email, status, role, fullName } = req.body;
+    const { id } = req.params;
+    if (!isValidObjectId(id)) {
+      return res
+        .status(501)
+        .json({ message: "update user id not define", status: false });
     }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.email = email || user.email;
+    user.status = status || user.status;
+    user.role = role || user.role;
+    user.fullName = fullName || user.fullName;
+
+    await user.save();
+
+    res.status(202).json({
+      message: "User updated successfully",
+      status: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message, status: false });
   }
-);
+});
 
 // delete user by admin
 router.delete(
   "/admin/:id",
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -150,7 +135,7 @@ router.delete(
 
       if (!user)
         return res.status(404).json({
-          message: "user not deleted on this username",
+          message: "user delete not found on this id",
           status: false,
         });
 
@@ -162,10 +147,10 @@ router.delete(
 );
 
 // get current user
-router.get("/current-user", verifyJWT, async (req, res) => {
+router.get("/current-user", verifyJWT(), async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select(
-      "-refreshToken -password"
+      "-refreshToken -password -__v"
     );
     if (!user) {
       return res
@@ -182,35 +167,30 @@ router.get("/current-user", verifyJWT, async (req, res) => {
 // sign up create new user
 router.post("/sign-up", async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, status, role, email, password } =
-      req.body;
+    const { phoneNumber, status, role, email, password, fullName } = req.body;
 
-    if ([email, password, role].some((field) => field?.trim() === "")) {
-      throw new Error("User all fields are required");
-    }
-
-    const username = generateUsername(email);
-
-    const exitsUser = await User.findOne({
-      $or: [{ username }, { email }],
+    [email, password, role, fullName].some((field) => {
+      if (!field || field.trim() === "") {
+        throw new Error("All fields are required of " + field);
+      }
     });
+
+    const exitsUser = await User.findOne({ email });
     if (exitsUser) {
-      throw new Error("user Email or Username already exists");
+      throw new Error("user Email or Full Name already exists");
     }
 
     const user = await User.create({
       email,
       password,
       role,
-      username,
-      firstName,
-      lastName,
+      fullName,
       phoneNumber,
       status,
     });
 
     const createdUser = await User.findById(user?._id).select(
-      "-password -refreshToken"
+      "-password -refreshToken -__v"
     );
 
     if (!createdUser) {
@@ -226,29 +206,26 @@ router.post("/sign-up", async (req, res) => {
 // sign in user
 router.post("/sign-in", async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const { email, password } = req.body;
 
-    const tempUser = await User.findOne({
-      $or: [{ email }, { username }],
-    });
+    const tempUser = await User.findOne({ email }).select("-refreshToken -__v");
     if (!tempUser) {
-      throw new Error("user does not exist on database");
+      throw new Error("user not found");
     }
 
     const isPasswordValid = await tempUser.isPasswordCorrect(password);
     if (!isPasswordValid) {
-      throw new Error("user invalid credentials check password");
+      throw new Error("Invalid password");
     }
 
-    const user = await User.findById(tempUser._id);
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
+    const accessToken = await tempUser.generateAccessToken();
+    const refreshToken = await tempUser.generateRefreshToken();
 
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
+    tempUser.refreshToken = refreshToken;
+    await tempUser.save({ validateBeforeSave: false });
 
     const modifyUser = await User.findById(tempUser._id).select(
-      "-password -refreshToken"
+      "-password -refreshToken -__v"
     );
 
     res.cookie("refreshToken", refreshToken, cookiePayload);
@@ -264,7 +241,7 @@ router.post("/sign-in", async (req, res) => {
 });
 
 // logout current user
-router.post("/logout", verifyJWT, async (req, res) => {
+router.post("/logout", verifyJWT(), async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
       req.user._id,
@@ -272,7 +249,7 @@ router.post("/logout", verifyJWT, async (req, res) => {
       { new: true }
     );
 
-    if (!user) return new Error("user not logout properly");
+    if (!user) return new Error("user logout failed");
 
     return res
       .status(200)
@@ -285,7 +262,7 @@ router.post("/logout", verifyJWT, async (req, res) => {
 });
 
 // change password current user
-router.post("/password", verifyJWT, async (req, res) => {
+router.post("/password", verifyJWT(), async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
 
@@ -294,16 +271,8 @@ router.post("/password", verifyJWT, async (req, res) => {
 
     const user = await User.findById(req.user._id);
 
-    if (
-      [
-        "demo_user@gmail.com",
-        "guest-user@gmail.com",
-        "useradmin@gmail.com",
-      ].includes(user.email)
-    )
-      return res
-        .status(401)
-        .json({ message: "Access denied this user not password change" });
+    if (["guest-user@gmail.com", "useradmin@gmail.com"].includes(user.email))
+      return res.status(401).json({ message: "Access denied this user" });
 
     const check = await user.isPasswordCorrect(oldPassword);
     if (!check) throw Error("your old password is wrong");
@@ -317,23 +286,20 @@ router.post("/password", verifyJWT, async (req, res) => {
   }
 });
 
-router.patch("/update", verifyJWT, async (req, res) => {
+router.patch("/update", verifyJWT(), async (req, res) => {
   try {
-    const { firstName, lastName, phoneNumber, email, status, role, username } =
-      req.body;
+    const { phoneNumber, email, status, role, fullName } = req.body;
 
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
     user.phoneNumber = phoneNumber || user.phoneNumber;
     user.email = email || user.email;
     user.status = status || user.status;
     user.role = role || user.role;
-    user.username = username || user.username;
+    user.fullName = fullName || user.fullName;
 
     await user.save();
 
@@ -348,7 +314,7 @@ router.patch("/update", verifyJWT, async (req, res) => {
 });
 
 // refresh token when access token expired
-router.post("/refresh-token", verifyJWT, async (req, res) => {
+router.post("/refresh-token", verifyJWT(), async (req, res) => {
   try {
     const token = req.cookies?.refreshToken;
     if (!token)
@@ -396,33 +362,38 @@ router.post("/google", async (req, res) => {
 });
 
 // add or update user avatar
-router.post("/avatar", verifyJWT, upload.single("avatar"), async (req, res) => {
-  try {
-    const filePath = req?.file?.path;
-    if (!filePath) throw Error("invalid file type of avatar");
+router.post(
+  "/avatar",
+  verifyJWT(),
+  upload.single("avatar"),
+  async (req, res) => {
+    try {
+      const filePath = req?.file?.path;
+      if (!filePath) throw Error("invalid file type of avatar");
 
-    const avatar = await uploadSingleImg(filePath);
-    if (!avatar) throw Error("Avatar not create on cloudinary");
+      const avatar = await uploadSingleImg(filePath);
+      if (!avatar) throw Error("Avatar not create on cloudinary");
 
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { $set: { avatar } },
-      { new: true }
-    ).select("-password -refreshToken");
+      const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: { avatar } },
+        { new: true }
+      ).select("-password -refreshToken");
 
-    if (req?.user?.avatar) {
-      const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
-      await removeSingleImg(publicId);
+      if (req?.user?.avatar) {
+        const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
+        await removeSingleImg(publicId);
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      res.status(501).json({ message: error.message, status: false });
     }
-
-    return res.status(200).json(user);
-  } catch (error) {
-    res.status(501).json({ message: error.message, status: false });
   }
-});
+);
 
 // only remove user avatar
-router.delete("/avatar", verifyJWT, async (req, res) => {
+router.delete("/avatar", verifyJWT(), async (req, res) => {
   try {
     const publicId = req?.user?.avatar?.split("/")[7]?.split(".")[0];
     if (!publicId) throw Error("avatar publicId is not founded");
@@ -445,7 +416,7 @@ router.delete("/avatar", verifyJWT, async (req, res) => {
 });
 
 // add or remove favorite product
-router.patch("/favorite/:id", verifyJWT, async (req, res) => {
+router.patch("/favorite/:id", verifyJWT(), async (req, res) => {
   try {
     const userId = req.user._id;
     const { id } = req.params;
@@ -480,7 +451,7 @@ router.patch("/favorite/:id", verifyJWT, async (req, res) => {
 });
 
 // get all favorite products
-router.get("/favorite", verifyJWT, async (req, res) => {
+router.get("/favorite", verifyJWT(), async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("favorite");
     if (!user) {

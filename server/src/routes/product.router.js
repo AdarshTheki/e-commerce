@@ -9,7 +9,7 @@ import {
   uploadMultiImg,
   uploadSingleImg,
 } from "../utils/cloudinary.js";
-import { roleVerifyJWT } from "../middlewares/auth.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { pagination } from "../utils/pagination.js";
 
 const router = Router();
@@ -17,32 +17,45 @@ const router = Router();
 router.get("/", async (req, res) => {
   try {
     const {
-      title,
+      title = "",
       minPrice,
       maxPrice,
       minRating,
       maxRating,
       sortBy = "title",
-      order = "asc", // default ascending order
+      order = "asc",
       page = 1,
       limit = 10,
+      category,
+      brand,
     } = req.query;
+
+    // Build match conditions
+    const match = {};
+
+    if (title) {
+      match.title = { $regex: title, $options: "i" };
+    }
+    if (category) {
+      match.category = category;
+    }
+    if (brand) {
+      match.brand = brand;
+    }
+    if (minPrice || maxPrice) {
+      match.price = {};
+      if (minPrice) match.price.$gte = Number(minPrice);
+      if (maxPrice) match.price.$lte = Number(maxPrice);
+    }
+    if (minRating || maxRating) {
+      match.rating = {};
+      if (minRating) match.rating.$gte = Number(minRating);
+      if (maxRating) match.rating.$lte = Number(maxRating);
+    }
 
     const result = await Product.aggregate(
       pagination(
-        {
-          $match: {
-            $or: [
-              { title: { $regex: title, $options: "i" } },
-              {
-                $and: [
-                  { price: { $gte: minPrice, $lte: maxPrice } },
-                  { rating: { $gte: minRating, $lte: maxRating } },
-                ],
-              },
-            ],
-          },
-        },
+        { $match: match },
         parseInt(page),
         parseInt(limit),
         sortBy,
@@ -63,7 +76,7 @@ router.post(
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 5 },
   ]),
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const {
@@ -111,6 +124,7 @@ router.post(
         rating,
         stock,
         discount,
+        createdBy: req.user._id,
       });
 
       await product.save();
@@ -129,7 +143,7 @@ router.patch(
     { name: "thumbnail", maxCount: 1 },
     { name: "images", maxCount: 5 },
   ]),
-  roleVerifyJWT(["admin", "seller"]),
+  verifyJWT(["admin", "seller"]),
   async (req, res) => {
     try {
       const { id } = req.params;
@@ -186,7 +200,7 @@ router.patch(
 );
 
 // Delete Product
-router.delete("/:id", roleVerifyJWT(["admin", "seller"]), async (req, res) => {
+router.delete("/:id", verifyJWT(["admin", "seller"]), async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -217,9 +231,9 @@ router.get("/reviews/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
     const reviews = await Review.find({ productId })
-      .populate("userId", "username")
-      .populate("replies.userId", "username")
-      .populate("reports.userId", "username");
+      .populate("createdBy", "fullName avatar")
+      .populate("replies.createdBy", "fullName avatar")
+      .populate("reports.createdBy", "fullName avatar");
 
     res.status(200).json(reviews);
   } catch (error) {

@@ -7,11 +7,11 @@ import { success, error } from "../utils/ApiResponse.js";
 const router = Router();
 
 // get all carts
-router.get("/", verifyJWT, async (req, res) => {
+router.get("/", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
 
-    const carts = await Cart.findOne({ userId }).populate(
+    const carts = await Cart.findOne({ createdBy }).populate(
       "items.productId",
       "thumbnail title price category brand discount"
     );
@@ -26,18 +26,18 @@ router.get("/", verifyJWT, async (req, res) => {
 });
 
 // Add item to cart
-router.post("/", verifyJWT, async (req, res) => {
+router.post("/", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { productId, quantity } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
       return res.status(404).json(error("productId is invalid", 404));
 
-    let cart = await Cart.findOne({ userId });
+    let cart = await Cart.findOne({ createdBy });
 
     if (!cart) {
-      cart = new Cart({ userId, items: [{ productId, quantity }] });
+      cart = new Cart({ createdBy, items: [{ productId, quantity }] });
     } else {
       const itemIndex = cart.items.findIndex(
         (item) => item.productId.toString() === productId
@@ -59,16 +59,16 @@ router.post("/", verifyJWT, async (req, res) => {
 });
 
 // Remove item from cart
-router.delete("/:id", verifyJWT, async (req, res) => {
+router.delete("/:id", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id))
       return res.status(404).json(error("invalid productId", 405));
     5;
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ createdBy });
 
     if (!cart) return res.status(404).json(error("User Cart not found", 404));
 
@@ -86,9 +86,9 @@ router.delete("/:id", verifyJWT, async (req, res) => {
 });
 
 // Update item quantity
-router.put("/", verifyJWT, async (req, res) => {
+router.put("/", verifyJWT(), async (req, res) => {
   try {
-    const userId = req?.user?._id;
+    const createdBy = req?.user?._id;
     const { quantity, productId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
@@ -96,7 +96,7 @@ router.put("/", verifyJWT, async (req, res) => {
         .status(404)
         .json({ message: "productId is invalid", status: false });
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ createdBy });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -119,11 +119,11 @@ router.put("/", verifyJWT, async (req, res) => {
 });
 
 // Remove all items from cart
-router.delete("/delete/all", verifyJWT, async (req, res) => {
+router.delete("/delete/all", verifyJWT(), async (req, res) => {
   try {
-    const userId = req?.user?._id;
+    const createdBy = req?.user?._id;
 
-    const cart = await Cart.findOneAndDelete({ userId });
+    const cart = await Cart.findOneAndDelete({ createdBy });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -136,9 +136,9 @@ router.delete("/delete/all", verifyJWT, async (req, res) => {
 });
 
 // Move item to wishlist
-router.post("/move-wishlist", verifyJWT, async (req, res) => {
+router.post("/move-wishlist", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user?._id;
+    const createdBy = req.user?._id;
     const { productId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
@@ -146,7 +146,7 @@ router.post("/move-wishlist", verifyJWT, async (req, res) => {
         .status(404)
         .json({ message: "productId is invalid", status: false });
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ createdBy });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -170,9 +170,9 @@ router.post("/move-wishlist", verifyJWT, async (req, res) => {
 });
 
 // Move item from wishlist to cart
-router.post("/move-cart", verifyJWT, async (req, res) => {
+router.post("/move-cart", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
+    const createdBy = req.user._id;
     const { productId, quantity } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
@@ -180,7 +180,7 @@ router.post("/move-cart", verifyJWT, async (req, res) => {
         .status(404)
         .json({ message: "productId is invalid", status: false });
 
-    const cart = await Cart.findOne({ userId });
+    const cart = await Cart.findOne({ createdBy });
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
@@ -215,10 +215,10 @@ router.post("/move-cart", verifyJWT, async (req, res) => {
 });
 
 // Share cart
-router.get("/share", verifyJWT, async (req, res) => {
+router.get("/share", verifyJWT(), async (req, res) => {
   try {
-    const userId = req.user._id;
-    const cart = await Cart.findOne({ userId });
+    const createdBy = req.user._id;
+    const cart = await Cart.findOne({ createdBy });
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
     const shareableLink = `${process.env.ECOMMERCE_REDIRECT_URL}/cart/${cart._id}`;
