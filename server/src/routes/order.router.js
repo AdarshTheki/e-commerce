@@ -35,33 +35,36 @@ router.post(
       return res.status(400).json({ message: `Webhook Error: ${err.message}` });
     }
 
-    if (event.type === "checkout.session.completed") {
-      const session = event.data.object;
-      const { userId, addressId } = session.metadata || {};
+    switch (event.type) {
+      case "checkout.session.completed":
+        const session = event.data.object;
+        const { userId, addressId } = session.metadata || {};
 
-      if (!userId || !addressId) {
-        return res
-          .status(400)
-          .json({ message: "Missing userId or addressId in metadata" });
-      }
+        if (!userId || !addressId) {
+          return res
+            .status(400)
+            .json({ message: "Missing userId or addressId in metadata" });
+        }
 
-      const cart = await Cart.findOne({ createdBy: userId });
-      if (!cart || !cart.items?.length) {
-        return res.status(400).json({ message: "Cart not found or empty" });
-      }
+        const cart = await Cart.findOne({ createdBy: userId });
+        if (!cart || !cart.items?.length) {
+          return res.status(400).json({ message: "Cart not found or empty" });
+        }
 
-      const order = new Order({
-        customer: userId,
-        items: cart.items,
-        shipping: addressId,
-        status: "pending",
-      });
-      await order.save();
+        const order = new Order({
+          customer: userId,
+          items: cart.items,
+          shipping: addressId,
+          status: "pending",
+        });
+        await order.save();
 
-      cart.items = [];
-      await cart.save();
+        cart.items = [];
+        await cart.save();
 
-      return res.status(200).json({ message: "Order created successfully" });
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
     }
 
     res.status(200).json({ received: true });
