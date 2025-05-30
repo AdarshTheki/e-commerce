@@ -27,7 +27,7 @@ const CategoryCard = ({ heading = "", items = [], slug = "" }) => {
           <NavLink
             to={`/product?${slug}=${item?.title}`}
             key={item?._id}
-            className="border border-gray-300 hover:shadow-lg min-w-[150px] rounded-lg overflow-hidden">
+            className="border border-gray-300 hover:shadow-lg min-w-[180px] rounded-lg overflow-hidden">
             <img
               src={item?.thumbnail || "placeholder.png"}
               alt="New Release 1"

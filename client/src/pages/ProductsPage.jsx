@@ -81,7 +81,7 @@ const ProductListing = () => {
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(true)}
-          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm !font-medium">
+          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-1">
           {limit} Page <Scaling size={16} />
         </button>
         {isOpen && (
@@ -89,7 +89,7 @@ const ProductListing = () => {
             {pageSizeOptions.map((i) => (
               <button
                 onClick={() => setLimit(i.value)}
-                className={`w-full hover:bg-gray-50 text-nowrap px-3 py-1.5 text-sm ${
+                className={`w-full hover:bg-gray-50 text-nowrap px-3 py-2 ${
                   i.value == Number(limit) && "text-indigo-600"
                 }`}
                 key={i.label}>
@@ -108,7 +108,7 @@ const ProductListing = () => {
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(true)}
-          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm !font-medium">
+          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-1">
           Sort <ListFilterPlus size={16} />
         </button>
         {isOpen && (
@@ -116,7 +116,7 @@ const ProductListing = () => {
             {sortByOptions.map((i) => (
               <button
                 onClick={() => setSortBy(i.value)}
-                className={`w-full text-left pl-4 text-nowrap hover:bg-gray-50 px-3 py-1.5 text-sm ${
+                className={`w-full text-left pl-4 text-nowrap hover:bg-gray-50 px-3 py-2 ${
                   i.value === sortBy && "text-indigo-600"
                 }`}
                 key={i.label}>
@@ -265,19 +265,19 @@ const ProductListing = () => {
 
         <div className="flex-1 flex flex-col gap-4">
           {/* search products */}
-          <div className="flex sm:gap-4 gap-1 flex-wrap items-center ">
+          <div className="flex sm:gap-4 gap-2 flex-wrap items-center ">
             <Input
               name="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               type="text"
-              className="w-full text-sm min-w-[300px] py-1.5 pl-4"
+              className="w-full min-w-[300px] pl-4"
               placeholder="Search..."
             />
             {/* mobile filters */}
             <button
               onClick={() => setIsOpen(isOpen ? false : true)}
-              className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-0.5 !text-sm sm:hidden !font-medium">
+              className="border rounded-lg border-gray-300 !py-1.5 px-4 !text-gray-700 flex items-center gap-1 sm:hidden">
               Filter
               <Settings size={16} />
             </button>
@@ -296,15 +296,15 @@ const ProductListing = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex gap-2 justify-between card">
-            <p className="text-sm text-gray-500">
+          <div className="flex text-gray-700 gap-4 flex-wrap justify-between items-center card">
+            <h2>
               Showing {(page - 1) * limit + 1} to{" "}
               {Math.min(page * limit, data?.totalItems || 0)} of{" "}
               {data?.totalItems}
-            </p>
+            </h2>
             <div className="flex gap-2 items-center">
               <button
-                className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                className={`svg-btn !w-14 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
                   page === 1 && "hidden"
                 }`}
                 onClick={() => handlePageChange(page - 1)}>
@@ -318,7 +318,7 @@ const ProductListing = () => {
               />
 
               <button
-                className={`btn text-xs !py-1 !px-2.5 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
+                className={`svg-btn !w-14 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
                   page === data?.totalPages && "hidden"
                 }`}
                 onClick={() => handlePageChange(page + 1)}>

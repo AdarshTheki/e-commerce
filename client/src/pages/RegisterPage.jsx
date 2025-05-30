@@ -34,7 +34,7 @@ const Register = () => {
   };
 
   return (
-    <section className="flex items-center justify-center p-4">
+    <section className="flex items-center justify-center p-4 min-h-[80vh]">
       <div className="w-full max-w-md space-y-8">
         {/* <!-- Register Form --> */}
         <div className="bg-white p-8 rounded-lg border border-gray-200">

@@ -1,5 +1,3 @@
-import React from "react";
-
 const RenderPaginationButtons = ({
   page,
   totalPages,
@@ -11,7 +9,7 @@ const RenderPaginationButtons = ({
   buttons.push(
     <button
       key={1}
-      className={`btn text-xs !py-1 !px-2 ${
+      className={`svg-btn ${
         page === 1
           ? "bg-indigo-600 text-white"
           : "border border-neutral-200 hover:bg-gray-50"
@@ -26,7 +24,7 @@ const RenderPaginationButtons = ({
     buttons.push(
       <button
         key={2}
-        className={`btn text-xs !py-1 !px-2 ${
+        className={`svg-btn ${
           page === 2
             ? "bg-indigo-600 text-white"
             : "border border-neutral-200 hover:bg-gray-50"
@@ -42,7 +40,7 @@ const RenderPaginationButtons = ({
     buttons.push(
       <span
         key="ellipsis"
-        className="btn text-xs !py-1 !px-2 border border-neutral-200 rounded-lg">
+        className="svg-btn border border-neutral-200 rounded-lg">
         ...
       </span>
     );
@@ -53,7 +51,7 @@ const RenderPaginationButtons = ({
     buttons.push(
       <button
         key={page}
-        className="btn text-xs !py-1 !px-2 bg-indigo-600 text-white rounded-lg"
+        className="svg-btn bg-indigo-600 text-white rounded-lg"
         onClick={() => handlePageChange(page)}>
         {page}
       </button>
@@ -65,7 +63,7 @@ const RenderPaginationButtons = ({
     buttons.push(
       <button
         key={totalPages}
-        className={`btn text-xs !py-1 !px-2 ${
+        className={`svg-btn ${
           page === totalPages
             ? "bg-indigo-600 text-white"
             : "border border-neutral-200 hover:bg-gray-50"

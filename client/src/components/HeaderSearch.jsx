@@ -30,45 +30,43 @@ const HeaderSearch = () => {
 
       {isOpen && (
         <div className="fixed top-14 right-2 z-30 card w-80" ref={dropdownRef}>
-          <div className="p-4">
-            <div className="flex items-center gap-2 border border-indigo-500 p-2 rounded-lg mb-2">
-              <Search size={20} />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-none outline-none flex-1"
-              />
-              <X
-                size={20}
-                className="cursor-pointer hover:text-indigo-600"
-                onClick={() => {
-                  setSearchQuery("");
-                  setIsOpen(false);
-                }}
-              />
-            </div>
-            <ul>
-              {data && data?.items?.length > 0 ? (
-                data?.items?.map((item) => (
-                  <li key={item?._id}>
-                    <button
-                      onClick={() => {
-                        navigate(`/product/${item?._id}`);
-                      }}
-                      className="py-1.5 w-full text-left text-gray-700 pl-5 rounded-lg text-sm hover:bg-indigo-100"
-                      dangerouslySetInnerHTML={{
-                        __html: boldQuery(item?.title),
-                      }}
-                    />
-                  </li>
-                ))
-              ) : (
-                <li className="py-1.5 block pl-5 text-sm">No results found</li>
-              )}
-            </ul>
+          <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
+            <Search size={26} />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border-none outline-none w-full"
+            />
+            <X
+              size={26}
+              className="cursor-pointer hover:text-indigo-600"
+              onClick={() => {
+                setSearchQuery("");
+                setIsOpen(false);
+              }}
+            />
           </div>
+          <ul>
+            {data && data?.items?.length > 0 ? (
+              data?.items?.map((item) => (
+                <li key={item?._id}>
+                  <button
+                    onClick={() => {
+                      navigate(`/product/${item?._id}`);
+                    }}
+                    className="p-1.5 px-4 w-full text-left text-gray-700 rounded-lg text-sm hover:bg-indigo-100"
+                    dangerouslySetInnerHTML={{
+                      __html: boldQuery(item?.title),
+                    }}
+                  />
+                </li>
+              ))
+            ) : (
+              <li className="py-1.5 block pl-5 text-sm">No results found</li>
+            )}
+          </ul>
         </div>
       )}
     </>
