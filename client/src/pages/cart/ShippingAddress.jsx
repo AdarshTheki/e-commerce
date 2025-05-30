@@ -5,6 +5,7 @@ import useFetch from "../../hooks/useFetch";
 import { Edit2, Trash2Icon } from "lucide-react";
 import errorHandler from "../../helper/errorHandler";
 import axiosInstance from "../../helper/axiosInstance";
+import { toast } from "react-toastify";
 
 const ShippingAddress = () => {
   const { data, refetch, loading: isLoad } = useFetch("/address");
@@ -57,7 +58,12 @@ const ShippingAddress = () => {
 
   const handleCheckout = async () => {
     try {
-      console.log(formData);
+      if (!formData._id) return toast.error("user address not define");
+      const res = await axiosInstance.post("/order/stripe-checkout", {
+        userId: "",
+        addressId: formData?._id,
+      });
+      if (res.data) window.location.href = res.data;
     } catch (error) {
       errorHandler(error);
     }

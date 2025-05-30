@@ -3,7 +3,6 @@ import express from "express";
 import { Order } from "../models/order.model.js";
 import { Cart } from "../models/cart.model.js";
 import { Address } from "../models/address.model.js";
-import { ApiError } from "../utils/ApiError.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -12,67 +11,69 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY, {
   apiVersion: "2024-04-10",
 });
 
-router.post("/stripe-webhook", async (req, res) => {
-  const payload = JSON.stringify(req.body, null, 2);
-  const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  const header = stripe.webhooks.generateTestHeaderString({
-    payload,
-    secret,
-  });
+router.post(
+  "/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  async (req, res) => {
+    const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const sig = req.headers["stripe-signature"];
 
-  if (!payload || !stripeWebhookSecret || !header) {
-    throw new ApiError(404, "Not enough data to text or headers");
-  }
+    if (!stripeWebhookSecret || !sig) {
+      return res
+        .status(400)
+        .json({ message: "Missing webhook secret or signature" });
+    }
 
-  try {
-    const event = stripe.webhooks.constructEvent(
-      payload,
-      header,
-      stripeWebhookSecret
-    );
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        stripeWebhookSecret
+      );
+    } catch (err) {
+      return res.status(400).json({ message: `Webhook Error: ${err.message}` });
+    }
+
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
+      const { userId, addressId } = session.metadata || {};
 
-      const retrieveSession = await stripe.checkout.sessions.retrieve(
-        session.id,
-        { expand: ["line_items.data.price.product"] }
-      );
-
-      const createdBy = session.metadata?.userId;
-      if (!createdBy || !retrieveSession) {
+      if (!userId || !addressId) {
         return res
-          .status(200)
-          .json({ message: "order failed stripe webhook of userId" });
-      } else {
-        const cart = await Cart.findOne({ createdBy });
-        const address = await Address.findOne(
-          { createdBy },
-          { isDefault: true }
-        );
-        const order = new Order({
-          customerId: createdBy,
-          items: cart.items,
-          shippingId: address._id,
-          status: "pending",
-        });
-        await order.save();
-        cart.items = [];
-        cart.save();
-
-        res.status(200).json("order created successful");
+          .status(400)
+          .json({ message: "Missing userId or addressId in metadata" });
       }
-    } else {
-      return res.status(400).json({ message: "Failed Payment" });
+
+      const cart = await Cart.findOne({ createdBy: userId });
+      if (!cart || !cart.items?.length) {
+        return res.status(400).json({ message: "Cart not found or empty" });
+      }
+
+      const order = new Order({
+        customer: userId,
+        items: cart.items,
+        shipping: addressId,
+        status: "pending",
+      });
+      await order.save();
+
+      cart.items = [];
+      await cart.save();
+
+      return res.status(200).json({ message: "Order created successfully" });
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message, status: false });
+
+    res.status(200).json({ received: true });
   }
-});
+);
 
 router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
-  const cart = await Cart.findOne({ createdBy: req.user._id }).populate(
-    "items.productId"
-  );
+  const { userId, addressId } = req.body;
+  const cart = await Cart.findOne({
+    createdBy: userId || req.user._id,
+  }).populate("items.productId");
+  const address = await Address.findById(addressId);
 
   const redirect_url = process.env.ECOMMERCE_REDIRECT_URL;
   try {
@@ -95,6 +96,10 @@ router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
         },
         quantity: item.quantity,
       })),
+      metadata: {
+        userId: String(userId || req.user._id),
+        addressId: String(addressId),
+      },
       success_url: `${redirect_url}/order/success`,
       cancel_url: `${redirect_url}/order/failed`,
     });
