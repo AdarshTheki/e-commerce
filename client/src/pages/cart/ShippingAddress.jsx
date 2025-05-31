@@ -6,11 +6,18 @@ import { Edit2, Trash2Icon } from "lucide-react";
 import errorHandler from "../../helper/errorHandler";
 import axiosInstance from "../../helper/axiosInstance";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+
+// import { loadStripe } from "@stripe/stripe-js";
+// const stripePromise = loadStripe(
+//   "pk_test_51PJfyGSEX6kzN9W0RX5OCU3HY9fCAMDQY4YUNsFcfoT5zuAFykop0jEAyOxBcMg4Tvh3g9lfQjL7EwJYkvtwGwEX00yx979bXF"
+// );
 
 const ShippingAddress = () => {
   const { data, refetch, loading: isLoad } = useFetch("/address");
   const [loading, setLoading] = useState(false);
   const address = data?.find((i) => i?.isDefault);
+  const { user } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     addressLine: address?.addressLine || "",
@@ -60,10 +67,12 @@ const ShippingAddress = () => {
     try {
       if (!formData._id) return toast.error("user address not define");
       const res = await axiosInstance.post("/order/stripe-checkout", {
-        userId: "",
+        userId: user._id,
         addressId: formData?._id,
       });
-      if (res.data) window.location.href = res.data;
+      if (res.data) {
+        window.location.href = res.data;
+      }
     } catch (error) {
       errorHandler(error);
     }

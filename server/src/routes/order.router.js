@@ -11,72 +11,12 @@ const stripe = new Stripe(process.env.STRIPE_API_KEY, {
   apiVersion: "2024-04-10",
 });
 
-router.post(
-  "/stripe-webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    const sig = req.headers["stripe-signature"];
-
-    if (!stripeWebhookSecret || !sig) {
-      return res
-        .status(400)
-        .json({ message: "Missing webhook secret or signature" });
-    }
-
-    let event;
-    try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        stripeWebhookSecret
-      );
-    } catch (err) {
-      return res.status(400).json({ message: `Webhook Error: ${err.message}` });
-    }
-
-    switch (event.type) {
-      case "checkout.session.completed":
-        const session = event.data.object;
-        const { userId, addressId } = session.metadata || {};
-
-        if (!userId || !addressId) {
-          return res
-            .status(400)
-            .json({ message: "Missing userId or addressId in metadata" });
-        }
-
-        const cart = await Cart.findOne({ createdBy: userId });
-        if (!cart || !cart.items?.length) {
-          return res.status(400).json({ message: "Cart not found or empty" });
-        }
-
-        const order = new Order({
-          customer: userId,
-          items: cart.items,
-          shipping: addressId,
-          status: "pending",
-        });
-        await order.save();
-
-        cart.items = [];
-        await cart.save();
-
-        break;
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-    }
-
-    res.status(200).json({ received: true });
-  }
-);
-
 router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
   const { userId, addressId } = req.body;
+
   const cart = await Cart.findOne({
-    createdBy: userId || req.user._id,
+    createdBy: userId,
   }).populate("items.productId");
-  const address = await Address.findById(addressId);
 
   const redirect_url = process.env.ECOMMERCE_REDIRECT_URL;
   try {
@@ -89,6 +29,10 @@ router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
         { shipping_rate: "shr_1PUUUQSEX6kzN9W0NTr4rNla" },
         { shipping_rate: "shr_1PUfgHSEX6kzN9W0mtantJdO" },
       ],
+      metadata: {
+        userId,
+        addressId,
+      },
       line_items: cart.items?.map((item) => ({
         price_data: {
           currency: "inr",
@@ -99,10 +43,6 @@ router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
         },
         quantity: item.quantity,
       })),
-      metadata: {
-        userId: String(userId || req.user._id),
-        addressId: String(addressId),
-      },
       success_url: `${redirect_url}/order/success`,
       cancel_url: `${redirect_url}/order/failed`,
     });
@@ -154,7 +94,7 @@ router.post("/", verifyJWT(), async (req, res) => {
 
     let tempAddress;
     if (!shipping) {
-      tempAddress = await Address.findOne({ owner: req.user._id });
+      tempAddress = await Address.findById({ owner: req.user._id });
     } else {
       tempAddress = await Address.create({
         owner: req.user._id,

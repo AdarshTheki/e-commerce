@@ -3,6 +3,33 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 // import rateLimit from "express-rate-limit";
 
+const app = express();
+
+app.use(cors({ origin: "*", credentials: true }));
+
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // max 100 requests per windowMs
+// });
+
+// app.use(limiter);
+
+import stripeRoute from "./routes/stripe.route.js";
+
+app.post(
+  "/api/v1/order/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeRoute
+);
+
+app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static("public"));
+
+app.use(cookieParser());
+
 // import all routing files
 import userRoute from "./routes/user.router.js";
 import productRoute from "./routes/product.router.js";
@@ -14,25 +41,6 @@ import cartRoute from "./routes/cart.router.js";
 import addressRoute from "./routes/address.router.js";
 import openaiRoute from "./routes/openai.router.js";
 import dashboardRoute from "./routes/dashboard.js";
-
-const app = express();
-
-app.use(cors({ origin: "*", credentials: true }));
-
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static("public"));
-
-app.use(cookieParser());
-
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // max 100 requests per windowMs
-// });
-
-// app.use(limiter);
 
 // used all base url
 app.use("/api/v1/user", userRoute);
