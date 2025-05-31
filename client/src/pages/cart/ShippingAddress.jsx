@@ -66,12 +66,12 @@ const ShippingAddress = () => {
   const handleCheckout = async () => {
     try {
       if (!formData._id) return toast.error("user address not define");
-      const res = await axiosInstance.post("/order/stripe-checkout", {
+      const res = await axiosInstance.post("/stripe/stripe-checkout", {
         userId: user._id,
         addressId: formData?._id,
       });
       if (res.data) {
-        window.location.href = res.data;
+        window.location.href = res.data?.url;
       }
     } catch (error) {
       errorHandler(error);

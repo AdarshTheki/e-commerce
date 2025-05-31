@@ -14,12 +14,12 @@ app.use(cors({ origin: "*", credentials: true }));
 
 // app.use(limiter);
 
-import stripeRoute from "./routes/stripe.route.js";
+import { stripeCheckout, stripeWebhook } from "./routes/stripe.route.js";
 
 app.post(
-  "/api/v1/order/stripe-webhook",
+  "/api/v1/stripe/stripe-webhook",
   express.raw({ type: "application/json" }),
-  stripeRoute
+  stripeWebhook
 );
 
 app.use(express.json());
@@ -29,6 +29,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 app.use(cookieParser());
+
+app.post("/api/v1/stripe/stripe-checkout", verifyJWT(), stripeCheckout);
 
 // import all routing files
 import userRoute from "./routes/user.router.js";
@@ -41,6 +43,7 @@ import cartRoute from "./routes/cart.router.js";
 import addressRoute from "./routes/address.router.js";
 import openaiRoute from "./routes/openai.router.js";
 import dashboardRoute from "./routes/dashboard.js";
+import { verifyJWT } from "./middlewares/auth.middleware.js";
 
 // used all base url
 app.use("/api/v1/user", userRoute);

@@ -10,6 +10,9 @@ import {
   ProductsPage,
   SingleProductPage,
   FavoritePage,
+  OrderFailed,
+  OrderListing,
+  OrderSuccess,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { Footer, Header, PrivateRoute } from "./components";
@@ -51,6 +54,9 @@ const App = () => {
             <Route path="/cart" element={<CartsPage />} />
             <Route path="/setting" element={<SettingPage />} />
             <Route path="/favorite" element={<FavoritePage />} />
+            <Route path="/order/failed" element={<OrderFailed />} />
+            <Route path="/order/success" element={<OrderSuccess />} />
+            <Route path="/orders" element={<OrderListing />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>

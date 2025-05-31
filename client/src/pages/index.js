@@ -7,8 +7,14 @@ import RegisterPage from "./RegisterPage";
 import Notfound from "./Notfound";
 import SettingPage from "./Setting";
 import FavoritePage from "./FavoritePage";
+import OrderFailed from "./OrderFailed";
+import OrderSuccess from "./OrderSuccess";
+import OrderListing from "./OrderListing";
 
 export {
+  OrderListing,
+  OrderFailed,
+  OrderSuccess,
   CartsPage,
   HomePage,
   SingleProductPage,
