@@ -1,38 +1,50 @@
-export class ApiResponse {
-  constructor(statusCode, data, message = "success") {
-    this.statusCode = statusCode;
-    this.data = data;
+export class ApiSuccess {
+  constructor(data, message = "Data fetch success", code = 200) {
+    this.code = code;
     this.message = message;
-    this.success = statusCode < 400;
+    this.status = code <= 400;
+    this.data = data;
+  }
+}
+
+export class ApiError extends Error {
+  constructor(
+    message = "something went wrong!",
+    statusCode,
+    errors = [],
+    stack = ""
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.data = null;
+    this.success = false;
+    this.errors = errors;
+
+    if (this.stack) {
+      this.stack = stack;
+    } else {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }
 
 export const success = (
-  data,
-  message = "get fetch data success",
-  statusCode = 200
+  data = null,
+  message = "Data fetched successfully",
+  code = 200
 ) => {
   return {
-    data,
+    status: code <= 400,
+    code,
     message,
-    statusCode,
-    success: true,
+    data,
   };
 };
 
-export const error = (message = "something want wrong!", statusCode = 500) => {
-  // List of common HTTP request code
-  const codes = [200, 201, 400, 401, 404, 403, 422, 500];
-
-  // Get matched code
-  const findCode = codes.find((code) => code == statusCode);
-
-  if (!findCode) statusCode = 500;
-  else statusCode = findCode;
-
+export const error = (message = "Something went wrong!", code = 500) => {
   return {
+    status: code >= 400,
+    code,
     message,
-    statusCode,
-    success: false,
   };
 };

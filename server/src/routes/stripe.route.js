@@ -3,7 +3,7 @@ import { Cart } from "../models/cart.model.js";
 import { Order } from "../models/order.model.js";
 import { isValidObjectId } from "mongoose";
 
-const stripe = new Stripe(process.env.STRIPE_API_KEY, {
+const stripe = new Stripe(process.env.STRIPE_API_SECRET, {
   apiVersion: "2024-04-10",
 });
 
@@ -100,8 +100,8 @@ export const stripeCheckout = async (req, res) => {
         },
         quantity: item.quantity,
       })),
-      success_url: `${process.env.ECOMMERCE_REDIRECT_URL}/order/success`,
-      cancel_url: `${process.env.ECOMMERCE_REDIRECT_URL}/order/failed`,
+      success_url: `${process.env.REDIRECT_URL}/order/success`,
+      cancel_url: `${process.env.REDIRECT_URL}/order/failed`,
     });
 
     return res

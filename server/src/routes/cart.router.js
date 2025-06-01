@@ -11,10 +11,7 @@ router.get("/", verifyJWT(), async (req, res) => {
   try {
     const createdBy = req.user._id;
 
-    const carts = await Cart.findOne({ createdBy }).populate(
-      "items.productId",
-      "thumbnail title price category brand discount"
-    );
+    const carts = await Cart.findOne({ createdBy }).populate("items.productId");
 
     if (!carts)
       return res.status(404).json(error("get user carts not exists", 404));
@@ -92,14 +89,12 @@ router.put("/", verifyJWT(), async (req, res) => {
     const { quantity, productId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(productId))
-      return res
-        .status(404)
-        .json({ message: "productId is invalid", status: false });
+      return res.status(404).json(error("productId invalid", 404));
 
     const cart = await Cart.findOne({ createdBy });
 
     if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+      return res.status(404).json(error("cart not found", 404));
     }
 
     const itemIndex = cart.items.findIndex(
@@ -111,10 +106,10 @@ router.put("/", verifyJWT(), async (req, res) => {
       await cart.save();
       res.status(200).json(cart);
     } else {
-      res.status(404).json({ message: "Item not found in cart" });
+      res.status(404).json(error("item not found", 404));
     }
   } catch (error) {
-    res.status(500).json({ message: "Error updating quantity", error });
+    res.status(500).json(error(error.message));
   }
 });
 
@@ -221,7 +216,7 @@ router.get("/share", verifyJWT(), async (req, res) => {
     const cart = await Cart.findOne({ createdBy });
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-    const shareableLink = `${process.env.ECOMMERCE_REDIRECT_URL}/cart/${cart._id}`;
+    const shareableLink = `${process.env.REDIRECT_URL}/cart/${cart._id}`;
     res.status(200).json({ message: "Cart shared", link: shareableLink });
   } catch (error) {
     res.status(500).json({ message: "Error sharing cart", error });

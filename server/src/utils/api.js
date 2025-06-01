@@ -1,22 +1,14 @@
 import axios from "axios";
 
-export const sportsApi = axios.create({
-  baseURL: `${process.env.SUPER_NODE_URL}api/`,
-  timeout: 50000,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-export const openaiInstance = axios.create({
+export const openai = axios.create({
   baseURL: "https://api.openai.com/v1",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    Authorization: `Bearer ${process.env.OPENAI_API_URL}`,
   },
 });
 
-export const haggingaiInstance = axios.create({
+export const haggingFace = axios.create({
   baseURL: "https://router.huggingface.co/together/v1",
   headers: {
     "Content-Type": "application/json",

@@ -42,7 +42,7 @@ export const verifyJWT = (roles = [], status = []) => {
       req.user = user;
       next();
     } catch (err) {
-      return res.status(500).json(error(err.message, 500));
+      return res.status(500).json(error(err.message));
     }
   };
 };
