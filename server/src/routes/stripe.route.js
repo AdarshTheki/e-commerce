@@ -79,11 +79,11 @@ export const stripeCheckout = async (req, res) => {
       payment_method_types: ["card"],
       mode: "payment",
       shipping_address_collection: { allowed_countries: ["IN"] },
-      shipping_options: [
-        { shipping_rate: "shr_1PUfiJSEX6kzN9W0nabvhl8X" },
-        { shipping_rate: "shr_1PUUUQSEX6kzN9W0NTr4rNla" },
-        { shipping_rate: "shr_1PUfgHSEX6kzN9W0mtantJdO" },
-      ],
+      // shipping_options: [
+      //   { shipping_rate: "shr_1PUfiJSEX6kzN9W0nabvhl8X" },
+      //   { shipping_rate: "shr_1PUUUQSEX6kzN9W0NTr4rNla" },
+      //   { shipping_rate: "shr_1PUfgHSEX6kzN9W0mtantJdO" },
+      // ],
       metadata: {
         userId,
         addressId,
@@ -91,7 +91,7 @@ export const stripeCheckout = async (req, res) => {
       customer_email: req.user.email,
       line_items: cart.items?.map((item) => ({
         price_data: {
-          currency: "inr",
+          currency: "usd",
           product_data: {
             name: item.productId.title,
           },

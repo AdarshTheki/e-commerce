@@ -8,8 +8,10 @@ import CategoryCard from "./CategoryCard";
 import HeaderSearch from "./HeaderSearch";
 import HeaderUserMenu from "./HeaderUserMenu";
 import ProductReviewLike from "./ProductReviewLike";
+import CartListing from "./CartListing";
 
 export {
+  CartListing,
   ProductReviewLike,
   HeaderSearch,
   HeaderUserMenu,

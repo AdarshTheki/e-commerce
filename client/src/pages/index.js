@@ -1,4 +1,4 @@
-import CartsPage from "./cart/CartsPage";
+import CartsPage from "./CartsPage";
 import HomePage from "./HomePage";
 import SingleProductPage from "./SingleProductPage";
 import ProductsPage from "./ProductsPage";
@@ -10,8 +10,10 @@ import FavoritePage from "./FavoritePage";
 import OrderFailed from "./OrderFailed";
 import OrderSuccess from "./OrderSuccess";
 import OrderListing from "./OrderListing";
+import ShippingAddress from "./ShippingAddress";
 
 export {
+  ShippingAddress,
   OrderListing,
   OrderFailed,
   OrderSuccess,

@@ -1,17 +1,14 @@
 import { useState } from "react";
 
-import { Input, Loading, Select } from "../../utils";
-import useFetch from "../../hooks/useFetch";
 import { Edit2, Trash2Icon } from "lucide-react";
-import errorHandler from "../../helper/errorHandler";
-import axiosInstance from "../../helper/axiosInstance";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
-// import { loadStripe } from "@stripe/stripe-js";
-// const stripePromise = loadStripe(
-//   "pk_test_51PJfyGSEX6kzN9W0RX5OCU3HY9fCAMDQY4YUNsFcfoT5zuAFykop0jEAyOxBcMg4Tvh3g9lfQjL7EwJYkvtwGwEX00yx979bXF"
-// );
+import useFetch from "../hooks/useFetch";
+import errorHandler from "../helper/errorHandler";
+import axiosInstance from "../helper/axiosInstance";
+import { Input, Loading, Select } from "../utils";
+import { NavLink } from "react-router-dom";
 
 const ShippingAddress = () => {
   const { data, refetch, loading: isLoad } = useFetch("/address");
@@ -89,7 +86,7 @@ const ShippingAddress = () => {
   if (isLoad) return <Loading />;
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 min-h-screen mx-auto max-w-3xl">
       {!formData.isEdit && (
         <div
           className="border border-gray-300 cursor-pointer card mb-5"
@@ -122,18 +119,20 @@ const ShippingAddress = () => {
           </div>
         ))}
 
-      {!formData.isEdit && formData?._id && (
-        <div className="flex gap-5 mt-5">
-          <button className="bg-red-600 btn text-nowrap text-white">
-            Go Back
-          </button>
+      <div className="flex gap-5 text-sm font-semibold mt-10 mb-5">
+        <NavLink
+          to="/cart"
+          className="bg-red-600 border btn text-nowrap text-white">
+          Go Back
+        </NavLink>
+        {!formData.isEdit && formData?._id && (
           <button
             className="bg-indigo-600 btn text-nowrap text-white"
             onClick={handleCheckout}>
             {"Save & Checkout"}
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {formData.isEdit && (
         <form className="space-y-4" onSubmit={handleAddressSubmit}>
