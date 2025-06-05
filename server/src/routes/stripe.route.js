@@ -1,7 +1,11 @@
 import Stripe from "stripe";
+import { isValidObjectId } from "mongoose";
+import { Router } from "express";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { Cart } from "../models/cart.model.js";
 import { Order } from "../models/order.model.js";
-import { isValidObjectId } from "mongoose";
+
+const router = Router();
 
 const stripe = new Stripe(process.env.STRIPE_API_SECRET, {
   apiVersion: "2024-04-10",
@@ -64,7 +68,7 @@ export const stripeWebhook = async (req, res) => {
   }
 };
 
-export const stripeCheckout = async (req, res) => {
+router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
   const { userId, addressId } = req.body;
 
   if (!isValidObjectId(userId)) throw Error("invalid userId");
@@ -110,4 +114,6 @@ export const stripeCheckout = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
-};
+});
+
+export default router;

@@ -1,20 +1,25 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-// import rateLimit from "express-rate-limit";
+import rateLimit from "express-rate-limit";
+
+// import all routing files
+import userRoute from "./routes/user.router.js";
+import productRoute from "./routes/product.router.js";
+import orderRoute from "./routes/order.router.js";
+import reviewRoute from "./routes/review.router.js";
+import categoryRoute from "./routes/category.router.js";
+import brandRoute from "./routes/brand.router.js";
+import cartRoute from "./routes/cart.router.js";
+import addressRoute from "./routes/address.router.js";
+import openaiRoute from "./routes/openai.router.js";
+import dashboardRoute from "./routes/dashboard.js";
+import health_checkRoute from "./routes/healthcheck.router.js";
+import stripeRouter, { stripeWebhook } from "./routes/stripe.route.js";
 
 const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
-
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // max 100 requests per windowMs
-// });
-
-// app.use(limiter);
-
-import { stripeCheckout, stripeWebhook } from "./routes/stripe.route.js";
 
 app.post(
   "/api/v1/stripe/stripe-webhook",
@@ -30,20 +35,12 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-app.post("/api/v1/stripe/stripe-checkout", verifyJWT(), stripeCheckout);
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
 
-// import all routing files
-import userRoute from "./routes/user.router.js";
-import productRoute from "./routes/product.router.js";
-import orderRoute from "./routes/order.router.js";
-import reviewRoute from "./routes/review.router.js";
-import categoryRoute from "./routes/category.router.js";
-import brandRoute from "./routes/brand.router.js";
-import cartRoute from "./routes/cart.router.js";
-import addressRoute from "./routes/address.router.js";
-import openaiRoute from "./routes/openai.router.js";
-import dashboardRoute from "./routes/dashboard.js";
-import { verifyJWT } from "./middlewares/auth.middleware.js";
+app.use(limiter);
 
 // used all base url
 app.use("/api/v1/user", userRoute);
@@ -56,15 +53,12 @@ app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/openai", openaiRoute);
 app.use("/api/v1/dashboard", dashboardRoute);
+app.use("/api/v1/stripe", stripeRouter);
 
-app.get("/api/v1", async (req, res) => {
-  res
-    .status(200)
-    .json({ message: "API Health Check Successful", status: "ok" });
+app.get("/", (req, res) => {
+  return res.sendFile("/public/index.html");
 });
 
-app.get("*", (req, res) => {
-  res.status(404).json({ message: "Endpoint Not Found" });
-});
+app.use("/", health_checkRoute);
 
 export { app };

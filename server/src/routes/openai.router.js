@@ -104,7 +104,9 @@ router.post("/image-ai", async (req, res) => {
       n: 1,
     });
 
-    res.status(200).json(success(response.data));
+    res
+      .status(200)
+      .json(success(response.data, "image generate success with openai"));
   } catch (error) {
     res.status(500).json({ message: error.message, success: false });
   }

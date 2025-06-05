@@ -1,4 +1,4 @@
-// Aggrigation Pipeline
+// Aggregation Pipeline
 
 export const pagination = (
   filter,

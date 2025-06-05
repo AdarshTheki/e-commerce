@@ -43,7 +43,7 @@ export const success = (
 
 export const error = (message = "Something went wrong!", code = 500) => {
   return {
-    status: code >= 400,
+    status: code <= 400,
     code,
     message,
   };
