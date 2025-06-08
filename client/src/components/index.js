@@ -9,8 +9,16 @@ import HeaderSearch from "./HeaderSearch";
 import HeaderUserMenu from "./HeaderUserMenu";
 import ProductReviewLike from "./ProductReviewLike";
 import CartListing from "./CartListing";
+import HomeSpotlight from "./HomeSpotlight";
+import HomeCertificate from "./HomeCertificate";
+import HomeNew from "./HomeNew";
+import HomeWishlist from "./HomeWishlist";
 
 export {
+  HomeWishlist,
+  HomeNew,
+  HomeCertificate,
+  HomeSpotlight,
   CartListing,
   ProductReviewLike,
   HeaderSearch,

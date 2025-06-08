@@ -2,6 +2,7 @@ import React from "react";
 import HeartFavorite from "./HeartFavorite";
 import { NavLink } from "react-router-dom";
 import { LazyImage } from "../utils";
+import { Star } from "lucide-react";
 
 const ProductItem = ({ ...item }) => {
   return (
@@ -26,21 +27,18 @@ const ProductItem = ({ ...item }) => {
           </span>
         </div>
       </div>
-      <div className="space-y-2 capitalize">
-        <p className="space-x-3">
-          <span className="text-gray-600 text-sm">{item.brand}</span>
-          <span className="bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit">
+      <div className="capitalize text-gray-800 p-2">
+        <p className="space-x-3 text-sm">
+          {!!item.brand && <span>{item.brand}</span>}
+          <span className="bg-indigo-900/10 px-3 rounded-2xl text-xs py-1 w-fit">
             {item.category}
           </span>
         </p>
-        <h3 className="font-semibold mb-2 text-gray-700 line-clamp-2">
-          {item.title}
-        </h3>
-
-        <p className="flex justify-between">
-          <span className="text-gray-600 text-xl">${item.price}</span>{" "}
-          <span>
-            {item.rating} <span className="text-xl text-yellow-400">★</span>
+        <h3 className="font-medium line-clamp-1 mt-2">{item.title}</h3>
+        <p className="flex mt-4 justify-between">
+          <span className="text-xl">${item.price}</span>{" "}
+          <span className="flex gap-1 items-center">
+            {item.rating} <Star className="text-yellow-400" size={18} />
           </span>
         </p>
       </div>

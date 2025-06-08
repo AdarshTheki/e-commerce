@@ -40,7 +40,7 @@ const limiter = rateLimit({
   max: 100, // max 100 requests per windowMs
 });
 
-app.use(limiter);
+// app.use(limiter);
 
 // used all base url
 app.use("/api/v1/user", userRoute);

@@ -21,10 +21,10 @@ const sortByOptions = [
 ];
 
 const pageSizeOptions = [
-  { label: "10 items per page", value: 10 },
-  { label: "30 items per page", value: 30 },
-  { label: "50 items per page", value: 50 },
-  { label: "100 items per page", value: 100 },
+  { label: "10 Items per Page", value: 10 },
+  { label: "30 Items per Page", value: 30 },
+  { label: "50 Items per Page", value: 50 },
+  { label: "100 Items per Page", value: 100 },
 ];
 
 const ratingOptions = [
@@ -75,56 +75,38 @@ const ProductListing = () => {
     }
   };
 
-  const PageItem = () => {
-    const { isOpen, setIsOpen, dropdownRef } = useDropdown();
-    return (
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-1">
-          {limit} Page <Scaling size={16} />
-        </button>
-        {isOpen && (
-          <div className="absolute right-0 top-full mt-1 z-10 card">
-            {pageSizeOptions.map((i) => (
-              <button
-                onClick={() => setLimit(i.value)}
-                className={`w-full hover:bg-gray-50 text-nowrap px-3 py-2 ${
-                  i.value == Number(limit) && "text-indigo-600"
-                }`}
-                key={i.label}>
-                {i.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const SortByItem = () => {
     const { isOpen, setIsOpen, dropdownRef } = useDropdown();
     return (
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(true)}
-          className="btn border border-gray-300 !py-1.5 !text-gray-700 flex items-center gap-1">
+          className="btn border border-gray-300 !py-1.5 !flex items-center gap-1">
           Sort <ListFilterPlus size={16} />
         </button>
-        {isOpen && (
-          <div className="absolute right-0 top-full mt-1 z-10 card">
-            {sortByOptions.map((i) => (
-              <button
-                onClick={() => setSortBy(i.value)}
-                className={`w-full text-left pl-4 text-nowrap hover:bg-gray-50 px-3 py-2 ${
-                  i.value === sortBy && "text-indigo-600"
-                }`}
-                key={i.label}>
-                {i.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <div
+          className={`absolute mt-1 z-20 card duration-300 ease-in ${!isOpen ? "right-80 sm:-right-80 opacity-0" : "right-0 opacity-100"}`}>
+          {sortByOptions.map((i) => (
+            <button
+              onClick={() => setSortBy(i.value)}
+              className={`block text-left pl-4 text-nowrap hover:bg-indigo-100 rounded px-3 py-2 ${
+                i.value === sortBy && "text-indigo-600"
+              }`}
+              key={i.label}>
+              {i.label}
+            </button>
+          ))}
+          {pageSizeOptions.map((i) => (
+            <button
+              onClick={() => setLimit(i.value)}
+              className={`block text-left pl-4 text-nowrap hover:bg-indigo-100 rounded px-3 py-2 ${
+                i.value == Number(limit) && "text-indigo-600"
+              }`}
+              key={i.label}>
+              {i.label}
+            </button>
+          ))}
+        </div>
       </div>
     );
   };
@@ -163,20 +145,20 @@ const ProductListing = () => {
 
   return (
     <section className="p-2 max-w-6xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="lg:grid gap-5" style={{ gridTemplateColumns: "1fr 3fr" }}>
         {/* <!-- Filters Sidebar --> */}
         <div
           className={
             isOpen
-              ? "fixed inset-0 bg-black/50 z-30 pt-20"
-              : "w-[300px] max-lg:hidden sticky h-fit top-[54px]"
+              ? "fixed inset-0 bg-black/50 z-30 pt-20 duration-300 ease-in" // mobile
+              : "w-full max-lg:hidden lg:sticky lg:h-fit lg:top-[54px]" // desktop
           }>
           <div
             ref={dropdownRef}
             className={
               isOpen
-                ? "!p-5 h-full !rounded-2xl bg-white overflow-auto card text-gray-700 flex flex-col gap-4"
-                : "overflow-y-auto scrollbar card text-gray-700 flex flex-col gap-4"
+                ? "!p-5 h-full text-gray-800 !rounded-2xl bg-white overflow-auto card flex flex-col gap-4"
+                : "overflow-y-auto scrollbar card text-gray-800  flex flex-col gap-4"
             }>
             {/* <!-- Clear Filters --> */}
             <div className="flex justify-between">
@@ -263,9 +245,9 @@ const ProductListing = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-4">
+        <div className="flex-1 flex flex-col gap-4 overflow-hidden">
           {/* search products */}
-          <div className="flex sm:gap-4 gap-2 flex-wrap items-center ">
+          <div className="flex sm:gap-4 gap-2 flex-wrap items-center">
             <Input
               name="search"
               value={search}
@@ -277,12 +259,11 @@ const ProductListing = () => {
             {/* mobile filters */}
             <button
               onClick={() => setIsOpen(isOpen ? false : true)}
-              className="border rounded-lg border-gray-300 !py-1.5 px-4 !text-gray-700 flex items-center gap-1 sm:hidden">
+              className="border rounded-lg border-gray-300 !py-1.5 px-4 ! flex items-center gap-1 lg:hidden">
               Filter
               <Settings size={16} />
             </button>
             <SortByItem />
-            <PageItem />
           </div>
 
           {/* <!-- Products Grid --> */}
@@ -296,7 +277,7 @@ const ProductListing = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex text-gray-700 gap-4 flex-wrap justify-between items-center card">
+          <div className="flex  gap-4 flex-wrap justify-between items-center card">
             <h2>
               Showing {(page - 1) * limit + 1} to{" "}
               {Math.min(page * limit, data?.totalItems || 0)} of{" "}

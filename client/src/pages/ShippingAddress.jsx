@@ -86,10 +86,10 @@ const ShippingAddress = () => {
   if (isLoad) return <Loading />;
 
   return (
-    <div className="p-4 min-h-screen mx-auto max-w-3xl">
+    <div className="p-4 min-h-screen mx-auto max-w-6xl">
       {!formData.isEdit && (
         <div
-          className="border border-gray-300 cursor-pointer card mb-5"
+          className="border border-gray-300 cursor-pointer card mb-5 relative max-w-3xl"
           onClick={() => setFormData({ isEdit: true })}>
           <h2 className="font-semibold pl-2">Add New Address</h2>
         </div>
@@ -97,7 +97,7 @@ const ShippingAddress = () => {
 
       {!formData.isEdit &&
         data?.map((item) => (
-          <div key={item._id} className="relative mb-5">
+          <div key={item._id} className="relative mb-5 max-w-3xl">
             <div
               onClick={() => setFormData(item)}
               className={`capitalize !pl-5 border border-gray-300 cursor-pointer card ${item._id === formData._id && "!bg-indigo-100 border !border-indigo-300"}`}>
@@ -122,7 +122,7 @@ const ShippingAddress = () => {
       <div className="flex gap-5 text-sm font-semibold mt-10 mb-5">
         <NavLink
           to="/cart"
-          className="bg-red-600 border btn text-nowrap text-white">
+          className="bg-slate-800 border btn text-nowrap text-white">
           Go Back
         </NavLink>
         {!formData.isEdit && formData?._id && (

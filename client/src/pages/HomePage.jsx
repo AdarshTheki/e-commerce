@@ -1,5 +1,11 @@
 import { useSelector } from "react-redux";
-import { CategoryCard } from "../components";
+import {
+  CategoryCard,
+  HomeCertificate,
+  HomeNew,
+  HomeSpotlight,
+  HomeWishlist,
+} from "../components";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -49,50 +55,16 @@ const HomePage = () => {
     return () => clearInterval(interval);
   }, [index]);
 
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const now = new Date();
-    const endOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-      0,
-      0,
-      0
-    );
-    return Math.max(0, endOfDay - now);
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prevTime) => Math.max(0, prevTime - 1000));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTimeLeft = () => {
-    const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
-    const seconds = Math.floor((timeLeft / 1000) % 60);
-    return `${hours} hrs ${minutes} mins ${seconds} sec`;
-  };
-
   return (
     <main className="min-h-screen">
-      {/* offer valid */}
-      <p className="max-w-6xl mx-auto py-2 my-2 bg-pink-200 text-center text-xs">
-        Sale ends in <span className="font-bold">{formatTimeLeft()}</span>
-      </p>
-
       {/* Banner Listing */}
       <div className="w-full max-w-6xl mx-auto">
         <div className="h-full relative overflow-hidden">
-          <NavLink to={"/product"}>
+          <NavLink to={`/product`} className="">
             <img
               src={data[index]?.image}
-              alt={"banner_image"}
-              className="w-full object-cover"
-              loading="lazy"
+              alt="image"
+              className="object-cover bg-right w-full max-sm:h-[40vh]"
             />
           </NavLink>
           <div className="flex items-center justify-center py-2">
@@ -111,22 +83,20 @@ const HomePage = () => {
       {/* Category Listing */}
       <CategoryCard
         items={categories?.items}
-        heading={
-          categories?.items?.length > 1
-            ? "Featured Categories"
-            : "Feature Category"
-        }
+        heading="Categories"
         slug="category"
       />
 
+      <HomeSpotlight />
+
       {/* Brand Listing */}
-      <CategoryCard
-        items={brands?.items}
-        heading={
-          brands?.items?.length > 1 ? "Featured Brands" : "Feature Brand"
-        }
-        slug="brand"
-      />
+      <CategoryCard items={brands?.items} heading="Brands" slug="brand" />
+
+      <HomeNew />
+
+      <HomeCertificate />
+
+      <HomeWishlist />
     </main>
   );
 };

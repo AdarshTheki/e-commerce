@@ -93,7 +93,7 @@ const ProductReview = () => {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto p-4">
+    <div className="mx-auto px-3 py-5 max-w-6xl">
       <h2 className="text-2xl font-bold text-gray-800 uppercase mb-5">
         Comment
       </h2>

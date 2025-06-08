@@ -1,10 +1,15 @@
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import useFetch from "../hooks/useFetch";
-import { HeartFavorite, ProductReview } from "../components";
+import {
+  HeartFavorite,
+  HomeCertificate,
+  HomeNew,
+  HomeWishlist,
+  ProductReview,
+} from "../components";
 import { Loading } from "../utils";
 import errorHandler from "../helper/errorHandler";
 import instance from "../helper/axiosInstance";
@@ -48,7 +53,7 @@ const ProductDetail = () => {
 
   return (
     <section>
-      <div className="mx-auto max-w-screen-lg p-4">
+      <div className="mx-auto max-w-screen-lg p-4 text-gray-800">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* <!-- Product Images --> */}
           <div className="space-y-4">
@@ -85,9 +90,7 @@ const ProductDetail = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <Star className="text-yellow-400" />
-                  <span className="ml-2 text-sm text-gray-600">
-                    (128 reviews)
-                  </span>
+                  <span className="ml-2 text-sm ">(128 reviews)</span>
                 </div>
                 <span className="text-green-600">In Stock</span>
               </div>
@@ -96,14 +99,14 @@ const ProductDetail = () => {
             <div className="space-y-2">
               <div className="flex items-center">
                 <span className="text-3xl font-bold">${product?.price}</span>
-                <span className="ml-4 text-lg text-gray-500 line-through">
+                <span className="ml-4 text-lg  line-through">
                   ${(product?.price / (1 - product?.discount / 100)).toFixed(2)}
                 </span>
                 <span className="ml-2 bg-red-500 text-white px-2 py-1 text-sm rounded">
                   {product?.discount}% OFF
                 </span>
               </div>
-              <p className="text-sm text-gray-600">Price includes VAT</p>
+              <p className="text-sm ">Price includes VAT</p>
             </div>
 
             {/* <!-- Color Selection --> */}
@@ -155,7 +158,7 @@ const ProductDetail = () => {
                     +
                   </button>
                 </div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm ">
                   {product?.stock - quantity} items available
                 </span>
               </div>
@@ -174,102 +177,19 @@ const ProductDetail = () => {
                 className="py-2 px-3 border rounded-lg"
               />
             </div>
-
-            {/* <!-- Delivery Info --> */}
-            <div className="border-t pt-6 space-y-4">
-              <div className="flex items-center space-x-4">
-                <i className="fa-solid fa-truck text-2xl text-gray-600"></i>
-                <div>
-                  <h4 className="font-semibold">Free Delivery</h4>
-                  <p className="text-sm text-gray-600">
-                    Enter your postal code for delivery availability
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <i className="fa-solid fa-rotate-left text-2xl text-gray-600"></i>
-                <div>
-                  <h4 className="font-semibold">30-Day Returns</h4>
-                  <p className="text-sm text-gray-600">Shop with confidence</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* <!-- Product Reviews --> */}
+      <HomeCertificate />
+
       <ProductReview />
 
-      {/* <!-- Related Products --> */}
-      <RelatedProduct url={product?.category} />
+      <HomeNew />
+
+      <HomeWishlist />
     </section>
   );
 };
 
 export default ProductDetail;
-
-const RelatedProduct = ({ url }) => {
-  const { data, error, loading } = useFetch(
-    `/product?category=${url}&limit=30&sortBy=asc`
-  );
-
-  if (error || loading) return <h2>loading...</h2>;
-
-  return (
-    <section className="mt-10 pl-2">
-      <h2 className="text-2xl font-bold py-2">Related Products</h2>
-      <div className="flex w-full gap-4 overflow-x-auto scrollbar-hidden">
-        {data?.totalDocs
-          ? data?.docs?.map((item) => (
-              <div
-                key={item._id}
-                className="bg-white overflow-hidden min-w-[230px]">
-                <div className="relative min-h-[200px] bg-black/20 rounded-lg overflow-hidden">
-                  <NavLink to={`/product/${item._id}`}>
-                    <img
-                      src={
-                        item.thumbnail ||
-                        item.images[0] ||
-                        "https://placehold.co/200x140"
-                      }
-                      alt="Product"
-                      className="w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100"
-                      loading="lazy"
-                    />
-                  </NavLink>
-                  <div className="absolute top-2 right-2 space-y-2">
-                    <HeartFavorite id={item._id} />
-                  </div>
-                  <div className="absolute top-2 left-2">
-                    <span className="bg-red-500 text-white px-2 py-1 text-sm rounded">
-                      {item.discount}%
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4 space-y-2 capitalize">
-                  <p className="space-x-3">
-                    <span className="text-gray-600 text-sm">{item.brand}</span>
-                    <span className="bg-gray-200 px-3 text-xs rounded-2xl py-1 w-fit">
-                      {item.category}
-                    </span>
-                  </p>
-                  <h3 className="font-semibold mb-2 text-gray-700 line-clamp-2">
-                    {item.title}
-                  </h3>
-
-                  <p className="flex justify-between">
-                    <span className="text-gray-600 text-xl">${item.price}</span>{" "}
-                    <span>
-                      {item.rating}{" "}
-                      <span className="text-xl text-yellow-400">★</span>
-                    </span>
-                  </p>
-                </div>
-              </div>
-            ))
-          : null}
-      </div>
-    </section>
-  );
-};

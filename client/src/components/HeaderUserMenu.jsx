@@ -4,6 +4,7 @@ import useDropdown from "../hooks/useDropdown";
 import axiosInstance from "../helper/axiosInstance";
 import { toast } from "react-toastify";
 import { logout } from "../redux/authSlice";
+import { useState } from "react";
 
 const userMenu = [
   { id: 1, name: "Carts", path: "/cart" },
@@ -13,6 +14,7 @@ const userMenu = [
 ];
 
 const HeaderUserMenu = () => {
+  const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const { isOpen, setIsOpen, dropdownRef } = useDropdown();
   const navigate = useNavigate();
@@ -20,45 +22,50 @@ const HeaderUserMenu = () => {
 
   const logoutHandler = async () => {
     try {
+      setLoading(true);
       const res = await axiosInstance.post("/user/logout");
       if (res.data) {
         localStorage.removeItem("token");
-        navigate("/");
         dispatch(logout());
+        window.location.href = "/";
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.response?.data?.message || "Logout failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      {isOpen && user?._id && (
-        <div className="fixed top-14 right-2 z-30 card w-60" ref={dropdownRef}>
-          <ul className="w-full">
-            {userMenu.map((item) => (
-              <li key={item.id}>
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `py-1.5 block mb-2 text-left text-gray-700 pl-5 rounded-lg hover:bg-indigo-100 ${
-                      isActive ? "bg-indigo-100" : ""
-                    }`
-                  }
-                  onClick={() => setIsOpen(false)}>
-                  {item.name}
-                </NavLink>
-              </li>
-            ))}
-            <li>
-              <button onClick={logoutHandler} className="btn text-red-600 px-5">
-                Logout
-              </button>
+      <div
+        className={`absolute top-12 z-30 card w-40 duration-300 ease-in right-0 ${!isOpen ? "opacity-0" : "opacity-100"} ${!user && "hidden"}`}
+        ref={dropdownRef}>
+        <ul className="w-full">
+          {userMenu.map((item) => (
+            <li key={item.id}>
+              <NavLink
+                to={item.path}
+                className={({ isActive }) =>
+                  `py-1.5 block text-left text-gray-700 pl-5 rounded-lg hover:bg-indigo-100 ${
+                    isActive ? "bg-indigo-100" : ""
+                  }`
+                }
+                onClick={() => setIsOpen(false)}>
+                {item.name}
+              </NavLink>
             </li>
-          </ul>
-        </div>
-      )}
+          ))}
+          <li>
+            <NavLink
+              to={"#"}
+              onClick={logoutHandler}
+              className={`py-1.5 block mb-2 text-left !text-red-500 font-medium pl-5 rounded-lg hover:bg-indigo-100`}>
+              {loading ? "Loading..." : "Logout"}
+            </NavLink>
+          </li>
+        </ul>
+      </div>
 
       <img
         onClick={() => (user?._id ? setIsOpen(true) : navigate("/login"))}

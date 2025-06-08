@@ -42,7 +42,7 @@ const App = () => {
   if (loading) return <Loading />;
 
   return (
-    <div>
+    <div className="snap-start bg-slate-50 text-slate-700">
       <Router>
         <Header />
         <Routes>
