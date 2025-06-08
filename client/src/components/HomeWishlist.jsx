@@ -3,11 +3,11 @@ import { NavLink } from "react-router-dom";
 
 const HomeWishlist = () => {
   const items = [
-    { id: 1, icon: "/wishlist_1.jpeg" },
-    { id: 2, icon: "/wishlist_2.jpeg" },
-    { id: 3, icon: "/wishlist_3.jpeg" },
-    { id: 4, icon: "/wishlist_4.jpeg" },
-    { id: 5, icon: "/wishlist_5.jpeg" },
+    { id: 1, icon: "/wishlist/wishlist_1.jpeg" },
+    { id: 2, icon: "/wishlist/wishlist_2.jpeg" },
+    { id: 3, icon: "/wishlist/wishlist_3.jpeg" },
+    { id: 4, icon: "/wishlist/wishlist_4.jpeg" },
+    { id: 5, icon: "/wishlist/wishlist_5.jpeg" },
   ];
   // Shuffle items and pick a random one when page loads
   const [itemsToShow] = useState(() => {

@@ -1,5 +1,10 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  NavLink,
+} from "react-router-dom";
 import {
   LoginPage,
   Notfound,
@@ -16,7 +21,7 @@ import {
   ShippingAddress,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
-import { Footer, Header, PrivateRoute } from "./components";
+import { Footer, FooterMenu, Header, PrivateRoute } from "./components";
 import { Loading } from "./utils";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
@@ -42,7 +47,7 @@ const App = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="snap-start bg-slate-50 text-slate-700">
+    <div className="bg-slate-50 text-slate-700">
       <Router>
         <Header />
         <Routes>
@@ -63,6 +68,7 @@ const App = () => {
           <Route path="*" element={<Notfound />} />
         </Routes>
         <Footer />
+        <FooterMenu />
       </Router>
     </div>
   );

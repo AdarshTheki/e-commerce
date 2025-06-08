@@ -13,8 +13,10 @@ import HomeSpotlight from "./HomeSpotlight";
 import HomeCertificate from "./HomeCertificate";
 import HomeNew from "./HomeNew";
 import HomeWishlist from "./HomeWishlist";
+import FooterMenu from "./FooterMenu";
 
 export {
+  FooterMenu,
   HomeWishlist,
   HomeNew,
   HomeCertificate,

@@ -1,13 +1,24 @@
-import connectDB from "./connectDB.js";
-import { app } from "./app.js";
+import mongoose from "mongoose";
+import server from "./app.js";
 
-const port = 8000;
-const host = "0.0.0.0";
+const PORT = process.env.PORT || 8000;
+const HOST = process.env.HOST || "0.0.0.0";
+
+async function connectDB() {
+  try {
+    const { connection } = await mongoose.connect(process.env.MONGODB_URI);
+    const { host, name } = connection;
+    console.log(`Mongodb Connected On >> ${host} - ${name}`);
+  } catch (error) {
+    console.error(`Mongodb Failed On >> ${error.message}`);
+    process.exit(1);
+  }
+}
 
 connectDB()
   .then(() => {
-    app.listen(port, host, () => {
-      console.log(`running port url : http://localhost:${port}`);
+    server.listen(PORT, HOST, () => {
+      console.log(`Running PORT >> http://localhost:${PORT}`);
     });
   })
-  .catch((err) => console.error(err?.message, "mongodb failed on index"));
+  .catch((err) => console.log(`Server Failed On >> ${err.message}`));

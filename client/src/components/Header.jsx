@@ -1,11 +1,17 @@
 import { NavLink } from "react-router-dom";
-import { ShoppingCart } from "lucide-react";
 import HeaderUserMenu from "./HeaderUserMenu";
 import HeaderSearch from "./HeaderSearch";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
-    <header className="sticky top-0 left-0 w-full bg-slate-50 py-1 z-20 px-4">
+    <header className="sticky top-0 left-0 w-full bg-slate-50 py-1 z-50 px-4">
       <div className="flex justify-between w-full max-w-6xl mx-auto relative">
         {/* Logo */}
         <NavLink to="/">

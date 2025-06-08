@@ -24,12 +24,12 @@ const HeaderSearch = () => {
         onClick={() => setIsOpen(isOpen ? false : true)}
         title="Search products"
         className="cursor-pointer hover:text-indigo-600 flex gap-1 items-center">
-        <Search size={18} />
-        <span>Search</span>
+        <Search size={22} className="!text-slate-700" />
+        <span className="max-sm:hidden">Search</span>
       </button>
 
       <div
-        className={`absolute top-12 z-30 card w-80 duration-300 ease-in right-0 ${!isOpen ? "opacity-0" : "opacity-100"}`}
+        className={`absolute top-12 z-30 card w-80 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"}`}
         ref={dropdownRef}>
         <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
           <Search size={26} />

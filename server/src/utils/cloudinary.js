@@ -13,8 +13,8 @@ cloudinary.config({
 });
 
 const uploadMultiImg = async (images = []) => {
+  if (images.length === 0) return [];
   try {
-    if (images.length === 0) return [];
     const uploadResults = await Promise.allSettled(
       images.map((file) =>
         cloudinary.uploader.upload(file.path, {
@@ -28,13 +28,7 @@ const uploadMultiImg = async (images = []) => {
       .filter((result) => result.status === "fulfilled")
       .map((result) => result.value.secure_url);
 
-    images.forEach((img) => {
-      try {
-        fs.unlinkSync(img.path);
-      } catch (err) {
-        console.error("Error deleting file:", img.path, err.message);
-      }
-    });
+    images.forEach((img) => fs.unlinkSync(img.path));
 
     return urls;
   } catch (error) {
@@ -45,33 +39,32 @@ const uploadMultiImg = async (images = []) => {
 
 const uploadSingleImg = async (localFilePath = "") => {
   try {
-    if (!localFilePath) return "";
+    if (!localFilePath) return false;
+
     const res = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "image",
       folder,
     });
-    try {
-      fs.unlinkSync(localFilePath);
-    } catch (err) {
-      console.error("Error deleting file:", localFilePath, err.message);
-    }
+
+    fs.unlinkSync(localFilePath);
+
     return res.secure_url;
   } catch (error) {
-    console.error("Error uploading single image:", error.message);
-    return "";
+    console.log(error.message);
+    return false;
   }
 };
 
 const removeSingleImg = async (url = "") => {
+  if (!url) return false;
   try {
-    if (!url) return false;
     const publicId = url.split("/").pop().split(".")[0];
     await cloudinary.uploader.destroy(publicId, {
       resource_type: "image",
     });
     return true;
   } catch (error) {
-    console.error("Error removing single image:", error.message);
+    console.log(error.message);
     return false;
   }
 };
@@ -87,7 +80,7 @@ const removeMultiImg = async (images = []) => {
     );
     return true;
   } catch (error) {
-    console.error("Error removing multiple images:", error.message);
+    console.log(error.message);
     return false;
   }
 };

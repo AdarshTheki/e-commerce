@@ -39,7 +39,7 @@ const HeaderUserMenu = () => {
   return (
     <div>
       <div
-        className={`absolute top-12 z-30 card w-40 duration-300 ease-in right-0 ${!isOpen ? "opacity-0" : "opacity-100"} ${!user && "hidden"}`}
+        className={`absolute top-12 z-30 card w-40 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"} ${!user && "hidden"}`}
         ref={dropdownRef}>
         <ul className="w-full">
           {userMenu.map((item) => (

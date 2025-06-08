@@ -31,7 +31,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(express.static("public"));
+app.use(express.static("public/dist"));
 
 app.use(cookieParser());
 
@@ -56,9 +56,9 @@ app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/stripe", stripeRouter);
 
 app.get("/", (req, res) => {
-  return res.sendFile("/public/index.html");
+  return res.sendFile("/public/dist/index.html");
 });
 
 app.use("/", health_checkRoute);
 
-export { app };
+export default app;
