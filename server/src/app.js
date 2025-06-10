@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import rateLimit from "express-rate-limit";
+// import rateLimit from "express-rate-limit";
+import { socketConnection } from "./socket.js";
 
 // import all routing files
 import userRoute from "./routes/user.router.js";
@@ -21,6 +22,8 @@ const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
 
+const server = socketConnection(app);
+
 app.post(
   "/api/v1/stripe/stripe-webhook",
   express.raw({ type: "application/json" }),
@@ -35,10 +38,10 @@ app.use(express.static("public/dist"));
 
 app.use(cookieParser());
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max 100 requests per windowMs
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // max 100 requests per windowMs
+// });
 
 // app.use(limiter);
 
@@ -61,4 +64,4 @@ app.get("/", (req, res) => {
 
 app.use("/", health_checkRoute);
 
-export default app;
+export default server;

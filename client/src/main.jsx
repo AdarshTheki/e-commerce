@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <App />
-      <ToastContainer />
+      <ToastContainer position="top-center" />
     </Provider>
   </StrictMode>
 );

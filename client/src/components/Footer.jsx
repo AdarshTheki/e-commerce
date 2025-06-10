@@ -3,7 +3,7 @@ const Footer = () => {
     <footer id="footer" className="bg-gray-900 text-gray-300">
       {/* <!-- Main Footer --> */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* <!-- Company Info --> */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-white mb-4">Cartify</h3>
@@ -65,106 +65,108 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* <!-- Quick Links --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Shop
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Categories
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Brands
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
+          <div className="grid grid-cols-2 sm:gap-5 gap-2 w-full">
+            {/* <!-- Quick Links --> */}
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-4">
+                Quick Links
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Home
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Shop
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Categories
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Brands
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-          {/* <!-- Customer Service --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Customer Service
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  My Account
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Track Order
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Wishlist
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Returns Policy
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  Shipping Info
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300">
-                  FAQs
-                </a>
-              </li>
-            </ul>
+            {/* <!-- Customer Service --> */}
+            <div>
+              <h4 className="text-lg font-semibold text-white mb-4">
+                Customer Service
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    My Account
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Track Order
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Wishlist
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Returns Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    Shipping Info
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-white transition-colors duration-300">
+                    FAQs
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
 
           {/* <!-- Newsletter --> */}
@@ -214,20 +216,20 @@ const Footer = () => {
               <p>© 2024 Cartify. All rights reserved.</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <div className="flex space-x-6">
+              <div className="flex text-xs space-x-6">
                 <a
                   href="#"
-                  className="hover:text-white transition-colors duration-300">
+                  className="hover:text-white transition-colors duration-300 text-nowrap">
                   Privacy Policy
                 </a>
                 <a
                   href="#"
-                  className="hover:text-white transition-colors duration-300">
+                  className="hover:text-white transition-colors duration-300 text-nowrap">
                   Terms of Service
                 </a>
                 <a
                   href="#"
-                  className="hover:text-white transition-colors duration-300">
+                  className="hover:text-white transition-colors duration-300 text-nowrap">
                   Cookie Policy
                 </a>
               </div>

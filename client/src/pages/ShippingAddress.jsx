@@ -9,6 +9,7 @@ import errorHandler from "../helper/errorHandler";
 import axiosInstance from "../helper/axiosInstance";
 import { Input, Loading, Select } from "../utils";
 import { NavLink } from "react-router-dom";
+import { HomeSpotlight } from "../components";
 
 const ShippingAddress = () => {
   const { data, refetch, loading: isLoad } = useFetch("/address");
@@ -194,6 +195,8 @@ const ShippingAddress = () => {
           </div>
         </form>
       )}
+
+      <HomeSpotlight />
     </div>
   );
 };

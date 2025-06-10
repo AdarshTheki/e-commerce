@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import {
-  CategoryCard,
+  HomeCard,
   HomeCertificate,
   HomeNew,
   HomeSpotlight,
@@ -64,6 +64,7 @@ const HomePage = () => {
             <img
               src={data[index]?.image}
               alt="image"
+              loading="lazy"
               className="object-cover bg-right w-full max-sm:h-[40vh]"
             />
           </NavLink>
@@ -81,7 +82,7 @@ const HomePage = () => {
       </div>
 
       {/* Category Listing */}
-      <CategoryCard
+      <HomeCard
         items={categories?.items}
         heading="Categories"
         slug="category"
@@ -90,7 +91,7 @@ const HomePage = () => {
       <HomeSpotlight />
 
       {/* Brand Listing */}
-      <CategoryCard items={brands?.items} heading="Brands" slug="brand" />
+      <HomeCard items={brands?.items} heading="Brands" slug="brand" />
 
       <HomeNew />
 

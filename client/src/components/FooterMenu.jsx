@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 const FooterMenu = () => {
   return (
     <footer className="sm:hidden sticky bottom-0 left-0 w-full p-3 bg-slate-50">
-      <div className="flex items-center justify-between text-sm">
+      <div className="flex items-center justify-between text-xs font-medium">
         <NavLink to={"/"} className="flex items-center justify-center flex-col">
           <Home /> Home
         </NavLink>

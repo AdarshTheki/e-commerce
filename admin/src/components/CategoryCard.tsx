@@ -13,7 +13,7 @@ const CategoryCard = ({
         <LazyImage
           className="h-full w-full"
           alt={`${title}_Image`}
-          src={thumbnail || "/placeholder.png"}
+          src={thumbnail || "/placeholder.jpg"}
         />
       </div>
       <div className="p-3 text-gray-700">

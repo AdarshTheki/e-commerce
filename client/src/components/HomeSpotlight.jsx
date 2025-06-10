@@ -1,17 +1,62 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import HomeCard from "./HomeCard";
 
 const HomeSpotlight = () => {
   const items = [
-    { id: 1, icon: "/spotlight/spotlight (1).jpeg" },
-    { id: 2, icon: "/spotlight/spotlight (2).jpeg" },
-    { id: 3, icon: "/spotlight/spotlight (3).jpeg" },
-    { id: 4, icon: "/spotlight/spotlight (4).jpeg" },
-    { id: 5, icon: "/spotlight/spotlight (5).jpeg" },
-    { id: 6, icon: "/spotlight/spotlight (6).jpeg" },
-    { id: 7, icon: "/spotlight/spotlight (7).jpeg" },
-    { id: 8, icon: "/spotlight/spotlight (8).jpeg" },
-    { id: 9, icon: "/spotlight/spotlight (9).jpeg" },
+    {
+      _id: 1,
+      title: "Up to 10% off on ₹999",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/uqnqqzb4ybgsanunn5a4.avif",
+    },
+    {
+      _id: 2,
+      title: "Up to 10% off on ₹999",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/dxwytiqjmdsa2bzxoqjh.avif",
+    },
+    {
+      _id: 3,
+      title: "Up to 15% off on ₹799",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545007/gallery/zq24hw1qtdhkmopg7i78.avif",
+    },
+    {
+      _id: 4,
+      title: "Up to 8% off on ₹199",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/rgwszo9ptxigmqmr2bmb.avif",
+    },
+    {
+      _id: 5,
+      title: "Up to 22% off on ₹599",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/cefx3jx4y6icn2e0hvpo.avif",
+    },
+    {
+      _id: 6,
+      title: "Up to 28% off on ₹899",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/zuqkqaye0p9rvu4qtofl.avif",
+    },
+    {
+      _id: 7,
+      title: "Up to 40% off on ₹1999",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/ycevsxxhvl1octxxp2gi.avif",
+    },
+    {
+      _id: 8,
+      title: "Up to 30% off on ₹3999",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/svuaipnystulmobythyu.avif",
+    },
+    {
+      _id: 9,
+      title: "Up to 5% off on ₹1999",
+      thumbnail:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545003/gallery/ox2obutegrw8rdh53ss0.avif",
+    },
   ];
   // Shuffle items and pick a random one when page loads
   const [itemsToShow] = useState(() => {
@@ -19,24 +64,7 @@ const HomeSpotlight = () => {
     return shuffled;
   });
 
-  return (
-    <div className="relative mx-auto max-w-6xl sm:p-4 p-3">
-      <h2 className="font-medium text-xl">Spotlight On</h2>
-      <div className="w-full snap-x relative py-5 sm:gap-4 gap-2 flex overflow-x-auto scrollbar-hidden">
-        {itemsToShow.map((item) => (
-          <NavLink to={"/product"} key={item.id} className="snap-start">
-            <img
-              src={item.icon}
-              alt={`image-${item.id}`}
-              className="object-cover min-w-[260px] rounded h-[180px]"
-            />
-            <p className="p-2">Up to {item.id}0% off on ₹999</p>
-          </NavLink>
-        ))}
-      </div>
-      <div className="absolute top-10 bottom-0 right-0 w-14 bg-gradient-to-r to-gray-100"></div>
-    </div>
-  );
+  return <HomeCard heading="Spotlight On" items={itemsToShow} />;
 };
 
 export default HomeSpotlight;

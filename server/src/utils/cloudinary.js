@@ -12,14 +12,14 @@ cloudinary.config({
   api_secret,
 });
 
-const uploadMultiImg = async (images = []) => {
+const uploadMultiImg = async (images = [], folderName = "") => {
   if (images.length === 0) return [];
   try {
     const uploadResults = await Promise.allSettled(
       images.map((file) =>
         cloudinary.uploader.upload(file.path, {
           resource_type: "image",
-          folder,
+          folder: folderName || folder,
         })
       )
     );
@@ -85,4 +85,25 @@ const removeMultiImg = async (images = []) => {
   }
 };
 
-export { uploadSingleImg, removeSingleImg, uploadMultiImg, removeMultiImg };
+const getImageUrls = async (expression = "folder:gallery", limit = 100) => {
+  try {
+    const result = await cloudinary.search
+      .expression(expression)
+      .sort_by("public_id", "desc")
+      .max_results(parseInt(limit)) // You can paginate if you have more than 100
+      .execute();
+    const urls = result.resources.map((file) => file.secure_url);
+    return urls;
+  } catch (error) {
+    console.log(error.message);
+    return [];
+  }
+};
+
+export {
+  uploadSingleImg,
+  removeSingleImg,
+  uploadMultiImg,
+  removeMultiImg,
+  getImageUrls,
+};

@@ -11,8 +11,10 @@ import OrderFailed from "./OrderFailed";
 import OrderSuccess from "./OrderSuccess";
 import OrderListing from "./OrderListing";
 import ShippingAddress from "./ShippingAddress";
+import GalleryPage from "./GalleryPage";
 
 export {
+  GalleryPage,
   ShippingAddress,
   OrderListing,
   OrderFailed,

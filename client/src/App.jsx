@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  NavLink,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
   LoginPage,
   Notfound,
@@ -19,6 +14,7 @@ import {
   OrderListing,
   OrderSuccess,
   ShippingAddress,
+  GalleryPage,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { Footer, FooterMenu, Header, PrivateRoute } from "./components";
@@ -64,6 +60,7 @@ const App = () => {
             <Route path="/order/failed" element={<OrderFailed />} />
             <Route path="/order/success" element={<OrderSuccess />} />
             <Route path="/orders" element={<OrderListing />} />
+            <Route path="/gallery" element={<GalleryPage />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>

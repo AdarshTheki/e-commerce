@@ -128,16 +128,20 @@ router.patch("/like", verifyJWT(), async (req, res) => {
 
     if (!review) return res.status(404).json({ message: "Review not found" });
 
-    if (!review.likes.includes(createdBy)) {
-      review.likes.push(createdBy);
+    if (!review.likes.includes(createdBy.toString())) {
+      review.likes.push(createdBy.toString());
     } else {
-      review.likes = review.likes.filter((id) => id.toString() !== createdBy);
+      review.likes = review.likes.filter(
+        (id) => id.toString() !== createdBy.toString()
+      );
     }
 
     await review.save();
-    res
-      .status(200)
-      .json({ message: "Review liked/unliked", likes: review.likes.length });
+
+    res.status(200).json({
+      message: `Review ${review.likes.includes(createdBy) ? "unlike" : "liked"}`,
+      likes: review.likes.length,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

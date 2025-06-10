@@ -11,6 +11,7 @@ const userMenu = [
   { id: 2, name: "Setting", path: "/setting" },
   { id: 3, name: "Favorite", path: "/favorite" },
   { id: 4, name: "Orders", path: "/orders" },
+  { id: 5, name: "gallery", path: "/gallery" },
 ];
 
 const HeaderUserMenu = () => {

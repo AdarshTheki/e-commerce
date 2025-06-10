@@ -46,7 +46,7 @@ const CartComponent = () => {
               <CartListing key={item._id} {...item} refetch={refetch} />
             ))}
         </div>
-        <div className="p-4 md:w-1/3 space-y-3 w-full">
+        <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-10 h-fit">
           <h3>This Order shipping Fee!</h3>
           <div className="flex justify-between font-semibold text-xl">
             <span>({items?.length}) Item</span>
@@ -64,14 +64,14 @@ const CartComponent = () => {
             <span>Total:</span>
             <span>${((totals + 5) | 0).toFixed(2)}</span>
           </div>
-          <div className="flex gap-6 text-sm font-semibold mt-10">
+          <div className="flex gap-6 font-semibold mt-10">
             <NavLink
               to={"/product"}
-              className="text-red-600 btn text-nowrap border">
+              className="text-red-600 btn !text-base text-nowrap border">
               Go Product
             </NavLink>
             <NavLink to={"/shipping"} className="bg-indigo-600 text-white btn">
-              Checkout Address
+              Checkout
             </NavLink>
           </div>
         </div>

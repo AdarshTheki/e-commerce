@@ -5,19 +5,19 @@ const HomeNew = () => {
   const items = [
     {
       id: 1,
-      icon: "/new/new (1).jpeg",
+      icon: "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545623/gallery/zxlcmvdd9sitcvabremz.avif",
       title: "Kevin Aucoin",
       content: "Studio-approved makeup for your vanity",
     },
     {
       id: 2,
-      icon: "/new/new (2).jpeg",
+      icon: "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545624/gallery/d3k50dlf7a54sa9oullg.avif",
       title: "Tira Merch",
       content: "Go beyond beauty with high-quality everyday essentials",
     },
     {
       id: 3,
-      icon: "/new/new (3).jpeg",
+      icon: "https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545624/gallery/sqzzzirvzshe1s8yaivs.avif",
       title: "Nuse",
       content: "Makeup with soft colours for fresh and natural look",
     },

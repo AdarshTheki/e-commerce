@@ -6,13 +6,13 @@ import { Star } from "lucide-react";
 
 const ProductItem = ({ ...item }) => {
   return (
-    <div className={`group card w-full`}>
-      <div className="relative min-h-[200px]">
+    <div className={`group card w-full max-sm:grid gap-2 grid-cols-2`}>
+      <div className="relative sm:min-h-[200px]">
         <NavLink to={`/product/${item._id}`}>
           <LazyImage
             src={item.thumbnail || item.images[0]}
             placeholder={"https://placehold.co/200x140"}
-            fallback={"/placeholder.png"}
+            fallback={"/placeholder.jpg"}
             alt="Product"
             className="w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100"
             loading="lazy"
@@ -27,14 +27,10 @@ const ProductItem = ({ ...item }) => {
           </span>
         </div>
       </div>
-      <div className="capitalize text-gray-800 p-2">
-        <p className="space-x-3 text-sm">
-          {!!item.brand && <span>{item.brand}</span>}
-          <span className="bg-indigo-900/10 px-3 rounded-2xl text-xs py-1 w-fit">
-            {item.category}
-          </span>
-        </p>
-        <h3 className="font-medium line-clamp-1 mt-2">{item.title}</h3>
+      <div className="capitalize p-2">
+        <h3 className="font-medium max-sm:text-xl line-clamp-2 mb-3">
+          {item.title}
+        </h3>
         <p className="flex mt-4 justify-between">
           <span className="text-xl">${item.price}</span>{" "}
           <span className="flex gap-1 items-center">

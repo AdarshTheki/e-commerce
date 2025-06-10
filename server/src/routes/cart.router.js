@@ -1,5 +1,5 @@
 import { Router } from "express";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { Cart } from "../models/cart.model.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { success, error } from "../utils/ApiResponse.js";
@@ -85,10 +85,10 @@ router.delete("/:id", verifyJWT(), async (req, res) => {
 // Update item quantity
 router.put("/", verifyJWT(), async (req, res) => {
   try {
-    const createdBy = req?.user?._id;
+    const createdBy = req.user._id;
     const { quantity, productId } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(productId))
+    if (!isValidObjectId(productId))
       return res.status(404).json(error("productId invalid", 404));
 
     const cart = await Cart.findOne({ createdBy });
@@ -98,7 +98,7 @@ router.put("/", verifyJWT(), async (req, res) => {
     }
 
     const itemIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId.toString() === productId.toString()
     );
 
     if (itemIndex > -1) {

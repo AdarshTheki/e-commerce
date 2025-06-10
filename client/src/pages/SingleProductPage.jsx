@@ -53,7 +53,7 @@ const ProductDetail = () => {
 
   return (
     <section>
-      <div className="mx-auto max-w-screen-lg p-4 text-gray-800">
+      <div className="mx-auto max-w-6xl p-4 text-gray-800">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* <!-- Product Images --> */}
           <div className="space-y-4">
@@ -184,8 +184,6 @@ const ProductDetail = () => {
       <HomeCertificate />
 
       <ProductReview />
-
-      <HomeNew />
 
       <HomeWishlist />
     </section>

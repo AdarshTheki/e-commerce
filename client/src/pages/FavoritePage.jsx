@@ -1,6 +1,5 @@
-import React from "react";
 import useFetch from "../hooks/useFetch";
-import { HomeNew, HomeWishlist, ProductItem } from "../components";
+import { HomeNew, ProductItem } from "../components";
 import { NavLink } from "react-router-dom";
 import { Loading } from "../utils";
 
@@ -14,7 +13,7 @@ const FavoritePage = () => {
       <div className="relative mx-auto max-w-6xl sm:p-4 p-3">
         <h2 className="font-medium text-xl my-5">Favorite Item Gallery</h2>
         {data?.length > 0 ? (
-          <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 w-full">
+          <div className="grid md:grid-cols-4 sm:grid-cols-3 gap-4 w-full">
             {data?.map((item) => (
               <ProductItem key={item.id} {...item} />
             ))}

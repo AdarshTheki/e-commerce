@@ -268,7 +268,7 @@ const ProductListing = () => {
 
           {/* <!-- Products Grid --> */}
           {!data?.totalItems && <Loading className="h-[70vh]" />}
-          <div className={`grid sm:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
+          <div className={`grid md:grid-cols-3 sm:grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.items?.length &&
               data?.items?.map((item) => (

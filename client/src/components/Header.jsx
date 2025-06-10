@@ -15,7 +15,11 @@ const Header = () => {
       <div className="flex justify-between w-full max-w-6xl mx-auto relative">
         {/* Logo */}
         <NavLink to="/">
-          <img src="/logo.png" alt="logo" width={140} />
+          <img
+            src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1749545771/gallery/c7xok3k6msh7lizkis13.png"
+            alt="logo"
+            width={140}
+          />
         </NavLink>
 
         <div className="flex items-center gap-5">

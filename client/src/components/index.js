@@ -4,7 +4,7 @@ import PrivateRoute from "./PrivateRoute";
 import HeartFavorite from "./HeartFavorite";
 import ProductItem from "./ProductItem";
 import ProductReview from "./ProductReview";
-import CategoryCard from "./CategoryCard";
+import HomeCard from "./HomeCard";
 import HeaderSearch from "./HeaderSearch";
 import HeaderUserMenu from "./HeaderUserMenu";
 import ProductReviewLike from "./ProductReviewLike";
@@ -14,8 +14,10 @@ import HomeCertificate from "./HomeCertificate";
 import HomeNew from "./HomeNew";
 import HomeWishlist from "./HomeWishlist";
 import FooterMenu from "./FooterMenu";
+import GalleryImage from "./GalleryImage";
 
 export {
+  GalleryImage,
   FooterMenu,
   HomeWishlist,
   HomeNew,
@@ -31,5 +33,5 @@ export {
   Footer,
   ProductItem,
   ProductReview,
-  CategoryCard,
+  HomeCard,
 };
