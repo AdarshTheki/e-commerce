@@ -72,10 +72,10 @@ const GalleryImage = () => {
             id="expression"
             onChange={(e) => setQuery({ ...query, expression: e.target.value })}
             value={query.expression}>
-            <option value={"folder:gallery"}>gallery</option>
-            <option value={"folder:cartify"}>Cartify Demo</option>
-            <option value={"folder:cartify-demo"}>Cartify</option>
-            <option value={"folder:''"}>folder</option>
+            <option value={"folder:gallery"}>Gallery</option>
+            <option value={"folder:cartify"}>Cartify</option>
+            <option value={"folder:cartify-demo"}>Cartify Demo</option>
+            <option value={"resource_type:image"}>All Image</option>
           </select>
         </label>
       </div>
