@@ -5,13 +5,47 @@ import axiosInstance from "../helper/axiosInstance";
 import { toast } from "react-toastify";
 import { logout } from "../redux/authSlice";
 import { useState } from "react";
+import {
+  ClipboardList,
+  Heart,
+  Image,
+  LogOut,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+} from "lucide-react";
 
-const userMenu = [
-  { id: 1, name: "Carts", path: "/cart" },
-  { id: 2, name: "Setting", path: "/setting" },
-  { id: 3, name: "Favorite", path: "/favorite" },
-  { id: 4, name: "Orders", path: "/orders" },
-  { id: 5, name: "gallery", path: "/gallery" },
+const menuItems = [
+  {
+    id: 2,
+    name: "Carts",
+    path: "/cart",
+    icon: <ShoppingCart size={22} />,
+  },
+  {
+    id: 3,
+    name: "Account",
+    path: "/setting",
+    icon: <User size={22} />,
+  },
+  {
+    id: 4,
+    name: "Favorite",
+    path: "/favorite",
+    icon: <Heart size={22} />,
+  },
+  {
+    id: 5,
+    name: "Orders",
+    path: "/orders",
+    icon: <ClipboardList size={22} />,
+  },
+  {
+    id: 1,
+    name: "Gallery",
+    path: "/gallery",
+    icon: <Image size={22} />,
+  },
 ];
 
 const HeaderUserMenu = () => {
@@ -38,22 +72,22 @@ const HeaderUserMenu = () => {
   };
 
   return (
-    <div>
+    <>
       <div
-        className={`absolute top-12 z-30 card w-40 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"} ${!user && "hidden"}`}
+        className={`absolute top-11 z-30 card w-60 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"} ${!user && "hidden"}`}
         ref={dropdownRef}>
         <ul className="w-full">
-          {userMenu.map((item) => (
+          {menuItems.map((item) => (
             <li key={item.id}>
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `py-1.5 block text-left text-gray-700 pl-5 rounded-lg hover:bg-indigo-100 ${
+                  `px-3 py-2 mb-1 flex items-center gap-3 !text-lg text-left text-gray-700 pl-5 rounded-lg hover:bg-indigo-100 ${
                     isActive ? "bg-indigo-100" : ""
                   }`
                 }
                 onClick={() => setIsOpen(false)}>
-                {item.name}
+                {item.icon} {item.name}
               </NavLink>
             </li>
           ))}
@@ -61,21 +95,27 @@ const HeaderUserMenu = () => {
             <NavLink
               to={"#"}
               onClick={logoutHandler}
-              className={`py-1.5 block mb-2 text-left !text-red-500 font-medium pl-5 rounded-lg hover:bg-indigo-100`}>
+              className={`px-3 py-2 mb-1 flex items-center gap-3 !text-lg text-left !text-red-500 font-medium pl-5 rounded-lg hover:bg-indigo-100`}>
+              <LogOut size={22} />
               {loading ? "Loading..." : "Logout"}
             </NavLink>
           </li>
         </ul>
       </div>
 
-      <img
-        onClick={() => (user?._id ? setIsOpen(true) : navigate("/login"))}
-        src={user?.avatar || "https://avatar.iran.liara.run/public"}
-        alt="User"
-        className="min-w-9 min-h-9 h-9 w-9 rounded-full object-cover cursor-pointer bg-gray-500"
-        loading="lazy"
-      />
-    </div>
+      <button
+        title="Account"
+        className="flex items-center gap-1 cursor-pointer"
+        onClick={() => (user?._id ? setIsOpen(true) : navigate("/login"))}>
+        <img
+          src={user?.avatar || "https://avatar.iran.liara.run/public"}
+          alt="User"
+          className="h-7 w-7 rounded-full object-cover bg-gray-500"
+          loading="lazy"
+        />
+        <span className="text-lg font-serif max-sm:hidden">User</span>
+      </button>
+    </>
   );
 };
 

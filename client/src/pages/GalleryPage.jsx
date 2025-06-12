@@ -3,7 +3,7 @@ import { Input, LazyImage } from "../utils";
 import errorHandler from "../helper/errorHandler";
 import axiosInstance from "../helper/axiosInstance";
 import { Trash2Icon } from "lucide-react";
-import { GalleryImage } from "../components";
+import { GalleryImage, ImageCropper } from "../components";
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -77,6 +77,8 @@ const Gallery = () => {
             />
           ))}
       </div>
+
+      <ImageCropper />
 
       <GalleryImage />
     </div>

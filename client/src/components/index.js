@@ -15,8 +15,10 @@ import HomeNew from "./HomeNew";
 import HomeWishlist from "./HomeWishlist";
 import FooterMenu from "./FooterMenu";
 import GalleryImage from "./GalleryImage";
+import ImageCropper from "./ImageCropper";
 
 export {
+  ImageCropper,
   GalleryImage,
   FooterMenu,
   HomeWishlist,

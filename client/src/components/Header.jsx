@@ -3,6 +3,7 @@ import HeaderUserMenu from "./HeaderUserMenu";
 import HeaderSearch from "./HeaderSearch";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { Home, ShoppingBag } from "lucide-react";
 
 const Header = () => {
   const location = useLocation();
@@ -24,11 +25,15 @@ const Header = () => {
 
         <div className="flex items-center gap-5">
           {/* Main Header*/}
-          <NavLink to={"/"} className="max-sm:hidden">
-            Home
+          <NavLink to={"/"} className="max-sm:hidden flex items-center gap-1">
+            <Home size={22} />
+            <span className="text-lg font-serif">Home</span>
           </NavLink>
-          <NavLink to={"/product"} className="max-sm:hidden">
-            Product
+          <NavLink
+            to={"/product"}
+            className="max-sm:hidden flex items-center gap-1">
+            <ShoppingBag size={22} />
+            <span className="text-lg font-serif">Product</span>
           </NavLink>
 
           {/* Right Actions*/}

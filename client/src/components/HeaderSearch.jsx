@@ -7,7 +7,9 @@ import { Search, X } from "lucide-react";
 const HeaderSearch = () => {
   const { isOpen, setIsOpen, dropdownRef } = useDropdown();
   const [searchQuery, setSearchQuery] = useState("");
-  const { data } = useFetch(`/product?title=${searchQuery}&limit=10`);
+  const { data } = useFetch(
+    `/product?title=${searchQuery}&limit=10&sortBy=price`
+  );
   const navigate = useNavigate();
 
   const boldQuery = useCallback(
@@ -23,13 +25,13 @@ const HeaderSearch = () => {
       <button
         onClick={() => setIsOpen(isOpen ? false : true)}
         title="Search products"
-        className="cursor-pointer hover:text-indigo-600 flex gap-1 items-center">
-        <Search size={22} className="!text-slate-700" />
-        <span className="max-sm:hidden">Search</span>
+        className="cursor-pointer flex gap-1 items-center">
+        <Search size={22} />
+        <span className="text-lg font-serif max-sm:hidden">Search</span>
       </button>
 
       <div
-        className={`absolute top-12 z-30 card w-80 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"}`}
+        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"}`}
         ref={dropdownRef}>
         <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
           <Search size={26} />
@@ -52,12 +54,15 @@ const HeaderSearch = () => {
         <ul>
           {data && data?.items?.length > 0 ? (
             data?.items?.map((item) => (
-              <li key={item?._id}>
-                <button
-                  onClick={() => {
-                    navigate(`/product/${item?._id}`);
-                  }}
-                  className="p-1.5 px-4 w-full text-left text-gray-700 rounded-lg text-sm hover:bg-indigo-100"
+              <li
+                key={item?._id}
+                className="flex gap-2 items-center hover:bg-indigo-100 px-4 rounded cursor-pointer"
+                onClick={() => {
+                  navigate(`/product/${item?._id}`);
+                }}>
+                <img src={item.thumbnail} alt={item.title} width={40} />
+                <p
+                  className="w-full text-left text-gray-700"
                   dangerouslySetInnerHTML={{
                     __html: boldQuery(item?.title),
                   }}
