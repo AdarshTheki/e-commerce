@@ -116,7 +116,7 @@ const ProductListing = () => {
       return (
         items?.length > 1 && (
           <div>
-            <h3 className="font-medium">{heading}</h3>
+            <h3 className="font-medium mb-1">{heading} :</h3>
             <ul>
               {items.map((it) => (
                 <label
@@ -181,7 +181,7 @@ const ProductListing = () => {
 
             {/* <!-- Price Range --> */}
             <div>
-              <h3 className="font-medium">Price Range</h3>
+              <h3 className="font-medium mb-1">Price:</h3>
               <input
                 type="range"
                 className="w-full"
@@ -221,7 +221,7 @@ const ProductListing = () => {
 
             {/* <!-- Rating Filter --> */}
             <div>
-              <h3 className="font-medium">Rating</h3>
+              <h3 className="font-medium mb-1">Rating:</h3>
               <ul className="max-h-[200px] overflow-y-auto w-full scrollbar-hidden">
                 {ratingOptions.map((it) => (
                   <label

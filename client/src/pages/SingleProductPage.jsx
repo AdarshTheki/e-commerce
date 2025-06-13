@@ -111,7 +111,7 @@ const ProductDetail = () => {
 
             {/* <!-- Color Selection --> */}
             <div>
-              <h3 className="font-semibold mb-3">Color</h3>
+              <h3 className="font-semibold mb-3">Color:</h3>
               <div className="flex space-x-3">
                 {["black", "blue", "gray"].map((i) => (
                   <button
@@ -126,16 +126,24 @@ const ProductDetail = () => {
             </div>
 
             <div>
-              <span className="text-xl capitalize">{product?.brand}</span>
-              <span className="px-4 py-1 ml-4 capitalize rounded-lg bg-gray-100">
-                {product?.category}
-              </span>
-              <p className="pt-5">{product?.description}</p>
+              <div className="flex gap-2">
+                <h3 className="font-semibold mb-3">Brand:</h3>
+                <span className="capitalize">{product?.brand}</span>
+              </div>
+
+              <div className="flex gap-2">
+                <h3 className="font-semibold mb-3">Category:</h3>
+                <span className="capitalize">{product?.category}</span>
+              </div>
             </div>
 
-            {/* <!-- Quantity --> */}
             <div>
-              <h3 className="font-semibold mb-3">Quantity</h3>
+              <h3 className="font-semibold mb-3">Description:</h3>
+              <p>{product?.description}</p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-3">Quantity:</h3>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center border rounded-lg border-gray-300">
                   <button
@@ -164,7 +172,6 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* <!-- Actions --> */}
             <div className="flex space-x-4">
               <button
                 onClick={() => handleAddToCart(product?._id || "", quantity)}
@@ -172,10 +179,7 @@ const ProductDetail = () => {
                 Add to Cart
               </button>
 
-              <HeartFavorite
-                id={id || ""}
-                className="py-2 px-3 border rounded-lg"
-              />
+              <HeartFavorite id={id} className="py-2 px-3" />
             </div>
           </div>
         </div>

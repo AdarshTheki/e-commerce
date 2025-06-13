@@ -180,7 +180,7 @@ const ProductReview = () => {
                   loading="lazy"
                 />
                 <div>
-                  <h4 className="font-semibold">{item?.createdBy?.fullName}</h4>
+                  <p className="font-semibold">{item?.createdBy?.fullName}</p>
                   <StarRating rating={item?.rating} />
                 </div>
               </div>
