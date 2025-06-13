@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { socket } from "../helper";
+import { socket, action } from "../helper";
 import { Input } from "../utils";
 
 const Chat = () => {
@@ -8,18 +8,18 @@ const Chat = () => {
 
   useEffect(() => {
     // socket.on (listen for message)
-    socket.on("message", (data) => {
+    socket.on(action.MESSAGE, (data) => {
       setChat((prev) => [...prev, data]);
     });
 
     // socket.off (cleanup)
     return () => {
-      socket.off("message");
+      socket.off(action.MESSAGE);
     };
   }, []);
 
   const sendMessage = () => {
-    socket.emit("message", msg); // socket.emit
+    socket.emit(action.MESSAGE, msg); // socket.emit
     setMsg("");
   };
 

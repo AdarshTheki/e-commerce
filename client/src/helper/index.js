@@ -10,4 +10,19 @@ export const socialFormats = {
   "Facebook Cover (205:78)": { width: 820, height: 312, aspectRatio: "205:78" },
 };
 
+export const action = {
+  CONNECTED_EVENT: "connected",
+  DISCONNECT_EVENT: "disconnect",
+  JOIN_CHAT_EVENT: "joinChat",
+  NEW_CHAT_EVENT: "newChat",
+  TYPING_EVENT: "typing",
+  STOP_TYPING_EVENT: "stopTyping",
+  MESSAGE_RECEIVED_EVENT: "messageReceived",
+  LEAVE_CHAT_EVENT: "leaveChat",
+  UPDATE_GROUP_NAME_EVENT: "updateGroupName",
+  MESSAGE_DELETE_EVENT: "messageDeleted",
+  SOCKET_ERROR_EVENT: "socketError",
+  MESSAGE: "message",
+};
+
 export { socket, errorHandler, axios };
