@@ -6,12 +6,7 @@ import { ProductItem } from "../components";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import useDropdown from "../hooks/useDropdown";
-import {
-  ListFilterPlus,
-  Scaling,
-  Settings,
-  TrainFrontTunnel,
-} from "lucide-react";
+import { ListFilterPlus, Settings } from "lucide-react";
 
 const sortByOptions = [
   { label: "Title (A-Z)", value: "title-asc" },

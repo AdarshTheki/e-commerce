@@ -4,7 +4,7 @@ import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
 import { CartListing, HomeCertificate, HomeWishlist } from "../components";
 
-const CartComponent = () => {
+const ShoppingCartPage = () => {
   const { data, loading, refetch } = useFetch("/cart");
   const items = data?.data?.items || [];
 
@@ -84,4 +84,4 @@ const CartComponent = () => {
   );
 };
 
-export default CartComponent;
+export default ShoppingCartPage;

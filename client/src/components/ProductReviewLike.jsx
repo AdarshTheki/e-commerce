@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import axiosInstance from "../helper/axiosInstance";
-import errorHandler from "../helper/errorHandler";
+import { errorHandler, axios } from "../helper";
 import { MessageSquare, ThumbsUp } from "lucide-react";
 
 const ProductReviewLike = ({ reviewId, likes, replies, openReply }) => {
@@ -11,7 +10,7 @@ const ProductReviewLike = ({ reviewId, likes, replies, openReply }) => {
 
   const handleLike = async () => {
     try {
-      const res = await axiosInstance.patch(`/review/like`, { reviewId });
+      const res = await axios.patch(`/review/like`, { reviewId });
       if (res.data) {
         setLike(!like);
         console.log(res.data);

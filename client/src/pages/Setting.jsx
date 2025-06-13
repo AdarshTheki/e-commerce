@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import axiosInstance from "../helper/axiosInstance";
+import { axios } from "../helper";
 import { Input } from "../utils";
 
 const ProfileSettings = () => {
@@ -26,7 +26,7 @@ const AvatarComponent = () => {
       if (e.target.files && e.target.files[0]) {
         const formData = new FormData();
         formData.append("avatar", e.target.files[0]);
-        const res = await axiosInstance.post("/user/avatar", formData);
+        const res = await axios.post("/user/avatar", formData);
         if (res.data) {
           toast.success("upload avatar image succeed");
           setAvatar(res.data.avatar);
@@ -98,7 +98,7 @@ const SectionsComponent = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axiosInstance.patch("/user/update", formData);
+      const response = await axios.patch("/user/update", formData);
       if (response.data) toast.success("user update success");
     } catch (error) {
       console.log(error);
@@ -112,7 +112,7 @@ const SectionsComponent = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post("/user/password", {
+      const response = await axios.post("/user/password", {
         ...password,
       });
       if (response.data) toast.success("password update success");

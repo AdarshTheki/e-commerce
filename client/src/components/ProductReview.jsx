@@ -3,19 +3,17 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
-import { ArrowRightIcon, TrashIcon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 
 import ProductReviewLike from "./ProductReviewLike";
-import axiosInstance from "../helper/axiosInstance";
-import { StarSelected, StarRating } from "../utils";
 import useFetch from "../hooks/useFetch";
-import errorHandler from "../helper/errorHandler";
+import { errorHandler, axios } from "../helper";
 
 const ProductReview = () => {
   const { id: productId } = useParams();
   const { data, refetch } = useFetch(`/review/${productId}`);
   const [reviews, setReviews] = React.useState();
-  const [newReview, setNewReview] = useState({ comment: "", rating: 0 });
+  const [newReview, setNewReview] = useState({ comment: "", rating: 5 });
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
 
@@ -29,7 +27,7 @@ const ProductReview = () => {
 
   const deleteReviewHandler = async (id) => {
     try {
-      const res = await axiosInstance.delete(`/review/${id}`);
+      const res = await axios.delete(`/review/${id}`);
       if (res.data) {
         refetch();
       }
@@ -40,7 +38,7 @@ const ProductReview = () => {
 
   const addReviewHandler = async () => {
     try {
-      const res = await axiosInstance.post(`/review`, {
+      const res = await axios.post(`/review`, {
         productId,
         ...newReview,
       });
@@ -60,7 +58,7 @@ const ProductReview = () => {
         if (replyText.trim()) {
           if (!userId) return toast.error("Firstly login then write reply");
           try {
-            const res = await axiosInstance.post(`/review/reply`, {
+            const res = await axios.post(`/review/reply`, {
               reviewId: item._id,
               comment: replyText,
             });
@@ -114,15 +112,26 @@ const ProductReview = () => {
             item.replies.map((reply, index) => (
               <div
                 key={index}
-                className="text-sm mb-3 flex gap-4 p-4 rounded-lg border border-gray-200">
-                <p className="flex flex-col">
-                  <span className="font-semibold text-right">
-                    {reply?.createdBy?.fullName || reply?.fullName}
-                  </span>
-                  <span className="text-gray-500 text-xs">
-                    {format(new Date(reply?.createdAt), "dd MMM, h:mm a")}
-                  </span>
-                </p>
+                className="mb-3 flex max-sm:flex-col gap-4 p-4 rounded-lg border border-gray-200">
+                <div className="flex gap-2 items-start">
+                  <p className="px-3 py-1 rounded-full bg-gray-300 text-slate-800">
+                    {(reply?.createdBy?.fullName || reply?.fullName)?.slice(
+                      0,
+                      1
+                    )}
+                  </p>
+                  <div className="flex flex-col">
+                    <span className="font-semibold">
+                      {reply?.createdBy?.fullName || reply?.fullName}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {format(
+                        new Date(reply?.createdAt),
+                        "dd MMM yyyy, h:mm a"
+                      )}
+                    </span>
+                  </div>
+                </div>
                 <p className="flex-1/2">{reply?.comment}</p>
               </div>
             ))}
@@ -140,36 +149,34 @@ const ProductReview = () => {
 
       <div className="grid gap-4">
         {/* Review Form */}
-        <div className="w-full card">
+        <div className="w-full card space-y-4 ">
+          <label htmlFor="public_comment" className="font-medium">
+            Write a public comment
+          </label>
           <textarea
-            rows={4}
-            className="w-full outline-none p-2"
+            rows={2}
+            id="public_comment"
+            className="w-full outline-none border border-indigo-300 rounded-lg mt-1 p-2"
             placeholder="Write your review..."
             value={newReview.comment}
             onChange={(e) =>
               setNewReview({ ...newReview, comment: e.target.value })
             }
           />
-          <div className="flex items-center w-full justify-between">
-            <StarSelected
-              defaultRating={newReview.rating}
-              onChange={(val) => setNewReview({ ...newReview, rating: val })}
-            />
 
-            <button
-              disabled={!newReview.comment.trim() || newReview.rating === 0}
-              onClick={addReviewHandler}
-              className="btn-primary flex gap-1 items-center disabled:opacity-50">
-              Add <ArrowRightIcon />
-            </button>
-          </div>
+          <button
+            disabled={!newReview.comment.trim()}
+            onClick={addReviewHandler}
+            className="btn-primary !text-base disabled:opacity-50">
+            Post Comment
+          </button>
         </div>
 
         {/* Review List */}
         {reviews?.map((item) => (
           <div key={item?._id} className="w-full card space-y-4">
             <div className="flex gap-5 max-sm:flex-col relative">
-              <div className="flex gap-4 relative items-center">
+              <div className="flex gap-4 min-w-[200px] relative items-center">
                 <img
                   src={
                     item?.createdBy?.avatar ||
@@ -181,20 +188,17 @@ const ProductReview = () => {
                 />
                 <div>
                   <p className="font-semibold">{item?.createdBy?.fullName}</p>
-                  <StarRating rating={item?.rating} />
+                  <p className="text-gray-500 text-xs">
+                    {format(new Date(item?.createdAt), "dd MMM yyyy, h:mm a")}
+                  </p>
                 </div>
               </div>
-              <div className="space-y-2">
-                <p>{item?.comment}</p>
-                <p className="text-gray-500 text-xs">
-                  {format(new Date(item?.createdAt), "dd MMM yyyy, h:mm a")}
-                </p>
-              </div>
+              <p>{item?.comment}</p>
               {item?.createdBy?._id === userId && (
                 <button
                   onClick={() => deleteReviewHandler(item?._id)}
-                  className="absolute top-2 right-2 cursor-pointer svg-btn p-2 text-red-600">
-                  <TrashIcon />
+                  className="absolute bg-white top-0 right-0 cursor-pointer svg-btn p-2 text-red-600">
+                  <Trash2Icon />
                 </button>
               )}
             </div>

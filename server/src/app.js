@@ -16,13 +16,12 @@ import addressRoute from "./routes/address.router.js";
 import openaiRoute from "./routes/openai.router.js";
 import dashboardRoute from "./routes/dashboard.js";
 import health_checkRoute from "./routes/healthcheck.router.js";
+import galleryRoute from "./routes/gallery.router.js";
 import stripeRouter, { stripeWebhook } from "./routes/stripe.route.js";
 
 const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
-
-const server = socketConnection(app);
 
 app.post(
   "/api/v1/stripe/stripe-webhook",
@@ -57,11 +56,14 @@ app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/openai", openaiRoute);
 app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/stripe", stripeRouter);
+app.use("/api/v1/gallery", galleryRoute);
 
 app.get("/", (req, res) => {
   return res.sendFile("/public/dist/index.html");
 });
 
 app.use("/", health_checkRoute);
+
+const server = socketConnection(app);
 
 export default server;

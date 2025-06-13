@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Input } from "../utils";
-import axios from "../helper/axiosInstance";
+import { axios } from "../helper";
 
 const Register = () => {
   const navigate = useNavigate();

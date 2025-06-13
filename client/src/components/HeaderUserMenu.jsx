@@ -1,16 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import useDropdown from "../hooks/useDropdown";
-import axiosInstance from "../helper/axiosInstance";
+import { axios } from "../helper";
 import { toast } from "react-toastify";
 import { logout } from "../redux/authSlice";
 import { useState } from "react";
 import {
+  ChartBar,
   ClipboardList,
   Heart,
   Image,
   LogOut,
-  ShoppingBag,
   ShoppingCart,
   User,
 } from "lucide-react";
@@ -46,6 +46,12 @@ const menuItems = [
     path: "/gallery",
     icon: <Image size={22} />,
   },
+  {
+    id: 6,
+    name: "Chat",
+    path: "/chat",
+    icon: <ChartBar size={22} />,
+  },
 ];
 
 const HeaderUserMenu = () => {
@@ -58,7 +64,7 @@ const HeaderUserMenu = () => {
   const logoutHandler = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.post("/user/logout");
+      const res = await axios.post("/user/logout");
       if (res.data) {
         localStorage.removeItem("token");
         dispatch(logout());

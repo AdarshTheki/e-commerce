@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import instance from "../helper/axiosInstance";
-
-const DEFAULT_ERROR_MESSAGE = "An internal error occurred";
+import { axios } from "../helper";
 
 const useFetch = (url) => {
   const [data, setData] = useState(null);
@@ -16,10 +14,10 @@ const useFetch = (url) => {
     const signal = controller.signal;
 
     try {
-      const res = await instance.get(url, { signal });
+      const res = await axios.get(url, { signal });
       if (res.data) setData(res.data);
     } catch (err) {
-      setError(err?.response?.data?.message || DEFAULT_ERROR_MESSAGE);
+      setError(err?.response?.data?.message || "An internal error occurred");
     } finally {
       setLoading(false);
     }

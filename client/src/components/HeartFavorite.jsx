@@ -3,8 +3,7 @@ import { Heart } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import errorHandler from "../helper/errorHandler";
-import instance from "../helper/axiosInstance";
+import { errorHandler, axios } from "../helper";
 
 const HeartFavorite = ({ id, className }) => {
   const router = useNavigate();
@@ -19,7 +18,7 @@ const HeartFavorite = ({ id, className }) => {
       setLoading(true);
       if (!user?._id) return router("/login");
 
-      const res = await instance.patch(`/user/favorite/${id}`);
+      const res = await axios.patch(`/user/favorite/${id}`);
       if (res.data) {
         const check = res.data.favorites.includes(id);
         setIsLiked(check);

@@ -14,12 +14,12 @@ import HomeCertificate from "./HomeCertificate";
 import HomeNew from "./HomeNew";
 import HomeWishlist from "./HomeWishlist";
 import FooterMenu from "./FooterMenu";
-import GalleryImage from "./GalleryImage";
-import ImageCropper from "./ImageCropper";
+import ImageGallery from "./ImageGallery";
+import ImageUpload from "./ImageUpload";
 
 export {
-  ImageCropper,
-  GalleryImage,
+  ImageUpload,
+  ImageGallery,
   FooterMenu,
   HomeWishlist,
   HomeNew,

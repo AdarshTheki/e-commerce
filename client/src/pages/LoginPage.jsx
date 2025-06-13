@@ -1,4 +1,4 @@
-import axiosInstance from "../helper/axiosInstance";
+import { axios } from "../helper";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Input } from "../utils";
@@ -14,7 +14,7 @@ const Login = () => {
     }
 
     try {
-      const { data } = await axiosInstance.post("/user/sign-in", {
+      const { data } = await axios.post("/user/sign-in", {
         email,
         password,
       });

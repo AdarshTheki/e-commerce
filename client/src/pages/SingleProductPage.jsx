@@ -6,13 +6,11 @@ import { toast } from "react-toastify";
 import {
   HeartFavorite,
   HomeCertificate,
-  HomeNew,
   HomeWishlist,
   ProductReview,
 } from "../components";
 import { Loading } from "../utils";
-import errorHandler from "../helper/errorHandler";
-import instance from "../helper/axiosInstance";
+import { errorHandler, axios } from "../helper";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -25,7 +23,7 @@ const ProductDetail = () => {
     const getProduct = async () => {
       try {
         setLoading(true);
-        const res = await instance.get(`/product/${id}`);
+        const res = await axios.get(`/product/${id}`);
         if (res.data) {
           setProduct(res.data);
         }
@@ -40,7 +38,7 @@ const ProductDetail = () => {
 
   const handleAddToCart = async (productId, quantity) => {
     try {
-      const res = await instance.post(`/cart`, { productId, quantity });
+      const res = await axios.post(`/cart`, { productId, quantity });
       if (res.data) {
         toast.success("Add to cart success");
       }

@@ -1,4 +1,5 @@
-import CartsPage from "./CartsPage";
+import CartsPage from "./ShoppingCartPage";
+import ChatPage from "./ChatPage";
 import HomePage from "./HomePage";
 import SingleProductPage from "./SingleProductPage";
 import ProductsPage from "./ProductsPage";
@@ -14,6 +15,7 @@ import ShippingAddress from "./ShippingAddress";
 import GalleryPage from "./GalleryPage";
 
 export {
+  ChatPage,
   GalleryPage,
   ShippingAddress,
   OrderListing,

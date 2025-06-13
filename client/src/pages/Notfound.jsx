@@ -1,14 +1,24 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { XCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const Notfound = () => {
+const PageNotFound = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div>
-        <NavLink to={"/admin"}>Home</NavLink>
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-md text-center">
+        <XCircle className="text-red-500 w-16 h-16 mx-auto mb-4" />
+        <h1 className="text-2xl font-bold mb-2">Page Not Found</h1>
+        <p className="text-gray-600 mb-6">
+          Oops! Something went wrong. Your page was not fonded.
+        </p>
+        <Link
+          to="/"
+          className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-xl transition">
+          Try Again
+        </Link>
       </div>
     </div>
   );
 };
 
-export default Notfound;
+export default PageNotFound;

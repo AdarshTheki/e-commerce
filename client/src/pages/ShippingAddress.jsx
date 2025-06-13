@@ -5,8 +5,7 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
 import useFetch from "../hooks/useFetch";
-import errorHandler from "../helper/errorHandler";
-import axiosInstance from "../helper/axiosInstance";
+import { errorHandler, axios } from "../helper";
 import { Input, Loading, Select } from "../utils";
 import { NavLink } from "react-router-dom";
 import { HomeSpotlight } from "../components";
@@ -35,7 +34,7 @@ const ShippingAddress = () => {
       }
       const method = formData?._id ? "patch" : "post";
       const url = formData?._id ? `/address/${formData._id}` : "/address";
-      const res = await axiosInstance[method](url, {
+      const res = await axios[method](url, {
         ...formData,
         countryCode: "IN",
       });
@@ -52,7 +51,7 @@ const ShippingAddress = () => {
 
   const handleDeleteAddress = async (id) => {
     try {
-      const res = await axiosInstance.delete(`/address/${id}`);
+      const res = await axios.delete(`/address/${id}`);
       if (res.data) {
         refetch();
       }
@@ -64,7 +63,7 @@ const ShippingAddress = () => {
   const handleCheckout = async () => {
     try {
       if (!formData._id) return toast.error("user address not define");
-      const res = await axiosInstance.post("/stripe/stripe-checkout", {
+      const res = await axios.post("/stripe/stripe-checkout", {
         userId: user._id,
         addressId: formData?._id,
       });

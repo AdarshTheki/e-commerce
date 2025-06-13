@@ -1,7 +1,6 @@
-import instance from "../helper/axiosInstance";
 import { NavLink } from "react-router-dom";
-import { Trash2Icon, X } from "lucide-react";
-import errorHandler from "../helper/errorHandler";
+import { Trash2Icon } from "lucide-react";
+import { errorHandler, axios } from "../helper";
 import { useState } from "react";
 
 const CartListing = ({ productId, quantity, refetch }) => {
@@ -10,7 +9,7 @@ const CartListing = ({ productId, quantity, refetch }) => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await instance.delete(`/cart/${id}`);
+      const res = await axios.delete(`/cart/${id}`);
       if (res.data) {
         refetch();
       }
@@ -20,7 +19,7 @@ const CartListing = ({ productId, quantity, refetch }) => {
   };
   const handleUpdateQty = async () => {
     try {
-      const res = await instance.put(`/cart`, {
+      const res = await axios.put(`/cart`, {
         productId: _id,
         quantity: qty,
       });

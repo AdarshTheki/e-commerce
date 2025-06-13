@@ -15,6 +15,7 @@ import {
   OrderSuccess,
   ShippingAddress,
   GalleryPage,
+  ChatPage,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { Footer, FooterMenu, Header, PrivateRoute } from "./components";
@@ -61,6 +62,7 @@ const App = () => {
             <Route path="/order/success" element={<OrderSuccess />} />
             <Route path="/orders" element={<OrderListing />} />
             <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/chat" element={<ChatPage />} />
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>
