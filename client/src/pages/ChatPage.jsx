@@ -28,7 +28,7 @@ const Chat = () => {
       {chat.map((m, i) => (
         <p key={i}>{m}</p>
       ))}
-      <div className="card">
+      <div className="card flex gap-5 max-w-[600px] sticky top-10 h-fit">
         <Input value={msg} onChange={(e) => setMsg(e.target.value)} />
         <button className="btn-primary" onClick={sendMessage}>
           Send

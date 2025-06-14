@@ -1,9 +1,9 @@
-export class ApiSuccess {
-  constructor(data, message = "Data fetch success", code = 200) {
-    this.code = code;
-    this.message = message;
-    this.status = code <= 400;
+export class ApiResponse {
+  constructor(statusCode, data, message = "Success") {
+    this.statusCode = statusCode;
     this.data = data;
+    this.message = message;
+    this.success = statusCode < 400;
   }
 }
 

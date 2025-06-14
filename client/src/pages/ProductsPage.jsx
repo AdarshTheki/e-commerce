@@ -273,11 +273,11 @@ const ProductListing = () => {
 
           {/* Pagination */}
           <div className="flex  gap-4 flex-wrap justify-between items-center card">
-            <h2>
+            <p>
               Showing {(page - 1) * limit + 1} to{" "}
               {Math.min(page * limit, data?.totalItems || 0)} of{" "}
               {data?.totalItems}
-            </h2>
+            </p>
             <div className="flex gap-2 items-center">
               <button
                 className={`svg-btn !w-14 border border-neutral-200 rounded-lg hover:bg-gray-50 ${

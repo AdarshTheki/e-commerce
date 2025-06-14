@@ -11,6 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_API_SECRET, {
   apiVersion: "2024-04-10",
 });
 
+// -----load stripe with webhook and payment success/failed-----
 export const stripeWebhook = async (req, res) => {
   const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const sig = req.headers["stripe-signature"];
@@ -27,7 +28,7 @@ export const stripeWebhook = async (req, res) => {
       sig,
       stripeWebhookSecret
     );
-
+    // check event type
     switch (event.type) {
       case "checkout.session.completed":
         const session = event.data.object;
@@ -68,6 +69,7 @@ export const stripeWebhook = async (req, res) => {
   }
 };
 
+// -----checkout payment with stripe-----
 router.post("/stripe-checkout", verifyJWT(), async (req, res) => {
   const { userId, addressId } = req.body;
 
