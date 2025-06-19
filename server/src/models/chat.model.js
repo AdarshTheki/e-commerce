@@ -3,7 +3,7 @@ import { Schema, model } from "mongoose";
 const chatSchema = new Schema(
   {
     name: {
-      type: String,
+      type: String, // for group chat
       required: true,
     },
     isGroupChat: {
@@ -12,7 +12,7 @@ const chatSchema = new Schema(
     },
     lastMessage: {
       type: Schema.Types.ObjectId,
-      ref: "ChatMessage",
+      ref: "Message",
     },
     participants: [
       {

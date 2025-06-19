@@ -3,164 +3,167 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Chat } from "../models/chat.model.js";
+import { Message } from "../models/message.model.js";
+import { isValidObjectId } from "mongoose";
+import { removeSingleImg } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
-import mongoose from "mongoose";
 
 const router = Router();
 
-const chatCommonAggregation = () => {
-  return [
-    // lookup for the participants present
-    {
-      $lookup: {
-        from: "users",
-        foreignField: "_id",
-        localField: "participants",
-        as: "participants",
-        pipeline: [
-          {
-            $project: {
-              username: 1,
-              fullName: 1,
-              email: 1,
-            },
-          },
-        ],
-      },
-    },
-    {
-      // lookup for the group chats
-      $lookup: {
-        from: "chatmessages",
-        foreignField: "_id",
-        localField: "lastMessage",
-        as: "lastMessage",
-        pipeline: [
-          {
-            // get details of the sender
-            $lookup: {
-              from: "users",
-              foreignField: "_id",
-              localField: "sender",
-              as: "sender",
-              pipeline: [
-                {
-                  $project: {
-                    username: 1,
-                    fullName: 1,
-                    avatar: 1,
-                    email: 1,
-                  },
-                },
-              ],
-            },
-          },
-          {
-            $addFields: {
-              sender: { $first: "$sender" },
-            },
-          },
-        ],
-      },
-    },
-    {
-      $addFields: {
-        lastMessage: { $first: "$lastMessage" },
-      },
-    },
-  ];
+// ----delete chat message----
+const deleteChatMessages = async (chatId) => {
+  const messages = await Message.find({ chat: chatId });
+
+  if (messages.length) {
+    messages.map(async (message) => {
+      // remove attachment files
+      if (message.attachments?.length) {
+        message.attachments.forEach(async (url) => await removeSingleImg(url));
+      }
+    });
+
+    // delete all the messages
+    await Message.deleteMany({ chat: chatId });
+  }
 };
 
-// ----search available users----
+// -----create or get one one one chat----
+router.post(
+  "/single/:receiverId",
+  verifyJWT(),
+  asyncHandler(async (req, res) => {
+    const { receiverId } = req.params;
+
+    if (!isValidObjectId(receiverId))
+      throw new ApiError(403, "Invalid receiver ID");
+
+    // check if receiver is not the user who is requesting a chat
+    if (receiverId.toString() === req.user._id.toString()) {
+      throw new ApiError(400, "You cannot chat with yourself");
+    }
+
+    // Search for an existing one-on-one chat between the two users (order-independent)
+    let chat = await Chat.findOne({
+      isGroupChat: false,
+      participants: { $all: [req.user._id, receiverId], $size: 2 },
+    })
+      .populate("participants", "fullName avatar email")
+      .populate("lastMessage");
+
+    if (chat) {
+      return res.status(200).json(chat);
+    }
+
+    // If chat doesn't exist, create a new one
+    const newChat = await Chat.create({
+      isGroupChat: false,
+      name: "one on one chat",
+      participants: [req.user._id, receiverId],
+      admin: req.user._id,
+    });
+
+    const populatedChat = await newChat.populate(
+      "participants",
+      "fullName avatar email"
+    );
+
+    populatedChat.participants.forEach((p) => {
+      if (p._id.toString() === req.user._id.toString()) return;
+      // Send real-time update to the specific user
+      req.app.get("io").to(p._id.toString()).emit("newChat", populatedChat);
+    });
+
+    res.status(201).json(populatedChat);
+  })
+);
+
+// ----search available user to chat-----
 router.get(
-  "/user",
+  "/users",
   verifyJWT(),
   asyncHandler(async (req, res) => {
     const users = await User.aggregate([
-      {
-        $match: {
-          _id: { $ne: req.user._id }, // avoid login user
-        },
-      },
-      {
-        $project: {
-          avatar: 1,
-          fullName: 1,
-          username: 1,
-          email: 1,
-        },
-      },
+      { $match: { _id: { $ne: req.user._id } } },
+      { $project: { avatar: 1, username: 1, fullName: 1, email: 1 } },
     ]);
-
     res.status(200).json(users);
   })
 );
 
-// -----create or get a one on one chat------
+// ----list of all chats-----
 router.get(
-  "/receiver/:receiveId",
+  "/",
   verifyJWT(),
   asyncHandler(async (req, res) => {
-    const { receiveId } = req.params;
+    const chats = await Chat.find({ participants: req.user._id })
+      .populate("participants", "fullName avatar email")
+      .populate("lastMessage");
+    res.status(200).json(chats);
+  })
+);
 
-    const receiver = await User.findById(receiveId);
-    if (!receiver) throw new ApiError(404, "User does not exits");
+// ----delete one on one chat and messages----
+router.delete(
+  "/single/:chatId",
+  asyncHandler(async (req, res) => {
+    const { chatId } = req.params;
 
-    if (req.user._id.toString() === receiver._id.toString())
-      throw new ApiError(404, "You cna not chat with yourself");
+    if (!isValidObjectId(chatId)) throw new ApiError(403, "Invalid chat ID");
 
-    const chat = await Chat.aggregate([
-      {
-        $match: {
-          isGroupChat: false,
-          $and: [
-            {
-              participants: {
-                $elemMatch: { $eq: new mongoose.Types.ObjectId(req.user._id) },
-              },
-            },
-            {
-              participants: {
-                $elemMatch: { $eq: new mongoose.Types.ObjectId(receiveId) },
-              },
-            },
-          ],
-        },
-      },
-      ...chatCommonAggregation(),
-    ]);
+    await Chat.findByIdAndDelete(chatId);
+    await deleteChatMessages(chatId);
 
-    if (chat?.length) {
-      // if we find the chat that means user already has created a chat
-      return res.status(200).json(chat[0]);
-    }
+    res.status(200).json({ message: "chat and message deleted succeed" });
+  })
+);
 
-    // if not we need to create a new one on one chat
-    const newChatInstance = await Chat.create({
-      name: "one on one chat",
-      participants: [req.user._id, receiveId],
+// ----create a group chat----
+router.post(
+  "/",
+  verifyJWT(),
+  asyncHandler(async (req, res) => {
+    const { isGroupChat, name, participants } = req.body;
+
+    if (!name || !participants?.length > 1)
+      throw new ApiError(404, "name and participants filled are required");
+
+    const newChat = await Chat.create({
       admin: req.user._id,
+      isGroupChat: !!isGroupChat,
+      name,
+      participants,
     });
 
-    const createdChat = await Chat.aggregate([
-      { $match: { _id: newChatInstance._id } },
-      ...chatCommonAggregation(),
-    ]);
+    const populatedChat = await newChat.populate(
+      "participants",
+      "fullName avatar email"
+    );
 
-    if (!createdChat[0]) throw new ApiError(404, "Internal server error");
+    res.status(201).json(populatedChat);
+  })
+);
 
-    createdChat[0]?.participants?.forEach((participant) => {
-      if (participant._id.toString() === req.user._id.toString()) return;
+// ----update chat by (1-1 or group)----
+router.patch(
+  "/:chatId",
+  asyncHandler(async (req, res) => {
+    const { name, participants } = req.body;
+    const { chatId } = req.params;
 
-      req.app
-        .get("io")
-        .to(participant._id.toString())
-        .emit("newChat", createdChat[0]);
-    });
+    if (!isValidObjectId(chatId)) throw new ApiError(403, "Invalid Chat ID");
 
-    res
-      .status(200)
-      .json({ chat: createdChat[0], message: "Chat retrieved successfully" });
+    if (!name || !participants?.length > 1)
+      throw new ApiError(404, "name and participants filled are required");
+
+    const updatedChat = await Chat.findByIdAndUpdate(
+      chatId,
+      { ...(name && { name }), ...(participants && { participants }) },
+      { new: true }
+    )
+      .populate("participants", "fullName avatar email")
+      .populate("lastMessage");
+
+    res.status(200).json(updatedChat);
   })
 );
 

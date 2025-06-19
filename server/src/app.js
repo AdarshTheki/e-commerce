@@ -59,22 +59,25 @@ app.set("io", io);
 
 // 🔥 socket.io logic
 io.on("connection", (socket) => {
-  console.log("✅ Client connected:", socket.id); // io.on
+  console.log("User connected:", socket.id);
 
-  // socket.on and get/send message
-  socket.on("message", (data) => {
-    console.log("📩 Message received:", data);
-    io.emit("message", data); // io.emit
+  socket.on("joinRoom", (roomId) => socket.join(roomId));
+
+  socket.on("sendMessage", ({ roomId, message }) => {
+    io.to(roomId).emit("receiveMessage", message);
   });
 
-  // Optional: join the user to a room with their userId
-  socket.on("join", (userId) => {
-    socket.join(userId); // user will receive events sent to their ID
-    console.log(`User ${userId} joined their room`);
-  });
+  // 🟡 Typing indicator
+  // socket.on("typing", ({ chatId, user }) => {
+  //   socket.to(chatId).emit("typing", user);
+  // });
+
+  // socket.on("stopTyping", ({ chatId, user }) => {
+  //   socket.to(chatId).emit("stopTyping", user);
+  // });
 
   socket.on("disconnect", () => {
-    console.log("❌ Disconnected:", socket.id); // socket.on (disconnect)
+    console.log("User disconnected", socket.id);
   });
 });
 

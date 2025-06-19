@@ -1,41 +1,26 @@
-import { useEffect, useState } from "react";
-import { socket, action } from "../helper";
-import { Input } from "../utils";
+import { useState } from "react";
+import useFetch from "../hooks/useFetch";
+import Chat from "./Chat";
+import Messages from "./Messages";
 
-const Chat = () => {
-  const [msg, setMsg] = useState("");
-  const [chat, setChat] = useState([]);
-
-  useEffect(() => {
-    // socket.on (listen for message)
-    socket.on(action.MESSAGE, (data) => {
-      setChat((prev) => [...prev, data]);
-    });
-
-    // socket.off (cleanup)
-    return () => {
-      socket.off(action.MESSAGE);
-    };
-  }, []);
-
-  const sendMessage = () => {
-    socket.emit(action.MESSAGE, msg); // socket.emit
-    setMsg("");
-  };
+const ChatPage = () => {
+  const { data: chats } = useFetch(`/chats`);
+  const [chatId, setChatId] = useState("");
 
   return (
-    <div className="min-h-screen">
-      {chat.map((m, i) => (
-        <p key={i}>{m}</p>
-      ))}
-      <div className="card flex gap-5 max-w-[600px] sticky top-10 h-fit">
-        <Input value={msg} onChange={(e) => setMsg(e.target.value)} />
-        <button className="btn-primary" onClick={sendMessage}>
-          Send
-        </button>
+    <div className="flex gap-5 max-sm:flex-col relative">
+      <Chat setChatId={setChatId} chats={chats} />
+      <div className="w-full">
+        {chatId ? (
+          <Messages chatId={chatId} />
+        ) : (
+          <p className="min-h-[50vh] flex items-center justify-center">
+            No content found
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
-export default Chat;
+export default ChatPage;

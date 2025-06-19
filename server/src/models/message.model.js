@@ -1,30 +1,20 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 // TODO: Add image and pdf file sharing in the next version
-const chatMessageSchema = new Schema(
+const chatMessageSchema = new mongoose.Schema(
   {
     sender: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    content: {
-      type: String,
-    },
-    attachments: {
-      type: [
-        {
-          url: String,
-          localPath: String,
-        },
-      ],
-      default: [],
-    },
     chat: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
     },
+    content: String,
+    attachments: [String],
   },
   { timestamps: true }
 );
 
-export const ChatMessage = mongoose.model("ChatMessage", chatMessageSchema);
+export const Message = mongoose.model("Message", chatMessageSchema);
