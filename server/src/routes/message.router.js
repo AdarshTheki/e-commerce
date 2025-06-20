@@ -1,7 +1,7 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Router } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadMultiImg } from "../utils/cloudinary.js";
+import { removeMultiImg, uploadMultiImg } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
@@ -84,23 +84,40 @@ router.post(
   })
 );
 
-// ----📝 Update message text-----
-router.patch(
-  "/:messageId",
+// ----📝 delete single message text/image-----
+router.delete(
+  "/delete",
+  verifyJWT(),
   asyncHandler(async (req, res) => {
-    const { content } = req.body;
-    const { messageId } = req.params;
+    const { messageIds } = req.body;
 
-    if (!isValidObjectId(messageId) || !content)
-      throw new ApiError(403, "Invalid Message ID, and Content are required");
+    console.log(messageIds);
 
-    const updatedMessage = await Message.findByIdAndUpdate(
-      messageId,
-      { content },
-      { new: true }
-    ).populate("sender", "avatar fullName");
+    if (!Array.isArray(messageIds))
+      throw new ApiError(403, "Invalid Messages ID");
 
-    res.status(200).json(updatedMessage);
+    const message = await Message.aggregate([
+      { $match: { _id: { $in: messageIds } } },
+    ]);
+
+    // if (message?.attachments?.length > 0) {
+    //   await removeMultiImg(message.attachments);
+    // }
+
+    // const chat = await Chat.findById(message.chat).populate("lastMessage");
+
+    // if (chat) await Message.deleteOne({ _id: messageId });
+
+    // chat.participants.forEach((p) => {
+    //   if (p._id.toString() === req.user._id.toString()) return;
+
+    //   res.app
+    //     .get("io")
+    //     .to(chat._id.toString())
+    //     .emit("deleteMessage", message._id);
+    // });
+
+    res.status(200).json({ message, message: "message deleted successfully" });
   })
 );
 

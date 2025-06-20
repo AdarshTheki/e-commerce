@@ -26,9 +26,14 @@ export function formatChatTime(date) {
   }
 }
 
-export const action = {
+export const socketAction = {
   CONNECTED_EVENT: "connected",
   DISCONNECT_EVENT: "disconnect",
+  JOIN_ROOM_EVENT: "joinRoom",
+  RECEIVE_MESSAGE_EVENT: "receiveMessage",
+  DELETE_MESSAGE_EVENT: "deleteMessage",
+  SEND_MESSAGE_EVENT: "sendMessage",
+  //
   JOIN_CHAT_EVENT: "joinChat",
   NEW_CHAT_EVENT: "newChat",
   TYPING_EVENT: "typing",

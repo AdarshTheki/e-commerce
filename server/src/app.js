@@ -65,6 +65,7 @@ io.on("connection", (socket) => {
 
   socket.on("sendMessage", ({ roomId, message }) => {
     io.to(roomId).emit("receiveMessage", message);
+    io.to(roomId).emit("deleteMessage", message);
   });
 
   // 🟡 Typing indicator

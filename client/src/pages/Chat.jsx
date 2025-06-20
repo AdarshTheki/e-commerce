@@ -15,8 +15,6 @@ const Chat = ({ setChatId, chats = [] }) => {
     )[0],
   }));
 
-  console.log(filterUser);
-
   if (!chats || !chats?.length)
     return (
       <p className="flex h-screen items-center justify-center">

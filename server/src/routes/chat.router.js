@@ -29,7 +29,7 @@ const deleteChatMessages = async (chatId) => {
 
 // -----create or get one one one chat----
 router.post(
-  "/single/:receiverId",
+  "/chat/:receiverId",
   verifyJWT(),
   asyncHandler(async (req, res) => {
     const { receiverId } = req.params;
@@ -77,7 +77,7 @@ router.post(
   })
 );
 
-// ----search available user to chat-----
+// ----search available users-----
 router.get(
   "/users",
   verifyJWT(),
@@ -90,7 +90,7 @@ router.get(
   })
 );
 
-// ----list of all chats-----
+// ----list of all chats or group-----
 router.get(
   "/",
   verifyJWT(),
@@ -104,7 +104,7 @@ router.get(
 
 // ----delete one on one chat and messages----
 router.delete(
-  "/single/:chatId",
+  "/chat/:chatId",
   asyncHandler(async (req, res) => {
     const { chatId } = req.params;
 
@@ -119,51 +119,103 @@ router.delete(
 
 // ----create a group chat----
 router.post(
-  "/",
+  "/group",
   verifyJWT(),
   asyncHandler(async (req, res) => {
-    const { isGroupChat, name, participants } = req.body;
+    const { name, participants } = req.body;
 
-    if (!name || !participants?.length > 1)
-      throw new ApiError(404, "name and participants filled are required");
+    if (participants.includes(req.user._id.toString()))
+      throw new ApiError(
+        400,
+        "Participants array should not be contain the group creator"
+      );
 
-    const newChat = await Chat.create({
-      admin: req.user._id,
-      isGroupChat: !!isGroupChat,
+    let members = [...new Set([...participants, req.user._id.toString()])];
+
+    if (members.length < 3)
+      throw new ApiError(400, "you have pass duplicate participants");
+
+    // create a group chat
+    const groupChat = await Chat.create({
       name,
-      participants,
+      admin: req.user._id,
+      isGroupChat: true,
+      participants: members,
     });
 
-    const populatedChat = await newChat.populate(
-      "participants",
-      "fullName avatar email"
-    );
-
-    res.status(201).json(populatedChat);
-  })
-);
-
-// ----update chat by (1-1 or group)----
-router.patch(
-  "/:chatId",
-  asyncHandler(async (req, res) => {
-    const { name, participants } = req.body;
-    const { chatId } = req.params;
-
-    if (!isValidObjectId(chatId)) throw new ApiError(403, "Invalid Chat ID");
-
-    if (!name || !participants?.length > 1)
-      throw new ApiError(404, "name and participants filled are required");
-
-    const updatedChat = await Chat.findByIdAndUpdate(
-      chatId,
-      { ...(name && { name }), ...(participants && { participants }) },
-      { new: true }
-    )
+    const chat = await Chat.findById(groupChat._id)
       .populate("participants", "fullName avatar email")
       .populate("lastMessage");
 
-    res.status(200).json(updatedChat);
+    if (!chat) throw new ApiError(500, "Internal server error");
+
+    chat.participants.forEach((p) => {
+      if (p._id.toString() === req.user._id.toString()) return;
+
+      req.app.get("io").to(p._id.toString()).emit("newChat", chat);
+    });
+
+    res.status(201).json({ chat, message: "Group chat created successfully" });
+  })
+);
+
+// ----get group chat in details----
+router.get(
+  "/group/:chatId",
+  asyncHandler(async (req, res) => {
+    const { chatId } = req.params;
+    const groupChat = await Chat.findById(chatId)
+      .populate("participants", "fullName avatar email")
+      .populate("lastMessage");
+
+    return res.status(200).json(groupChat);
+  })
+);
+
+// ----update group chat----
+router.patch(
+  "/group/:chatId",
+  verifyJWT(),
+  asyncHandler(async (req, res) => {
+    const { name, participantId, type } = req.body;
+    const { chatId } = req.params;
+
+    const chat = await Chat.findById(chatId);
+
+    if (chat._id.toString() === req.user._id.toString())
+      throw new ApiError(404, "You are on a admin this group chat");
+
+    switch (type) {
+      case "NAME":
+        if (name) chat.name = name;
+      case "Add_PARTICIPANT":
+        if (!chat.participants.includes(participantId))
+          chat.participants.push(participantId);
+        break;
+      case "REMOVE_PARTICIPANT":
+        if (chat.participants.includes(participantId))
+          chat.participants.pop(participantId);
+        break;
+    }
+
+    await chat.save();
+
+    const populatedChat = await Chat.findOne({
+      isGroupChat: true,
+      _id: chat._id,
+    })
+      .populate("participants", "fullName avatar email")
+      .populate("lastMessage");
+
+    populatedChat.participants.forEach((p) => {
+      if (p._id.toString() === req.user._id.toString()) return;
+
+      res.app.get("io").to(p._id.toString()).emit("updateChat", populatedChat);
+    });
+
+    res
+      .status(200)
+      .json({ populatedChat, message: "Group chat updated successfully" });
   })
 );
 

@@ -1,37 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { axios, errorHandler, formatChatTime, socket } from "../helper";
-import { Input } from "../utils";
-import { useEffect } from "react";
-import useFetch from "../hooks/useFetch";
 import { Send } from "lucide-react";
+import { axios, errorHandler, formatChatTime } from "../helper";
+import { Input } from "../utils";
 
-const Messages = ({ chatId = "" }) => {
+const Messages = ({ chatId = "", messages = [] }) => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const { data, loading } = useFetch(`/messages/${chatId}`);
+  const [onDelete, setOnDelete] = useState([]);
   const { user } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (chatId) {
-      setMessages(loading ? [] : data);
-    }
-  }, [chatId, data, loading]);
-
-  useEffect(() => {
-    // Join the room when chatId changes
-    if (!socket || !chatId) return;
-    socket.emit("joinRoom", chatId);
-
-    // Listen for incoming messages
-    const handleReceiveMessage = (data) => {
-      setMessages((prev) => [...prev, data]);
-    };
-    socket.on("receiveMessage", handleReceiveMessage);
-    return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
-    };
-  }, [chatId]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -40,30 +16,65 @@ const Messages = ({ chatId = "" }) => {
       const res = await axios.post(`/messages/${chatId}`, { content: message });
       if (res.data) {
         setMessage("");
-        // Optionally, you can emit here if you want instant feedback
-        // socket.emit("sendMessage", { roomId: chatId, message: res.data });
       }
     } catch (error) {
       errorHandler(error);
     }
   };
 
+  const handleDeleteMessage = async () => {
+    try {
+      console.log(onDelete);
+      if (onDelete.length > 0) {
+        const res = await axios.delete(`/messages/delete`, {
+          messageIds: [...onDelete],
+        });
+        console.log(res.data);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
+  // Manage onDelete as an array of ids
+  const handleToggleDelete = (id) => {
+    setOnDelete((prev) => {
+      if (Array.isArray(prev)) {
+        return prev.includes(id)
+          ? prev.filter((item) => item !== id)
+          : [...prev, id];
+      }
+    });
+  };
+
   return (
     <div className="w-full relative h-full">
-      {!messages?.length && (
-        <p className="min-h-[50vh] flex items-center justify-center">
-          No content found
-        </p>
+      {/* Delete messages */}
+      {onDelete.length > 0 && (
+        <div className="flex items-center justify-center gap-2">
+          <button
+            onClick={() => handleDeleteMessage("item?._id")}
+            className="px-3 py-1 rounded-full items-center  bg-red-600 text-white">
+            Delete {onDelete.length || null}
+          </button>
+          <button
+            onClick={() => setOnDelete([])}
+            className="px-3 py-1 rounded-full items-center ">
+            Close
+          </button>
+        </div>
       )}
+
       <div className="flex-col gap-2 flex">
         {messages.map((item) => {
           const sender = item?.sender?.email === user?.email;
           return (
             <div
+              onClick={() => handleToggleDelete(item?._id)}
               key={item?._id}
-              className={`flex items-center justify-end ${!sender && "!justify-start"}`}>
+              className={`flex items-center justify-end ${!sender && "!justify-start"} ${onDelete?.includes(item._id) && "!bg-gray-300"}`}>
               <div
-                className={`card !shadow-sm w-fit !px-5 !flex gap-2 items-end ${!sender ? "!bg-gray-100 !rounded-r-4xl !rounded-t-4xl" : "!rounded-l-4xl !rounded-b-4xl"}`}>
+                className={`card relative cursor-pointer !shadow-sm w-fit !px-5 !flex gap-2 items-end ${sender ? "!bg-indigo-100 !rounded-l-4xl !rounded-b-4xl" : "!rounded-r-4xl !rounded-b-4xl"}`}>
                 {item?.content && <p>{item?.content}</p>}
                 {/* {item?.attechments} */}
                 <small className="text-nowrap text-slate-400">
