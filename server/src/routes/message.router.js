@@ -41,7 +41,7 @@ router.get(
       chat: new mongoose.Types.ObjectId(chatId),
     })
       .populate("sender", "fullName avatar email")
-      .sort({ createdAt: -1 });
+      .sort({ updatedAt: 1 });
 
     res.status(200).json(messages);
   })

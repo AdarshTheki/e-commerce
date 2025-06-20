@@ -77,11 +77,19 @@ const HeaderUserMenu = () => {
     }
   };
 
+  const handelToggle = () => {
+    if (!user?._id) {
+      navigate("/login");
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
+
   return (
-    <>
+    <div ref={dropdownRef}>
       <div
-        className={`absolute top-11 z-30 card w-60 duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"} ${!user && "hidden"}`}
-        ref={dropdownRef}>
+        style={{ display: !isOpen ? "none" : "flex" }}
+        className={`absolute top-11 z-30 card w-60 duration-75 ease-in-out right-0`}>
         <ul className="w-full">
           {menuItems.map((item) => (
             <li key={item.id}>
@@ -110,9 +118,10 @@ const HeaderUserMenu = () => {
       </div>
 
       <button
+        type="button"
         title="Account"
         className="flex items-center gap-1 cursor-pointer"
-        onClick={() => (user?._id ? setIsOpen(true) : navigate("/login"))}>
+        onClick={handelToggle}>
         <img
           src={user?.avatar || "https://avatar.iran.liara.run/public"}
           alt="User"
@@ -121,7 +130,7 @@ const HeaderUserMenu = () => {
         />
         <span className="text-lg font-serif max-sm:hidden">User</span>
       </button>
-    </>
+    </div>
   );
 };
 

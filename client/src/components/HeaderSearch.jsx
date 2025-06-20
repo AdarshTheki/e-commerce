@@ -21,9 +21,9 @@ const HeaderSearch = () => {
   );
 
   return (
-    <>
+    <div ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(isOpen ? false : true)}
+        onClick={() => setIsOpen(!isOpen)}
         title="Search products"
         className="cursor-pointer flex gap-1 items-center">
         <Search size={22} />
@@ -31,8 +31,8 @@ const HeaderSearch = () => {
       </button>
 
       <div
-        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0 ${!isOpen ? "opacity-0 !-top-120" : "opacity-100"}`}
-        ref={dropdownRef}>
+        style={{ display: !isOpen ? "none" : "block" }}
+        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0`}>
         <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
           <Search size={26} />
           <input
@@ -74,7 +74,7 @@ const HeaderSearch = () => {
           )}
         </ul>
       </div>
-    </>
+    </div>
   );
 };
 

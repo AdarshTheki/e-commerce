@@ -8,7 +8,7 @@ import { PackageSearch } from "lucide-react";
 const OrderEmpty = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-md text-center">
+      <div className="p-8 max-w-md text-center">
         <PackageSearch className="w-20 h-20 text-gray-400 mb-4 mx-auto" />
         <h2 className="text-2xl font-semibold mb-2">No Orders Yet</h2>
         <p className="text-gray-600 mb-6">

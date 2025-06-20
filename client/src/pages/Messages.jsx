@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { format } from "date-fns";
 import { useSelector } from "react-redux";
-import { axios, errorHandler, socket } from "../helper";
+import { axios, errorHandler, formatChatTime, socket } from "../helper";
 import { Input } from "../utils";
 import { useEffect } from "react";
 import useFetch from "../hooks/useFetch";
+import { Send } from "lucide-react";
 
 const Messages = ({ chatId = "" }) => {
   const [message, setMessage] = useState("");
@@ -36,6 +36,7 @@ const Messages = ({ chatId = "" }) => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     try {
+      if (!message.trim()) return;
       const res = await axios.post(`/messages/${chatId}`, { content: message });
       if (res.data) {
         setMessage("");
@@ -48,13 +49,13 @@ const Messages = ({ chatId = "" }) => {
   };
 
   return (
-    <div className="w-full relative h-fit !min-h-[80vh]">
+    <div className="w-full relative h-full">
       {!messages?.length && (
         <p className="min-h-[50vh] flex items-center justify-center">
           No content found
         </p>
       )}
-      <div className="flex-col gap-4 flex">
+      <div className="flex-col gap-2 flex">
         {messages.map((item) => {
           const sender = item?.sender?.email === user?.email;
           return (
@@ -62,18 +63,12 @@ const Messages = ({ chatId = "" }) => {
               key={item?._id}
               className={`flex items-center justify-end ${!sender && "!justify-start"}`}>
               <div
-                className={`card w-fit !px-5 ${!sender ? "!bg-indigo-100 !rounded-r-4xl !rounded-b-4xl" : "!rounded-e-4xl !rounded-t-4xl"}`}>
+                className={`card !shadow-sm w-fit !px-5 !flex gap-2 items-end ${!sender ? "!bg-gray-100 !rounded-r-4xl !rounded-t-4xl" : "!rounded-l-4xl !rounded-b-4xl"}`}>
                 {item?.content && <p>{item?.content}</p>}
                 {/* {item?.attechments} */}
-                <small className="text-nowrap">
-                  {format(
-                    item?.updatedAt
-                      ? new Date(
-                          new Date(item?.updatedAt).getTime() +
-                            3 * 60 * 60 * 1000
-                        )
-                      : new Date(),
-                    "dd MMM, h:mm a"
+                <small className="text-nowrap text-slate-400">
+                  {formatChatTime(
+                    item?.updatedAt ? item?.updatedAt : new Date()
                   )}
                 </small>
               </div>
@@ -83,14 +78,19 @@ const Messages = ({ chatId = "" }) => {
 
         <form
           onSubmit={handleSendMessage}
-          className="w-full bg-white p-2 flex gap-5 items-center sticky bottom-0">
+          className="w-full p-2 flex gap-2 items-center sticky bottom-0 bg-slate-50">
           <Input
+            required={false}
+            className="rounded-full !p-2 !px-5"
             name="message"
+            placeholder="Enter a message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          <button type="submit" className="btn-primary">
-            Submit Message
+          <button
+            type="submit"
+            className="btn-primary flex gap-2 !rounded-full !px-5 items-center">
+            Send <Send size={16} />
           </button>
         </form>
       </div>
