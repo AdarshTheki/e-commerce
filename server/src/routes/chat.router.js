@@ -7,6 +7,7 @@ import { Message } from "../models/message.model.js";
 import { isValidObjectId } from "mongoose";
 import { removeSingleImg } from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
+import { emitSocketEvent, ChatEvents } from "../socket/index.js";
 
 const router = Router();
 
@@ -34,8 +35,8 @@ router.post(
   asyncHandler(async (req, res) => {
     const { receiverId } = req.params;
 
-    if (!isValidObjectId(receiverId))
-      throw new ApiError(403, "Invalid receiver ID");
+    const receiver = await User.findById(receiverId);
+    if (!receiver) throw new ApiError(403, "User is does not exits");
 
     // check if receiver is not the user who is requesting a chat
     if (receiverId.toString() === req.user._id.toString()) {
@@ -57,7 +58,7 @@ router.post(
     // If chat doesn't exist, create a new one
     const newChat = await Chat.create({
       isGroupChat: false,
-      name: "one on one chat",
+      name: receiver?.fullName || "one on one chat",
       participants: [req.user._id, receiverId],
       admin: req.user._id,
     });
@@ -67,13 +68,30 @@ router.post(
       "fullName avatar email"
     );
 
-    populatedChat.participants.forEach((p) => {
-      if (p._id.toString() === req.user._id.toString()) return;
-      // Send real-time update to the specific user
-      req.app.get("io").to(p._id.toString()).emit("newChat", populatedChat);
-    });
+    if (populatedChat.participants.length > 1) {
+      populatedChat.participants.forEach((p) => {
+        if (p._id.toString() === req.user._id.toString()) return;
+        // Send real-time update to the specific user
+        emitSocketEvent(
+          req,
+          p._id.toString(),
+          ChatEvents.NEW_CHAT_EVENT,
+          populatedChat
+        );
+      });
+    } else {
+      emitSocketEvent(
+        req,
+        populatedChat.participants[0]?._id.toString(),
+        ChatEvents.NEW_CHAT_EVENT,
+        populatedChat
+      );
+    }
 
-    res.status(201).json(populatedChat);
+    res.status(201).json({
+      chat: populatedChat,
+      message: "get or create chat room in one on one",
+    });
   })
 );
 
@@ -97,7 +115,8 @@ router.get(
   asyncHandler(async (req, res) => {
     const chats = await Chat.find({ participants: req.user._id })
       .populate("participants", "fullName avatar email")
-      .populate("lastMessage");
+      .populate("lastMessage")
+      .sort({ updatedAt: -1 });
     res.status(200).json(chats);
   })
 );
@@ -105,15 +124,31 @@ router.get(
 // ----delete one on one chat and messages----
 router.delete(
   "/chat/:chatId",
+  verifyJWT(),
   asyncHandler(async (req, res) => {
     const { chatId } = req.params;
 
     if (!isValidObjectId(chatId)) throw new ApiError(403, "Invalid chat ID");
 
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) throw new ApiError(404, "chat not found on db");
+
+    const otherParticipate = chat.participants.find(
+      (p) => p._id.toString() !== req.user._id.toString()
+    );
+
+    if (!otherParticipate)
+      throw new ApiError(404, "Other participant not found");
+
     await Chat.findByIdAndDelete(chatId);
     await deleteChatMessages(chatId);
 
-    res.status(200).json({ message: "chat and message deleted succeed" });
+    emitSocketEvent(req, chatId, ChatEvents.LEAVE_CHAT_EVENT, chat);
+
+    res
+      .status(200)
+      .json({ chat, message: "chat and all message deleted successfully" });
   })
 );
 
@@ -133,7 +168,7 @@ router.post(
     let members = [...new Set([...participants, req.user._id.toString()])];
 
     if (members.length < 3)
-      throw new ApiError(400, "you have pass duplicate participants");
+      throw new ApiError(400, "You have passed duplicate participants Ids");
 
     // create a group chat
     const groupChat = await Chat.create({
@@ -152,7 +187,7 @@ router.post(
     chat.participants.forEach((p) => {
       if (p._id.toString() === req.user._id.toString()) return;
 
-      req.app.get("io").to(p._id.toString()).emit("newChat", chat);
+      emitSocketEvent(req, p._id.toString(), ChatEvents.NEW_CHAT_EVENT, chat);
     });
 
     res.status(201).json({ chat, message: "Group chat created successfully" });
@@ -164,6 +199,7 @@ router.get(
   "/group/:chatId",
   asyncHandler(async (req, res) => {
     const { chatId } = req.params;
+
     const groupChat = await Chat.findById(chatId)
       .populate("participants", "fullName avatar email")
       .populate("lastMessage");
@@ -210,7 +246,12 @@ router.patch(
     populatedChat.participants.forEach((p) => {
       if (p._id.toString() === req.user._id.toString()) return;
 
-      res.app.get("io").to(p._id.toString()).emit("updateChat", populatedChat);
+      emitSocketEvent(
+        req,
+        p._id.toString(),
+        ChatEvents.UPDATE_GROUP_NAME_EVENT,
+        populatedChat
+      );
     });
 
     res

@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { Server } from "socket.io";
 import http from "http";
+import { Server } from "socket.io";
+import { initializeSocketIO } from "./socket/index.js";
 // import rateLimit from "express-rate-limit";
 
 // import all routing files
@@ -51,36 +52,16 @@ app.use(cookieParser());
 // ----Connect and Serve the Socket.Io-----
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", credentials: true, methods: ["GET", "POST"] },
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
 });
 
 // Save io instance in app for global access
 app.set("io", io);
 
-// 🔥 socket.io logic
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
-  socket.on("joinRoom", (roomId) => socket.join(roomId));
-
-  socket.on("sendMessage", ({ roomId, message }) => {
-    io.to(roomId).emit("receiveMessage", message);
-    io.to(roomId).emit("deleteMessage", message);
-  });
-
-  // 🟡 Typing indicator
-  // socket.on("typing", ({ chatId, user }) => {
-  //   socket.to(chatId).emit("typing", user);
-  // });
-
-  // socket.on("stopTyping", ({ chatId, user }) => {
-  //   socket.to(chatId).emit("stopTyping", user);
-  // });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected", socket.id);
-  });
-});
+initializeSocketIO(io);
 
 // used all base url
 app.use("/api/v1/user", userRoute);
@@ -98,17 +79,7 @@ app.use("/api/v1/gallery", galleryRoute);
 app.use("/api/v1/chats", chatRoute);
 app.use("/api/v1/messages", messageRoute);
 app.use("/api/v1/notifications", notificationRoute);
-app.use("/api/v1/health-check", health_checkRoute);
-
-// ---Display the HTML Static Page Load---
-app.get("/", (req, res) => {
-  return res.sendFile("/public/dist/index.html");
-});
-
-// ---Check API is Valid Endpoints----
-app.get("*", (req, res) => {
-  res.status(504).json({ message: "API Endpoint is Not Found" });
-});
+app.use("/", health_checkRoute);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

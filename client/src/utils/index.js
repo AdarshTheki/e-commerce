@@ -7,8 +7,10 @@ import Typewriter from "./Typewriter";
 import StarRating from "./StarRating";
 import StarSelected from "./StarSelected";
 import LazyImage from "./LazyImage";
+import Avatar from "./Avatar";
 
 export {
+  Avatar,
   LazyImage,
   StarSelected,
   StarRating,

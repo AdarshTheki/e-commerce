@@ -1,12 +1,13 @@
 import mongoose, { isValidObjectId } from "mongoose";
 import { Router } from "express";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { removeMultiImg, uploadMultiImg } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
+import { removeMultiImg, uploadMultiImg } from "../utils/cloudinary.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { Chat } from "../models/chat.model.js";
 import { Message } from "../models/message.model.js";
+import { emitSocketEvent, ChatEvents } from "../socket/index.js";
 
 const router = Router();
 
@@ -16,8 +17,6 @@ router.post(
   upload.array("files", 5),
   asyncHandler(async (req, res) => {
     const files = req?.files;
-
-    console.log(files);
 
     if (files && !files?.length > 0)
       throw new ApiError(404, "files not upload to local path");
@@ -78,46 +77,52 @@ router.post(
     );
 
     // Emit to room via socket.io
-    req.app.get("io").to(chatId).emit("receiveMessage", populatedMessage);
+    emitSocketEvent(
+      req,
+      chatId,
+      ChatEvents.MESSAGE_RECEIVED_EVENT,
+      populatedMessage
+    );
 
-    res.status(201).json(populatedMessage);
+    res.status(201).json({
+      data: populatedMessage,
+      message: "message create successfully with chatId",
+    });
   })
 );
 
 // ----📝 delete single message text/image-----
 router.delete(
-  "/delete",
+  "/messageId",
   verifyJWT(),
   asyncHandler(async (req, res) => {
-    const { messageIds } = req.body;
+    const { messageId } = req.params;
 
-    console.log(messageIds);
+    const message = await Message.findById(messageId);
 
-    if (!Array.isArray(messageIds))
-      throw new ApiError(403, "Invalid Messages ID");
+    if (message?.attachments?.length > 0) {
+      await removeMultiImg(message.attachments);
+    }
 
-    const message = await Message.aggregate([
-      { $match: { _id: { $in: messageIds } } },
-    ]);
+    const chat = await Chat.findById(message.chat).populate("lastMessage");
 
-    // if (message?.attachments?.length > 0) {
-    //   await removeMultiImg(message.attachments);
-    // }
+    if (chat) await Message.deleteOne({ _id: messageId });
 
-    // const chat = await Chat.findById(message.chat).populate("lastMessage");
+    chat.participants.forEach((p) => {
+      if (p._id.toString() === req.user._id.toString()) return;
 
-    // if (chat) await Message.deleteOne({ _id: messageId });
+      emitSocketEvent(
+        req,
+        chat._id.toString(),
+        ChatEvents.MESSAGE_DELETE_EVENT,
+        chat
+      );
+    });
 
-    // chat.participants.forEach((p) => {
-    //   if (p._id.toString() === req.user._id.toString()) return;
-
-    //   res.app
-    //     .get("io")
-    //     .to(chat._id.toString())
-    //     .emit("deleteMessage", message._id);
-    // });
-
-    res.status(200).json({ message, message: "message deleted successfully" });
+    res.status(200).json({
+      data: message,
+      message: "message deleted successfully on messageId",
+    });
   })
 );
 
