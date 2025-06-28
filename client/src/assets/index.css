@@ -4,9 +4,9 @@
   --primary: rgb(79, 70, 229);
 }
 
-html {
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+p {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 
 *:focus-visible {
@@ -32,63 +32,61 @@ h6 {
   color: var(--primary);
 }
 
-@layer utilities {
-  .scrollbar-hidden::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hidden {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-  .scrollbar::-webkit-scrollbar {
-    width: 1px;
-    height: 1px;
-  }
+.scrollbar::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
 
-  .scrollbar::-webkit-scrollbar-track {
-    border-radius: 2px;
-  }
+.scrollbar::-webkit-scrollbar-track {
+  border-radius: 2px;
+}
 
-  .scrollbar::-webkit-scrollbar-thumb {
-    background: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+}
 
-  .btn-primary {
-    @apply bg-indigo-500 text-white font-medium py-2 px-4 rounded hover:bg-indigo-600;
-  }
+.btn-primary {
+  @apply bg-indigo-500 text-white font-medium py-2 px-4 rounded hover:bg-indigo-600;
+}
 
-  .btn-secondary {
-    @apply bg-gray-800 text-white font-bold py-2 px-4 rounded hover:bg-gray-700;
-  }
+.btn-secondary {
+  @apply bg-gray-800 text-white font-bold py-2 px-4 rounded hover:bg-gray-700;
+}
 
-  .card {
-    @apply bg-white sm:p-3 p-2 rounded-lg shadow-md;
-  }
+.card {
+  @apply bg-white sm:p-3 p-2 rounded-lg shadow-md;
+}
 
-  button {
-    @apply border-gray-300 cursor-pointer;
-  }
+button {
+  @apply border-gray-300 cursor-pointer;
+}
 
-  .btn {
-    @apply px-4 py-2 rounded duration-200 ease-in hover:opacity-80;
-  }
+.btn {
+  @apply px-4 py-2 rounded duration-200 ease-in hover:opacity-80;
+}
 
-  .svg-btn {
-    @apply w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-200/50;
-  }
+.svg-btn {
+  @apply w-9 h-9 flex items-center justify-center rounded-full hover:bg-slate-200/50;
+}
 
-  .status-active {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-green-100 text-green-700 rounded-full;
-  }
+.status-active {
+  @apply px-2 py-1 font-medium capitalize text-xs bg-green-100 text-green-700 rounded-full;
+}
 
-  .status-pending {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-yellow-100 text-yellow-700 rounded-full;
-  }
+.status-pending {
+  @apply px-2 py-1 font-medium capitalize text-xs bg-yellow-100 text-yellow-700 rounded-full;
+}
 
-  .status-inactive {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-red-100 text-red-700 rounded-full;
-  }
+.status-inactive {
+  @apply px-2 py-1 font-medium capitalize text-xs bg-red-100 text-red-700 rounded-full;
 }

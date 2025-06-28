@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Send } from "lucide-react";
-import { axios, errorHandler, formatChatTime } from "../../helper";
-import { Input } from "../../utils";
-import { useSearchParams } from "react-router-dom";
 
-const Messages = ({ messages = [] }) => {
-  const [searchParams] = useSearchParams();
-  const chatId = searchParams.get("chatId");
+import { axios, classNames, errorHandler, formatChatTime } from "../../helper";
+import { Input } from "../../utils";
+
+const Messages = ({ messages = [], chatId = "" }) => {
   const [message, setMessage] = useState("");
   const [onDelete, setOnDelete] = useState([]);
   const { user } = useSelector((state) => state.auth);
@@ -76,9 +74,18 @@ const Messages = ({ messages = [] }) => {
               <div
                 onClick={() => handleToggleDelete(item._id)}
                 key={item?._id}
-                className={`flex items-center justify-end ${!sender && "!justify-start"} ${onDelete?.includes(item._id) && "!bg-gray-300"}`}>
+                className={classNames(
+                  "flex items-center justify-end",
+                  !sender && "!justify-start",
+                  onDelete?.includes(item._id) && "!bg-gray-300"
+                )}>
                 <div
-                  className={`card relative cursor-pointer !shadow-sm w-fit !px-5 !flex gap-2 items-end ${sender ? "!bg-indigo-100 !rounded-l-4xl !rounded-b-4xl" : "!rounded-r-4xl !rounded-b-4xl"}`}>
+                  className={classNames(
+                    "card relative cursor-pointer !shadow-sm w-fit !px-5 !flex gap-2 items-end",
+                    sender
+                      ? "!bg-indigo-100 !rounded-l-4xl !rounded-t-4xl"
+                      : "!rounded-r-4xl !rounded-t-4xl"
+                  )}>
                   {item?.content && <p>{item?.content}</p>}
                   {/* {item?.attechments} */}
                   <small className="text-nowrap text-slate-400">

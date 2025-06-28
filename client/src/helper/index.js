@@ -30,36 +30,46 @@ const classNames = (...className) => {
   return className.filter(Boolean).join(" ");
 };
 
-const socketAction = {
-  // ? once user is ready to go
-  CONNECTED_EVENT: "connected",
-  // ? when user gets disconnected
-  DISCONNECT_EVENT: "disconnect",
-  // ? when user joins a socket room
-  JOIN_CHAT_EVENT: "joinChat",
-  // ? when participant gets removed from group, chat gets deleted or leaves a group
-  LEAVE_CHAT_EVENT: "leaveChat",
-  // ? when admin updates a group name
-  UPDATE_GROUP_NAME_EVENT: "updateGroupName",
-  // ? when new message is received
-  MESSAGE_RECEIVED_EVENT: "messageReceived",
-  // ? when there is new one on one chat, new group chat or user gets added in the group
-  NEW_CHAT_EVENT: "newChat",
-  // ? when there is an error in socket
-  SOCKET_ERROR_EVENT: "socketError",
-  // ? when participant stops typing
-  STOP_TYPING_EVENT: "stopTyping",
-  // ? when participant starts typing
-  TYPING_EVENT: "typing",
-  // ? when message is deleted
-  MESSAGE_DELETE_EVENT: "messageDeleted",
-};
+const isBrowser = typeof window !== "undefined";
+// A class that provides utility functions for working with local storage
+export class LocalStorage {
+  // Get a value from local storage by key
+  static get(key = "") {
+    if (!isBrowser) return;
+    const value = localStorage.getItem(key);
+    if (value) {
+      try {
+        return JSON.parse(value);
+      } catch (err) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  // Set a value in local storage by key
+  static set(key = "", value = "") {
+    if (!isBrowser) return;
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  // Remove a value from local storage by key
+  static remove(key = "") {
+    if (!isBrowser) return;
+    localStorage.removeItem(key);
+  }
+
+  // Clear all items from local storage
+  static clear() {
+    if (!isBrowser) return;
+    localStorage.clear();
+  }
+}
 
 export {
   axios,
   socket,
   socialFormats,
-  socketAction,
   errorHandler,
   classNames,
   formatChatTime,

@@ -52,7 +52,9 @@ router.post(
       .populate("lastMessage");
 
     if (chat) {
-      return res.status(200).json(chat);
+      return res
+        .status(200)
+        .json({ chat, message: "chat retrieved successfully" });
     }
 
     // If chat doesn't exist, create a new one
@@ -68,25 +70,15 @@ router.post(
       "fullName avatar email"
     );
 
-    if (populatedChat.participants.length > 1) {
-      populatedChat.participants.forEach((p) => {
-        if (p._id.toString() === req.user._id.toString()) return;
-        // Send real-time update to the specific user
-        emitSocketEvent(
-          req,
-          p._id.toString(),
-          ChatEvents.NEW_CHAT_EVENT,
-          populatedChat
-        );
-      });
-    } else {
+    populatedChat.participants.forEach((p) => {
+      // if (p._id.toString() === req.user._id.toString()) return; // don't emit the event for the logged
       emitSocketEvent(
         req,
-        populatedChat.participants[0]?._id.toString(),
+        p._id?.toString(),
         ChatEvents.NEW_CHAT_EVENT,
         populatedChat
       );
-    }
+    });
 
     res.status(201).json({
       chat: populatedChat,
@@ -185,8 +177,7 @@ router.post(
     if (!chat) throw new ApiError(500, "Internal server error");
 
     chat.participants.forEach((p) => {
-      if (p._id.toString() === req.user._id.toString()) return;
-
+      // if (p._id.toString() === req.user._id.toString()) return;
       emitSocketEvent(req, p._id.toString(), ChatEvents.NEW_CHAT_EVENT, chat);
     });
 

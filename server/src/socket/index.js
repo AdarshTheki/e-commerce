@@ -36,13 +36,13 @@ const mountJoinChatEvent = (socket) => {
 
 const mountParticipantTypingEvent = (socket) => {
   socket.on(ChatEvents.TYPING_EVENT, (chatId) => {
-    socket.in(chatId).emit(ChatEvents.TYPING_EVENT, chatId);
+    socket.to(chatId).emit(ChatEvents.TYPING_EVENT, chatId);
   });
 };
 
 const mountParticipantStoppedTypingEvent = (socket) => {
   socket.on(ChatEvents.STOP_TYPING_EVENT, (chatId) => {
-    socket.in(chatId).emit(ChatEvents.STOP_TYPING_EVENT, chatId);
+    socket.to(chatId).emit(ChatEvents.STOP_TYPING_EVENT, chatId);
   });
 };
 

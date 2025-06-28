@@ -69,7 +69,9 @@ router.post(
     });
 
     // Update lastMessage in chat
-    await Chat.findByIdAndUpdate(chatId, { lastMessage: newMessage._id });
+    const chat = await Chat.findByIdAndUpdate(chatId, {
+      lastMessage: newMessage._id,
+    });
 
     const populatedMessage = await newMessage.populate(
       "sender",
@@ -77,12 +79,15 @@ router.post(
     );
 
     // Emit to room via socket.io
-    emitSocketEvent(
-      req,
-      chatId,
-      ChatEvents.MESSAGE_RECEIVED_EVENT,
-      populatedMessage
-    );
+    chat.participants.forEach((userId) => {
+      // if (userId.toString() === req.user._id.toString()) return;
+      emitSocketEvent(
+        req,
+        userId.toString(),
+        ChatEvents.MESSAGE_RECEIVED_EVENT,
+        populatedMessage
+      );
+    });
 
     res.status(201).json({
       data: populatedMessage,

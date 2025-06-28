@@ -1,5 +1,5 @@
 import CartsPage from "./ShoppingCartPage";
-import ChatPage from "./Chat/index";
+import ChatPage from "./Chat/ChatPage";
 import HomePage from "./HomePage";
 import SingleProductPage from "./SingleProductPage";
 import ProductsPage from "./ProductsPage";

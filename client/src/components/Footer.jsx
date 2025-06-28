@@ -1,9 +1,11 @@
+import { NavLink } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer id="footer" className="bg-gray-900 text-gray-300">
       {/* <!-- Main Footer --> */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* <!-- Company Info --> */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-white mb-4">Cartify</h3>
@@ -12,8 +14,8 @@ const Footer = () => {
               products, great prices, and excellent service.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="#"
+              <NavLink
+                to={"/"}
                 className="hover:text-white transition-colors duration-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -27,9 +29,9 @@ const Footer = () => {
                   strokeLinejoin="round">
                   <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                 </svg>
-              </a>
-              <a
-                href="#"
+              </NavLink>
+              <NavLink
+                to={"/"}
                 className="hover:text-white transition-colors duration-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -43,9 +45,9 @@ const Footer = () => {
                   strokeLinejoin="round">
                   <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
                 </svg>
-              </a>
-              <a
-                href="#"
+              </NavLink>
+              <NavLink
+                to={"/"}
                 className="hover:text-white transition-colors duration-300">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -61,112 +63,110 @@ const Footer = () => {
                   <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                   <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                 </svg>
-              </a>
+              </NavLink>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:gap-5 gap-2 w-full">
-            {/* <!-- Quick Links --> */}
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-4">
-                Quick Links
-              </h4>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Shop
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Categories
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Brands
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
+          {/* <!-- Quick Links --> */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">
+              Quick Links
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <NavLink
+                  to={"/"}
+                  className="hover:text-white transition-colors duration-300">
+                  Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/"}
+                  className="hover:text-white transition-colors duration-300">
+                  Shop
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/categories"}
+                  className="hover:text-white transition-colors duration-300">
+                  Categories
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/brands"}
+                  className="hover:text-white transition-colors duration-300">
+                  Brands
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/about"}
+                  className="hover:text-white transition-colors duration-300">
+                  About Us
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/contact"}
+                  className="hover:text-white transition-colors duration-300">
+                  Contact
+                </NavLink>
+              </li>
+            </ul>
+          </div>
 
-            {/* <!-- Customer Service --> */}
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-4">
-                Customer Service
-              </h4>
-              <ul className="space-y-2">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    My Account
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Track Order
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Wishlist
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Returns Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    Shipping Info
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-white transition-colors duration-300">
-                    FAQs
-                  </a>
-                </li>
-              </ul>
-            </div>
+          {/* <!-- Customer Service --> */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">
+              Customer Service
+            </h4>
+            <ul className="space-y-2">
+              <li>
+                <NavLink
+                  to={"/setting"}
+                  className="hover:text-white transition-colors duration-300">
+                  My Account
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/order"}
+                  className="hover:text-white transition-colors duration-300">
+                  Track Order
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/wishlist"}
+                  className="hover:text-white transition-colors duration-300">
+                  Wishlist
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/return-policy"}
+                  className="hover:text-white transition-colors duration-300">
+                  Returns Policy
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/product"}
+                  className="hover:text-white transition-colors duration-300">
+                  Shipping Info
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to={"/faq"}
+                  className="hover:text-white transition-colors duration-300">
+                  FAQs
+                </NavLink>
+              </li>
+            </ul>
           </div>
 
           {/* <!-- Newsletter --> */}
@@ -216,22 +216,22 @@ const Footer = () => {
               <p>© 2024 Cartify. All rights reserved.</p>
             </div>
             <div className="mt-4 md:mt-0">
-              <div className="flex text-xs space-x-6">
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300 text-nowrap">
+              <div className="flex space-x-6">
+                <NavLink
+                  to={"/"}
+                  className="hover:text-white transition-colors duration-300">
                   Privacy Policy
-                </a>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300 text-nowrap">
+                </NavLink>
+                <NavLink
+                  to={"/"}
+                  className="hover:text-white transition-colors duration-300">
                   Terms of Service
-                </a>
-                <a
-                  href="#"
-                  className="hover:text-white transition-colors duration-300 text-nowrap">
+                </NavLink>
+                <NavLink
+                  to={"/"}
+                  className="hover:text-white transition-colors duration-300">
                   Cookie Policy
-                </a>
+                </NavLink>
               </div>
             </div>
           </div>
