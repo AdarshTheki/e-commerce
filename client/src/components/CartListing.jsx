@@ -3,15 +3,16 @@ import { Trash2Icon } from "lucide-react";
 import { errorHandler, axios } from "../helper";
 import { useState } from "react";
 
-const CartListing = ({ productId, quantity, refetch }) => {
+const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
   const { _id, thumbnail, title, price, category, brand } = productId;
   const [qty, setQty] = useState(quantity);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/cart/${id}`);
+      if (!_id) return;
+      const res = await axios.delete(`/cart/${_id}`);
       if (res.data) {
-        refetch();
+        onRemove();
       }
     } catch (error) {
       errorHandler(error);
@@ -19,12 +20,13 @@ const CartListing = ({ productId, quantity, refetch }) => {
   };
   const handleUpdateQty = async () => {
     try {
+      if (!_id || !qty) return;
       const res = await axios.put(`/cart`, {
         productId: _id,
         quantity: qty,
       });
       if (res.data) {
-        refetch();
+        onQtyChange(qty);
       }
     } catch (error) {
       errorHandler(error);
@@ -73,9 +75,7 @@ const CartListing = ({ productId, quantity, refetch }) => {
             </button>
             {quantity !== qty && <button onClick={handleUpdateQty}>Set</button>}
           </div>
-          <button
-            onClick={() => handleDelete(_id)}
-            className="text-red-600 svg-btn !p-2">
+          <button onClick={handleDelete} className="text-red-600 svg-btn !p-2">
             <Trash2Icon />
           </button>
         </div>

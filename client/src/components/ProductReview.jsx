@@ -11,8 +11,8 @@ import { errorHandler, axios } from "../helper";
 
 const ProductReview = () => {
   const { id: productId } = useParams();
-  const { data, refetch } = useFetch(`/review/${productId}`);
-  const [reviews, setReviews] = React.useState();
+  const { data } = useFetch(`/review/${productId}`);
+  const [reviews, setReviews] = React.useState([]);
   const [newReview, setNewReview] = useState({ comment: "", rating: 5 });
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
@@ -29,117 +29,109 @@ const ProductReview = () => {
     try {
       const res = await axios.delete(`/review/${id}`);
       if (res.data) {
-        refetch();
+        setReviews((prev) => prev.filter((r) => r._id !== id));
       }
     } catch (error) {
       errorHandler(error);
     }
   };
 
-  const addReviewHandler = async () => {
+  const addReviewHandler = async (e) => {
+    e.preventDefault();
     try {
       const res = await axios.post(`/review`, {
         productId,
         ...newReview,
       });
       if (res.data) {
-        setReviews(res.data.reviews);
-        setNewReview({ comment: "", rating: 0 });
-        toast.success("Review submitted successfully");
+        setReviews((prev) => [res.data.review, ...prev]);
+        setNewReview({ comment: "", rating: 5 });
       }
     } catch (error) {
       errorHandler(error);
     }
   };
 
-  const reviewReplyItem = useCallback(
-    (item) => {
-      const addReplyHandler = async () => {
-        if (replyText.trim()) {
-          if (!userId) return toast.error("Firstly login then write reply");
-          try {
-            const res = await axios.post(`/review/reply`, {
-              reviewId: item._id,
-              comment: replyText,
-            });
-            if (res?.data) {
-              setReviews(
-                reviews.map((r) =>
-                  r._id == item._id
-                    ? {
-                        ...r,
-                        replies: [
-                          ...r.replies,
-                          {
-                            fullName: "You",
-                            comment: replyText,
-                            createdAt: Date.now(),
-                          },
-                        ],
-                      }
-                    : r
-                )
-              );
-              setReplyText("");
-            }
-          } catch (error) {
-            errorHandler(error);
+  const reviewReplyItem = (item) => {
+    const addReplyHandler = async (e) => {
+      e.preventDefault();
+
+      if (replyText.trim()) {
+        if (!userId) return toast.error("Firstly login then write reply");
+        try {
+          const res = await axios.post(`/review/reply`, {
+            reviewId: item._id,
+            comment: replyText,
+          });
+          if (res?.data) {
+            setReviews(
+              reviews.map((r) =>
+                r._id == item._id
+                  ? {
+                      ...r,
+                      replies: [
+                        ...r.replies,
+                        {
+                          fullName: "You",
+                          comment: replyText,
+                          createdAt: Date.now(),
+                        },
+                      ],
+                    }
+                  : r
+              )
+            );
+            setReplyText("");
           }
+        } catch (error) {
+          errorHandler(error);
         }
-      };
+      }
+    };
 
-      if (replyingTo !== item._id) return null;
+    if (replyingTo !== item._id) return null;
 
-      return (
-        <>
-          {/* Create Reply Review */}
-          <div className="items-center flex gap-2">
-            <input
-              className="border w-full border-indigo-300 px-4 py-2 rounded-lg text-sm"
-              placeholder="Write a reply..."
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-            />
-            <button
-              disabled={!replyText.trim()}
-              onClick={() => addReplyHandler(item._id)}
-              className="w-fit text-sm btn bg-indigo-600 text-white disabled:opacity-50">
-              Reply
-            </button>
-          </div>
-          {/* Display Reply Review */}
-          {item?.replies?.length > 0 &&
-            item.replies.map((reply, index) => (
-              <div
-                key={index}
-                className="mb-3 flex max-sm:flex-col gap-4 p-4 rounded-lg border border-gray-200">
-                <div className="flex gap-2 items-start">
-                  <p className="px-3 py-1 rounded-full bg-gray-300 text-slate-800">
-                    {(reply?.createdBy?.fullName || reply?.fullName)?.slice(
-                      0,
-                      1
-                    )}
-                  </p>
-                  <div className="flex flex-col">
-                    <span className="font-semibold">
-                      {reply?.createdBy?.fullName || reply?.fullName}
-                    </span>
-                    <span className="text-gray-500 text-xs">
-                      {format(
-                        new Date(reply?.createdAt),
-                        "dd MMM yyyy, h:mm a"
-                      )}
-                    </span>
-                  </div>
+    return (
+      <>
+        {/* Create Reply Review */}
+        <form onSubmit={addReplyHandler} className="items-center flex gap-2">
+          <input
+            className="border w-full border-indigo-300 px-4 py-2 rounded-lg text-sm"
+            placeholder="Write a reply..."
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+          />
+          <button
+            disabled={!replyText.trim()}
+            className="w-fit text-sm btn bg-indigo-600 text-white disabled:opacity-50">
+            Reply
+          </button>
+        </form>
+        {/* Display Reply Review */}
+        {item?.replies?.length > 0 &&
+          item.replies.map((reply, index) => (
+            <div
+              key={index}
+              className="mb-3 flex max-sm:flex-col gap-4 p-4 rounded-lg border border-gray-200">
+              <div className="flex gap-2 items-start">
+                <p className="px-3 py-1 rounded-full bg-gray-300 text-slate-800">
+                  {(reply?.createdBy?.fullName || reply?.fullName)?.slice(0, 1)}
+                </p>
+                <div className="flex flex-col">
+                  <span className="font-semibold">
+                    {reply?.createdBy?.fullName || reply?.fullName}
+                  </span>
+                  <span className="text-gray-500 text-xs">
+                    {format(new Date(reply?.createdAt), "dd MMM yyyy, h:mm a")}
+                  </span>
                 </div>
-                <p className="flex-1/2">{reply?.comment}</p>
               </div>
-            ))}
-        </>
-      );
-    },
-    [replyText, replyingTo, reviews, userId]
-  );
+              <p className="flex-1/2">{reply?.comment}</p>
+            </div>
+          ))}
+      </>
+    );
+  };
 
   return (
     <div className="mx-auto py-5 max-w-6xl">
@@ -149,14 +141,14 @@ const ProductReview = () => {
 
       <div className="grid gap-4">
         {/* Review Form */}
-        <div className="w-full card space-y-4 ">
+        <form onSubmit={addReviewHandler} className="w-full card space-y-2">
           <label htmlFor="public_comment" className="font-medium">
-            Write a public comment
+            Public comment
           </label>
           <textarea
             rows={2}
             id="public_comment"
-            className="w-full outline-none border border-indigo-300 rounded-lg mt-1 p-2"
+            className="w-full outline-none border border-indigo-300 rounded-lg mt-1 py-2 px-4"
             placeholder="Write your review..."
             value={newReview.comment}
             onChange={(e) =>
@@ -166,11 +158,10 @@ const ProductReview = () => {
 
           <button
             disabled={!newReview.comment.trim()}
-            onClick={addReviewHandler}
-            className="btn-primary !text-base disabled:opacity-50">
+            className="btn-primary !text-xs disabled:opacity-70">
             Post Comment
           </button>
-        </div>
+        </form>
 
         {/* Review List */}
         {reviews?.map((item) => (

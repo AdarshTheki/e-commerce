@@ -3,12 +3,30 @@ import { ShoppingCart } from "lucide-react";
 import useFetch from "../hooks/useFetch";
 import { Loading } from "../utils";
 import { CartListing, HomeCertificate, HomeWishlist } from "../components";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const ShoppingCartPage = () => {
-  const { data, loading, refetch } = useFetch("/cart");
-  const items = data?.data?.items || [];
+  const { data, loading, error } = useFetch("/cart");
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    if (data?.data?.items?.length > 0) {
+      setItems(data?.data?.items);
+    }
+  }, [data?.data?.items]);
+
+  console.log(items);
 
   if (loading) return <Loading />;
+
+  if (error)
+    return (
+      <div className="min-h-screen flex flex-col gap-4 items-center justify-center">
+        <h2 className="text-xl">Something went wrong!</h2>
+        <p>{JSON.stringify(error)}</p>
+      </div>
+    );
 
   if (items?.length === 0) {
     return (
@@ -35,7 +53,7 @@ const ShoppingCartPage = () => {
   }
 
   const totals =
-    items && items?.reduce((p, c) => c.productId.price * c.quantity + p, 0);
+    items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);
 
   return (
     <section className="min-h-screen sm:p-4 p-3 max-w-6xl mx-auto">
@@ -43,7 +61,20 @@ const ShoppingCartPage = () => {
         <div className="md:flex-1 w-full">
           {items &&
             items.map((item) => (
-              <CartListing key={item._id} {...item} refetch={refetch} />
+              <CartListing
+                key={item._id}
+                {...item}
+                onQtyChange={(quantity) =>
+                  setItems((prev) =>
+                    prev.map((c) =>
+                      c._id === item._id ? { ...c, quantity } : c
+                    )
+                  )
+                }
+                onRemove={() =>
+                  setItems((prev) => prev.filter((c) => c._id !== item._id))
+                }
+              />
             ))}
         </div>
         <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-10 h-fit">

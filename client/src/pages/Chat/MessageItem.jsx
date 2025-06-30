@@ -1,0 +1,50 @@
+import React from "react";
+import { classNames, formatChatTime } from "../../helper";
+import { Trash2Icon } from "lucide-react";
+
+const MessageItem = ({ item, onDelete, sender }) => {
+  return (
+    <div
+      className={classNames(
+        "flex flex-col gap-2",
+        !sender ? "justify-start" : "items-end"
+      )}>
+      <div
+        className={classNames(
+          "relative cursor-pointer group w-fit flex gap-2 items-end py-2 px-5 shadow",
+          sender
+            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl"
+            : "bg-white rounded-r-4xl rounded-t-4xl"
+        )}>
+        <button
+          onClick={onDelete}
+          className="text-red-600 hidden group-hover:block absolute right-2 top-1 p-2 rounded-full bg-white">
+          <Trash2Icon size={18} />
+        </button>
+        {item?.content && <p>{item?.content}</p>}
+        <small className="text-nowrap text-slate-400">
+          {formatChatTime(item?.updatedAt)}
+        </small>
+      </div>
+      {item?.attachments.length > 0 && (
+        <div className="grid grid-cols-2 gap-2 max-w-[200px]">
+          {item?.attachments.map((attachment, index) => (
+            <a
+              href={attachment}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={index}>
+              <img
+                src={attachment}
+                alt={`attachment-${index}`}
+                className="aspect-square w-full border border-gray-300"
+              />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MessageItem;

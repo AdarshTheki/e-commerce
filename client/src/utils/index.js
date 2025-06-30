@@ -1,4 +1,3 @@
-import Breadcrumb from "./Breadcrumb";
 import Input from "./Input";
 import Loading from "./Loading";
 import PaginationBtn from "./PaginationBtn";
@@ -14,7 +13,6 @@ export {
   LazyImage,
   StarSelected,
   StarRating,
-  Breadcrumb,
   Input,
   Loading,
   PaginationBtn,

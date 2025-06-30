@@ -77,14 +77,12 @@ router.post("/", verifyJWT(), async (req, res) => {
         .status(401)
         .json({ status: false, message: "review not created" });
 
-    const reviews = await Review.find({ productId })
-      .populate("createdBy", "fullName avatar")
-      .populate("replies.createdBy", "fullName avatar")
-      .populate("reports.createdBy", "fullName avatar")
-      .sort({ createdAt: -1 })
-      .limit(20);
+    const review = await Review.findById(newReview._id)
+      .populate("createdBy", "fullName avatar email")
+      .populate("replies.createdBy", "fullName avatar email")
+      .populate("reports.createdBy", "fullName avatar email");
 
-    res.status(201).json({ message: "Review added successfully", reviews });
+    res.status(201).json({ message: "Review Added", review });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

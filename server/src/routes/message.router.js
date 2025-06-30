@@ -50,9 +50,11 @@ router.get(
 router.post(
   "/:chatId",
   verifyJWT(),
+  upload.array("attachments", 5),
   asyncHandler(async (req, res) => {
-    const { content, attachments } = req.body;
+    const { content } = req.body;
     const { chatId } = req.params;
+    const attachments = req.files;
 
     if (!isValidObjectId(chatId))
       throw new ApiError(
@@ -60,12 +62,17 @@ router.post(
         "Invalid Chat ID, And content & attachments are required"
       );
 
+    let uploads;
+    if (attachments && attachments?.length) {
+      uploads = await uploadMultiImg(attachments);
+    }
+
     // create message
     const newMessage = await Message.create({
       chat: new mongoose.Types.ObjectId(chatId),
       sender: req.user._id,
       content: content || "",
-      attachments: attachments?.length ? attachments : [],
+      attachments: uploads?.length ? uploads : [],
     });
 
     // Update lastMessage in chat
@@ -98,7 +105,7 @@ router.post(
 
 // ----📝 delete single message text/image-----
 router.delete(
-  "/messageId",
+  "/:messageId",
   verifyJWT(),
   asyncHandler(async (req, res) => {
     const { messageId } = req.params;
@@ -111,16 +118,18 @@ router.delete(
 
     const chat = await Chat.findById(message.chat).populate("lastMessage");
 
-    if (chat) await Message.deleteOne({ _id: messageId });
+    if (!chat) throw new ApiError(404, "Chat not found");
+
+    await Message.findByIdAndDelete(messageId);
 
     chat.participants.forEach((p) => {
-      if (p._id.toString() === req.user._id.toString()) return;
+      if (p.toString() === req.user._id.toString()) return;
 
       emitSocketEvent(
         req,
         chat._id.toString(),
         ChatEvents.MESSAGE_DELETE_EVENT,
-        chat
+        message
       );
     });
 

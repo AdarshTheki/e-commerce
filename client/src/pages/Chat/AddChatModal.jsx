@@ -1,16 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { X } from "lucide-react";
 
 import { axios } from "../../helper";
 import { Input, Select } from "../../utils";
 
-const AddChatModal = ({ usersData, onClose }) => {
+const AddChatModal = ({ usersData, onClose, chat }) => {
   const [users, setUsers] = React.useState(usersData || []);
-  const [groupName, setGroupName] = React.useState("");
-  const [isGroupChat, setIsGroupChat] = React.useState(false);
-  const [groupParticipants, setGroupParticipants] = React.useState([]);
+  const [groupName, setGroupName] = React.useState(chat?.name || "");
+  const [isGroupChat, setIsGroupChat] = React.useState(
+    chat?.isGroupChat || false
+  );
+
   const [selectUserId, setSelectUserId] = React.useState("");
+  const [selectedValues, setSelectedValues] = useState(
+    chat?.participants?.map((i) => i?._id) || []
+  );
+
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+
+    if (isGroupChat) {
+      setSelectedValues((prev) =>
+        checked ? [...prev, value] : prev.filter((val) => val !== value)
+      );
+      setSelectUserId("");
+    } else {
+      setSelectUserId(value);
+      setSelectedValues([]);
+    }
+  };
 
   const handleCreateChat = async () => {
     if (!selectUserId) return toast.error("Please select a user");
@@ -22,15 +41,19 @@ const AddChatModal = ({ usersData, onClose }) => {
   };
 
   const handleCreateGroupChat = async () => {
-    if (!groupName || groupParticipants.length === 0) {
-      return toast.error("Please provide a group name and add participants");
+    if (!groupName || selectedValues.length === 0) {
+      return toast.error("Please provide a Group Name and add Participants");
     }
-    const res = await axios.post(`/chats/group`, {
+    const method = chat?._id ? "patch" : "post";
+    const url = chat?._id ? `/chats/group/${chat?._id}` : "/chats/group";
+
+    const res = await axios[method](url, {
       name: groupName,
-      participants: groupParticipants,
+      participants: selectedValues,
     });
+
     if (res.data) {
-      toast.success("Chat created successfully");
+      toast.success(`Chat ${chat?._id ? "updated" : "created"}  successfully`);
       handleClose();
     }
   };
@@ -40,26 +63,29 @@ const AddChatModal = ({ usersData, onClose }) => {
     setSelectUserId("");
     setGroupName("");
     setIsGroupChat(false);
-    setGroupParticipants([]);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 bg-black/10 flex justify-center items-center h-full z-50">
       <div className="bg-white rounded-xl p-6 w-96 shadow-xl space-y-5">
-        <p className="text-xl font-medium">Create Chat</p>
-
-        <label
-          htmlFor="group-chat"
-          className="flex gap-2 items-center"
-          value={isGroupChat}
-          onChange={() => setIsGroupChat(!isGroupChat)}>
-          <input type="checkbox" id="group-chat" defaultValue={isGroupChat} />
-          Is a group chat ?
-        </label>
-
+        <p className="text-xl font-medium">
+          {chat?._id ? "Update Group Chat" : "Create Chat"}
+        </p>
+        {!chat?._id && (
+          <label htmlFor="group-chat" className="flex gap-2 items-center">
+            <input
+              onChange={() => setIsGroupChat(!isGroupChat)}
+              type="checkbox"
+              id="group-chat"
+              checked={isGroupChat}
+            />
+            Create Group Chat ?
+          </label>
+        )}
         {isGroupChat && (
           <Input
+            label="Group Name"
             type="text"
             placeholder="Enter Group Name"
             value={groupName}
@@ -67,49 +93,27 @@ const AddChatModal = ({ usersData, onClose }) => {
           />
         )}
 
-        <label htmlFor="user-select" className="block ">
-          <Select
-            id="user-select"
-            value={isGroupChat ? "" : selectUserId || ""}
-            options={[
-              { value: "", label: "--Select User--" },
-              ...(Array.isArray(users) ? users : []).map((user) => ({
-                value: user?._id,
-                label: user?.fullName,
-              })),
-            ]}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (isGroupChat && !groupParticipants.includes(value)) {
-                // if user is creating a group chat track the participants in an array
-                setGroupParticipants([...groupParticipants, value]);
-              } else {
-                setSelectUserId(value);
-                // if user is creating normal chat just get a single user
-              }
-            }}
-          />
-        </label>
-
-        {isGroupChat && (
-          <div className="flex gap-2 flex-wrap items-center">
-            <p className="flex-1 min-w-full text-sm">Selected participants</p>
-            {users
-              ?.filter((user) => groupParticipants.includes(user?._id))
-              .map((participant) => (
-                <button
-                  onClick={() => {
-                    setGroupParticipants(
-                      groupParticipants.filter((id) => id !== participant?._id)
-                    );
-                  }}
-                  key={participant?._id}
-                  className="svg-btn min-w-fit px-2 text-xs bg-slate-300">
-                  {participant?.fullName} <X size={14} />
-                </button>
-              ))}
-          </div>
-        )}
+        <div className="max-h-[200px] overflow-y-auto">
+          <p className="mb-1">Participants:</p>
+          {users.map((option) => (
+            <div key={option._id}>
+              <label htmlFor={option._id} className="block">
+                <input
+                  type="checkbox"
+                  id={option._id}
+                  value={option._id}
+                  checked={
+                    isGroupChat
+                      ? selectedValues.includes(option._id)
+                      : selectUserId === option._id
+                  }
+                  onChange={handleCheckboxChange}
+                />
+                <span className="pl-2 py-2 text-sm">{option.fullName}</span>
+              </label>
+            </div>
+          ))}
+        </div>
 
         <div className="flex gap-5 text-center font-medium">
           <button className="btn-primary flex-1" onClick={handleClose}>
@@ -118,7 +122,7 @@ const AddChatModal = ({ usersData, onClose }) => {
           <button
             className="btn-secondary flex-1"
             onClick={isGroupChat ? handleCreateGroupChat : handleCreateChat}>
-            Create
+            {chat?._id ? "Update" : "Create"}
           </button>
         </div>
       </div>

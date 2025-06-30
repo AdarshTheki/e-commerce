@@ -113,7 +113,7 @@ router.get(
   })
 );
 
-// ----delete one on one chat and messages----
+// ----delete one on one chat with message deleted all----
 router.delete(
   "/chat/:chatId",
   verifyJWT(),
@@ -204,26 +204,16 @@ router.patch(
   "/group/:chatId",
   verifyJWT(),
   asyncHandler(async (req, res) => {
-    const { name, participantId, type } = req.body;
+    const { name, participants } = req.body;
     const { chatId } = req.params;
 
     const chat = await Chat.findById(chatId);
 
-    if (chat._id.toString() === req.user._id.toString())
-      throw new ApiError(404, "You are on a admin this group chat");
+    if (chat.admin.toString() !== req.user._id.toString())
+      throw new ApiError(404, "You are not a admin this group chat");
 
-    switch (type) {
-      case "NAME":
-        if (name) chat.name = name;
-      case "Add_PARTICIPANT":
-        if (!chat.participants.includes(participantId))
-          chat.participants.push(participantId);
-        break;
-      case "REMOVE_PARTICIPANT":
-        if (chat.participants.includes(participantId))
-          chat.participants.pop(participantId);
-        break;
-    }
+    chat.name = name || chat.name;
+    chat.participants = [...new Set(participants, req.user._id.toString())];
 
     await chat.save();
 
@@ -239,7 +229,7 @@ router.patch(
 
       emitSocketEvent(
         req,
-        p._id.toString(),
+        populatedChat._id.toString(),
         ChatEvents.UPDATE_GROUP_NAME_EVENT,
         populatedChat
       );

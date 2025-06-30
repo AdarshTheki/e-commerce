@@ -13,7 +13,6 @@ const ProductReviewLike = ({ reviewId, likes, replies, openReply }) => {
       const res = await axios.patch(`/review/like`, { reviewId });
       if (res.data) {
         setLike(!like);
-        console.log(res.data);
         setTotalLike(res.data.likes);
       }
     } catch (error) {

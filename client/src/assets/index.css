@@ -60,7 +60,7 @@ h6 {
 }
 
 .btn-secondary {
-  @apply bg-gray-800 text-white font-bold py-2 px-4 rounded hover:bg-gray-700;
+  @apply bg-gray-800 text-white font-medium py-2 px-4 rounded hover:bg-gray-700;
 }
 
 .card {

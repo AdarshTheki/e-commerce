@@ -1,50 +1,69 @@
 import { useRef, useState } from "react";
+import { ImageUp, Plus, Search, Send, Trash2Icon, X } from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 import ChatItem from "./ChatItem";
+import MessageItem from "./MessageItem";
 import AddChatModal from "./AddChatModal";
-import MessageListing from "./Messages";
-import { Avatar, Input, Loading } from "../../utils";
-import { axios, socket, LocalStorage, errorHandler } from "../../helper";
 import useFetch from "../../hooks/useFetch";
-import { toast } from "react-toastify";
-import { Plus, Search, X } from "lucide-react";
-import { set } from "date-fns";
+import { Avatar, Input, Loading } from "../../utils";
+import {
+  axios,
+  socket,
+  LocalStorage,
+  errorHandler,
+  classNames,
+  getChatObjectMetadata,
+} from "../../helper";
 
-const CONNECTED_EVENT = "connected";
-const DISCONNECT_EVENT = "disconnect";
 const JOIN_CHAT_EVENT = "joinChat";
 const NEW_CHAT_EVENT = "newChat";
-const TYPING_EVENT = "typing";
-const STOP_TYPING_EVENT = "stopTyping";
 const LEAVE_CHAT_EVENT = "leaveChat";
 const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
 const MESSAGE_RECEIVED_EVENT = "messageReceived";
 const MESSAGE_DELETE_EVENT = "messageDeleted";
-// const SOCKET_ERROR_EVENT = "socketError";
+const SOCKET_ERROR_EVENT = "socketError";
+// const CONNECTED_EVENT = "connected";
+// const DISCONNECT_EVENT = "disconnect";
+// const TYPING_EVENT = "typing";
+// const STOP_TYPING_EVENT = "stopTyping";
 
 const ChatPage = () => {
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [unReadMessages, setUnReadMessages] = useState([]);
   const [chats, setChats] = useState([]);
+  const [updateChat, setUpdateChat] = useState(null);
   const [chatsLoading, setChatsLoading] = useState(false);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const currentChat = useRef(null);
   const [openAddChat, setOpenAddChat] = useState(false);
   const [searchUserChat, setSearchUserChat] = useState("");
   const { data: usersData } = useFetch("/chats/users");
-  const [isConnected, setIsConnected] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const typingTimeoutRef = useRef(null);
   const { user } = useSelector((state) => state.auth);
+  const [previews, setPreviews] = useState([]);
+  const [attachments, setAttachments] = useState([]);
 
-  const onDisconnect = () => {
-    setIsConnected(false);
+  const handlePreviewAttachments = (e) => {
+    const files = e.target.files;
+    setPreviews(
+      Array.from(files)
+        .slice(0, 5)
+        .map((file) => URL.createObjectURL(file))
+    );
+    setAttachments(Array.from(files).slice(0, 5));
   };
 
-  const onConnect = () => {
-    setIsConnected(true);
+  const handleRemoveAttachment = (index) => {
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const onSocketError = (message) => {
+    toast.error(`${JSON.stringify(message)}`);
   };
 
   const fetchChats = async () => {
@@ -71,23 +90,13 @@ const ChatPage = () => {
     }
   };
 
-  const onIsTypingOn = () => {
-    if (currentChat.current?._id !== currentChat.current?._id) return;
-    setIsTyping(true);
-  };
-
-  const onIsTypingOff = () => {
-    if (currentChat.current?._id !== currentChat.current?._id) return;
-    setIsTyping(false);
-  };
-
   const onNewChat = (chat) => {
-    console.log("new chat", chat);
+    // console.log("new chat", chat);
     setChats((prev) => [chat, ...prev]);
   };
 
   const onChatLeave = (chat) => {
-    console.log("chat leave", chat);
+    // console.log("chat leave", chat);
     setChats((prev) => prev.filter((c) => c._id !== chat._id));
     if (chat._id === currentChat.current?._id) {
       LocalStorage.set("currentChat", null);
@@ -98,7 +107,7 @@ const ChatPage = () => {
   };
 
   const onGroupUpdate = (chat) => {
-    console.log("update group chat", chat);
+    // console.log("update group chat", chat);
     if (chat._id === currentChat.current?._id) {
       // update chat details
     }
@@ -113,6 +122,7 @@ const ChatPage = () => {
   };
 
   const onMessageDelete = (message) => {
+    // console.log(message, "delete");
     setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
     // update chat last message
   };
@@ -137,11 +147,52 @@ const ChatPage = () => {
     }
   };
 
-  const handleChatDeleted = async (id) => {
+  const handleChatDeleted = async (chatId) => {
     try {
-      const res = await axios.delete(`/chats/chat/${id}`);
+      if (!chatId) return;
+      const res = await axios.delete(`/chats/chat/${chatId}`);
       if (res.data) {
         toast.success("chat deleted success");
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    try {
+      setIsLoading(true);
+      if (!message.trim()) return;
+      const formData = new FormData();
+      formData.append("content", message);
+      if (attachments?.length > 0) {
+        attachments?.forEach((file, i) => {
+          formData.append("attachments", attachments[i]);
+        });
+      }
+      const res = await axios.post(
+        `/messages/${currentChat.current?._id}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      if (res.data) {
+        setMessage("");
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      if (!messageId) return;
+      console.log(messageId);
+      const res = await axios.delete(`/messages/${messageId}`);
+      if (res.data) {
+        toast.success("Message deleted successfully");
       }
     } catch (error) {
       errorHandler(error);
@@ -155,48 +206,44 @@ const ChatPage = () => {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on(CONNECTED_EVENT, onConnect);
-    socket.on(DISCONNECT_EVENT, onDisconnect);
-    socket.on(TYPING_EVENT, onIsTypingOn);
-    socket.on(STOP_TYPING_EVENT, onIsTypingOff);
     socket.on(NEW_CHAT_EVENT, onNewChat);
     socket.on(LEAVE_CHAT_EVENT, onChatLeave);
     socket.on(UPDATE_GROUP_NAME_EVENT, onGroupUpdate);
     socket.on(MESSAGE_RECEIVED_EVENT, onMessageRetrieved);
     socket.on(MESSAGE_DELETE_EVENT, onMessageDelete);
+    socket.on(SOCKET_ERROR_EVENT, onSocketError);
 
     return () => {
-      socket.off(CONNECTED_EVENT, onConnect);
-      socket.off(DISCONNECT_EVENT, onDisconnect);
-      socket.off(TYPING_EVENT, onIsTypingOn);
-      socket.off(STOP_TYPING_EVENT, onIsTypingOff);
       socket.off(NEW_CHAT_EVENT, onNewChat);
       socket.off(LEAVE_CHAT_EVENT, onChatLeave);
       socket.off(UPDATE_GROUP_NAME_EVENT, onGroupUpdate);
       socket.off(MESSAGE_RECEIVED_EVENT, onMessageRetrieved);
       socket.off(MESSAGE_DELETE_EVENT, onMessageDelete);
+      socket.off(SOCKET_ERROR_EVENT, onSocketError);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
-
-  // console.log(chatId, unReadMessages);
 
   if (chatsLoading || messagesLoading) return <Loading />;
 
   return (
     <>
       <div className="flex max-sm:flex-col h-full">
-        <div className="!min-w-[340px] sticky top-12 h-full p-2 bg-slate-50 z-20">
+        <div className="!min-w-[340px] sticky top-12 h-full bg-slate-50 z-20">
           {/* Create Group Modal */}
           {!!openAddChat && (
             <AddChatModal
-              onClose={() => setOpenAddChat(false)}
+              onClose={() => {
+                setOpenAddChat(false);
+                setUpdateChat(null);
+              }}
               usersData={usersData}
+              chat={updateChat}
             />
           )}
 
           {/* Search Bar */}
-          <div className="bg-white relative pl-3 rounded-2xl overflow-hidden border border-slate-200 flex items-center">
+          <div className="bg-white relative shadow overflow-hidden flex items-center p-2 pb-1">
             <Search size={18} />
             <label htmlFor="search-users">
               <Input
@@ -204,7 +251,7 @@ const ChatPage = () => {
                 id="search-users"
                 title="search chat user"
                 placeholder="Search..."
-                className="border-none !w-full outline-none !py-2 !px-4"
+                className="border-none !w-full outline-none"
                 onChange={(e) => setSearchUserChat(e.target.value)}
                 value={searchUserChat}
               />
@@ -215,6 +262,7 @@ const ChatPage = () => {
               </button>
             )}
             <button
+              title="Add new chat"
               className="!py-2.5 text-sm text-nowrap rounded-none !px-2 flex gap-1 items-center border-none font-medium btn-primary"
               onClick={() => setOpenAddChat(true)}>
               <Plus size={16} /> Add Chat
@@ -252,22 +300,118 @@ const ChatPage = () => {
                   (p) => p._id.toString() !== user._id.toString()
                 )[0]
               }
+              unreadCount={
+                [...unReadMessages].filter((n) => n.chat === item._id).length
+              }
               isActive={currentChat.current?._id === item?._id}
-              onDelete={() => handleChatDeleted(item._id)}
+              onUpdate={() => {
+                setUpdateChat(item);
+                setOpenAddChat(true);
+              }}
+              onDelete={(chatId) => handleChatDeleted(chatId)}
+              onLeave={(chatId) => {
+                setChats((prev) => prev.filter((c) => c._id !== chatId));
+                if (currentChat.current?._id === chatId) {
+                  currentChat.current = null;
+                  LocalStorage.remove("currentChat");
+                }
+              }}
               onClick={() => {
                 currentChat.current = item;
                 LocalStorage.set("currentChat", item);
                 socket.emit(JOIN_CHAT_EVENT, item._id);
                 fetchMessages(item._id);
+                setUnReadMessages((prev) =>
+                  prev.filter((n) => n.chat !== item._id)
+                );
               }}
             />
           ))}
         </div>
-        <div className="w-full border-l border-slate-200 p-2 h-full">
-          <MessageListing
-            messages={messages}
-            chatId={currentChat.current?._id}
-          />
+        <div className="w-full border-l border-slate-200 h-full">
+          {!!currentChat.current?._id && (
+            <div className="py-2 px-4 bg-white flex items-center gap-3 top-12 sticky z-10 shadow">
+              <img
+                src={
+                  getChatObjectMetadata(currentChat.current, user).avatar ||
+                  "/placeholder.jpg"
+                }
+                alt="img"
+                className="w-8 h-8 rounded-full"
+              />
+              <p>{getChatObjectMetadata(currentChat.current, user).title}</p>
+            </div>
+          )}
+          <div className="flex-col gap-2 flex justify-end p-4 h-fit min-h-[400px]">
+            {[...messages].map((item) => (
+              <MessageItem
+                key={item?._id}
+                item={item}
+                sender={item?.sender?._id === user?._id}
+                onDelete={() => handleDeleteMessage(item?._id)}
+              />
+            ))}
+          </div>
+
+          {previews?.length > 0 && (
+            <div className="w-full py-2 flex gap-2 items-center sticky bottom-14 bg-white">
+              {previews.map((preview, i) => (
+                <div key={i} className="relative">
+                  <img
+                    src={preview}
+                    alt="image-preview"
+                    className={classNames("w-16 h-16 rounded")}
+                  />
+                  <Trash2Icon
+                    onClick={() => handleRemoveAttachment(i)}
+                    size={16}
+                    className="absolute top-1 right-1 !text-red-600 cursor-pointer"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!!currentChat.current?._id && (
+            <form
+              onSubmit={handleSendMessage}
+              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-0 bg-slate-50">
+              <Input
+                className="rounded-full !p-2 !px-5"
+                name="message"
+                placeholder="Enter a message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+              />
+
+              <label
+                title="send files with limit 5"
+                htmlFor="attachment"
+                className="rounded-full bg-indigo-600 p-2 text-white cursor-pointer">
+                <ImageUp size={20} />
+                <input
+                  type="file"
+                  multiple={true}
+                  onChange={handlePreviewAttachments}
+                  id="attachment"
+                  name="attachment"
+                  className="hidden"
+                />
+              </label>
+              <button
+                disabled={isLoading}
+                type="submit"
+                className="btn-primary flex gap-2 !rounded-full !px-5 items-center">
+                {isLoading ? (
+                  "Loading..."
+                ) : (
+                  <>
+                    Send <Send size={16} />
+                  </>
+                )}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </>

@@ -49,7 +49,7 @@ const ImageUpload = () => {
   }
 
   return (
-    <div className="min-h-[60vh]">
+    <div className="min-h-[40vh]">
       <div className="flex gap-x-5 gap-y-2 flex-wrap items-end">
         <label htmlFor="gallery" className="flex flex-col gap-2">
           <span className="font-medium">Upload Image</span>
