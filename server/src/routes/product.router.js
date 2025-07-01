@@ -218,10 +218,11 @@ router.delete("/:id", verifyJWT(["admin", "seller"]), async (req, res) => {
       await removeMultiImg(product.images);
     }
 
-    await product.remove();
+    await Product.findByIdAndDelete(id);
+
     res
       .status(200)
-      .json({ success: true, message: "Product deleted successfully" });
+      .json({ productId: id, message: "Product deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

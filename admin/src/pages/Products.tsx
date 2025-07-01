@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   PaginationBtn,
   DeleteModal,
+  NotFound,
 } from "../utils";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
@@ -16,6 +17,8 @@ import axiosInstance from "../constant/axiosInstance";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ProductCard } from "@/components";
+import { errorHandler } from "@/constant";
+import { AxiosError } from "axios";
 
 const sortByOptions = [
   { label: "Title (A-Z)", value: "title-asc" },
@@ -40,8 +43,11 @@ export default function Product() {
   const query = useDebounce(search, 500);
   const [deleteIsOpen, setDeleteIsOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
+  const [products, setProducts] = useState<ProductType[]>([]);
 
-  const { data, loading } = useFetch<PaginationTypeWithDocs<ProductType>>(
+  const { data, loading, error } = useFetch<
+    PaginationTypeWithDocs<ProductType>
+  >(
     `/product?title=${query}&page=${page}&limit=${limit}&sortBy=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
@@ -52,6 +58,12 @@ export default function Product() {
     if (title) setSearch(title);
   }, [searchParams]);
 
+  useEffect(() => {
+    if (data?.items?.length) {
+      setProducts(data.items);
+    }
+  }, [data?.items]);
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
       setPage(newPage);
@@ -60,13 +72,13 @@ export default function Product() {
 
   const handleDelete = async (id: string) => {
     try {
+      setProducts((prev) => prev.filter((p) => p?._id !== id));
       const res = await axiosInstance.delete(`/product/${id}`);
       if (res.data) {
-        toast.success("Product deleted success");
+        toast.success("Product deleted");
       }
     } catch (err) {
-      toast.error("Something went wrong");
-      console.log(err);
+      errorHandler(err as AxiosError);
     }
   };
 
@@ -166,9 +178,13 @@ export default function Product() {
         </div>
       </div>
 
-      {!loading && data && data?.items.length > 0 ? (
+      {error && <NotFound title={JSON.stringify(error)} />}
+
+      {loading && <Loading />}
+
+      {products?.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {data?.items?.map((item) => (
+          {products?.map((item) => (
             <div
               className="border relative group rounded-lg overflow-hidden"
               key={item._id}>
@@ -206,8 +222,6 @@ export default function Product() {
             </div>
           ))}
         </div>
-      ) : (
-        <Loading className="min-h-[50vh]" />
       )}
     </div>
   );

@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import { Menu, User, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Input } from "../utils";
 import menuItems from "../constant/menuItems";
 import useDebounce from "../hooks/useDebounce";
 import useFetch from "../hooks/useFetch";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const Layout: React.FC = () => {
+  const { user } = useSelector((s: RootState) => s.auth);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 500);
@@ -61,8 +64,14 @@ const Layout: React.FC = () => {
                 </>
               )}
             </div>
+
             <NavLink to={"/profile"} className="svg-btn !scale-125 border">
-              <User size={18} />
+              <img
+                src={user?.avatar || "https://avatar.iran.liara.run/public"}
+                alt="User"
+                className="h-7 w-7 rounded-full object-cover bg-gray-500"
+                loading="lazy"
+              />
             </NavLink>
 
             <button

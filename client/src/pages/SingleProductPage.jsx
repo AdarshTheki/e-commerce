@@ -9,7 +9,7 @@ import {
   HomeWishlist,
   ProductReview,
 } from "../components";
-import { Loading } from "../utils";
+import { Loading, NotFound } from "../utils";
 import { errorHandler, axios } from "../helper";
 import useFetch from "../hooks/useFetch";
 
@@ -33,12 +33,7 @@ const ProductDetail = () => {
   if (loading) return <Loading />;
 
   if (error)
-    return (
-      <div className="min-h-screen flex flex-col gap-4 items-center justify-center">
-        <h2 className="text-xl">Something went wrong!</h2>
-        <p>{JSON.stringify(error)}</p>
-      </div>
-    );
+    return <NotFound title={JSON.stringify(error).split(`"`).join("")} />;
 
   return (
     <section>

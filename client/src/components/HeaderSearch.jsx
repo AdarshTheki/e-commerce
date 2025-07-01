@@ -3,6 +3,7 @@ import useDropdown from "../hooks/useDropdown";
 import useFetch from "../hooks/useFetch";
 import { useNavigate } from "react-router-dom";
 import { Search, X } from "lucide-react";
+import { LazyImage } from "../utils";
 
 const HeaderSearch = () => {
   const { isOpen, setIsOpen, dropdownRef } = useDropdown();
@@ -32,7 +33,7 @@ const HeaderSearch = () => {
 
       <div
         style={{ display: !isOpen ? "none" : "block" }}
-        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0`}>
+        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0 !rounded-l-4xl !border !border-gray-200 !rounded-b-4xl`}>
         <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
           <Search size={26} />
           <input
@@ -60,7 +61,13 @@ const HeaderSearch = () => {
                 onClick={() => {
                   navigate(`/product/${item?._id}`);
                 }}>
-                <img src={item.thumbnail} alt={item.title} width={40} />
+                <LazyImage
+                  src={item.thumbnail}
+                  placeholder={"/placeholder.jpg"}
+                  width={40}
+                  height={40}
+                  lazy={"static"}
+                />
                 <p
                   className="w-full text-left text-gray-700"
                   dangerouslySetInnerHTML={{

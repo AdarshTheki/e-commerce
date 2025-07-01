@@ -8,6 +8,7 @@ import Breadcrumb from "./Breadcrumb";
 import PaginationBtn from "./PaginationBtn";
 import LazyImage from "./LazyImage";
 import DeleteModal from "./DeleteModal";
+import NotFound from "./NotFound";
 
 export {
   DeleteModal,
@@ -20,4 +21,5 @@ export {
   Input,
   Select,
   Textarea,
+  NotFound,
 };

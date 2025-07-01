@@ -3,9 +3,10 @@ import { NavLink, useNavigate } from "react-router-dom";
 
 import { Input } from "../utils";
 import { toast } from "react-toastify";
-import axiosInstance from "../constant/axiosInstance";
+import { errorHandler, axios } from "@/constant";
+import { AxiosError } from "axios";
 
-const Register: React.FC = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,7 +25,7 @@ const Register: React.FC = () => {
       if (password !== conPassword) {
         return toast.error("please check your password");
       }
-      const register = await axiosInstance.post("/user/sign-up", {
+      const register = await axios.post("/user/sign-up", {
         email,
         password,
         fullName,
@@ -33,9 +34,8 @@ const Register: React.FC = () => {
         toast.success("User register succeeded");
         navigate("/login");
       }
-    } catch (err) {
-      toast.error("User register failed, Try again!");
-      console.log(err);
+    } catch (error) {
+      errorHandler(error as AxiosError);
     }
   };
 

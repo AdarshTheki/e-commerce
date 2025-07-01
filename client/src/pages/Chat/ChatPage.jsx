@@ -32,7 +32,7 @@ const SOCKET_ERROR_EVENT = "socketError";
 
 const ChatPage = () => {
   const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [messageSendLoading, setMessageSendLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [unReadMessages, setUnReadMessages] = useState([]);
   const [chats, setChats] = useState([]);
@@ -162,7 +162,7 @@ const ChatPage = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     try {
-      setIsLoading(true);
+      setMessageSendLoading(true);
       if (!message.trim()) return;
       const formData = new FormData();
       formData.append("content", message);
@@ -177,12 +177,14 @@ const ChatPage = () => {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       if (res.data) {
+        setAttachments([]);
+        setPreviews([]);
         setMessage("");
       }
     } catch (error) {
       errorHandler(error);
     } finally {
-      setIsLoading(false);
+      setMessageSendLoading(false);
     }
   };
 
@@ -399,10 +401,10 @@ const ChatPage = () => {
                 />
               </label>
               <button
-                disabled={isLoading}
+                disabled={messageSendLoading}
                 type="submit"
                 className="btn-primary flex gap-2 !rounded-full !px-5 items-center">
-                {isLoading ? (
+                {messageSendLoading ? (
                   "Loading..."
                 ) : (
                   <>

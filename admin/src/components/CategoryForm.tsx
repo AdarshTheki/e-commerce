@@ -5,6 +5,8 @@ import { Trash2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
+import { errorHandler } from "@/constant";
+import { AxiosError } from "axios";
 
 const CategoryForm = ({ item }: { item?: CategoryType }) => {
   const { pathname } = useLocation();
@@ -60,7 +62,7 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
         navigate(`/${path}`);
       }
     } catch (error) {
-      console.error(error);
+      errorHandler(error as AxiosError);
     } finally {
       setLoading(false);
     }

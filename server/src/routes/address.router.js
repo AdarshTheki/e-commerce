@@ -93,9 +93,11 @@ router.patch("/:id", verifyJWT(), async (req, res) => {
 
     await address.save();
 
-    res
-      .status(202)
-      .json({ address, message: "address updated success", status: true });
+    res.status(202).json({
+      shipping: address,
+      message: "address updated success",
+      status: true,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }
@@ -114,7 +116,9 @@ router.delete("/:id", verifyJWT(), async (req, res) => {
       return res.status(404).json({ message: "Address not found" });
     }
 
-    res.status(200).json({ message: "address delete succeed" }); // 204 No Content (successful deletion)
+    res
+      .status(200)
+      .json({ shipping: address, message: "address delete succeed" }); // 204 No Content (successful deletion)
   } catch (error) {
     res.status(500).json({ message: error.message, status: false });
   }

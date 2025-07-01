@@ -62,19 +62,19 @@ Welcome to the E-commerce Store project! This application is built using the MER
 
 ### Admin Panel
 
-<img src="./thumbnail/admin.png" alt="admin" width="45%"/>
-<img src="./thumbnail/category.png" alt="category" width="45%"/>
-<img src="./thumbnail/profile.png" alt="profile" width="45%"/>
-<img src="./thumbnail/delete.png" alt="delete" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380850/cartify-demo/hjd8gdzyrme8d8lqbwej.png" alt="admin" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380866/cartify-demo/zsxrjsplyhjahnicpnzi.png" alt="category" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380940/cartify-demo/mkowvh1lvcadmdmtzxu0.png" alt="profile" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380893/cartify-demo/bkrualmqfxtujfb7nzs0.png" alt="delete" width="45%"/>
 
 ### E-Cartify Store
 
-<img src="./thumbnail/home.png" alt="delete" width="45%"/>
-<img src="./thumbnail/login.png" alt="delete" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380913/cartify-demo/pvmgiexlpzgs72ortera.png" alt="delete" width="45%"/>
+<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380927/cartify-demo/tkspaeepi3s7jipq87tm.png" alt="delete" width="45%"/>
 
 ### Database Management
 
-![Database](/thumbnail/database.png)
+![Database](https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380882/cartify-demo/whmcb6q2nlubkfr2hjey.png)
 
 ### Installation
 
@@ -82,7 +82,8 @@ Welcome to the E-commerce Store project! This application is built using the MER
 2. Set up the folder: `cd ../client`, `cd ../server` & `cd ../admin`
 3. Install dependencies of each folder structure: `npm install`
 4. Start the development server: `npm run dev`
-5. Open the website in your browser: `http://localhost:3000`
+5. Open the website in your browser: `http://localhost:5173`
+6. Project hosted [client](https://cartifycommerce.vercel.app), [server](https://cartify-server.koyeb.app) & [admin](https://cartifyadmin.vercel.app)
 
 ### MIT License
 

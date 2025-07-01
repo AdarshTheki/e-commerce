@@ -6,6 +6,8 @@ import { Input, Select, SpinnerBtn, Textarea } from "../utils";
 import { toast } from "react-toastify";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
+import { AxiosError } from "axios";
+import { errorHandler } from "@/constant";
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const navigate = useNavigate();
@@ -115,8 +117,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
         navigate("/product");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong, please try again.");
+      errorHandler(error as AxiosError);
     } finally {
       setLoading(false);
     }

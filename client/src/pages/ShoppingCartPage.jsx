@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import useFetch from "../hooks/useFetch";
-import { Loading } from "../utils";
+import { Loading, NotFound } from "../utils";
 import { CartListing, HomeCertificate, HomeWishlist } from "../components";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -16,41 +16,31 @@ const ShoppingCartPage = () => {
     }
   }, [data?.data?.items]);
 
-  console.log(items);
-
   if (loading) return <Loading />;
 
   if (error)
-    return (
-      <div className="min-h-screen flex flex-col gap-4 items-center justify-center">
-        <h2 className="text-xl">Something went wrong!</h2>
-        <p>{JSON.stringify(error)}</p>
-      </div>
-    );
+    return <NotFound title={JSON.stringify(error).split(`"`).join("")} />;
 
-  if (items?.length === 0) {
+  if (items?.length === 0)
     return (
-      <div>
-        <div className="flex items-center justify-center p-4">
-          <div className="p-8 max-w-md text-center">
+      <>
+        <NotFound
+          canvas={
             <ShoppingCart className="w-20 h-20 text-gray-400 mb-4 mx-auto" />
-            <h2 className="text-2xl font-semibold mb-2">Your cart is empty</h2>
-            <p className="text-gray-600 mb-6">
-              Looks like you haven’t added anything to your cart yet.
-            </p>
-            <NavLink
-              to="/product"
-              className="bg-blue-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-blue-700 transition">
-              Start Shopping
-            </NavLink>
-          </div>
-        </div>
+          }
+          title="Your cart is empty"
+          description="Looks like you haven’t added anything to your cart yet."
+          linkName="Start Shopping"
+          linkClass="bg-indigo-600"
+          linkTo="/product"
+          mainClass="min-h-[100px]"
+        />
+
         <HomeCertificate />
 
         <HomeWishlist />
-      </div>
+      </>
     );
-  }
 
   const totals =
     items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);

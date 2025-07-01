@@ -5,8 +5,9 @@ import { toast } from "react-toastify";
 import { Input, SpinnerBtn } from "../utils";
 import axiosInstance from "../constant/axiosInstance";
 import { AxiosError } from "axios";
+import { errorHandler } from "@/constant";
 
-const Login: React.FC = () => {
+const Login = () => {
   const [loading, setLoading] = useState(false);
 
   const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,12 +33,7 @@ const Login: React.FC = () => {
         window.location.href = "/";
       }
     } catch (error) {
-      console.log(error);
-      toast.error(
-        error instanceof AxiosError
-          ? error.response?.data.message
-          : "Something went wrong"
-      );
+      errorHandler(error as AxiosError);
     } finally {
       setLoading(false);
     }

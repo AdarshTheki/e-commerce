@@ -1,12 +1,8 @@
 import { NavLink } from "react-router-dom";
-import { LazyImage, Loading } from "../utils";
+import { LazyImage, Loading, NotFound } from "../utils";
 import { useCallback } from "react";
 
-const HomeCard = ({
-  heading = "",
-  items = [{ _id: "", title: "", thumbnail: "" }],
-  slug = "",
-}) => {
+const HomeCard = ({ heading = "", items = [], slug = "" }) => {
   const itemRender = useCallback(() => {
     return (
       <div className="relative mx-auto max-w-6xl sm:p-4 p-3">
@@ -39,6 +35,16 @@ const HomeCard = ({
       </div>
     );
   }, [heading, items, slug]);
+
+  if (!items?.length)
+    return (
+      <NotFound
+        mainClass="min-h-[200px]"
+        canvas={null}
+        title={null}
+        linkTo=""
+      />
+    );
 
   return itemRender();
 };

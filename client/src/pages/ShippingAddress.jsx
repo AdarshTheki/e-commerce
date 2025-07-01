@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Edit2, Trash2Icon } from "lucide-react";
 import { toast } from "react-toastify";
@@ -6,24 +6,30 @@ import { useSelector } from "react-redux";
 
 import useFetch from "../hooks/useFetch";
 import { errorHandler, axios } from "../helper";
-import { Input, Loading, Select } from "../utils";
+import { Input, Loading, NotFound, Select } from "../utils";
 import { NavLink } from "react-router-dom";
 import { HomeSpotlight } from "../components";
 
 const ShippingAddress = () => {
-  const { data, refetch, loading: isLoad } = useFetch("/address");
+  const { data, loading: isLoad, error } = useFetch("/address");
   const [loading, setLoading] = useState(false);
-  const address = data?.find((i) => i?.isDefault);
-  const { user } = useSelector((state) => state.auth);
-
+  const [addresses, setAddresses] = useState([]);
   const [formData, setFormData] = useState({
-    addressLine: address?.addressLine || "",
-    city: address?.city || "",
-    postalCode: address?.postalCode || "",
-    countryCode: address?.countryCode || "IN",
-    isDefault: address?.isDefault || false,
+    addressLine: "",
+    city: "",
+    postalCode: "",
+    countryCode: "IN",
+    isDefault: false,
     isEdit: false,
   });
+  const { user } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (data?.length) {
+      setAddresses(data);
+      setFormData((prev) => ({ ...prev, ...data.find((a) => a.isDefault) }));
+    }
+  }, [data]);
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
@@ -39,8 +45,8 @@ const ShippingAddress = () => {
         countryCode: "IN",
       });
       if (res.data) {
+        setAddresses((prev) => [...prev, res.data.shipping]);
         setFormData({ isEdit: false });
-        refetch();
       }
     } catch (error) {
       errorHandler(error);
@@ -53,7 +59,7 @@ const ShippingAddress = () => {
     try {
       const res = await axios.delete(`/address/${id}`);
       if (res.data) {
-        refetch();
+        setAddresses((prev) => prev.filter((a) => a._id !== id));
       }
     } catch (error) {
       errorHandler(error);
@@ -85,6 +91,8 @@ const ShippingAddress = () => {
 
   if (isLoad) return <Loading />;
 
+  if (error) return <NotFound title={JSON.stringify(error)} />;
+
   return (
     <div className="p-4 min-h-screen mx-auto max-w-6xl">
       {!formData.isEdit && (
@@ -96,7 +104,7 @@ const ShippingAddress = () => {
       )}
 
       {!formData.isEdit &&
-        data?.map((item) => (
+        addresses?.map((item) => (
           <div key={item._id} className="relative mb-5 max-w-3xl">
             <div
               onClick={() => setFormData(item)}

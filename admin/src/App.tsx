@@ -28,7 +28,7 @@ import { fetchBrands } from "./redux/brandSlice";
 import { AppDispatch } from "./redux/store";
 
 const App: React.FC = () => {
-  const { data, loading } = useFetch<UserType>("/user/current-user");
+  const { data, loading } = useFetch<UserType | null>("/user/current-user");
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {

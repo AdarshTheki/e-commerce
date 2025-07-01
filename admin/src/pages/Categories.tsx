@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Plus, Trash2 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
-import axiosInstance from "@/constant/axiosInstance";
-import { RootState } from "@/redux/store";
+import { AxiosError } from "axios";
+import { useSelector } from "react-redux";
 
 import {
   Input,
@@ -11,13 +11,12 @@ import {
   DropdownMenu,
   PaginationBtn,
   DeleteModal,
+  NotFound,
 } from "../utils";
-import useFetch from "../hooks/useFetch";
-import useDebounce from "../hooks/useDebounce";
-import useTitle from "../hooks/useTitle";
-import { AxiosError } from "axios";
-import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useFetch, useDebounce, useTitle } from "../hooks";
 import { CategoryCard } from "@/components";
+import { errorHandler, axios } from "@/constant";
 
 const sortByOptions = [
   { label: "Title (A to Z)", value: "title-asc" },
@@ -34,7 +33,7 @@ const pageSizeOptions = [
 ];
 
 const CategoryListing = () => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const { user } = useSelector((state: RootState) => state.auth);
   const { pathname } = useLocation();
   const [sortBy, setSortBy] = useState<string>("title-asc");
   const [limit, setLimit] = useState<number>(10);
@@ -42,14 +41,24 @@ const CategoryListing = () => {
   const [search, setSearch] = useState<string>("");
   const query = useDebounce(search, 500);
   const path = pathname.split("/").join("");
-  useTitle(`Cartify: ${path} listing`);
   const [deleteIsOpen, setDeleteIsOpen] = useState(false);
+  const [items, setItems] = useState<CategoryType[]>([]);
 
-  const { data, refetch } = useFetch<PaginationTypeWithDocs<CategoryType>>(
+  useTitle(`Cartify: ${path} listing`);
+
+  const { data, error, loading } = useFetch<
+    PaginationTypeWithDocs<CategoryType>
+  >(
     `/${path}?limit=${limit}&page=${page}&title=${query}&sort=${
       sortBy.split("-")[0]
     }&order=${sortBy.split("-")[1]}`
   );
+
+  useEffect(() => {
+    if (data?.items.length) {
+      setItems(data.items);
+    }
+  }, [data?.items]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
@@ -59,18 +68,14 @@ const CategoryListing = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await axiosInstance.delete(`/${path}/${id}`);
+      if (!id) return;
+      setItems((prev) => prev.filter((i) => i._id !== id));
+      const res = await axios.delete(`/${path}/${id}`);
       if (res.data) {
-        refetch();
-        toast.success(`${path} deleted success`);
+        toast.success(`${path} deleted`);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(
-        error instanceof AxiosError
-          ? error.response?.data.message
-          : "Something went wrong"
-      );
+      errorHandler(error as AxiosError);
     }
   };
 
@@ -169,10 +174,14 @@ const CategoryListing = () => {
         </div>
       </div>
 
+      {loading && <Loading />}
+
+      {error && <NotFound title={JSON.stringify(error)} />}
+
       {/* Show results */}
-      {data?.totalItems ? (
+      {items?.length > 0 && (
         <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2">
-          {data?.items?.map((item: CategoryType) => (
+          {items.map((item: CategoryType) => (
             <div key={item._id} className="group relative">
               <CategoryCard key={item._id} {...item} />
 
@@ -208,8 +217,6 @@ const CategoryListing = () => {
             </div>
           ))}
         </div>
-      ) : (
-        <Loading className="h-[50vh]" />
       )}
     </div>
   );

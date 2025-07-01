@@ -1,40 +1,39 @@
 import { Plus, Trash2 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
-
-import useFetch from "../hooks/useFetch";
-import useTitle from "../hooks/useTitle";
-import axiosInstance from "../constant/axiosInstance";
-import { DeleteModal, Loading } from "../utils";
-import { UserCard } from "../components";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { useSelector } from "react-redux";
+
+import { useFetch, useTitle } from "../hooks";
+import { DeleteModal, Loading, NotFound } from "../utils";
+import { UserCard } from "../components";
 import { RootState } from "@/redux/store";
+import { axios, errorHandler } from "@/constant";
 
 const Customers = () => {
-  const { data, loading, refetch } =
+  const { data, loading, error } =
     useFetch<PaginationTypeWithDocs<UserType>>("/user/admin");
   const users = useSelector((state: RootState) => state.auth.user);
   const [deleteIsOpen, setDeleteIsOpen] = useState(false);
+  const [customers, setCustomers] = useState<UserType[]>([]);
 
   useTitle("cartify: user information");
 
+  useEffect(() => {
+    if (data?.items.length) {
+      setCustomers(data.items);
+    }
+  }, [data?.items]);
+
   const handleDelete = async (id: string) => {
     try {
-      const response = await axiosInstance.delete(`/user/admin/${id}`);
-      if (response.data) refetch();
+      if (!id) return;
+      setCustomers((prev) => prev.filter((c) => c._id !== id));
+      await axios.delete(`/user/admin/${id}`);
     } catch (error) {
-      console.log(error);
-      toast.error(
-        error instanceof AxiosError
-          ? error.response?.data.message
-          : "Something went wrong"
-      );
+      errorHandler(error as AxiosError);
     }
   };
-
-  console.log(data);
 
   return (
     <>
@@ -50,9 +49,12 @@ const Customers = () => {
       </div>
 
       {loading && <Loading />}
-      {data && data?.items?.length > 0 && (
+
+      {error && <NotFound title={JSON.stringify(error)} />}
+
+      {customers?.length > 0 && (
         <div className="grid sm:grid-cols-2 gap-5">
-          {data?.items.map((user) => (
+          {customers.map((user) => (
             <div
               key={user?._id}
               className="rounded-lg border p-6 group relative">

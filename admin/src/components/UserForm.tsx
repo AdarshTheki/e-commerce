@@ -5,7 +5,8 @@ import { NavLink } from "react-router-dom";
 import { countries } from "../constant/countries";
 import axiosInstance from "../constant/axiosInstance";
 import useTitle from "../hooks/useTitle";
-import { toast } from "react-toastify";
+import { errorHandler } from "@/constant";
+import { AxiosError } from "axios";
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
@@ -48,104 +49,98 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
         navigate("/customer");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("Something went wrong, please try again.");
+      errorHandler(error as AxiosError);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="">
-      <h2 className="text-2xl text-center pb-5 font-semibold text-gray-800">
-        {userData?._id ? "Update User" : "Create User"}
-      </h2>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <Input
+        name="fullName"
+        label="fullName"
+        placeholder="please enter a unique fullName"
+        onChange={handleChange}
+        type="text"
+        value={user.fullName}
+        required
+      />
+
+      <Input
+        name="email"
+        label="Email"
+        type="email"
+        placeholder="please enter a unique email"
+        onChange={handleChange}
+        value={user.email}
+        required
+      />
+
+      {!userData?._id && (
         <Input
-          name="fullName"
-          label="fullName"
-          placeholder="please enter a unique fullName"
+          name="password"
+          label="Password"
+          placeholder="please enter a strong password"
           onChange={handleChange}
           type="text"
-          value={user.fullName}
+          value={user.password}
           required
         />
+      )}
 
-        <Input
-          name="email"
-          label="Email"
-          type="email"
-          placeholder="please enter a unique email"
+      <Input
+        name="phone"
+        label="Phone number"
+        placeholder="please enter a phoneNumber"
+        type="number"
+        onChange={handleChange}
+        value={user.phone}
+        required
+      />
+      <div className="flex gap-2">
+        <Select
           onChange={handleChange}
-          value={user.email}
-          required
+          value={user.code}
+          name="code"
+          label="Country"
+          options={countries}
         />
-
-        {!userData?._id && (
-          <Input
-            name="password"
-            label="Password"
-            placeholder="please enter a strong password"
-            onChange={handleChange}
-            type="text"
-            value={user.password}
-            required
-          />
-        )}
-
-        <Input
-          name="phone"
-          label="Phone number"
-          placeholder="please enter a phoneNumber"
-          type="number"
+        <Select
           onChange={handleChange}
-          value={user.phone}
-          required
+          value={user.status}
+          name="status"
+          label="Status"
+          options={[
+            { id: "active", title: "active" },
+            { id: "inactive", title: "in-active" },
+          ]}
         />
-        <div className="flex gap-2">
-          <Select
-            onChange={handleChange}
-            value={user.code}
-            name="code"
-            label="Country"
-            options={countries}
-          />
-          <Select
-            onChange={handleChange}
-            value={user.status}
-            name="status"
-            label="Status"
-            options={[
-              { id: "active", title: "active" },
-              { id: "inactive", title: "in-active" },
-            ]}
-          />
-          <Select
-            onChange={handleChange}
-            value={user.role}
-            name="role"
-            label="role"
-            options={[
-              { id: "customer", title: "customer" },
-              { id: "seller", title: "seller" },
-            ]}
-          />
-        </div>
-        <div className="flex gap-5 items-center mt-5">
-          <SpinnerBtn
-            className="w-fit"
-            type="submit"
-            loading={loading}
-            primaryName={userData?._id ? "Update User" : "Create User"}
-          />
-          <NavLink
-            to={"/customer"}
-            className="btn bg-red-600 !text-white text-sm">
-            Cancel
-          </NavLink>
-        </div>
-      </form>
-    </div>
+        <Select
+          onChange={handleChange}
+          value={user.role}
+          name="role"
+          label="role"
+          options={[
+            { id: "customer", title: "customer" },
+            { id: "seller", title: "seller" },
+          ]}
+        />
+      </div>
+      <div className="flex gap-5 items-center mt-5">
+        <SpinnerBtn
+          className="w-fit"
+          type="submit"
+          loading={loading}
+          primaryName={userData?._id ? "Update User" : "Create User"}
+        />
+        <NavLink
+          to={"/customer"}
+          className="btn bg-red-600 !text-white text-sm">
+          Cancel
+        </NavLink>
+      </div>
+    </form>
   );
 };
 

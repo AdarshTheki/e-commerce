@@ -1,8 +1,7 @@
 import { Box, CircleDollarSign, ShoppingBag, Users } from "lucide-react";
 import { Counter } from "../components";
-import useTitle from "../hooks/useTitle";
-import useFetch from "../hooks/useFetch";
-import { Loading } from "../utils";
+import { useTitle, useFetch } from "../hooks";
+import { Loading, NotFound } from "../utils";
 
 interface DashboardData {
   totalUsers: number;
@@ -12,14 +11,17 @@ interface DashboardData {
 }
 
 const Dashboard = () => {
-  const { data, loading } = useFetch<DashboardData>("/dashboard/totals");
-  useTitle(`Cartify: admin dashboard`);
+  const { data, loading, error } = useFetch<DashboardData>("/dashboard/totals");
 
-  if (loading || !data) return <Loading />;
+  useTitle(`Cartify: Dashboard`);
 
-  const percentageCalculate = (min: number, max: number) => {
+  const percentageCalculate = (min: number = 0, max: number = 0) => {
     return parseFloat(((min / max) * 100).toFixed(2)) || 4.6;
   };
+
+  if (loading) return <Loading />;
+
+  if (error) return <NotFound title={JSON.stringify(error)} />;
 
   return (
     <>

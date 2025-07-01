@@ -4,7 +4,11 @@ const ProductCard = ({ item }: { item: ProductType }) => {
   return (
     <>
       <div className="w-full overflow-hidden">
-        <LazyImage alt={`${item?.title}_Image`} src={item?.thumbnail} />
+        <LazyImage
+          alt={`${item?.title}_Image`}
+          src={item?.thumbnail}
+          placeholder="/placeholder.jpg"
+        />
       </div>
       <div className="p-4 capitalize space-y-1">
         <p className="text-sm">#{item?.brand || "Other"}</p>

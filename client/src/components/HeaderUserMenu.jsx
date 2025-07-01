@@ -89,7 +89,7 @@ const HeaderUserMenu = () => {
     <div ref={dropdownRef}>
       <div
         style={{ display: !isOpen ? "none" : "flex" }}
-        className={`absolute top-11 z-30 card w-60 duration-75 ease-in-out right-0`}>
+        className={`absolute top-11 z-30 w-60 duration-75 ease-in-out right-5 p-2 border border-gray-200 bg-white !rounded-l-4xl !rounded-b-4xl overflow-hidden`}>
         <ul className="w-full">
           {menuItems.map((item) => (
             <li key={item.id}>

@@ -7,8 +7,10 @@ import StarRating from "./StarRating";
 import StarSelected from "./StarSelected";
 import LazyImage from "./LazyImage";
 import Avatar from "./Avatar";
+import NotFound from "./NotFound";
 
 export {
+  NotFound,
   Avatar,
   LazyImage,
   StarSelected,
