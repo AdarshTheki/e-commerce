@@ -226,8 +226,6 @@ const ChatPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket]);
 
-  if (chatsLoading || messagesLoading) return <Loading />;
-
   return (
     <>
       <div className="flex max-sm:flex-col h-full">
@@ -292,6 +290,8 @@ const ChatPage = () => {
             </div>
           )}
 
+          {chatsLoading && <Loading />}
+
           {/* Display Chats */}
           {[...chats].map((item) => (
             <ChatItem
@@ -332,18 +332,19 @@ const ChatPage = () => {
         </div>
         <div className="w-full border-l border-slate-200 h-full">
           {!!currentChat.current?._id && (
-            <div className="py-2 px-4 bg-white flex items-center gap-3 top-12 sticky z-10 shadow">
+            <div className="py-2 px-4 flex font-medium bg-white text-lg items-center gap-3 top-12 sticky z-10 shadow">
               <img
                 src={
                   getChatObjectMetadata(currentChat.current, user).avatar ||
                   "/placeholder.jpg"
                 }
                 alt="img"
-                className="w-8 h-8 rounded-full"
+                className="w-10 h-10 rounded-full object-cover"
               />
               <p>{getChatObjectMetadata(currentChat.current, user).title}</p>
             </div>
           )}
+          {messagesLoading && <Loading />}
           <div className="flex-col gap-2 flex justify-end p-4 h-fit min-h-[400px]">
             {[...messages].map((item) => (
               <MessageItem
@@ -356,13 +357,13 @@ const ChatPage = () => {
           </div>
 
           {previews?.length > 0 && (
-            <div className="w-full py-2 flex gap-2 items-center sticky bottom-14 bg-white">
+            <div className="w-full flex flex-wrap px-4 gap-2 items-center justify-center sticky bottom-14 bg-white">
               {previews.map((preview, i) => (
                 <div key={i} className="relative">
                   <img
                     src={preview}
                     alt="image-preview"
-                    className={classNames("w-16 h-16 rounded")}
+                    className={classNames("w-20 h-20 rounded object-cover")}
                   />
                   <Trash2Icon
                     onClick={() => handleRemoveAttachment(i)}
@@ -389,7 +390,7 @@ const ChatPage = () => {
               <label
                 title="send files with limit 5"
                 htmlFor="attachment"
-                className="rounded-full bg-indigo-600 p-2 text-white cursor-pointer">
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center cursor-pointer">
                 <ImageUp size={20} />
                 <input
                   type="file"
@@ -403,7 +404,7 @@ const ChatPage = () => {
               <button
                 disabled={messageSendLoading}
                 type="submit"
-                className="btn-primary flex gap-2 !rounded-full !px-5 items-center">
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center">
                 {messageSendLoading ? (
                   "Loading..."
                 ) : (

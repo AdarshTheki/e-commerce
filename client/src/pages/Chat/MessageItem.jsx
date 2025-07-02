@@ -13,8 +13,8 @@ const MessageItem = ({ item, onDelete, sender }) => {
         className={classNames(
           "relative cursor-pointer group w-fit py-2 px-5 shadow",
           sender
-            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl"
-            : "bg-white rounded-r-4xl rounded-t-4xl"
+            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl bg-gradient-to-r from-pink-400 text-white font-medium to-purple-400"
+            : "bg-white rounded-r-4xl rounded-b-4xl"
         )}>
         <button
           onClick={onDelete}
@@ -23,7 +23,7 @@ const MessageItem = ({ item, onDelete, sender }) => {
         </button>
         <div className="flex gap-2 items-end">
           {item?.content && <p>{item?.content}</p>}
-          <small className="text-nowrap text-slate-400">
+          <small className="text-nowrap" style={{ fontWeight: 400 }}>
             {formatChatTime(item?.updatedAt)}
           </small>
         </div>

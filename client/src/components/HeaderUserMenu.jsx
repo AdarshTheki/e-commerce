@@ -1,8 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import useDropdown from "../hooks/useDropdown";
-import { axios } from "../helper";
-import { toast } from "react-toastify";
+import { axios, errorHandler } from "../helper";
 import { logout } from "../redux/authSlice";
 import { useState } from "react";
 import {
@@ -71,7 +70,7 @@ const HeaderUserMenu = () => {
         window.location.href = "/";
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Logout failed");
+      errorHandler(error);
     } finally {
       setLoading(false);
     }

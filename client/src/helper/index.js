@@ -42,6 +42,7 @@ export class LocalStorage {
       try {
         return JSON.parse(value);
       } catch (err) {
+        console.log(err?.message);
         return null;
       }
     }
@@ -107,6 +108,42 @@ export const getChatObjectMetadata = (
       lastMessage,
     };
   }
+};
+const tailwindColorMap = {
+  light: {
+    "red-100": "#fee2e2",
+    "blue-100": "#dbeafe",
+    "green-100": "#d1fae5",
+    "yellow-100": "#fef9c3",
+    "purple-100": "#e9d5ff",
+    "pink-100": "#fce7f3",
+    "indigo-100": "#e0e7ff",
+    "cyan-100": "#cffafe",
+    "lime-100": "#ecfccb",
+    "orange-100": "#ffedd5",
+  },
+  dark: {
+    "red-800": "#991b1b",
+    "blue-800": "#1e40af",
+    "green-800": "#065f46",
+    "yellow-800": "#854d0e",
+    "purple-800": "#6b21a8",
+    "pink-800": "#9d174d",
+    "indigo-800": "#3730a3",
+    "cyan-800": "#155e75",
+    "lime-800": "#365314",
+    "orange-800": "#9a3412",
+  },
+};
+
+export const getRandomTailwindColorWithHex = (type = "light") => {
+  const colorEntries = Object.entries(tailwindColorMap[type]);
+  const [tailwindColor, hex] =
+    colorEntries[Math.floor(Math.random() * colorEntries.length)];
+  return {
+    tailwindColor: `bg-${tailwindColor}`,
+    hex,
+  };
 };
 
 export { axios, socket, errorHandler };

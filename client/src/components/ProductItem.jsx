@@ -3,18 +3,20 @@ import HeartFavorite from "./HeartFavorite";
 import { NavLink } from "react-router-dom";
 import { LazyImage } from "../utils";
 import { Star } from "lucide-react";
+import { classNames, getRandomTailwindColorWithHex } from "../helper";
 
 const ProductItem = ({ ...item }) => {
+  let color = getRandomTailwindColorWithHex("dark");
+
   return (
     <div className={`group card w-full max-sm:grid gap-2 grid-cols-2`}>
       <div className="relative sm:min-h-[200px]">
         <NavLink to={`/product/${item._id}`}>
           <LazyImage
-            src={item.thumbnail || item.images[0]}
-            placeholder={"https://placehold.co/200x140"}
-            fallback={"/placeholder.jpg"}
+            src={item.thumbnail}
+            fallback={`https://placehold.co/200x150/eeee/${color.hex.replace("#", "")}?text=${item.title.substring(0, 10)}`}
             alt="Product"
-            className="w-full max-h-[200px] object-contain transition-opacity duration-300 opacity-100"
+            className="w-full object-contain aspect-[1/0.8] transition-opacity duration-300 opacity-100"
             loading="lazy"
           />
         </NavLink>
@@ -28,7 +30,11 @@ const ProductItem = ({ ...item }) => {
         </div>
       </div>
       <div className="capitalize p-2">
-        <h3 className="font-medium max-sm:text-xl line-clamp-2 mb-3">
+        <h3
+          style={{ color: color.hex }}
+          className={classNames(
+            "font-medium max-sm:text-xl line-clamp-2 mb-3"
+          )}>
           {item.title}
         </h3>
         <p className="flex mt-4 justify-between">
