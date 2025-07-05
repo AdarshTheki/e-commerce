@@ -1,147 +1,183 @@
-import React, { useState } from "react";
-import { Input, Select, SpinnerBtn } from "../utils";
-import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
-import { countries } from "../constant/countries";
-import axiosInstance from "../constant/axiosInstance";
-import useTitle from "../hooks/useTitle";
-import { errorHandler } from "@/constant";
-import { AxiosError } from "axios";
+import React, { useState } from 'react';
+import { Input, SpinnerBtn } from './ui';
+import { useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+import useTitle from '../hooks/useTitle';
+import { AxiosError } from 'axios';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from './ui/Select';
+import { axiosInstance, countries, errorHandler } from '@/lib/utils';
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
-  const [user, setUser] = React.useState({
-    email: userData?.email || "",
-    password: userData?.password || "",
-    fullName: userData?.fullName || "",
-    role: userData?.role || "",
-    status: userData?.status || "",
-    code: userData?.phoneNumber?.split("-")[0] || "",
-    phone: userData?.phoneNumber?.split("-")[1] || "",
-  });
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  useTitle(`Cartify: ${userData?._id ? "Update User" : "Add New User"}`);
+    const [user, setUser] = React.useState({
+        email: userData?.email || '',
+        password: userData?.password || '',
+        fullName: userData?.fullName || '',
+        role: userData?.role || '',
+        status: userData?.status || '',
+        code: userData?.phoneNumber?.split('-')[0] || '+91',
+        phone: userData?.phoneNumber?.split('-')[1] || '',
+    });
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    useTitle(`Cartify: ${userData?._id ? 'Update User' : 'Add New User'}`);
 
-  const handleChange: React.ChangeEventHandler<
-    HTMLInputElement | HTMLSelectElement
-  > = (e) => {
-    const { name, value } = e.target;
-    setUser((prevUser) => ({ ...prevUser, [name]: value }));
-  };
+    const handleChange: React.ChangeEventHandler<
+        HTMLInputElement | HTMLSelectElement
+    > = (e) => {
+        const { name, value } = e.target;
+        setUser((prevUser) => ({ ...prevUser, [name]: value }));
+    };
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    let response;
-    try {
-      if (userData?._id) {
-        response = await axiosInstance.patch(`/user/admin/${userData._id}`, {
-          ...user,
-          phoneNumber: `${user.code}-${user.phone}`,
-        });
-      } else {
-        response = await axiosInstance.post("/user/admin", {
-          ...user,
-          phoneNumber: `${user.code}-${user.phone}`,
-        });
-      }
-      if (response.data) {
-        navigate("/customer");
-      }
-    } catch (error) {
-      errorHandler(error as AxiosError);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        let response;
+        try {
+            if (userData?._id) {
+                response = await axiosInstance.patch(
+                    `/user/admin/${userData._id}`,
+                    {
+                        ...user,
+                        phoneNumber: `${user.code}-${user.phone}`,
+                    }
+                );
+            } else {
+                response = await axiosInstance.post('/user/admin', {
+                    ...user,
+                    phoneNumber: `${user.code}-${user.phone}`,
+                });
+            }
+            if (response.data) {
+                navigate('/customer');
+            }
+        } catch (error) {
+            errorHandler(error as AxiosError);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <Input
-        name="fullName"
-        label="fullName"
-        placeholder="please enter a unique fullName"
-        onChange={handleChange}
-        type="text"
-        value={user.fullName}
-        required
-      />
+    return (
+        <form className="max-w-lg space-y-6 p-3" onSubmit={handleSubmit}>
+            <h2 className="text-2xl font-medium">
+                {user?.email ? 'User Update' : 'Create User'}
+            </h2>
+            <Input
+                name="fullName"
+                onChange={handleChange}
+                type="text"
+                value={user.fullName}
+                required={true}
+            />
 
-      <Input
-        name="email"
-        label="Email"
-        type="email"
-        placeholder="please enter a unique email"
-        onChange={handleChange}
-        value={user.email}
-        required
-      />
+            <Input
+                name="email"
+                type="email"
+                onChange={handleChange}
+                value={user.email}
+                required={true}
+            />
 
-      {!userData?._id && (
-        <Input
-          name="password"
-          label="Password"
-          placeholder="please enter a strong password"
-          onChange={handleChange}
-          type="text"
-          value={user.password}
-          required
-        />
-      )}
+            {!userData?._id && (
+                <Input
+                    name="password"
+                    onChange={handleChange}
+                    type="text"
+                    value={user.password}
+                    required={true}
+                />
+            )}
+            <div className="flex gap-3 items-end">
+                <Input
+                    type="number"
+                    name="phone"
+                    placeholder="Enter Phone Number"
+                    onChange={handleChange}
+                    value={user.phone}
+                    required={true}
+                />
+                <Select
+                    onValueChange={(value) =>
+                        setUser({ ...user, code: value })
+                    }>
+                    <SelectTrigger className="w-xl">
+                        <SelectValue placeholder={user.code} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                        {countries.map((item) => (
+                            <SelectItem value={item.id}>
+                                {item.id} - {item.title}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div className="flex gap-3">
+                <Select
+                    onValueChange={(value) =>
+                        setUser({
+                            ...user,
+                            role: value as 'customer' | 'admin' | 'seller',
+                        })
+                    }>
+                    <SelectTrigger className="">
+                        <SelectValue placeholder={user.role || 'Select Role'} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                        {[
+                            { id: 'customer', title: 'Customer' },
+                            { id: 'seller', title: 'Seller' },
+                            { id: 'user', title: 'User' },
+                        ].map((item) => (
+                            <SelectItem value={item.id}>
+                                {item.title}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Select
+                    onValueChange={(value) =>
+                        setUser({ ...user, status: value })
+                    }>
+                    <SelectTrigger className="">
+                        <SelectValue
+                            placeholder={user.status || 'Select Status'}
+                        />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                        {[
+                            { id: 'active', title: 'Active' },
+                            { id: 'inActive', title: 'In-Active' },
+                        ].map((item) => (
+                            <SelectItem value={item.id}>
+                                {item.title}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
 
-      <Input
-        name="phone"
-        label="Phone number"
-        placeholder="please enter a phoneNumber"
-        type="number"
-        onChange={handleChange}
-        value={user.phone}
-        required
-      />
-      <div className="flex gap-2">
-        <Select
-          onChange={handleChange}
-          value={user.code}
-          name="code"
-          label="Country"
-          options={countries}
-        />
-        <Select
-          onChange={handleChange}
-          value={user.status}
-          name="status"
-          label="Status"
-          options={[
-            { id: "active", title: "active" },
-            { id: "inactive", title: "in-active" },
-          ]}
-        />
-        <Select
-          onChange={handleChange}
-          value={user.role}
-          name="role"
-          label="role"
-          options={[
-            { id: "customer", title: "customer" },
-            { id: "seller", title: "seller" },
-          ]}
-        />
-      </div>
-      <div className="flex gap-5 items-center mt-5">
-        <SpinnerBtn
-          className="w-fit"
-          type="submit"
-          loading={loading}
-          primaryName={userData?._id ? "Update User" : "Create User"}
-        />
-        <NavLink
-          to={"/customer"}
-          className="btn bg-red-600 !text-white text-sm">
-          Cancel
-        </NavLink>
-      </div>
-    </form>
-  );
+            <div className="flex gap-5 items-center mt-5">
+                <SpinnerBtn
+                    className="!btn"
+                    type="submit"
+                    loading={loading}
+                    primaryName={userData?._id ? 'Update User' : 'Create User'}
+                />
+                <NavLink
+                    to={'/customer'}
+                    className="btn bg-red-600 !text-white">
+                    Cancel
+                </NavLink>
+            </div>
+        </form>
+    );
 };
 
 export default UserForm;

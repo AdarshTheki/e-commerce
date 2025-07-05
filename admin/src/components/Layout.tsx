@@ -1,132 +1,105 @@
-import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import { Menu, X } from "lucide-react";
-import { Input } from "../utils";
-import menuItems from "../constant/menuItems";
-import useDebounce from "../hooks/useDebounce";
-import useFetch from "../hooks/useFetch";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import React, { useState } from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { Menu, X } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
+import { menuItems } from '@/lib/utils';
 
 const Layout: React.FC = () => {
-  const { user } = useSelector((s: RootState) => s.auth);
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search, 500);
+    const { user } = useSelector((s: RootState) => s.auth);
+    const [open, setOpen] = useState(false);
 
-  return (
-    <div className="flex">
-      {/* <!-- Desktop Menu --> */}
-      <Sidebar />
+    return (
+        <div className="lg:flex">
+            {/* <!-- Desktop Menu --> */}
+            <nav className="h-screen sticky top-0 flex-shrink-0 w-64 border-r hidden lg:block">
+                <div className="flex flex-col h-full">
+                    <div className="p-6">
+                        <div className="flex items-center space-x-2">
+                            <img
+                                src="/logo.png"
+                                alt="logo"
+                                className="w-8 h-8"
+                            />
+                            <span className="text-xl font-semibold">Admin</span>
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        {menuItems.map((item) => (
+                            <NavLink
+                                key={item.id}
+                                to={item.path}
+                                className="flex gap-2 items-center mb-2 pl-8 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-200">
+                                {<item.icon size={22} />}
+                                <span>{item.title}</span>
+                            </NavLink>
+                        ))}
+                    </div>
+                    <div className="px-4 py-2 text-gray-600 transition-colors duration-300 hover:bg-gray-200">
+                        <NavLink
+                            to={user?.email ? '/profile' : '/login'}
+                            className="flex items-center space-x-3">
+                            <Avatar style={{ width: 50, height: 50 }}>
+                                <AvatarImage src={user?.avatar} alt="avatar" />
+                                <AvatarFallback>
+                                    {user?.fullName.substring(0, 2)}
+                                </AvatarFallback>
+                            </Avatar>
 
-      {/* <!-- Mobile Menu --> */}
-      <div
-        onClick={() => setOpen(false)}
-        style={{ display: open ? "block" : "none" }}
-        className="mobile-menu fixed h-screen inset-0 rounded-b-2xl overflow-hidden shadow-lg bg-gray-700/30 z-40 lg:hidden">
-        <div
-          onClick={() => setOpen(true)}
-          className="p-4 space-y-4 bg-white max-h-[50vh] overflow-y-auto overflow-hidden">
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.id}
-              to={item.path}
-              className="flex items-center px-4 py-2 text-gray-600 transition-colors duration-300 rounded-lg hover:bg-gray-100">
-              {<item.icon size={18} />}
-              <span className="ml-3">{item.title}</span>
-            </NavLink>
-          ))}
-        </div>
-      </div>
+                            <div>
+                                <p className="text-sm font-medium uppercase">
+                                    {user?.fullName || 'Admin'}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    {user?.email || 'admin@example.com'}
+                                </p>
+                                <p className="text-xs text-blue-800">
+                                    {user?.role || 'Guest'}
+                                </p>
+                            </div>
+                        </NavLink>
+                    </div>
+                </div>
+            </nav>
 
-      {/* Main Body */}
-      <main className="h-full sm:overflow-y-auto w-[100vw]">
-        <div className="sticky top-0 z-10 border-b">
-          <div className="flex items-center justify-end gap-5 p-2 sm:px-4 bg-white">
-            {/* Inputs Search */}
-            <div className="relative sm:w-[350px]">
-              <Input
-                name="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
-              />
-              {debouncedSearch.length > 1 && (
-                <>
-                  <X
-                    className=" absolute right-2 top-2 cursor-pointer"
-                    onClick={() => {
-                      setSearch("");
-                    }}
-                  />
-                  <SearchResults query={debouncedSearch} setClose={setSearch} />
-                </>
-              )}
+            {/* <!-- Mobile Menu --> */}
+            <div className="py-2 hidden max-lg:flex px-4 bg-white top-0 sticky z-40 shadow">
+                <button onClick={() => setOpen(true)} className="svg-btn">
+                    {!open && <Menu />}
+                </button>
+            </div>
+            <div
+                className={`
+          fixed inset-0 h-screen z-50 bg-gray-700/30 shadow-lg overflow-hidden rounded-b-2xl
+          transform duration-300 ease-linear lg:hidden
+          ${open ? 'left-0 opacity-100' : 'left-[100%] opacity-0'}
+        `}>
+                <div className="p-4 py-6 space-y-4 bg-white w-full h-full">
+                    <button
+                        onClick={() => setOpen(false)}
+                        className="svg-btn absolute top-3 right-5">
+                        <X size={30} />
+                    </button>
+                    {menuItems.map((item) => (
+                        <NavLink
+                            onClick={() => setOpen(false)}
+                            key={item.id}
+                            to={item.path}
+                            className="flex items-center text-lg px-4 py-2 text-gray-600 transition-colors duration-300 rounded-lg hover:bg-gray-100">
+                            {<item.icon size={22} />}
+                            <span className="ml-3">{item.title}</span>
+                        </NavLink>
+                    ))}
+                </div>
             </div>
 
-            <NavLink to={"/profile"} className="svg-btn !scale-125 border">
-              <img
-                src={user?.avatar || "https://avatar.iran.liara.run/public"}
-                alt="User"
-                className="h-7 w-7 rounded-full object-cover bg-gray-500"
-                loading="lazy"
-              />
-            </NavLink>
-
-            <button
-              onClick={() => setOpen(!open)}
-              type="button"
-              className="svg-btn scale-125 sm:hidden">
-              {open ? <X /> : <Menu />}
-            </button>
-          </div>
+            {/* Main Body */}
+            <main className="min-h-screen sm:overflow-y-auto w-full p-4">
+                <Outlet />
+            </main>
         </div>
-
-        {/* Main of all Components */}
-        <div className="w-full p-4 sm:p-6 h-full space-y-6">
-          <Outlet />
-        </div>
-      </main>
-    </div>
-  );
+    );
 };
 
 export default Layout;
-
-const SearchResults = ({
-  query = "",
-  setClose,
-}: {
-  query: string;
-  setClose: React.Dispatch<React.SetStateAction<string>>;
-}) => {
-  const { data } = useFetch<PaginationTypeWithDocs<ProductType>>(
-    `/product?title=${query}&limit=10`
-  );
-
-  const boldQuery = (str: string) => {
-    const regex = new RegExp(`(${query})`, "gi");
-    return str.replace(regex, "<b>$1</b>");
-  };
-
-  return (
-    <ul className="absolute z-50 w-full bg-white border border-gray-200 rounded-lg shadow-lg">
-      {data && data?.items?.length === 0 && (
-        <li className="py-1.5 block px-4 text-sm h-20">No results found</li>
-      )}
-      {data?.items?.map((item) => (
-        <li
-          key={item._id}
-          className="py-1.5 block px-4 text-sm hover:bg-gray-100 ">
-          <NavLink
-            onClick={() => setClose("")}
-            to={`/product?title=${item.title}`}
-            className="!text-gray-700 line-clamp-1">
-            <span dangerouslySetInnerHTML={{ __html: boldQuery(item.title) }} />
-          </NavLink>
-        </li>
-      ))}
-    </ul>
-  );
-};

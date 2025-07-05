@@ -1,120 +1,164 @@
-import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { AxiosError } from 'axios';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Eye, EyeOff } from 'lucide-react';
 
-import { Input } from "../utils";
-import { toast } from "react-toastify";
-import { errorHandler, axios } from "@/constant";
-import { AxiosError } from "axios";
+import { errorHandler, axiosInstance } from '@/lib/utils';
 
 const Register = () => {
-  const navigate = useNavigate();
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [conformPassword, setConformPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [visible, setVisible] = useState(false);
 
-  const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
-    const password = (form.elements.namedItem("password") as HTMLInputElement)
-      .value;
-    const conPassword = (
-      form.elements.namedItem("confirm-password") as HTMLInputElement
-    ).value;
-    const fullName = (form.elements.namedItem("fullName") as HTMLInputElement)
-      .value;
+    const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            if (!email || !fullName || !password)
+                return toast.error('please enter all fields');
+            if (password !== conformPassword) {
+                return toast.error('please check your password');
+            }
+            setLoading(true);
+            const register = await axiosInstance.post('/user/sign-up', {
+                email,
+                password,
+                fullName,
+                role: 'seller',
+            });
+            if (register.data) {
+                const login = await axiosInstance.post('/user/sign-in', {
+                    email,
+                    password,
+                });
+                if (login.data) {
+                    localStorage.setItem('token', login.data.accessToken);
+                    window.location.href = '/';
+                }
+            }
+        } catch (err) {
+            errorHandler(err as AxiosError);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    try {
-      if (password !== conPassword) {
-        return toast.error("please check your password");
-      }
-      const register = await axios.post("/user/sign-up", {
-        email,
-        password,
-        fullName,
-      });
-      if (register.data) {
-        toast.success("User register succeeded");
-        navigate("/login");
-      }
-    } catch (error) {
-      errorHandler(error as AxiosError);
-    }
-  };
+    return (
+        <section className="flex items-center justify-center p-4 min-h-[80vh]">
+            <div className="max-w-md w-full bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
+                <h1 className="text-3xl text-center pb-5 font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+                    Create Account
+                </h1>
 
-  return (
-    <section
-      id="auth"
-      className="bg-gray-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        {/* <!-- Register Form --> */}
-        <div
-          className="bg-white p-8 rounded-lg border border-gray-200"
-          x-show="isRegister"
-          x-cloak="">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Create account</h2>
-            <p className="text-gray-600 mt-2">Sign up for a new account</p>
-          </div>
+                <form
+                    id="loginForm"
+                    className="space-y-6"
+                    onSubmit={handelSubmit}>
+                    <div>
+                        <label
+                            htmlFor="text"
+                            className="block text-sm font-medium text-gray-700 mb-2">
+                            Full Name
+                        </label>
+                        <input
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            type="text"
+                            id="text"
+                            name="text"
+                            required={true}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your full name"
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="email"
+                            className="block text-sm font-medium text-gray-700 mb-2">
+                            Email Address
+                        </label>
+                        <input
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                            id="email"
+                            name="email"
+                            required={true}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your email"
+                        />
+                    </div>
 
-          <form onSubmit={handelSubmit}>
-            <Input
-              name="fullName"
-              type="text"
-              label="fullName"
-              autoComplete="off"
-              required
-            />
-            <Input
-              name="email"
-              type="email"
-              label="Email"
-              autoComplete="off"
-              required
-            />
-            <Input
-              name="password"
-              type="text"
-              label="Password"
-              autoComplete="off"
-              required
-            />
-            <Input
-              name="confirm-password"
-              type="text"
-              label="Confirm Password"
-              autoComplete="off"
-              required
-            />
+                    <div className="relative">
+                        <label
+                            htmlFor="password"
+                            className="block text-sm font-medium text-gray-700 mb-2">
+                            Password{' '}
+                        </label>
+                        <input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            type={visible ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            required={true}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your password"
+                        />
+                        <button
+                            type="button"
+                            className="top-10 right-5 absolute avg-btn"
+                            onClick={() => setVisible(!visible)}>
+                            {!visible ? <Eye /> : <EyeOff />}
+                        </button>
+                    </div>
+                    <div>
+                        <label
+                            htmlFor="conformPassword"
+                            className="block text-sm font-medium text-gray-700 mb-2">
+                            Conform Password
+                        </label>
+                        <input
+                            value={conformPassword}
+                            onChange={(e) => setConformPassword(e.target.value)}
+                            type={visible ? 'text' : 'password'}
+                            id="conformPassword"
+                            name="conformPassword"
+                            required={true}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter your password"
+                        />
+                    </div>
 
-            <label
-              htmlFor="checkbox"
-              className="gap-2 my-2 cursor-pointer text-sm flex items-center text-gray-600">
-              <input
-                type="checkbox"
-                id="checkbox"
-                className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                required
-              />
-              <span>I agree to the Terms and Privacy Policy</span>
-            </label>
+                    <button
+                        disabled={loading}
+                        type="submit"
+                        className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        {loading ? 'Loading...' : 'Sign Up'}
+                    </button>
+                </form>
 
-            <button
-              type="submit"
-              className="w-full mt-5 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Create account
-            </button>
-          </form>
+                <div className="mt-6 flex items-center">
+                    <div className="flex-1 border-t border-gray-300"></div>
+                </div>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?
-            <NavLink
-              to={"/login"}
-              className="text-indigo-600 mx-2 hover:text-indigo-500">
-              Sign in
-            </NavLink>
-          </p>
-        </div>
-      </div>
-    </section>
-  );
+                <div className="mt-6 text-center">
+                    <p className="text-sm text-gray-600">
+                        Already have an account?
+                        <Link
+                            to="/login"
+                            className="text-blue-600 pl-2 hover:text-blue-800 font-medium"
+                            target="_self">
+                            Sign In
+                        </Link>
+                    </p>
+                </div>
+            </div>
+        </section>
+    );
 };
 
 export default Register;

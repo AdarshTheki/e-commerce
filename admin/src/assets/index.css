@@ -3,49 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --primary: rgb(79, 70, 229);
+    --primary: rgb(79, 70, 229);
 }
 @layer utilities {
-  html {
-    scroll-behavior: smooth;
-  }
+    html {
+        scroll-behavior: smooth;
+    }
 
-  .active {
-    color: var(--primary);
-  }
+    .active {
+        color: var(--primary);
+    }
 
-  .scrollbar::-webkit-scrollbar {
-    width: 1px;
-    height: 1px;
-  }
+    .scrollbar::-webkit-scrollbar {
+        width: 1px;
+        height: 1px;
+    }
 
-  .scrollbar::-webkit-scrollbar-track {
-    border-radius: 2px;
-  }
+    .scrollbar::-webkit-scrollbar-track {
+        border-radius: 2px;
+    }
 
-  .scrollbar::-webkit-scrollbar-thumb {
-    background: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-  }
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: #fff;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-  .btn {
-    @apply px-4 py-2 rounded-lg duration-200 ease-in hover:opacity-80;
-  }
+    .btn {
+        @apply px-4 py-2 rounded-lg duration-200 ease-in hover:opacity-80;
+    }
 
-  .svg-btn {
-    @apply w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-300/50;
-  }
+    .svg-btn {
+        @apply w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-300/50;
+    }
 
-  .status-active {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-green-100 text-green-700 rounded-full;
-  }
+    .status-active {
+        @apply px-2 py-1 font-medium capitalize text-xs bg-green-100 text-green-700 rounded-full;
+    }
 
-  .status-pending {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-yellow-100 text-yellow-700 rounded-full;
-  }
+    .status-pending {
+        @apply px-2 py-1 font-medium capitalize text-xs bg-yellow-100 text-yellow-700 rounded-full;
+    }
 
-  .status-inactive {
-    @apply px-2 py-1 font-medium capitalize text-xs bg-red-100 text-red-700 rounded-full;
-  }
+    .status-inactive {
+        @apply px-2 py-1 font-medium capitalize text-xs bg-red-100 text-red-700 rounded-full;
+    }
 }
