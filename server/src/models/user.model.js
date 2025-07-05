@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const userSchema = new Schema(
   {
@@ -21,7 +22,7 @@ const userSchema = new Schema(
     password: { type: String, required: true, minlength: 5, trim: true },
     role: {
       type: String,
-      enum: ["customer", "admin", "seller"],
+      enum: ["customer", "admin", "seller", "user"],
       default: "customer",
     },
     status: {
@@ -44,6 +45,8 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
+userSchema.plugin(mongoosePaginate);
 
 // Pre-save middleware to hash the password before saving it to the database
 userSchema.pre("save", async function (next) {

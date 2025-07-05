@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const replySchema = new mongoose.Schema({
   createdBy: {
@@ -38,5 +39,7 @@ const reviewSchema = new mongoose.Schema({
   reports: [reportSchema],
   createdAt: { type: Date, default: Date.now },
 });
+
+reviewSchema.plugin(mongoosePaginate);
 
 export const Review = mongoose.model("Review", reviewSchema);

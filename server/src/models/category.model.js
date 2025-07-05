@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const categorySchema = new Schema(
   {
@@ -33,5 +34,7 @@ const categorySchema = new Schema(
 );
 
 categorySchema.index({ title: "text" });
+
+categorySchema.plugin(mongoosePaginate);
 
 export const Category = mongoose.model("Category", categorySchema);

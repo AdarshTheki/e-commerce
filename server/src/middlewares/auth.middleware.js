@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
-import { error } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 
 export const verifyJWT = (roles = [], status = []) => {
   return async (req, res, next) => {
@@ -9,40 +9,31 @@ export const verifyJWT = (roles = [], status = []) => {
         req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
       if (!token) {
-        return res.status(401).json(error("No token provided", 401));
+        throw new ApiError(401, "No token access with cookies & Bearer");
       }
 
-      let decodedToken;
-      try {
-        decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
-      } catch (err) {
-        return res.status(401).json(error("Invalid or expired token", 401));
-      }
+      const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
 
       const user = await User.findById(decodedToken._id).select(
         "-password -refreshToken"
       );
 
       if (!user) {
-        return res
-          .status(401)
-          .json(error("Invalid Access Token: User not found", 401));
+        throw new ApiError(401, "Invalid Access Token: User not found");
       }
 
       if (roles && roles.length && !roles.includes(user.role)) {
-        return res
-          .status(403)
-          .json(error("Permission not allowed this user", 403));
+        throw new ApiError(403, "Permission not allowed to this Role");
       }
 
       if (status && status.length && !status.includes(user.status)) {
-        return res.status(403).json(error("Your account is not active", 403));
+        throw new ApiError(403, "Permission not allowed to user not Active");
       }
 
       req.user = user;
       next();
     } catch (err) {
-      return res.status(500).json(error(err.message));
+      throw new ApiError(401, err.message);
     }
   };
 };

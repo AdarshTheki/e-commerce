@@ -6,7 +6,6 @@ import { removeSingleImg, uploadSingleImg } from "../utils/cloudinary.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { User } from "../models/user.model.js";
-import { pagination } from "../utils/pagination.js";
 
 const router = Router();
 
@@ -17,25 +16,40 @@ const cookiePayload = {
   secure: process.env.NODE_ENV === "production",
 };
 
-// get all user by admin
+// get all users by admin (excluding a specific email)
 router.get("/admin", async (req, res) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
-    const users = await User.aggregate(
-      pagination(
-        {
-          $match: {
-            $nor: [{ role: "admin" }],
-          },
-        },
-        parseInt(page),
-        parseInt(limit),
-        "createdAt",
-        -1
-      )
-    );
+    const page = +req.query?.page || 1;
+    const limit = +req.query?.limit || 10;
+    const q = req.query?.query || "";
+    const status = req.query?.status || "";
+    const sort = req.query?.sort || "fullName";
+    const order = req.query?.order || "asc";
+    // Build query for filtering users (excluding admins)
+    const query = {
+      $and: [
+        { role: { $ne: "admin" } },
+        ...(q ? [{ fullName: { $regex: q, $options: "i" } }] : []),
+        ...(status
+          ? [
+              {
+                status: {
+                  $regex: status === "active" ? "active" : "inactive",
+                  $options: "i",
+                },
+              },
+            ]
+          : []),
+      ],
+    };
 
-    res.status(200).json(users[0]);
+    const users = await User.paginate(query, {
+      page,
+      limit,
+      sort: { [sort]: order === "asc" ? 1 : -1 },
+    });
+
+    res.status(200).json(users);
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
   }
