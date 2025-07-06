@@ -22,7 +22,6 @@ const Login = () => {
         password,
       });
       if (data) {
-        localStorage.setItem("token", data.accessToken);
         window.location.href = "/";
       }
     } catch (err) {

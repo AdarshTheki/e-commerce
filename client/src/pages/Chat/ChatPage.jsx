@@ -191,7 +191,6 @@ const ChatPage = () => {
   const handleDeleteMessage = async (messageId) => {
     try {
       if (!messageId) return;
-      console.log(messageId);
       const res = await axios.delete(`/messages/${messageId}`);
       if (res.data) {
         toast.success("Message deleted successfully");

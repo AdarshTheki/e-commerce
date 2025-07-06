@@ -6,6 +6,13 @@ import { Download, Trash2Icon } from "lucide-react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { errorHandler, axios } from "../helper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/Select";
 
 const GalleryImage = () => {
   const [query, setQuery] = useState({
@@ -33,7 +40,6 @@ const GalleryImage = () => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
       });
   };
 
@@ -43,32 +49,31 @@ const GalleryImage = () => {
     <div>
       <div className="flex gap-x-5 gap-y-2 py-5 items-center flex-wrap">
         <h2 className="text-xl font-medium">All Images</h2>
-        <label htmlFor="selection">
-          <select
-            className="peer border cursor-pointer border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-full px-4 py-1.5"
-            id="selection"
-            onChange={(e) => setSelectedFormat(e.target.value)}
-            value={selectedFormat}>
-            {Object.keys(socialFormats).map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label htmlFor="page-item">
-          <select
-            className="peer border cursor-pointer border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-full px-4 py-1.5"
-            id="page-item"
-            onChange={(e) => setQuery({ ...query, limit: e.target.value })}
-            value={query.limit}>
-            <option value={10}>10 / page</option>
-            <option value={20}>20 / page</option>
-            <option value={30}>30 / page</option>
-            <option value={50}>50 / page</option>
-            <option value={100}>100 / page</option>
-          </select>
-        </label>
+        <div className="w-[200px]">
+          <Select onValueChange={(value) => setSelectedFormat(value)}>
+            <SelectTrigger>
+              <SelectValue placeholder={selectedFormat} />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 ">
+              {Object.keys(socialFormats).map((item) => (
+                <SelectItem value={item}>{item}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-[180px]">
+          <Select
+            onValueChange={(value) => setQuery({ ...query, limit: value })}>
+            <SelectTrigger>
+              <SelectValue placeholder={`${query.limit} / pages`} />
+            </SelectTrigger>
+            <SelectContent className="bg-white border-gray-300 ">
+              {[10, 20, 30, 50, 100].map((item) => (
+                <SelectItem value={item}>{`${item} / pages`}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-5">

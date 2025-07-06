@@ -34,7 +34,7 @@ const LazyImage = ({ src, placeholder, fallback, ...rest }) => {
     }
   }, [src, fallback]);
 
-  return <img ref={imgRef} src={imgSrc} {...rest} />;
+  return <img ref={imgRef} src={imgSrc || "/placeholder.jpg"} {...rest} />;
 };
 
 export default LazyImage;

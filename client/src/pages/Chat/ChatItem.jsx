@@ -7,7 +7,7 @@ import {
 } from "../../helper";
 import { useSelector } from "react-redux";
 import useDropdown from "../../hooks/useDropdown";
-import { LazyImage } from "../../utils";
+import { Avatar } from "../../utils";
 
 const ChatItem = ({
   item,
@@ -37,14 +37,11 @@ const ChatItem = ({
         {item.isGroupChat ? (
           <div className="w-12 relative h-12 flex-shrink-0 flex justify-start items-center flex-nowrap">
             {item.participants.slice(0, 3).map((participant, i) => {
-              const { hex } = getRandomTailwindColorWithHex("dark");
               return (
-                <LazyImage
+                <Avatar
                   key={participant._id}
-                  src={
-                    participant.avatar ||
-                    `https://placehold.co/100x100/${hex.replace("#", "")}/eeee?text=${participant.fullName.substring(0, 2)}`
-                  }
+                  name={participant.fullName.substring(0, 2)}
+                  avatarUrl={participant?.avatar}
                   className={classNames(
                     "w-10 h-10 border-[1px] border-white rounded-full object-cover absolute outline outline-dark group-hover:outline-secondary",
                     i === 0

@@ -26,7 +26,7 @@ import stripeRouter, { stripeWebhook } from "./routes/stripe.route.js";
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS.split(","), credentials: true }));
+app.use(cors({ origin: process.env.CORS?.split(","), credentials: true }));
 
 app.post(
   "/api/v1/stripe/stripe-webhook",
