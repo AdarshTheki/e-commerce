@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import { Server } from "socket.io";
 import { initializeSocketIO } from "./socket/index.js";
-// import rateLimit from "express-rate-limit";
+import rateLimit from "express-rate-limit";
 
 // import all routing files
 import userRoute from "./routes/user.router.js";
@@ -34,20 +34,20 @@ app.post(
   stripeWebhook
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "16kb" }));
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
-app.use(express.static("public/dist"));
+app.use(express.static("public"));
 
 app.use(cookieParser());
 
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // max 100 requests per windowMs
-// });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // max 100 requests per windowMs
+});
 
-// app.use(limiter);
+app.use(limiter);
 
 // ----Connect and Serve the Socket.Io-----
 const server = http.createServer(app);

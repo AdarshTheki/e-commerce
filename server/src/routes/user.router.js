@@ -11,7 +11,7 @@ const router = Router();
 
 // cookie payload
 const cookiePayload = {
-  maxAge: 2 * 24 * 60 * 60 * 1000, // 7 days
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
 };
@@ -247,7 +247,6 @@ router.post("/sign-in", async (req, res) => {
     return res.status(200).json({
       user: modifyUser,
       accessToken,
-      refreshToken,
     });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
@@ -328,7 +327,7 @@ router.patch("/update", verifyJWT(), async (req, res) => {
 });
 
 // refresh token when access token expired
-router.post("/refresh-token", verifyJWT(), async (req, res) => {
+router.post("/refresh-token", async (req, res) => {
   try {
     const token = req.cookies?.refreshToken;
     if (!token)
@@ -338,9 +337,7 @@ router.post("/refresh-token", verifyJWT(), async (req, res) => {
       });
 
     const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
-    const user = await User.findById(decodedToken?._id).select(
-      "-password -refreshToken"
-    );
+    const user = await User.findById(decodedToken?._id);
 
     if (!user) {
       throw new Error("Unauthorized: Invalid refresh token");
@@ -352,11 +349,15 @@ router.post("/refresh-token", verifyJWT(), async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
+    const refreshUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
     res
       .status(200)
       .cookie("accessToken", accessToken, cookiePayload)
       .cookie("refreshToken", refreshToken, cookiePayload)
-      .json(user, accessToken, refreshToken);
+      .json({ user: refreshUser, accessToken });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
   }
