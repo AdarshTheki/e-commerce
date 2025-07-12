@@ -11,8 +11,10 @@ import ProfileSettings from './ProfileSettings';
 import Categories from './Categories';
 import CategoryUpdate from './CategoryUpdate';
 import CustomerUpdate from './CustomerUpdate';
+import Order from './Order';
 
 export {
+    Order,
     CustomerUpdate,
     Customers,
     CategoryUpdate,

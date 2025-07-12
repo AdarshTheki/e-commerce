@@ -1,52 +1,63 @@
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
 import { Edit2, Trash2Icon } from "lucide-react";
-import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import useFetch from "../hooks/useFetch";
 import { errorHandler, axios } from "../helper";
-import { Input, Loading, NotFound, Select } from "../utils";
-import { NavLink } from "react-router-dom";
-import { HomeSpotlight } from "../components";
+import { Input, Select } from "../utils";
+import {
+  updateAddress,
+  addAddress,
+  removeAddress,
+} from "../redux/addressSlice";
+
+const countries = [
+  { label: "China", value: "+86" },
+  { label: "India", value: "+91" },
+  { label: "United States", value: "+1" },
+  { label: "Indonesia", value: "+62" },
+  { label: "Pakistan", value: "+92" },
+  { label: "Nigeria", value: "+234" },
+  { label: "Brazil", value: "+55" },
+  { label: "Bangladesh", value: "+880" },
+  { label: "Russia", value: "+7" },
+  { label: "Mexico", value: "+52" },
+];
 
 const ShippingAddress = () => {
-  const { data, loading: isLoad, error } = useFetch("/address");
+  const { items } = useSelector((state) => state.address);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const [addresses, setAddresses] = useState([]);
+  const [isOpenForm, setIsOpenForm] = useState(false);
+
   const [formData, setFormData] = useState({
     addressLine: "",
     city: "",
     postalCode: "",
     countryCode: "IN",
     isDefault: false,
-    isEdit: false,
+    value: "",
   });
-  const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    if (data?.length) {
-      setAddresses(data);
-      setFormData((prev) => ({ ...prev, ...data.find((a) => a.isDefault) }));
-    }
-  }, [data]);
-
-  const handleAddressSubmit = async (e) => {
-    e.preventDefault();
+  const handleAddressSubmit = async (item) => {
     try {
       setLoading(true);
-      if (!formData.addressLine || !formData.city || !formData.postalCode) {
+      if (!item.addressLine || !item.city || !item.postalCode) {
         throw new Error("please fill all filed");
       }
-      const method = formData?._id ? "patch" : "post";
-      const url = formData?._id ? `/address/${formData._id}` : "/address";
-      const res = await axios[method](url, {
-        ...formData,
-        countryCode: "IN",
-      });
+      const method = item?._id ? "patch" : "post";
+      const url = item?._id ? `/address/${item._id}` : "/address";
+
+      const res = await axios[method](url, item);
+
       if (res.data) {
-        setAddresses((prev) => [...prev, res.data.shipping]);
-        setFormData({ isEdit: false });
+        if (item._id) {
+          dispatch(updateAddress(res.data.shipping));
+        } else {
+          dispatch(addAddress(res.data.shipping));
+        }
+
+        setIsOpenForm(false);
+        setFormData({});
       }
     } catch (error) {
       errorHandler(error);
@@ -57,155 +68,169 @@ const ShippingAddress = () => {
 
   const handleDeleteAddress = async (id) => {
     try {
-      const res = await axios.delete(`/address/${id}`);
-      if (res.data) {
-        setAddresses((prev) => prev.filter((a) => a._id !== id));
-      }
+      dispatch(removeAddress(id));
+      await axios.delete(`/address/${id}`);
     } catch (error) {
       errorHandler(error);
     }
   };
-
-  const handleCheckout = async () => {
-    try {
-      if (!formData._id) return toast.error("user address not define");
-      const res = await axios.post("/stripe/stripe-checkout", {
-        userId: user._id,
-        addressId: formData?._id,
-      });
-      if (res.data) {
-        window.location.href = res.data?.url;
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { type, name, value, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  if (isLoad) return <Loading />;
-
-  if (error) return <NotFound title={JSON.stringify(error)} />;
 
   return (
-    <div className="p-4 min-h-screen mx-auto max-w-6xl">
-      {!formData.isEdit && (
-        <div
-          className="border border-gray-300 cursor-pointer card mb-5 relative max-w-3xl"
-          onClick={() => setFormData({ isEdit: true })}>
-          <h2 className="font-semibold pl-2">Add New Address</h2>
-        </div>
-      )}
-
-      {!formData.isEdit &&
-        addresses?.map((item) => (
-          <div key={item._id} className="relative mb-5 max-w-3xl">
-            <div
-              onClick={() => setFormData(item)}
-              className={`capitalize !pl-5 border border-gray-300 cursor-pointer card ${item._id === formData._id && "!bg-indigo-100 border !border-indigo-300"}`}>
-              <h4 className="font-semibold">{item.addressLine}</h4>
-              <p>
-                {item.city}, {item.postalCode}, India
-              </p>
-            </div>
-            <button
-              onClick={() => setFormData({ ...formData, isEdit: true })}
-              className="svg-btn p-2 absolute right-10 top-5">
-              <Edit2 />
-            </button>
-            <button
-              onClick={() => handleDeleteAddress(item._id)}
-              className="svg-btn p-2 absolute right-0 top-5 text-red-600">
-              <Trash2Icon />
-            </button>
-          </div>
-        ))}
-
-      <div className="flex gap-5 text-sm font-semibold mt-10 mb-5">
-        <NavLink
-          to="/cart"
-          className="bg-slate-800 border btn text-nowrap text-white">
-          Go Back
-        </NavLink>
-        {!formData.isEdit && formData?._id && (
-          <button
-            className="bg-indigo-600 btn text-nowrap text-white"
-            onClick={handleCheckout}>
-            {"Save & Checkout"}
-          </button>
-        )}
+    <div className="mx-auto max-w-6xl py-4">
+      <div
+        onClick={() => {
+          setIsOpenForm(!isOpenForm);
+          setFormData({});
+        }}
+        className="border border-gray-300 cursor-pointer card mb-5 relative max-w-3xl">
+        <p className="font-medium pl-2 text-xl">Add New Address</p>
       </div>
 
-      {formData.isEdit && (
-        <form className="space-y-4" onSubmit={handleAddressSubmit}>
-          <Input
-            label="AddressLine"
-            name="addressLine"
-            value={formData.addressLine}
-            onChange={handleChange}
-          />
-          <Input
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-          />
-          <div className="flex gap-4">
-            <Input
-              label="Postal code"
-              name="postalCode"
-              type="number"
-              min={6}
-              max={6}
-              value={formData.postalCode}
-              onChange={handleChange}
+      {items &&
+        items?.map((item) => {
+          return (
+            <AddressItem
+              key={item._id}
+              item={item}
+              isDelete={() => handleDeleteAddress(item._id)}
+              isEdit={() => {
+                setIsOpenForm(true);
+                setFormData(item);
+              }}
             />
-            <Select
-              label="Country"
-              name="countryCode"
-              options={[{ value: "IN", label: " India " }]}
-              value={formData.countryCode}
-              onChange={handleChange}
-            />
-          </div>
-          <label htmlFor="address default" className="flex gap-2">
-            <input
-              type="checkbox"
-              name="isDefault"
-              id="address default"
-              value={formData.isDefault}
-              checked={formData.isDefault}
-              onChange={handleChange}
-            />
-            <span>Default Address</span>
-          </label>
+          );
+        })}
 
-          <div className="flex gap-5 mt-5">
-            <button
-              onClick={() => setFormData({ isEdit: false })}
-              type="button"
-              className="bg-red-600 btn text-nowrap text-white">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-indigo-600 btn text-nowrap text-white"
-              onClick={handleAddressSubmit}>
-              {loading ? "Loading..." : "Save Address"}
-            </button>
-          </div>
-        </form>
+      {isOpenForm && (
+        <AddressForm
+          item={formData}
+          loading={loading}
+          onClose={() => {
+            setIsOpenForm(false);
+            setFormData({});
+          }}
+          onSubmit={handleAddressSubmit}
+        />
       )}
-
-      <HomeSpotlight />
     </div>
   );
 };
 
 export default ShippingAddress;
+
+const AddressForm = ({ item, loading, onSubmit, onClose }) => {
+  const [formData, setFormData] = useState({
+    addressLine: item?.addressLine || "",
+    city: item?.city || "",
+    postalCode: item?.postalCode || "",
+    countryCode: item?.countryCode || "IN",
+    isDefault: item?.isDefault || false,
+    _id: item?._id || "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await onSubmit({ ...formData, value: item?._id });
+  };
+
+  return (
+    <div className=" fixed inset-0 w-full h-full flex items-center justify-center bg-black/10">
+      <form
+        className="space-y-4 max-w-2xl w-full p-5 mx-3 shadow-2xl bg-white rounded-xl"
+        onSubmit={handleSubmit}>
+        <p className="text-2xl font-semibold">
+          {item?._id ? "Update Address" : "Add New Address"}
+        </p>
+        <Input
+          label="AddressLine"
+          name="addressLine"
+          value={formData.addressLine}
+          onChange={(e) =>
+            setFormData({ ...formData, addressLine: e.target.value })
+          }
+        />
+        <Input
+          label="City"
+          name="city"
+          value={formData.city}
+          onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+        />
+        <div className="flex gap-4">
+          <Input
+            label="Postal code"
+            name="postalCode"
+            type="number"
+            value={formData.postalCode}
+            onChange={(e) =>
+              setFormData({ ...formData, postalCode: e.target.value })
+            }
+          />
+          <Select
+            label="Country"
+            name="countryCode"
+            options={countries}
+            value={formData.countryCode}
+            onChange={(e) =>
+              setFormData({ ...formData, countryCode: e.target.value })
+            }
+          />
+        </div>
+        <label htmlFor="address default" className="flex gap-2">
+          <input
+            type="checkbox"
+            name="isDefault"
+            id="address default"
+            value={formData.isDefault}
+            checked={formData.isDefault}
+            onChange={(e) => {
+              console.log(e.target.checked);
+              setFormData({
+                ...formData,
+                isDefault: e.target.checked,
+              });
+            }}
+          />
+          <span>Default Address</span>
+        </label>
+
+        <div className="flex gap-5 mt-5 max-w-[300px]">
+          <button
+            onClick={onClose}
+            type="button"
+            className="text-red-600 btn text-nowrap w-full border border-red-600">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="bg-indigo-600 btn text-nowrap w-full text-white">
+            {loading ? "Loading..." : "Save"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const AddressItem = ({ item, isEdit, isDelete }) => {
+  return (
+    <div key={item._id} className="relative mb-5 max-w-3xl">
+      <div
+        className={`capitalize !pl-5 border border-gray-300 cursor-pointer card`}>
+        {item.isDefault && <p className="status-active w-fit mb-2">Default</p>}
+        <div className="flex items-center">
+          <p className="font-semibold">{item.addressLine}</p>
+          <button onClick={isEdit} className="svg-btn p-2 ">
+            <Edit2 />
+          </button>
+          <button onClick={isDelete} className="svg-btn p-2  text-red-600">
+            <Trash2Icon />
+          </button>
+        </div>
+        <p>
+          {item.city}, {item.postalCode}, <br />
+          {countries.filter((i) => i.value === item?.countryCode)[0]?.label}
+        </p>
+      </div>
+    </div>
+  );
+};

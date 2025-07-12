@@ -3,7 +3,6 @@ import {
   classNames,
   formatChatTime,
   getChatObjectMetadata,
-  getRandomTailwindColorWithHex,
 } from "../../helper";
 import { useSelector } from "react-redux";
 import useDropdown from "../../hooks/useDropdown";
@@ -21,21 +20,17 @@ const ChatItem = ({
   const { isOpen, dropdownRef, setIsOpen } = useDropdown();
   const { user } = useSelector((s) => s.auth);
 
-  const { hex } = getRandomTailwindColorWithHex("dark");
-
-  const avatar = `https://placehold.co/100x100/${hex.replace("#", "")}/ffff?text=${getChatObjectMetadata(item, user)?.title?.substring(0, 1) || "A"}`;
-
   return (
     <div
       className={classNames(
-        "relative group rounded w-full py-2",
+        "relative group rounded w-full p-2",
         isActive && "bg-indigo-100"
       )}>
       <div
         ref={dropdownRef}
         className="flex gap-2 items-center justify-between">
         {item.isGroupChat ? (
-          <div className="w-12 relative h-12 flex-shrink-0 flex justify-start items-center flex-nowrap">
+          <div className="w-10 relative h-10 flex-shrink-0 flex justify-start items-center flex-nowrap">
             {item.participants.slice(0, 3).map((participant, i) => {
               return (
                 <Avatar
@@ -43,13 +38,13 @@ const ChatItem = ({
                   name={participant.fullName.substring(0, 2)}
                   avatarUrl={participant?.avatar}
                   className={classNames(
-                    "w-10 h-10 border-[1px] border-white rounded-full object-cover absolute outline outline-dark group-hover:outline-secondary",
+                    "w-8 h-8 border-[1px] border-white rounded-full object-cover absolute outline outline-dark group-hover:outline-secondary",
                     i === 0
                       ? "left-0 z-[3]"
                       : i === 1
-                        ? "left-2.5 z-[2]"
+                        ? "left-1.5 z-[2]"
                         : i === 2
-                          ? "left-[18px] z-[1]"
+                          ? "left-3 z-[1]"
                           : ""
                   )}
                 />
@@ -57,9 +52,10 @@ const ChatItem = ({
             })}
           </div>
         ) : (
-          <img
-            src={getChatObjectMetadata(item, user).avatar || avatar}
-            className="w-12 h-12 rounded-full object-cover"
+          <Avatar
+            avatarUrl={getChatObjectMetadata(item, user).avatar}
+            name={getChatObjectMetadata(item, user).title}
+            className="w-10 h-10 rounded-full object-cover"
           />
         )}
         {/* <Avatar name={item?.isGroupChat ? item?.name : chatWith?.fullName} /> */}

@@ -1,5 +1,13 @@
 import { useRef, useState } from "react";
-import { ImageUp, Plus, Search, Send, Trash2Icon, X } from "lucide-react";
+import {
+  ArrowLeft,
+  ImageUp,
+  Plus,
+  Search,
+  Send,
+  Trash2Icon,
+  X,
+} from "lucide-react";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -46,6 +54,7 @@ const ChatPage = () => {
   const { user } = useSelector((state) => state.auth);
   const [previews, setPreviews] = useState([]);
   const [attachments, setAttachments] = useState([]);
+  const [mobileChatOpen, setMobileChatOpen] = useState(true);
 
   const handlePreviewAttachments = (e) => {
     const files = e.target.files;
@@ -228,7 +237,7 @@ const ChatPage = () => {
   return (
     <>
       <div className="flex max-sm:flex-col h-full">
-        <div className="!min-w-[340px] sticky top-12 h-full bg-slate-50 z-20">
+        <div className="!min-w-[340px] sticky top-12 h-full bg-slate-50 z-20 min-h-screen">
           {/* Create Group Modal */}
           {!!openAddChat && (
             <AddChatModal
@@ -262,7 +271,7 @@ const ChatPage = () => {
             )}
             <button
               title="Add new chat"
-              className="!py-2.5 text-sm text-nowrap rounded-none !px-2 flex gap-1 items-center border-none font-medium btn-primary"
+              className="!py-2.5 text-sm text-nowrap !px-4 flex gap-1 items-center border-none font-medium btn-primary !rounded-2xl"
               onClick={() => setOpenAddChat(true)}>
               <Plus size={16} /> Add Chat
             </button>
@@ -319,6 +328,7 @@ const ChatPage = () => {
               }}
               onClick={() => {
                 currentChat.current = item;
+                setMobileChatOpen(true);
                 LocalStorage.set("currentChat", item);
                 socket.emit(JOIN_CHAT_EVENT, item._id);
                 fetchMessages(item._id);
@@ -329,92 +339,123 @@ const ChatPage = () => {
             />
           ))}
         </div>
-        <div className="w-full border-l border-slate-200 h-full">
-          {!!currentChat.current?._id && (
-            <div className="py-2 px-4 flex font-medium bg-white text-lg items-center gap-3 top-12 sticky z-10 shadow">
-              <img
-                src={
-                  getChatObjectMetadata(currentChat.current, user).avatar ||
-                  "/placeholder.jpg"
-                }
-                alt="img"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <p>{getChatObjectMetadata(currentChat.current, user).title}</p>
-            </div>
-          )}
-          {messagesLoading && <Loading />}
-          <div className="flex-col gap-2 flex justify-end p-4 h-fit min-h-[400px]">
-            {[...messages].map((item) => (
-              <MessageItem
-                key={item?._id}
-                item={item}
-                sender={item?.sender?._id === user?._id}
-                onDelete={() => handleDeleteMessage(item?._id)}
-              />
-            ))}
-          </div>
 
-          {previews?.length > 0 && (
-            <div className="w-full flex flex-wrap px-4 gap-2 items-center justify-center sticky bottom-14 bg-white">
-              {previews.map((preview, i) => (
-                <div key={i} className="relative">
-                  <img
-                    src={preview}
-                    alt="image-preview"
-                    className={classNames("w-20 h-20 rounded object-cover")}
-                  />
-                  <Trash2Icon
-                    onClick={() => handleRemoveAttachment(i)}
-                    size={16}
-                    className="absolute top-1 right-1 !text-red-600 cursor-pointer"
-                  />
-                </div>
+        {/* Messages Listing*/}
+        {!!currentChat.current?._id && (
+          <div
+            className={classNames(
+              "w-full border-l border-slate-200",
+              mobileChatOpen &&
+                "max-sm:absolute max-sm:inset-0 h-full w-full max-sm:z-[100] max-sm:bg-white"
+            )}>
+            <div className="py-2 px-4 flex bg-white items-center gap-3 sm:top-12 top-0 sticky z-10">
+              <button
+                className="svg-btn !p-2"
+                onClick={() => setMobileChatOpen(false)}>
+                <ArrowLeft />
+              </button>
+              <Avatar
+                name={getChatObjectMetadata(currentChat.current, user).title}
+                avatarUrl={
+                  getChatObjectMetadata(currentChat.current, user).avatar
+                }
+              />
+              <div>
+                <p>{getChatObjectMetadata(currentChat.current, user).title}</p>
+                {currentChat.current.isGroupChat && (
+                  <p className="text-xs font-light">
+                    {currentChat.current.participants?.length} members
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {messagesLoading && <Loading />}
+            <div className="flex-col gap-2 flex justify-end p-4 h-fit min-h-[80vh]">
+              {[...messages].map((item) => (
+                <MessageItem
+                  key={item?._id}
+                  item={item}
+                  sender={item?.sender?._id === user?._id}
+                  onDelete={() => handleDeleteMessage(item?._id)}
+                />
               ))}
             </div>
-          )}
 
-          {!!currentChat.current?._id && (
+            {previews?.length > 0 && (
+              <div className="w-full flex flex-wrap px-4 gap-2 items-center justify-center sticky bottom-14 bg-white">
+                {previews.map((preview, i) => (
+                  <div key={i} className="relative">
+                    <img
+                      src={preview}
+                      alt="image-preview"
+                      className={classNames("w-20 h-20 rounded object-cover")}
+                    />
+                    <Trash2Icon
+                      onClick={() => handleRemoveAttachment(i)}
+                      size={16}
+                      className="absolute top-1 right-1 !text-red-600 cursor-pointer"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
             <form
               onSubmit={handleSendMessage}
-              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-0 bg-slate-50">
-              <Input
-                className="rounded-full !p-2 !px-5"
-                name="message"
-                placeholder="Enter a message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-
-              <label
-                title="send files with limit 5"
-                htmlFor="attachment"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center cursor-pointer">
-                <ImageUp size={20} />
-                <input
-                  type="file"
-                  multiple={true}
-                  onChange={handlePreviewAttachments}
-                  id="attachment"
-                  name="attachment"
-                  className="hidden"
+              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-2 bg-slate-50">
+              <div className="relative w-full">
+                <Input
+                  className="rounded-full !p-2 !px-5"
+                  name="message"
+                  placeholder="Enter a message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
                 />
-              </label>
+                <label
+                  title="send files with limit 5"
+                  htmlFor="attachment"
+                  className="absolute bg-gray-100 right-2 top-1 font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center cursor-pointer">
+                  <ImageUp size={20} />
+                  <input
+                    type="file"
+                    multiple={true}
+                    onChange={handlePreviewAttachments}
+                    id="attachment"
+                    name="attachment"
+                    className="hidden"
+                  />
+                </label>
+              </div>
               <button
                 disabled={messageSendLoading}
                 type="submit"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center">
+                className="bg-indigo-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center">
                 {messageSendLoading ? (
-                  "Loading..."
+                  <svg
+                    className="animate-spin h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
                 ) : (
-                  <>
-                    Send <Send size={16} />
-                  </>
+                  <Send size={16} />
                 )}
+                <span className="max-sm:hidden">Send</span>
               </button>
             </form>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </>
   );

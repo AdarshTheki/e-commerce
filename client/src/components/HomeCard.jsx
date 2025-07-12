@@ -5,7 +5,7 @@ import { useCallback } from "react";
 const HomeCard = ({ heading = "", items = [], slug = "" }) => {
   const itemRender = useCallback(() => {
     return (
-      <div className="relative mx-auto max-w-6xl sm:p-4 p-3">
+      <div className="relative container mx-auto sm:p-4 p-3">
         <h2 className="font-medium text-xl">{heading || "heading"}</h2>
 
         {items && items?.length > 1 ? (
@@ -20,7 +20,7 @@ const HomeCard = ({ heading = "", items = [], slug = "" }) => {
                   src={item?.thumbnail}
                   placeholder="/placeholder.jpg"
                   alt="New Release 1"
-                  className="w-full h-[180px] object-cover"
+                  className="w-full h-[240px] object-cover"
                 />
                 <h3 className="capitalize text-slate-600 font-medium line-clamp-1 px-4 py-2">
                   {item?.title}

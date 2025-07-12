@@ -13,7 +13,7 @@ const MessageItem = ({ item, onDelete, sender }) => {
         className={classNames(
           "relative cursor-pointer group w-fit py-2 px-5 shadow",
           sender
-            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl bg-gradient-to-r from-pink-400 text-white font-medium to-purple-400"
+            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl"
             : "bg-white rounded-r-4xl rounded-b-4xl"
         )}>
         <button

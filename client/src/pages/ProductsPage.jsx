@@ -266,8 +266,12 @@ const ProductListing = () => {
           <div className={`grid md:grid-cols-3 sm:grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.items?.length &&
-              data?.items?.map((item) => (
-                <ProductItem key={item?._id} {...item} />
+              data?.items?.map((item, index) => (
+                <ProductItem
+                  key={item?._id}
+                  {...item}
+                  delay={index + 1 + "00ms"}
+                />
               ))}
           </div>
 

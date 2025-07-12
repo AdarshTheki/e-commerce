@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { LazyImage } from "../utils";
 
-const HeaderSearch = () => {
+const HeaderSearch = ({ children }) => {
   const { isOpen, setIsOpen, dropdownRef } = useDropdown();
   const [searchQuery, setSearchQuery] = useState("");
   const { data } = useFetch(
@@ -22,18 +22,12 @@ const HeaderSearch = () => {
   );
 
   return (
-    <div ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        title="Search products"
-        className="cursor-pointer flex gap-1 items-center">
-        <Search size={22} />
-        <span className="text-lg font-serif max-sm:hidden">Search</span>
-      </button>
+    <div ref={dropdownRef} className="flex items-center justify-center">
+      <div onClick={() => setIsOpen(true)}>{children}</div>
 
       <div
         style={{ display: !isOpen ? "none" : "block" }}
-        className={`absolute top-11 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0 !rounded-l-4xl !border !border-gray-200 !rounded-b-4xl`}>
+        className={`absolute top-15 z-30 card sm:w-80 w-full duration-75 ease-in-out right-0 !rounded-l-4xl !border !border-gray-200 !rounded-b-4xl`}>
         <div className="flex items-center gap-4 border border-indigo-500 p-2 rounded-lg mb-2">
           <Search size={26} />
           <input

@@ -97,3 +97,20 @@ interface CategoryType {
     updatedAt: string;
     createdBy: UserType | string;
 }
+
+interface OrderType {
+    _id: string;
+    customer: string;
+    shipping: {
+        addressLine: string;
+        city: string;
+        countryCode: string;
+        postalCode: number;
+    };
+    status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+    items: [
+        { productId: string; quantity: number; product: ProductType | null },
+    ];
+    createdAt: string;
+    updatedAt: string;
+}

@@ -1,22 +1,25 @@
 import mongoose, { Schema } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
+export const orderStatus = ["pending", "shipped", "delivered", "cancelled"];
+
 const orderSchema = new Schema(
   {
-    customerId: {
+    customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      enum: orderStatus,
       default: "pending",
     },
-    shippingId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      required: true,
+    shipping: {
+      addressLine: String,
+      postalCode: Number,
+      countryCode: String,
+      city: String,
     },
     items: [
       {
@@ -29,6 +32,7 @@ const orderSchema = new Schema(
           type: Number,
           required: true,
           min: 1,
+          max: 5,
         },
       },
     ],

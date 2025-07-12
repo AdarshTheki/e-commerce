@@ -9,7 +9,7 @@ import rateLimit from "express-rate-limit";
 // import all routing files
 import userRoute from "./routes/user.router.js";
 import productRoute from "./routes/product.router.js";
-import orderRoute from "./routes/order.router.js";
+import orderRoute, { stripeWebhook } from "./routes/order.router.js";
 import reviewRoute from "./routes/review.router.js";
 import categoryRoute from "./routes/category.router.js";
 import brandRoute from "./routes/brand.router.js";
@@ -21,15 +21,13 @@ import health_checkRoute from "./routes/healthcheck.router.js";
 import galleryRoute from "./routes/gallery.router.js";
 import messageRoute from "./routes/message.router.js";
 import chatRoute from "./routes/chat.router.js";
-import notificationRoute from "./routes/notification.router.js";
-import stripeRouter, { stripeWebhook } from "./routes/stripe.route.js";
 
 const app = express();
 
 app.use(cors({ origin: process.env.CORS?.split(","), credentials: true }));
 
 app.post(
-  "/api/v1/stripe/stripe-webhook",
+  "/api/v1/order/stripe-webhook",
   express.raw({ type: "application/json" }),
   stripeWebhook
 );
@@ -53,7 +51,7 @@ app.use(limiter);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CORS?.split(","),
     credentials: true,
   },
 });
@@ -74,11 +72,9 @@ app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/address", addressRoute);
 app.use("/api/v1/openai", openaiRoute);
 app.use("/api/v1/dashboard", dashboardRoute);
-app.use("/api/v1/stripe", stripeRouter);
 app.use("/api/v1/gallery", galleryRoute);
 app.use("/api/v1/chats", chatRoute);
 app.use("/api/v1/messages", messageRoute);
-app.use("/api/v1/notifications", notificationRoute);
 app.use("/", health_checkRoute);
 
 // Global Error Handler

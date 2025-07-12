@@ -64,7 +64,7 @@ router.get("/all", async (req, res) => {
 
     const gallery = await Gallery.aggregate(
       pagination(
-        { $match: { image_url: { $regex: "", $options: "i" } } },
+        [{ $match: { image_url: { $regex: "", $options: "i" } } }],
         parseInt(page),
         parseInt(limit),
         "createdAt",

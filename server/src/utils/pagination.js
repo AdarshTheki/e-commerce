@@ -1,65 +1,42 @@
 // Aggregation Pipeline
 
 export const pagination = (
-  filter,
+  filter = [],
   page = "1",
   limit = 50,
   sortBy = "createdAt",
   orderBy = -1
 ) => {
   const skip = (Number(page) - 1) * limit;
+  const numericLimit = Number(limit);
 
   return [
-    filter,
+    ...filter,
     {
-      $sort: {
-        [sortBy]: orderBy,
-      },
+      $sort: { [sortBy]: orderBy },
     },
-
     {
       $facet: {
-        total: [
-          {
-            $count: "count",
-          },
-        ],
-        data: [
-          {
-            $addFields: {
-              _id: "$_id",
-            },
-          },
-        ],
+        total: [{ $count: "count" }],
+        data: [{ $skip: skip }, { $limit: numericLimit }],
       },
     },
     {
       $unwind: "$total",
     },
-
     {
       $project: {
-        items: {
-          $slice: [
-            "$data",
-            skip,
-            {
-              $ifNull: [limit, "$total.count"],
-            },
-          ],
-        },
-        page: {
-          $literal: skip / limit + 1,
-        },
+        items: "$data",
+        page: { $literal: skip / numericLimit + 1 },
         hasNextPage: {
-          $lt: [{ $multiply: [limit, Number(page)] }, "$total.count"],
+          $lt: [{ $multiply: [numericLimit, Number(page)] }, "$total.count"],
         },
         hasPreviousPage: {
           $gt: [skip, 0],
         },
         totalPages: {
           $ceil: {
-            $divide: ["$total.count", limit],
+            $divide: ["$total.count", numericLimit],
           },
         },
         totalItems: "$total.count",

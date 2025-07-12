@@ -44,7 +44,7 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
         />
       </NavLink>
       <div className="sm:flex-1 max-sm:px-4 w-full space-y-2 capitalize">
-        <h3 className="font-medium text-lg">{title || "Smartphone X Pro"}</h3>
+        <p className="font-medium text-lg">{title || "Smartphone X Pro"}</p>
         <p>Category : {category || "other"}</p>
         <p>Brand: {brand || "other"}</p>
         <div className="flex items-center my-1">
@@ -53,9 +53,9 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
             ${price || 79.99} x {qty}
           </span>
         </div>
-        <h3>
+        <p>
           Totals: <span className="font-bold">${price * qty}</span>
-        </h3>
+        </p>
         <div className="flex gap-5 items-center mt-3">
           <div className="py-1 gap-6 flex items-center justify-center px-6 border border-slate-300 rounded-full w-fit font-medium">
             <button

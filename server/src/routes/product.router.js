@@ -55,7 +55,7 @@ router.get("/", async (req, res) => {
 
     const result = await Product.aggregate(
       pagination(
-        { $match: match },
+        [{ $match: match }],
         parseInt(page),
         parseInt(limit),
         sortBy,
@@ -275,11 +275,13 @@ router.get("/search", async (req, res) => {
 
     const searchResult = await Product.aggregate(
       pagination(
-        {
-          $match: {
-            $or: [{ title: regex }, { category: regex }, { brand: regex }],
+        [
+          {
+            $match: {
+              $or: [{ title: regex }, { category: regex }, { brand: regex }],
+            },
           },
-        },
+        ],
         1,
         10
       )

@@ -85,36 +85,43 @@ const Customers = () => {
                     className="w-full text-sm py-1.5 pl-4"
                     placeholder="Products search..."
                 />
-                <Select onValueChange={(value) => setSortBy(value)}>
-                    <SelectTrigger className="w-[160px]">
-                        <SelectValue
-                            placeholder={
-                                sortByOptions.filter(
-                                    (i) => i.value === sortBy
-                                )[0]?.label
-                            }
-                        />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                        {sortByOptions.map((item) => (
-                            <SelectItem value={item.value}>
-                                {item.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Select onValueChange={(value) => setLimit(parseInt(value))}>
-                    <SelectTrigger className="w-[160px]">
-                        <SelectValue placeholder={`${limit} items per page`} />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white">
-                        {pageSizeOptions.map((item) => (
-                            <SelectItem value={item.value.toString()}>
-                                {item.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <div className="w-[200px]">
+                    <Select onValueChange={(value) => setSortBy(value)}>
+                        <SelectTrigger>
+                            <SelectValue
+                                placeholder={
+                                    sortByOptions.filter(
+                                        (i) => i.value === sortBy
+                                    )[0]?.label
+                                }
+                            />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white w-full">
+                            {sortByOptions.map((item) => (
+                                <SelectItem value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="w-[200px]">
+                    <Select
+                        onValueChange={(value) => setLimit(parseInt(value))}>
+                        <SelectTrigger>
+                            <SelectValue
+                                placeholder={`${limit} items per page`}
+                            />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white w-full">
+                            {pageSizeOptions.map((item) => (
+                                <SelectItem value={item.value.toString()}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             {loading && <Loading />}

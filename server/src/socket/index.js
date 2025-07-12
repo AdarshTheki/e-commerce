@@ -53,8 +53,23 @@ export const emitSocketEvent = (req, roomId, event, payload) => {
 export const initializeSocketIO = (io) => {
   return io.on("connection", async (socket) => {
     try {
-      // If there is no access token in cookies. Check inside the handshake auth
-      const token = socket.handshake.auth?.token;
+      // Try to get token from cookies (withCredentials) first, then from handshake auth
+      let token;
+      const cookieHeader = socket.handshake.headers?.cookie;
+      if (cookieHeader) {
+        // Parse cookies to get token (assuming cookie name is 'accessToken')
+        const cookies = Object.fromEntries(
+          cookieHeader.split(";").map((c) => {
+            const [k, v] = c.trim().split("=");
+            return [k, decodeURIComponent(v)];
+          })
+        );
+        token = cookies.accessToken;
+      }
+      if (!token) {
+        // Fallback: If there is no access token in cookies, check inside the handshake auth
+        token = socket.handshake.auth?.token;
+      }
       if (!token) {
         // Token is required for the socket to work
         throw new ApiError(401, "Un-authorized handshake. Token is missing");

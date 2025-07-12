@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { X } from "lucide-react";
 
 import { axios } from "../../helper";
-import { Input, Select } from "../../utils";
+import { Input } from "../../utils";
 
 const AddChatModal = ({ usersData, onClose, chat }) => {
   const [users, setUsers] = React.useState(usersData || []);
@@ -116,11 +115,13 @@ const AddChatModal = ({ usersData, onClose, chat }) => {
         </div>
 
         <div className="flex gap-5 text-center font-medium">
-          <button className="btn-primary flex-1" onClick={handleClose}>
-            Close
+          <button
+            className="btn text-red-600 border border-red-600 flex-1"
+            onClick={handleClose}>
+            Cancel
           </button>
           <button
-            className="btn-secondary flex-1"
+            className="btn-primary flex-1"
             onClick={isGroupChat ? handleCreateGroupChat : handleCreateChat}>
             {chat?._id ? "Update" : "Create"}
           </button>

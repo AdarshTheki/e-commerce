@@ -7,10 +7,10 @@ const addressSchema = new Schema({
     required: true,
   },
   isDefault: { type: Boolean, default: false },
-  addressLine: { type: String, lowercase: true, required: true },
-  city: { type: String, lowercase: true, required: true },
+  addressLine: { type: String, required: true },
+  city: { type: String, required: true },
   postalCode: { type: Number, required: true },
-  countryCode: { type: String, lowercase: true, required: true },
+  countryCode: { type: String, required: true },
 });
 
 export const Address = mongoose.model("Address", addressSchema);

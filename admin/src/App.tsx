@@ -18,6 +18,7 @@ import {
     Categories,
     CustomerUpdate,
     CategoryUpdate,
+    Order,
 } from './pages';
 import useFetch from './hooks/useFetch';
 import { useDispatch } from 'react-redux';
@@ -93,6 +94,7 @@ const App: React.FC = () => {
                         />
                         <Route path="/brand/:id" element={<CategoryUpdate />} />
                         <Route path="/profile" element={<ProfileSettings />} />
+                        <Route path="/order" element={<Order />} />
                         <Route path="*" element={<Notfound />} />
                     </Route>
                     <Route path="/register" element={<Register />} />

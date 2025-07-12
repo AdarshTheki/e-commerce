@@ -24,6 +24,9 @@ import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
 import { fetchCategories } from "./redux/categorySlice";
 import { fetchBrands } from "./redux/brandSlice";
+import { fetchCarts } from "./redux/cartSlice";
+import { fetchAddresses } from "./redux/addressSlice";
+import { fetchProducts } from "./redux/productSlice";
 
 const App = () => {
   const { data, loading } = useFetch("/user/current-user");
@@ -39,6 +42,9 @@ const App = () => {
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchBrands());
+    dispatch(fetchCarts());
+    dispatch(fetchAddresses());
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   if (loading) return <Loading />;

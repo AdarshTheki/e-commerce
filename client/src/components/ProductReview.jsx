@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -134,7 +134,7 @@ const ProductReview = () => {
   };
 
   return (
-    <div className="mx-auto py-5 max-w-6xl">
+    <div className="container p-4 mx-auto">
       <h2 className="text-2xl font-bold text-gray-800 uppercase mb-5">
         Comment
       </h2>

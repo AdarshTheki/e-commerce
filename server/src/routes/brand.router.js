@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
 
     const results = await Brand.aggregate(
       pagination(
-        { $match: { title: RegExp(title, "i") } },
+        [{ $match: { title: RegExp(title, "i") } }],
         parseInt(page),
         parseInt(limit),
         sort,

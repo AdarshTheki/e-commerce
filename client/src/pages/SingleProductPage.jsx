@@ -3,15 +3,11 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import {
-  HeartFavorite,
-  HomeCertificate,
-  HomeWishlist,
-  ProductReview,
-} from "../components";
+import { HeartFavorite, ProductReview } from "../components";
 import { Loading, NotFound } from "../utils";
 import { errorHandler, axios } from "../helper";
 import useFetch from "../hooks/useFetch";
+import Trending from "./Home/Trending";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -37,7 +33,7 @@ const ProductDetail = () => {
 
   return (
     <section>
-      <div className="mx-auto max-w-6xl p-4 text-gray-800">
+      <div className="mx-auto container p-4 text-gray-800">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* <!-- Product Images --> */}
           <div className="space-y-4">
@@ -169,11 +165,9 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <HomeCertificate />
-
       <ProductReview />
 
-      <HomeWishlist />
+      <Trending size={4} heading="Related Products" />
     </section>
   );
 };

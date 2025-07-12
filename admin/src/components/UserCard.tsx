@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import Counter from './Counter';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
+import { cn } from '@/lib/utils';
 
 const UserCard = ({
     avatar,
@@ -12,11 +13,11 @@ const UserCard = ({
 }: UserType) => {
     return (
         <>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 text-gray-700">
                 <div className="flex items-center space-x-4">
                     <Avatar style={{ width: 50, height: 50 }}>
                         <AvatarImage src={avatar} alt="avatar" />
-                        <AvatarFallback className="bg-gray-100 font-bold text-gray-700">
+                        <AvatarFallback className="bg-gray-100 font-bold">
                             {fullName?.substring(0, 2)}
                         </AvatarFallback>
                     </Avatar>
@@ -26,7 +27,7 @@ const UserCard = ({
                     </div>
                 </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 text-gray-800">
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Member Since</span>
                     <span>
@@ -42,19 +43,25 @@ const UserCard = ({
                 </div>
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Total Spent</span>
-                    <span>
+                    <b>
                         $<Counter target={1856} />
-                    </span>
+                    </b>
                 </div>
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Status</span>
-                    <span className="px-3 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                    <span
+                        className={cn(
+                            status === 'active'
+                                ? 'status-active'
+                                : 'status-inactive',
+                            '!uppercase'
+                        )}>
                         {status}
                     </span>
                 </div>
                 <div className="flex justify-between text-sm">
                     <span className="text-gray-500">Role</span>
-                    <span>{role}</span>
+                    <span className="status-pending !uppercase">{role}</span>
                 </div>
             </div>
         </>

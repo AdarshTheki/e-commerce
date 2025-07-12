@@ -1,29 +1,41 @@
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
-import useFetch from "../hooks/useFetch";
-import { Loading, NotFound } from "../utils";
+import { NotFound } from "../utils";
 import { CartListing, HomeCertificate, HomeWishlist } from "../components";
 import { useState } from "react";
-import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { axios, errorHandler } from "../helper";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem, updateItemQuantity } from "../redux/cartSlice";
 
 const ShoppingCartPage = () => {
-  const { data, loading, error } = useFetch("/cart");
-  const [items, setItems] = useState([]);
+  const { items } = useSelector((state) => state.cart);
+  const { items: addresses } = useSelector((state) => state.address);
+  const dispatch = useDispatch();
+  const [selectAddress, setSelectAddress] = useState(null);
+  const { user } = useSelector((s) => s.auth);
 
-  useEffect(() => {
-    if (data?.data?.items?.length > 0) {
-      setItems(data?.data?.items);
+  const handleCheckout = async () => {
+    try {
+      if (!selectAddress) return toast.error("User Address not Defined");
+      const res = await axios.post("/order/stripe-checkout", {
+        addressId: selectAddress,
+        userId: user._id,
+      });
+      if (res.data) {
+        window.location.href = res.data?.url;
+      }
+    } catch (error) {
+      errorHandler(error);
     }
-  }, [data?.data?.items]);
+  };
 
-  if (loading) return <Loading />;
+  const totals =
+    items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);
 
-  if (error)
-    return <NotFound title={JSON.stringify(error).split(`"`).join("")} />;
-
-  if (items?.length === 0)
-    return (
-      <>
+  return (
+    <section className="min-h-screen sm:p-4 p-3 max-w-6xl mx-auto">
+      {items.length === 0 && (
         <NotFound
           canvas={
             <ShoppingCart className="w-20 h-20 text-gray-400 mb-4 mx-auto" />
@@ -35,18 +47,7 @@ const ShoppingCartPage = () => {
           linkTo="/product"
           mainClass="min-h-[100px]"
         />
-
-        <HomeCertificate />
-
-        <HomeWishlist />
-      </>
-    );
-
-  const totals =
-    items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);
-
-  return (
-    <section className="min-h-screen sm:p-4 p-3 max-w-6xl mx-auto">
+      )}
       <div className="flex max-sm:flex-col gap-5">
         <div className="md:flex-1 w-full">
           {items &&
@@ -55,18 +56,51 @@ const ShoppingCartPage = () => {
                 key={item._id}
                 {...item}
                 onQtyChange={(quantity) =>
-                  setItems((prev) =>
-                    prev.map((c) =>
-                      c._id === item._id ? { ...c, quantity } : c
-                    )
-                  )
+                  dispatch(updateItemQuantity({ _id: item._id, quantity }))
                 }
-                onRemove={() =>
-                  setItems((prev) => prev.filter((c) => c._id !== item._id))
-                }
+                onRemove={() => dispatch(removeItem(item._id))}
               />
             ))}
+
+          <p className="font-semibold text-2xl py-4">Shipping Address</p>
+
+          <div
+            className={`capitalize border border-gray-300 cursor-pointer !px-5 mb-4 card !bg-transparent`}>
+            <NavLink to={"/shipping"} className="font-semibold">
+              Add New Address
+            </NavLink>
+          </div>
+
+          {addresses?.map((i) => (
+            <div
+              onClick={() => setSelectAddress(i._id)}
+              className={`capitalize border border-gray-300 cursor-pointer !px-5 mb-4 card ${selectAddress === i._id ? "!bg-blue-100" : "!bg-transparent"}`}>
+              {i.isDefault && (
+                <p className="status-active w-fit mb-2">Default</p>
+              )}
+              <p className="font-semibold">{i.addressLine}</p>
+              <p>
+                {i.city}, {i.postalCode}, {i?.countryCode?.toUpperCase()}
+              </p>
+            </div>
+          ))}
+
+          {selectAddress && (
+            <div className="flex gap-6 font-semibold mt-10 ">
+              <NavLink
+                to={"/product"}
+                className="text-red-600 btn !text-base text-nowrap border">
+                Go Product
+              </NavLink>
+              <button
+                onClick={handleCheckout}
+                className="bg-indigo-600 text-white btn">
+                Checkout Payment
+              </button>
+            </div>
+          )}
         </div>
+
         <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-10 h-fit">
           <h3>This Order shipping Fee!</h3>
           <div className="flex justify-between font-semibold text-xl">
@@ -84,16 +118,6 @@ const ShoppingCartPage = () => {
           <div className="flex justify-between font-semibold text-3xl">
             <span>Total:</span>
             <span>${((totals + 5) | 0).toFixed(2)}</span>
-          </div>
-          <div className="flex gap-6 font-semibold mt-10">
-            <NavLink
-              to={"/product"}
-              className="text-red-600 btn !text-base text-nowrap border">
-              Go Product
-            </NavLink>
-            <NavLink to={"/shipping"} className="bg-indigo-600 text-white btn">
-              Checkout
-            </NavLink>
           </div>
         </div>
       </div>
