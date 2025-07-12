@@ -1,7 +1,8 @@
 import useFetch from "../hooks/useFetch";
-import { HomeNew, ProductItem } from "../components";
+import { ProductItem, HomeCertificate } from "../components";
 import { NavLink } from "react-router-dom";
 import { Loading } from "../utils";
+import Trending from "./Home/Trending";
 
 const FavoritePage = () => {
   const { data, loading } = useFetch("/user/favorite");
@@ -10,7 +11,7 @@ const FavoritePage = () => {
 
   return (
     <div>
-      <div className="relative mx-auto max-w-6xl sm:p-4 p-3">
+      <div className="relative mx-auto px-2 container">
         <h2 className="font-medium text-xl my-5">Favorite Item Gallery</h2>
         {data?.length > 0 ? (
           <div className="grid md:grid-cols-4 sm:grid-cols-3 gap-4 w-full">
@@ -28,7 +29,9 @@ const FavoritePage = () => {
         )}
       </div>
 
-      <HomeNew />
+      <HomeCertificate />
+
+      <Trending heading="For Your Wishlist" size={4} />
     </div>
   );
 };

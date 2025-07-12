@@ -6,7 +6,7 @@ const MessageItem = ({ item, onDelete, sender }) => {
   return (
     <div
       className={classNames(
-        "flex flex-col gap-2",
+        "flex flex-col gap-2 mb-2",
         !sender ? "justify-start" : "items-end"
       )}>
       <div

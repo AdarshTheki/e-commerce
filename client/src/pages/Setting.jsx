@@ -75,6 +75,15 @@ const ProfileSettings = () => {
     }
   };
 
+  const handleLogoutUser = async () => {
+    try {
+      const response = await axios.post("/user/logout");
+      if (response.data) window.location.href = "/";
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
   return (
     <div className="p-4 flex flex-col gap-4 mx-auto max-w-screen-md">
       {/* Profile Avatar */}
@@ -165,6 +174,10 @@ const ProfileSettings = () => {
           {passwordLoading ? "Saving..." : "Save Change"}
         </button>
       </form>
+
+      <button className="btn-primary" onClick={handleLogoutUser}>
+        Logout
+      </button>
     </div>
   );
 };

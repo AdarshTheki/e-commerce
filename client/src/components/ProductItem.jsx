@@ -49,7 +49,7 @@ export default function Item({ delay = "100ms", ...item }) {
         </NavLink>
         <HeartFavorite
           id={item._id}
-          className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute top-2 right-2 p-1.5 bg-white/80"
         />
       </div>
       <div className="p-4">

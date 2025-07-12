@@ -62,7 +62,9 @@ const ChatItem = ({
         <button
           className="flex-1 cursor-pointer text-left ml-2"
           onClick={onClick}>
-          <p>{getChatObjectMetadata(item, user).title}</p>
+          <p className="line-clamp-1">
+            {getChatObjectMetadata(item, user).title}
+          </p>
           <small className="line-clamp-1 text-gray-500">
             {getChatObjectMetadata(item, user).lastMessage || "No messages yet"}
           </small>

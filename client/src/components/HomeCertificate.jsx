@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { LazyImage } from "../utils";
 
 const HomeCertificate = () => {
@@ -29,15 +28,10 @@ const HomeCertificate = () => {
     },
   ];
 
-  const [itemsToShow] = useState(() => {
-    const shuffled = [...items].sort(() => Math.random() - 0.5);
-    return shuffled;
-  });
-
   return (
-    <div className="py-5">
-      <div className="grid bg-pink-100 md:grid-cols-4 grid-cols-2 gap-4 mx-auto max-w-6xl p-5">
-        {itemsToShow.map((item) => (
+    <div className="py-10 mx-auto container">
+      <div className="grid bg-pink-100 md:grid-cols-4 grid-cols-2 gap-4 w-full p-6">
+        {items.map((item) => (
           <div key={item.id} className="space-y-3">
             <LazyImage
               placeholder="/placeholder.jpg"

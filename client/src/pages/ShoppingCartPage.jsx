@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 import { NotFound } from "../utils";
-import { CartListing, HomeCertificate, HomeWishlist } from "../components";
+import { CartListing, HomeCertificate } from "../components";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { axios, errorHandler } from "../helper";
@@ -73,6 +73,7 @@ const ShoppingCartPage = () => {
 
           {addresses?.map((i) => (
             <div
+              key={i._id}
               onClick={() => setSelectAddress(i._id)}
               className={`capitalize border border-gray-300 cursor-pointer !px-5 mb-4 card ${selectAddress === i._id ? "!bg-blue-100" : "!bg-transparent"}`}>
               {i.isDefault && (
@@ -101,7 +102,7 @@ const ShoppingCartPage = () => {
           )}
         </div>
 
-        <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-10 h-fit">
+        <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-20 h-fit">
           <h3>This Order shipping Fee!</h3>
           <div className="flex justify-between font-semibold text-xl">
             <span>({items?.length}) Item</span>
@@ -123,8 +124,6 @@ const ShoppingCartPage = () => {
       </div>
 
       <HomeCertificate />
-
-      <HomeWishlist />
     </section>
   );
 };

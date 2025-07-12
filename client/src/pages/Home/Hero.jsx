@@ -18,11 +18,11 @@ const Hero = () => {
               products. Designed for the modern consumer.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a
-                href="#products"
+              <NavLink
+                to="/product"
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-300 transform hover:scale-105">
                 Shop Now
-              </a>
+              </NavLink>
               <a
                 href="#categories"
                 className="bg-white border border-gray-300 hover:border-indigo-600 text-gray-800 hover:text-indigo-600 px-8 py-3 rounded-md font-medium transition-all duration-300">
@@ -102,9 +102,9 @@ const Hero = () => {
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
-                      stroke-linecap="round"
-                      stroke-linejoin="round">
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                     <svg
@@ -114,9 +114,9 @@ const Hero = () => {
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
-                      stroke-linecap="round"
-                      stroke-linejoin="round">
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                     <svg
@@ -126,9 +126,9 @@ const Hero = () => {
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
-                      stroke-linecap="round"
-                      stroke-linejoin="round">
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                     <svg
@@ -138,9 +138,9 @@ const Hero = () => {
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
-                      stroke-linecap="round"
-                      stroke-linejoin="round">
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                     <svg
@@ -150,9 +150,9 @@ const Hero = () => {
                       viewBox="0 0 24 24"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
-                      stroke-linecap="round"
-                      stroke-linejoin="round">
+                      strokeWidth="1"
+                      strokeLinecap="round"
+                      strokeLinejoin="round">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                   </div>
@@ -165,8 +165,8 @@ const Hero = () => {
 
         {/* Scroll Indicator  */}
         <div className="flex justify-center mt-2 animate-bounce">
-          <NavLink
-            to="#categories"
+          <a
+            href="#categories"
             className="text-gray-400 hover:text-indigo-600 transition-colors duration-300">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -175,13 +175,13 @@ const Hero = () => {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="lucide lucide-chevron-down">
               <path d="m6 9 6 6 6-6"></path>
             </svg>
-          </NavLink>
+          </a>
         </div>
       </div>
     </section>

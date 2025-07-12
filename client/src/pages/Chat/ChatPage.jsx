@@ -235,9 +235,14 @@ const ChatPage = () => {
   }, [socket]);
 
   return (
-    <>
+    <div className="fixed top-16 w-full sm:bottom-0 bottom-14 bg-slate-50">
       <div className="flex max-sm:flex-col h-full">
-        <div className="!min-w-[340px] sticky top-12 h-full bg-slate-50 z-20 min-h-screen">
+        {/* Chat Left Side */}
+        <div
+          className={classNames(
+            "!sm:w-[280px] max-sm:w-full h-full overflow-y-auto",
+            mobileChatOpen && "max-sm:hidden"
+          )}>
           {/* Create Group Modal */}
           {!!openAddChat && (
             <AddChatModal
@@ -251,19 +256,16 @@ const ChatPage = () => {
           )}
 
           {/* Search Bar */}
-          <div className="bg-white relative shadow overflow-hidden flex items-center p-2 pb-1">
-            <Search size={18} />
-            <label htmlFor="search-users">
-              <Input
-                name="search"
-                id="search-users"
-                title="search chat user"
-                placeholder="Search..."
-                className="border-none !w-full outline-none"
-                onChange={(e) => setSearchUserChat(e.target.value)}
-                value={searchUserChat}
-              />
-            </label>
+          <div className="relative flex items-center p-2 bg-white">
+            <Search className="h-5 w-5 mx-2" />
+            <Input
+              name="search"
+              title="search chat user"
+              placeholder="Search..."
+              className="border-none !w-full outline-none"
+              onChange={(e) => setSearchUserChat(e.target.value)}
+              value={searchUserChat}
+            />
             {!!searchUserChat && (
               <button className="btn" onClick={() => setSearchUserChat("")}>
                 <X size={16} />
@@ -279,7 +281,7 @@ const ChatPage = () => {
 
           {/* Display Search User Listing*/}
           {!!searchUserChat?.length && (
-            <div className="flex flex-col absolute z-10 !top-14 !left-2 !right-2 p-2 rounded-2xl h-full shadow-2xl bg-slate-50 overflow-y-auto overflow-x-hidden">
+            <div className="flex flex-col absolute z-10 w-[350px] bg-white h-1/2 overflow-y-auto">
               {[...usersData]
                 .filter((i) =>
                   i?.fullName?.toLowerCase().includes(searchUserChat)
@@ -344,11 +346,10 @@ const ChatPage = () => {
         {!!currentChat.current?._id && (
           <div
             className={classNames(
-              "w-full border-l border-slate-200",
-              mobileChatOpen &&
-                "max-sm:absolute max-sm:inset-0 h-full w-full max-sm:z-[100] max-sm:bg-white"
+              "w-full max-sm:hidden border-l border-slate-200 overflow-y-auto flex flex-col",
+              mobileChatOpen && "!flex"
             )}>
-            <div className="py-2 px-4 flex bg-white items-center gap-3 sm:top-12 top-0 sticky z-10">
+            <div className="py-2 px-4 flex bg-white items-center gap-3 top-0 sticky z-10">
               <button
                 className="svg-btn !p-2"
                 onClick={() => setMobileChatOpen(false)}>
@@ -371,19 +372,24 @@ const ChatPage = () => {
             </div>
 
             {messagesLoading && <Loading />}
-            <div className="flex-col gap-2 flex justify-end p-4 h-fit min-h-[80vh]">
-              {[...messages].map((item) => (
-                <MessageItem
-                  key={item?._id}
-                  item={item}
-                  sender={item?.sender?._id === user?._id}
-                  onDelete={() => handleDeleteMessage(item?._id)}
-                />
-              ))}
+            <div className="flex-1 p-4">
+              <div className="min-h-[60dvh]">
+                {[...messages].map((item) => (
+                  <MessageItem
+                    key={item?._id}
+                    item={item}
+                    sender={item?.sender?._id === user?._id}
+                    onDelete={() => handleDeleteMessage(item?._id)}
+                  />
+                ))}
+                {!messages?.length && (
+                  <p className="text-center">Message is Empty</p>
+                )}
+              </div>
             </div>
 
             {previews?.length > 0 && (
-              <div className="w-full flex flex-wrap px-4 gap-2 items-center justify-center sticky bottom-14 bg-white">
+              <div className="w-full flex flex-wrap px-4 gap-2 items-center justify-center sticky bottom-14 bg-transparent">
                 {previews.map((preview, i) => (
                   <div key={i} className="relative">
                     <img
@@ -403,7 +409,7 @@ const ChatPage = () => {
 
             <form
               onSubmit={handleSendMessage}
-              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-2 bg-slate-50">
+              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-1 bg-white">
               <div className="relative w-full">
                 <Input
                   className="rounded-full !p-2 !px-5"
@@ -457,7 +463,7 @@ const ChatPage = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import Hero from "./Home/Hero";
 import Trending from "./Home/Trending";
 import Category from "./Home/Category";
+import Collection from "./Home/Collection";
 
 const HomePage = () => {
   return (
@@ -12,6 +13,8 @@ const HomePage = () => {
       </div>
 
       <Category />
+
+      <Collection />
 
       <Trending />
     </main>
