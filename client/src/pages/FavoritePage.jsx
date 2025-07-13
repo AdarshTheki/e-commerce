@@ -12,9 +12,9 @@ const FavoritePage = () => {
   return (
     <div>
       <div className="relative mx-auto px-2 container">
-        <h2 className="font-medium text-xl my-5">Favorite Item Gallery</h2>
+        <p className="font-medium text-xl my-5">Favorite Item Gallery</p>
         {data?.length > 0 ? (
-          <div className="grid md:grid-cols-4 sm:grid-cols-3 gap-4 w-full">
+          <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2 w-full">
             {data?.map((item) => (
               <ProductItem key={item.id} {...item} />
             ))}

@@ -10,9 +10,9 @@ const Category = () => {
 
   return (
     <div className="mx-auto container" id="categories">
-      <div className="mb-10 space-y-5">
-        <p className="text-3xl md:text-4xl font-bold text-center">Categories</p>
-        <p className="text-gray-600 max-w-2xl mx-auto text-center">
+      <div className="mb-10 space-y-5 text-center">
+        <h2 className="text-slate-700 text-[42px] font-semibold">Categories</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
           Browse our curated collection of products across popular categories.
         </p>
       </div>

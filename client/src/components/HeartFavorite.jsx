@@ -32,13 +32,20 @@ const HeartFavorite = ({ id, className }) => {
   };
 
   return (
-    <button onClick={handleLike} className={`${className}`} title="favorite">
+    <button
+      onClick={handleLike}
+      className={`${className} !bg-transparent`}
+      title="favorite">
       {loading ? (
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
         </div>
       ) : (
-        <Heart fill={`${isLiked ? "red" : "#ff01"}`} stroke="red" />
+        <Heart
+          fill={`${isLiked ? "red" : "#ff01"}`}
+          stroke="red"
+          className="h-5 w-5"
+        />
       )}
     </button>
   );

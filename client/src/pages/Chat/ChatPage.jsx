@@ -235,7 +235,7 @@ const ChatPage = () => {
   }, [socket]);
 
   return (
-    <div className="fixed top-16 w-full sm:bottom-0 bottom-14 bg-slate-50">
+    <div className="fixed top-12 w-full sm:bottom-0 bottom-10 pt-4 pb-2 bg-slate-50">
       <div className="flex max-sm:flex-col h-full">
         {/* Chat Left Side */}
         <div
@@ -409,7 +409,7 @@ const ChatPage = () => {
 
             <form
               onSubmit={handleSendMessage}
-              className="w-full py-2 px-4 flex gap-2 items-center sticky bottom-1 bg-white">
+              className="w-full py-2 px-4 flex gap-2 items-center sticky -bottom-1 bg-white">
               <div className="relative w-full">
                 <Input
                   className="rounded-full !p-2 !px-5"

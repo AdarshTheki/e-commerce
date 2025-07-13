@@ -1,10 +1,11 @@
+import { ChevronDown, Star } from "lucide-react";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <section id="home" className="overflow-hidden">
-      <div className="container mx-auto">
+    <section className="overflow-hidden">
+      <div id="home" className="container mx-auto">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
           {/* Hero Content  */}
           <div
@@ -17,15 +18,15 @@ const Hero = () => {
               Elevate your lifestyle with our curated collection of premium
               products. Designed for the modern consumer.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex max-sm:flex-col text-center gap-4">
               <NavLink
                 to="/product"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-300 transform hover:scale-105">
+                className="bg-indigo-600 flex-1 hover:bg-indigo-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-300 transform hover:scale-105">
                 Shop Now
               </NavLink>
               <a
                 href="#categories"
-                className="bg-white border border-gray-300 hover:border-indigo-600 text-gray-800 hover:text-indigo-600 px-8 py-3 rounded-md font-medium transition-all duration-300">
+                className="bg-white border flex-1 border-gray-300 hover:border-indigo-600 text-gray-800 hover:text-indigo-600 px-8 py-3 rounded-md font-medium transition-all duration-300">
                 Explore Categories
               </a>
             </div>
@@ -95,66 +96,15 @@ const Hero = () => {
                 }}>
                 <div className="flex items-center">
                   <div className="flex gap-1 text-yellow-400">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
+                    {Array(5)
+                      .fill(0)
+                      .map((_, i) => (
+                        <Star
+                          key={i}
+                          className="w-4 h-4"
+                          fill="oklch(85.2% 0.199 91.936)"
+                        />
+                      ))}
                   </div>
                   <span className="ml-2 text-sm font-medium">4.9 (2.5k)</span>
                 </div>
@@ -168,19 +118,7 @@ const Hero = () => {
           <a
             href="#categories"
             className="text-gray-400 hover:text-indigo-600 transition-colors duration-300">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-chevron-down">
-              <path d="m6 9 6 6 6-6"></path>
-            </svg>
+            <ChevronDown className="w-6 h-6" />
           </a>
         </div>
       </div>

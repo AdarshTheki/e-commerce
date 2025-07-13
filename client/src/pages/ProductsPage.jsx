@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import useDebounce from "../hooks/useDebounce";
-import { Loading, PaginationBtn, Input } from "../utils";
+import { Loading, Input } from "../utils";
 import { ProductItem } from "../components";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import useDropdown from "../hooks/useDropdown";
-import { ListFilterPlus, Settings } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronDown,
+  ChevronUp,
+  Search,
+  Settings,
+  Star,
+  X,
+} from "lucide-react";
 
 const sortByOptions = [
   { label: "Title (A-Z)", value: "title-asc" },
@@ -15,19 +23,19 @@ const sortByOptions = [
   { label: "Price (High to Low)", value: "price-desc" },
 ];
 
-const pageSizeOptions = [
-  { label: "10 Items per Page", value: 10 },
-  { label: "30 Items per Page", value: 30 },
-  { label: "50 Items per Page", value: 50 },
-  { label: "100 Items per Page", value: 100 },
-];
+// const pageSizeOptions = [
+//   { label: "10 Items per Page", value: 10 },
+//   { label: "30 Items per Page", value: 30 },
+//   { label: "50 Items per Page", value: 50 },
+//   { label: "100 Items per Page", value: 100 },
+// ];
 
 const ratingOptions = [
-  { _id: 1, title: "1.0 ★ below 2 to 1" },
-  { _id: 2, title: "2.0 ★ below 3 to 2" },
-  { _id: 3, title: "3.0 ★ below 4 to 3" },
-  { _id: 4, title: "4.0 ★ below 5 to 4" },
-  { _id: 5, title: "5.0 ★ below 5 to 4.5" },
+  { value: 1, label: "1.0 ★ below 2 to 1" },
+  { value: 2, label: "2.0 ★ below 3 to 2" },
+  { value: 3, label: "3.0 ★ below 4 to 3" },
+  { value: 4, label: "4.0 ★ below 5 to 4" },
+  { value: 5, label: "5.0 ★ below 5 to 4.5" },
 ];
 
 const ProductListing = () => {
@@ -42,9 +50,10 @@ const ProductListing = () => {
   const [maxPrice, setMaxPrice] = useState(100000);
   const [sortBy, setSortBy] = useState("title-asc");
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(params.get("title") || "");
   const query = useDebounce(search, 500);
-  const { isOpen, setIsOpen, dropdownRef } = useDropdown();
+  const [isOpenSort, setIsOpenSort] = React.useState(false);
+  const [mobileView, setMobileView] = React.useState(false);
 
   const queryParams = new URLSearchParams({
     ...(category && { category }),
@@ -59,107 +68,288 @@ const ProductListing = () => {
     order: sortBy.split("-")[1],
     page,
     limit,
-    title: query,
+    title: params.get("title") || query,
   }).toString();
 
   const { data } = useFetch(`/product?${queryParams}`);
 
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= (data?.totalPages || 1)) {
-      setPage(newPage);
-    }
-  };
-
-  const SortByItem = () => {
-    const { isOpen, setIsOpen, dropdownRef } = useDropdown();
-    return (
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setIsOpen(true)}
-          className="btn border border-gray-300 !py-1.5 !flex items-center gap-1">
-          Sort <ListFilterPlus size={16} />
-        </button>
-        <div
-          className={`absolute mt-1 z-20 card duration-300 ease-in ${!isOpen ? "right-80 sm:-right-80 opacity-0" : "right-0 opacity-100"}`}>
-          {sortByOptions.map((i) => (
-            <button
-              onClick={() => setSortBy(i.value)}
-              className={`block text-left pl-4 text-nowrap hover:bg-indigo-100 rounded px-3 py-2 ${
-                i.value === sortBy && "text-indigo-600"
-              }`}
-              key={i.label}>
-              {i.label}
-            </button>
-          ))}
-          {pageSizeOptions.map((i) => (
-            <button
-              onClick={() => setLimit(i.value)}
-              className={`block text-left pl-4 text-nowrap hover:bg-indigo-100 rounded px-3 py-2 ${
-                i.value == Number(limit) && "text-indigo-600"
-              }`}
-              key={i.label}>
-              {i.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
-  const categoryFilter = React.useCallback(
-    (items = [], heading = "", value = "", setValue) => {
-      return (
-        items?.length > 1 && (
-          <div>
-            <h3 className="font-medium mb-1">{heading} :</h3>
-            <ul>
-              {items.map((it) => (
-                <label
-                  htmlFor={it.title}
-                  key={it._id}
-                  className="flex items-center capitalize text-sm mb-1 cursor-pointer">
-                  <input
-                    onChange={(e) => setValue(e.target.checked ? it.title : "")}
-                    value={value}
-                    checked={value === it.title}
-                    id={it.title}
-                    name={it.title}
-                    type="checkbox"
-                    className="form-checkbox text-blue-600"
-                  />
-                  <span className="ml-2">{it.title.replace("-", " ")}</span>
-                </label>
-              ))}
-            </ul>
-          </div>
-        )
-      );
-    },
-    []
-  );
-
   return (
-    <section className="p-2 max-w-6xl mx-auto">
+    <section className="p-2 container mx-auto">
       <div className="lg:grid gap-5" style={{ gridTemplateColumns: "1fr 3fr" }}>
         {/* <!-- Filters Sidebar --> */}
         <div
           className={
-            isOpen
-              ? "fixed inset-0 bg-black/50 z-30 pt-20 duration-300 ease-in" // mobile
+            mobileView
+              ? "fixed inset-0 bg-black/50 z-30 pt-[30%] duration-300 ease-in" // mobile
               : "w-full max-lg:hidden lg:sticky lg:h-fit lg:top-[54px]" // desktop
           }>
           <div
-            ref={dropdownRef}
             className={
-              isOpen
+              mobileView
                 ? "!p-5 h-full text-gray-800 !rounded-2xl bg-white overflow-auto card flex flex-col gap-4"
                 : "overflow-y-auto scrollbar card text-gray-800  flex flex-col gap-4"
             }>
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-medium">Sort & Filter</p>
+              <X
+                className="sm:hidden cursor-pointer"
+                onClick={() => setMobileView(false)}
+              />
+            </div>
+
+            {/* Display filters */}
+            {!![category, brand, rating].filter((i) =>
+              i?.toString()?.trim()
+            )[0] && (
+              <div className="inline-flex gap-1 flex-wrap">
+                {!!category && (
+                  <span
+                    onClick={() => setCategory("")}
+                    className="status-inactive cursor-pointer">
+                    {category} x
+                  </span>
+                )}
+                {!!brand && (
+                  <span
+                    onClick={() => setBrand("")}
+                    className="status-inactive cursor-pointer">
+                    {brand} x
+                  </span>
+                )}
+                {!!rating && (
+                  <span
+                    className="status-inactive cursor-pointer"
+                    onClick={() => setRating(0)}>
+                    star {rating} x
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Search Filter */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md px-4">
+                <legend className="font-medium uppercase">Search</legend>
+                <div className="flex w-full items-center">
+                  <Search className="w-4 h-4" />
+                  <Input
+                    name="search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    type="text"
+                    className="!w-full !border-none"
+                    placeholder="Search products..."
+                  />
+                  {!!search?.length && (
+                    <X
+                      className="w-4 h-4 cursor-pointer"
+                      onClick={() => setSearch("")}
+                    />
+                  )}
+                </div>
+              </fieldset>
+            </div>
+
+            {/* sort product */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md py-2 px-4">
+                <legend className="font-medium uppercase">Sort By</legend>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIsOpenSort((prev) => (prev === "sort" ? "" : "sort"))
+                  }
+                  className="w-full flex justify-between text-left">
+                  <span>
+                    {sortByOptions.find((i) => i?.value == sortBy)?.label ||
+                      "Select"}
+                  </span>
+                  {isOpenSort === "sort" ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              </fieldset>
+
+              {isOpenSort === "sort" && (
+                <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
+                  {sortByOptions.map((sort) => (
+                    <li
+                      key={sort.value}
+                      className="px-4 py-2 hover:bg-indigo-500 hover:text-white cursor-pointer"
+                      onClick={() => {
+                        setSortBy(sort.value);
+                        setIsOpenSort("");
+                      }}>
+                      {sort.label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Category product */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md py-2 px-4">
+                <legend className="font-medium uppercase">Category</legend>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIsOpenSort((prev) =>
+                      prev === "category" ? "" : "category"
+                    )
+                  }
+                  className="w-full flex justify-between text-left">
+                  <span className="capitalize">
+                    {categories?.items?.find((i) => i?.title === category)
+                      ?.title || "Select"}
+                  </span>
+                  {isOpenSort === "category" ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              </fieldset>
+
+              {isOpenSort === "category" && (
+                <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
+                  {categories?.items?.map((sort) => (
+                    <li
+                      key={sort?._id}
+                      className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
+                      onClick={() => {
+                        setCategory(sort?.title);
+                        setIsOpenSort("");
+                      }}>
+                      {sort?.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Brand product */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md py-2 px-4">
+                <legend className="font-medium uppercase">Brand</legend>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setIsOpenSort((prev) => (prev === "brand" ? "" : "brand"))
+                  }
+                  className="w-full flex justify-between text-left">
+                  <span className="capitalize">
+                    {brands?.items?.find((i) => i?.title === brand)?.title ||
+                      "Select"}
+                  </span>
+                  {isOpenSort === "brand" ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </button>
+              </fieldset>
+
+              {isOpenSort === "brand" && (
+                <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
+                  {brands?.items?.map((sort) => (
+                    <li
+                      key={sort?._id}
+                      className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
+                      onClick={() => {
+                        setBrand(sort?.title);
+                        setIsOpenSort("");
+                      }}>
+                      {sort?.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* <!-- Price Range --> */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md py-2 px-4">
+                <legend className="font-medium uppercase">Price</legend>
+                <input
+                  type="range"
+                  className="w-full"
+                  min={0}
+                  max={100000}
+                  step="10"
+                  onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                />
+                <div className="flex gap-5 justify-between text-sm">
+                  <input
+                    type="number"
+                    className="w-full px-2 py-1 border rounded"
+                    placeholder="Min"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(parseInt(e.target.value))}
+                  />
+                  <input
+                    type="number"
+                    className="w-full px-2 py-1 border rounded"
+                    placeholder="Max"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                  />
+                </div>
+              </fieldset>
+            </div>
+
+            {/* <!-- Rating Filter --> */}
+            <div className="flex flex-col w-full text-sm relative">
+              <fieldset className="border border-gray-300 rounded-md py-2 px-4">
+                <legend className="font-medium uppercase">Rating</legend>
+                {ratingOptions.map((it) => (
+                  <label
+                    htmlFor={it.value}
+                    key={it.value}
+                    className="flex items-center mb-2 gap-2 capitalize text-sm cursor-pointer">
+                    <input
+                      onChange={(e) =>
+                        setRating(e.target.checked ? it.value : 0)
+                      }
+                      value={rating}
+                      checked={rating === it.value}
+                      id={it.value}
+                      name={it.value}
+                      type="radio"
+                      className="form-checkbox text-blue-600"
+                    />
+                    <div className="flex space-x-1">
+                      {Array(5)
+                        .fill(0)
+                        .map((_, i) => (
+                          <Star
+                            key={i}
+                            fill={
+                              i < it.value
+                                ? "oklch(85.2% 0.199 91.936)"
+                                : "#fff"
+                            }
+                            className="w-4 h-4 text-yellow-400"
+                          />
+                        ))}
+                    </div>
+                    ({it.value})
+                  </label>
+                ))}
+              </fieldset>
+            </div>
+
             {/* <!-- Clear Filters --> */}
-            <div className="flex justify-between">
-              <h2 className="font-bold text-lg">Filters</h2>
+            <div className="flex justify-between gap-4 h-fit sticky -bottom-4 p-2 bg-white">
               <button
-                className="text-sm text-red-600 font-bold"
+                onClick={() => setMobileView(false)}
+                className="btn-primary !text-sm !rounded-full flex-1">
+                Apply
+              </button>
+              <button
+                className="btn-primary !text-sm !rounded-full !bg-rose-600 flex-1"
                 onClick={() => {
                   setLimit(10);
                   setCategory("");
@@ -169,101 +359,52 @@ const ProductListing = () => {
                   setRating(0);
                   setSearch("");
                   setPage(1);
+                  setMobileView(false);
                 }}>
                 Clear All
               </button>
-            </div>
-
-            {/* <!-- Price Range --> */}
-            <div>
-              <h3 className="font-medium mb-1">Price:</h3>
-              <input
-                type="range"
-                className="w-full"
-                min={0}
-                max={100000}
-                step="10"
-                onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-              />
-              <div className="flex gap-5 justify-between text-sm">
-                <input
-                  type="number"
-                  className="w-full px-2 py-1 border rounded"
-                  placeholder="Min"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(parseInt(e.target.value))}
-                />
-                <input
-                  type="number"
-                  className="w-full px-2 py-1 border rounded"
-                  placeholder="Max"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                />
-              </div>
-            </div>
-
-            {/* <!-- Category Filter --> */}
-            {categoryFilter(
-              categories?.items,
-              "Category",
-              category,
-              setCategory
-            )}
-
-            {/* Brand Filter */}
-            {categoryFilter(brands?.items, "Brand", brand, setBrand)}
-
-            {/* <!-- Rating Filter --> */}
-            <div>
-              <h3 className="font-medium mb-1">Rating:</h3>
-              <ul className="max-h-[200px] overflow-y-auto w-full scrollbar-hidden">
-                {ratingOptions.map((it) => (
-                  <label
-                    htmlFor={it._id}
-                    key={it._id}
-                    className="flex items-center gap-2 capitalize text-sm cursor-pointer">
-                    <input
-                      onChange={(e) => setRating(e.target.checked ? it._id : 0)}
-                      value={rating}
-                      checked={rating === it._id}
-                      id={it._id}
-                      name={it._id}
-                      type="checkbox"
-                      className="form-checkbox text-blue-600"
-                    />
-                    <span className="ml-2">{it.title}</span>
-                  </label>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
 
         <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-          {/* search products */}
-          <div className="flex sm:gap-4 gap-2 flex-wrap items-center">
-            <Input
-              name="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              type="text"
-              className="w-full min-w-[300px] pl-4"
-              placeholder="Search..."
-            />
-            {/* mobile filters */}
+          {!data?.totalItems && <Loading className="h-[70vh]" />}
+
+          {/* Pagination */}
+          <div className="flex gap-4 flex-wrap justify-between items-center card !px-4">
+            <p>
+              <span className="max-sm:hidden">Showing</span>{" "}
+              {(page - 1) * limit + 1} to{" "}
+              {Math.min(page * limit, data?.totalItems || 0)} of{" "}
+              {data?.totalItems}
+            </p>
+            <div className="flex gap-2 items-center justify-center">
+              <button
+                onClick={() =>
+                  data?.hasPreviousPage && setPage((prev) => prev - 1)
+                }
+                className="flex items-center justify-center p-2">
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <button className="p-1">{page}</button>
+              <button
+                className="flex items-center justify-center p-2"
+                onClick={() =>
+                  data?.hasNextPage && setPage((prev) => prev + 1)
+                }>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
             <button
-              onClick={() => setIsOpen(isOpen ? false : true)}
-              className="border rounded-lg border-gray-300 !py-1.5 px-4 ! flex items-center gap-1 lg:hidden">
-              Filter
-              <Settings size={16} />
+              className="flex sm:hidden items-center justify-center gap-2"
+              onClick={() => setMobileView(true)}>
+              <Settings className="w-4 h-4" />
+              <span>Filter</span>
             </button>
-            <SortByItem />
           </div>
 
           {/* <!-- Products Grid --> */}
-          {!data?.totalItems && <Loading className="h-[70vh]" />}
-          <div className={`grid md:grid-cols-3 sm:grid-cols-2 gap-2 sm:gap-4`}>
+          <div className={`grid md:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
             {data?.items?.length &&
               data?.items?.map((item, index) => (
@@ -273,38 +414,6 @@ const ProductListing = () => {
                   delay={index + 1 + "00ms"}
                 />
               ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="flex  gap-4 flex-wrap justify-between items-center card">
-            <p>
-              Showing {(page - 1) * limit + 1} to{" "}
-              {Math.min(page * limit, data?.totalItems || 0)} of{" "}
-              {data?.totalItems}
-            </p>
-            <div className="flex gap-2 items-center">
-              <button
-                className={`svg-btn !w-14 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
-                  page === 1 && "hidden"
-                }`}
-                onClick={() => handlePageChange(page - 1)}>
-                Prev
-              </button>
-
-              <PaginationBtn
-                handlePageChange={handlePageChange}
-                page={data?.page || 1}
-                totalPages={data?.totalPages || 1}
-              />
-
-              <button
-                className={`svg-btn !w-14 border border-neutral-200 rounded-lg hover:bg-gray-50 ${
-                  page === data?.totalPages && "hidden"
-                }`}
-                onClick={() => handlePageChange(page + 1)}>
-                Next
-              </button>
-            </div>
           </div>
         </div>
       </div>

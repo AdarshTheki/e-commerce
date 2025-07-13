@@ -32,7 +32,7 @@ const Login = () => {
   };
 
   return (
-    <section className="flex items-center justify-center p-4 min-h-screen">
+    <section className="flex items-center justify-center p-4 min-h-[80dvh]">
       <div className="max-w-md w-full bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
         <h1 className="text-3xl text-center pb-5 font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
           Sign In

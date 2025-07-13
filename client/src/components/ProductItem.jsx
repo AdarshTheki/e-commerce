@@ -2,7 +2,7 @@ import React from "react";
 import HeartFavorite from "./HeartFavorite";
 import { NavLink } from "react-router-dom";
 import { LazyImage } from "../utils";
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Star } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../redux/cartSlice";
 import { axios, errorHandler } from "../helper";
@@ -25,7 +25,7 @@ export default function Item({ delay = "100ms", ...item }) {
       if (!user?._id) return toast.error("Un-Authorized User");
       const res = await axios.post(`/cart`, { productId, quantity: 1 });
       if (res.data) {
-        toast.success("Add to cart success");
+        toast.success("Cart Added");
       }
     } catch (error) {
       errorHandler(error);
@@ -51,6 +51,15 @@ export default function Item({ delay = "100ms", ...item }) {
           id={item._id}
           className="absolute top-2 right-2 p-1.5 bg-white/80"
         />
+
+        <button
+          onClick={() => {
+            dispatch(addItem(item));
+            handleAddToCart(item._id);
+          }}
+          className="text-indigo-600 absolute top-12 right-2 sm:hidden p-1.5 bg-transparent">
+          <ShoppingBag className="w-5 h-5" />
+        </button>
       </div>
       <div className="p-4">
         <div className="mb-2 flex items-center">
@@ -59,31 +68,26 @@ export default function Item({ delay = "100ms", ...item }) {
             {randomType.name}
           </span>
           <div className="ml-auto flex items-center text-amber-400">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 fill-current"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
+            <Star className="w-4" />
             <span className="ml-1 text-sm text-gray-600">{item?.rating}</span>
           </div>
         </div>
-        <p className="text-lg font-medium line-clamp-1">{item.title}</p>
-        <p className="text-gray-600 text-sm mb-3 flex gap-2 justify-between capitalize">
+        <p className="sm:text-lg text-base text-gray-600 leading-[1.4] font-medium sm:line-clamp-1 line-clamp-2">
+          {item.title}
+        </p>
+        <p className="text-gray-600 text-sm mb-3 max-sm:hidden flex gap-2 justify-between capitalize">
           <span>{item.category && "#" + item.category}</span>
           <span>{item.brand && "#" + item.brand}</span>
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center mt-2 justify-between">
           <span className="text-lg font-bold">${item.price}</span>
           <button
             onClick={() => {
               dispatch(addItem(item));
               handleAddToCart(item._id);
             }}
-            className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-300 flex items-center">
-            <ShoppingBag className="w-4 h-4 mr-2" />
+            className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-300 sm:flex hidden items-center gap-2">
+            <ShoppingBag className="w-4 h-4" />
             Add
           </button>
         </div>

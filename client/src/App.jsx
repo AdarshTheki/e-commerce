@@ -16,9 +16,17 @@ import {
   ShippingAddress,
   GalleryPage,
   ChatPage,
+  AIGenerate,
+  WriteArticles,
+  ResumeReviewer,
+  ObjectRemover,
+  BackgroundRemover,
+  AIImage,
+  BlogTitle,
+  AIDashboard,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
-import { Footer, FooterMenu, Header, PrivateRoute } from "./components";
+import { Footer, NavbarBottom, NavbarTop, PrivateRoute } from "./components";
 import { Loading } from "./utils";
 import { useDispatch } from "react-redux";
 import { login } from "./redux/authSlice";
@@ -27,6 +35,7 @@ import { fetchBrands } from "./redux/brandSlice";
 import { fetchCarts } from "./redux/cartSlice";
 import { fetchAddresses } from "./redux/addressSlice";
 import { fetchProducts } from "./redux/productSlice";
+import AITools from "./pages/Home/AITools";
 
 const App = () => {
   const { data, loading } = useFetch("/user/current-user");
@@ -52,7 +61,7 @@ const App = () => {
   return (
     <div className="bg-slate-50 text-slate-700">
       <Router>
-        <Header />
+        <NavbarTop />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/product" element={<ProductsPage />} />
@@ -68,12 +77,21 @@ const App = () => {
             <Route path="/order/success" element={<OrderSuccess />} />
             <Route path="/orders" element={<OrderListing />} />
             <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/message" element={<ChatPage />} />
+            <Route path="/ai" element={<AIGenerate />}>
+              <Route index element={<AIDashboard />} />
+              <Route path="write-article" element={<WriteArticles />} />
+              <Route path="blog-titles" element={<BlogTitle />} />
+              <Route path="generate-images" element={<AIImage />} />
+              <Route path="remove-background" element={<BackgroundRemover />} />
+              <Route path="remove-object" element={<ObjectRemover />} />
+              <Route path="review-resume" element={<ResumeReviewer />} />
+            </Route>
           </Route>
           <Route path="*" element={<Notfound />} />
         </Routes>
         <Footer />
-        <FooterMenu />
+        <NavbarBottom />
       </Router>
     </div>
   );
