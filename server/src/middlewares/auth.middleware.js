@@ -5,7 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const verifyJWT = (roles = []) =>
   asyncHandler(async (req, res, next) => {
-    const token = req.cookies?.accessToken; // || req.headers.authorization?.split(" ")[1];
+    const token =
+      req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       throw new ApiError(401, "No token access with cookies & Bearer");

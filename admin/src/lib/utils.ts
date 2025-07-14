@@ -49,6 +49,6 @@ export const errorHandler = (error: AxiosError) => {
 
 export const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
-    timeout: 30000,
+    timeout: 50000,
     withCredentials: true,
 });

@@ -4,12 +4,11 @@ import cookieParser from "cookie-parser";
 import http from "http";
 import { Server } from "socket.io";
 import { initializeSocketIO } from "./socket/index.js";
-import rateLimit from "express-rate-limit";
+// import rateLimit from "express-rate-limit";
 
 // import all routing files
 import userRoute from "./routes/user.router.js";
 import productRoute from "./routes/product.router.js";
-import orderRoute, { stripeWebhook } from "./routes/order.router.js";
 import reviewRoute from "./routes/review.router.js";
 import categoryRoute from "./routes/category.router.js";
 import brandRoute from "./routes/brand.router.js";
@@ -21,18 +20,13 @@ import health_checkRoute from "./routes/healthcheck.router.js";
 import galleryRoute from "./routes/gallery.router.js";
 import messageRoute from "./routes/message.router.js";
 import chatRoute from "./routes/chat.router.js";
+import orderRoute, { stripeWebhook } from "./routes/order.router.js";
 
 const app = express();
 
-const CORS = process.env?.CORS?.split(",") || "*";
+const CORS = process.env?.CORS?.split(",");
 
 app.use(cors({ origin: CORS, credentials: true }));
-
-app.post(
-  "/api/v1/order/stripe-webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook
-);
 
 app.use(express.json({ limit: "16kb" }));
 
@@ -42,12 +36,12 @@ app.use(express.static("public"));
 
 app.use(cookieParser());
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // max 100 requests per windowMs
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 200, // max 100 requests per windowMs
+// });
 
-app.use(limiter);
+// app.use(limiter);
 
 // ----Connect and Serve the Socket.Io-----
 const server = http.createServer(app);
@@ -78,6 +72,12 @@ app.use("/api/v1/gallery", galleryRoute);
 app.use("/api/v1/chats", chatRoute);
 app.use("/api/v1/messages", messageRoute);
 app.use("/", health_checkRoute);
+
+app.post(
+  "/api/v1/order/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

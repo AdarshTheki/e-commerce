@@ -22,6 +22,7 @@ const Login = () => {
         password,
       });
       if (data) {
+        localStorage.setItem("accessToken", data.accessToken);
         window.location.href = "/";
       }
     } catch (err) {
