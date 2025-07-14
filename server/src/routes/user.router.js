@@ -9,13 +9,6 @@ import { User } from "../models/user.model.js";
 
 const router = Router();
 
-// cookie payload
-const cookiePayload = {
-  httpOnly: true,
-  maxAge: 1000 * 60 * 60 * 24, // 1 days
-  secure: process.env.NODE_ENV !== "DEVELOPMENT",
-};
-
 // get all users by admin (excluding a specific email)
 router.get("/admin", async (req, res) => {
   try {
@@ -242,11 +235,22 @@ router.post("/sign-in", async (req, res) => {
       "-password -refreshToken -__v"
     );
 
-    res.cookie("refreshToken", refreshToken, cookiePayload);
-    res.cookie("accessToken", accessToken, cookiePayload);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      secure: process.env.NODE_ENV !== "DEVELOPMENT",
+      path: "/",
+    });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24, // 1 days
+      secure: process.env.NODE_ENV !== "DEVELOPMENT",
+      path: "/",
+    });
     return res.status(200).json({
       user: modifyUser,
       accessToken,
+      refreshToken,
     });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
@@ -355,8 +359,18 @@ router.post("/refresh-token", async (req, res) => {
 
     res
       .status(200)
-      .cookie("accessToken", accessToken, cookiePayload)
-      .cookie("refreshToken", refreshToken, cookiePayload)
+      .cookie("accessToken", accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24, // 1 days
+        secure: process.env.NODE_ENV !== "DEVELOPMENT",
+        path: "/",
+      })
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        secure: process.env.NODE_ENV !== "DEVELOPMENT",
+        path: "/",
+      })
       .json({ user: refreshUser, accessToken });
   } catch (error) {
     res.status(501).json({ message: error.message, status: false });
