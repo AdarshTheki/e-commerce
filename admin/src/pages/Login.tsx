@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { errorHandler, axiosInstance } from '@/lib/utils';
+import { login } from '@/redux/authSlice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
     const [email, setEmail] = useState('guest-user@gmail.com');
     const [password, setPassword] = useState('12345');
     const [loading, setLoading] = useState(false);
     const [visible, setVisible] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handelSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -24,7 +28,8 @@ const Login = () => {
             });
             if (data) {
                 localStorage.setItem('accessToken', data.accessToken);
-                window.location.href = '/';
+                dispatch(login(data.user));
+                navigate('/');
             }
         } catch (err) {
             errorHandler(err as AxiosError);

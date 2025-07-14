@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 import { axios, errorHandler } from "../helper";
 import { Input } from "../utils";
-import { login } from "../redux/authSlice";
+import { login, logout } from "../redux/authSlice";
 
 const ProfileSettings = () => {
   const dispatch = useDispatch();
@@ -78,7 +78,10 @@ const ProfileSettings = () => {
   const handleLogoutUser = async () => {
     try {
       const response = await axios.post("/user/logout");
-      if (response.data) window.location.href = "/";
+      if (response.data) {
+        localStorage.removeItem("accessToken");
+        dispatch(logout());
+      }
     } catch (error) {
       errorHandler(error);
     }

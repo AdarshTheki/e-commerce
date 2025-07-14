@@ -51,9 +51,8 @@ const ProfileSettings = () => {
         try {
             const res = await axiosInstance.post('/user/logout');
             if (res.data) {
-                localStorage.removeItem('token');
+                localStorage.removeItem('accessToken');
                 dispatch(logout());
-                window.location.href = '/';
             }
         } catch (error) {
             errorHandler(error as AxiosError);
