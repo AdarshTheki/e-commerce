@@ -13,7 +13,7 @@ import OrderSuccess from "./OrderSuccess";
 import OrderListing from "./OrderListing";
 import ShippingAddress from "./ShippingAddress";
 import GalleryPage from "./GalleryPage";
-import AIGenerate from "./AIGenerate/AIGenerate";
+import AILayout from "./AIGenerate/AILayout";
 import WriteArticles from "./AIGenerate/WriteArticles";
 import AIImage from "./AIGenerate/AIImage";
 import BackgroundRemover from "./AIGenerate/BackgroundRemover";
@@ -38,7 +38,7 @@ export {
   Notfound,
   SettingPage,
   FavoritePage,
-  AIGenerate,
+  AILayout,
   WriteArticles,
   AIImage,
   BackgroundRemover,

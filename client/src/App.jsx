@@ -16,7 +16,6 @@ import {
   ShippingAddress,
   GalleryPage,
   ChatPage,
-  AIGenerate,
   WriteArticles,
   ResumeReviewer,
   ObjectRemover,
@@ -24,6 +23,7 @@ import {
   AIImage,
   BlogTitle,
   AIDashboard,
+  AILayout,
 } from "./pages";
 import useFetch from "./hooks/useFetch";
 import { Footer, NavbarBottom, NavbarTop, PrivateRoute } from "./components";
@@ -78,7 +78,7 @@ const App = () => {
             <Route path="/orders" element={<OrderListing />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/message" element={<ChatPage />} />
-            <Route path="/ai" element={<AIGenerate />}>
+            <Route path="/ai" element={<AILayout />}>
               <Route index element={<AIDashboard />} />
               <Route path="write-article" element={<WriteArticles />} />
               <Route path="blog-titles" element={<BlogTitle />} />

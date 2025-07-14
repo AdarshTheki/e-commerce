@@ -4,7 +4,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Home } from "lucide-react";
 import { classNames } from "../../helper";
 
-const AIGenerate = () => {
+const AILayout = () => {
   return (
     <div className="sm:flex gap-5 w-full min-h-[80dvh]">
       {/* mobile menu */}
@@ -60,4 +60,4 @@ const AIGenerate = () => {
   );
 };
 
-export default AIGenerate;
+export default AILayout;
