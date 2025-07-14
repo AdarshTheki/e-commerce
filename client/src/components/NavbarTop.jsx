@@ -156,7 +156,7 @@ const NavbarTop = () => {
         </div>
 
         {!!searchOpen && (
-          <div className="p-2 flex gap-2 items-center justify-center left-0 w-full bg-white">
+          <div className="p-2 flex gap-2 items-center justify-center left-0 w-full">
             <div class="flex items-center border pl-4 gap-2 bg-white border-gray-500/30 h-[40px] rounded-full overflow-hidden max-w-md w-full">
               <Search className="w-5 h-5" />
               <input

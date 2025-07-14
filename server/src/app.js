@@ -24,7 +24,9 @@ import chatRoute from "./routes/chat.router.js";
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS?.split(","), credentials: true }));
+const CORS = process.env?.CORS?.split(",") || "*";
+
+app.use(cors({ origin: CORS, credentials: true }));
 
 app.post(
   "/api/v1/order/stripe-webhook",
@@ -51,7 +53,7 @@ app.use(limiter);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS?.split(","),
+    origin: CORS,
     credentials: true,
   },
 });
