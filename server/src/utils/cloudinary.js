@@ -18,7 +18,6 @@ const uploadMultiImg = async (images = [], folderName = "") => {
     const uploadResults = await Promise.allSettled(
       images.map((file) =>
         cloudinary.uploader.upload(file.path, {
-          resource_type: "image",
           folder: folderName || folder,
         })
       )
@@ -42,7 +41,6 @@ const uploadSingleImg = async (localFilePath = "") => {
     if (!localFilePath) return false;
 
     const res = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "image",
       folder,
     });
 
@@ -59,9 +57,7 @@ const removeSingleImg = async (url = "") => {
   if (!url) return false;
   try {
     const publicId = url.split("/").pop().split(".")[0];
-    await cloudinary.uploader.destroy(publicId, {
-      resource_type: "image",
-    });
+    await cloudinary.uploader.destroy(publicId);
     return true;
   } catch (error) {
     console.log(error.message);
@@ -74,9 +70,7 @@ const removeMultiImg = async (images = []) => {
     if (images.length === 0) return false;
     const publicIds = images.map((url) => url.split("/").pop().split(".")[0]);
     await Promise.all(
-      publicIds.map((publicId) =>
-        cloudinary.uploader.destroy(publicId, { resource_type: "image" })
-      )
+      publicIds.map((publicId) => cloudinary.uploader.destroy(publicId))
     );
     return true;
   } catch (error) {
@@ -101,6 +95,7 @@ const getImageUrls = async (expression = "folder:gallery", limit = 100) => {
 };
 
 export {
+  cloudinary,
   uploadSingleImg,
   removeSingleImg,
   uploadMultiImg,

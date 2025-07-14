@@ -6,14 +6,12 @@ import { classNames } from "../../helper";
 
 const AIGenerate = () => {
   return (
-    <div className="sm:flex gap-5 w-full">
+    <div className="sm:flex gap-5 w-full min-h-[80dvh]">
       {/* mobile menu */}
-      <div className="sm:hidden p-2 py-4 overflow-hidden flex gap-1 overflow-x-auto">
+      <div className="sm:hidden p-2 py-4 overflow-hidden flex gap-1 overflow-x-auto scrollbar-hidden">
         <NavLink
           to={"/ai"}
-          className={classNames(
-            "p-2 rounded-full text-sm items-center px-4 flex gap-1 bg-gray-100 text-nowrap"
-          )}>
+          className="p-2 rounded-full text-sm items-center px-4 flex gap-1 border border-gray-300 text-nowrap">
           <Home className="w-3 h-3" />
           Dashboard
         </NavLink>
@@ -25,7 +23,7 @@ const AIGenerate = () => {
               classNames(
                 isActive &&
                   "bg-gradient-to-r from-blue-600 to-purple-600 text-white",
-                "p-2 rounded-full text-sm items-center px-4 flex gap-1 bg-gray-100 text-nowrap"
+                "p-2 rounded-full text-sm items-center px-4 flex gap-1 border border-gray-300 text-nowrap"
               )
             }>
             <tool.Icon className="w-3 h-3" />
@@ -38,7 +36,7 @@ const AIGenerate = () => {
       <div className="flex flex-col w-[300px] p-4 sticky gap-2 text-sm top-14 h-full max-sm:hidden">
         <NavLink
           to={"/ai"}
-          className={"p-2 font-medium rounded-lg flex gap-2 items-center"}>
+          className={"p-2 rounded-lg flex gap-2 items-center"}>
           <Home className="w-4 h-4" />
           <span>Dashboard</span>
         </NavLink>
@@ -47,7 +45,7 @@ const AIGenerate = () => {
             key={index}
             to={tool.path}
             className={({ isActive }) =>
-              "p-2 font-medium rounded-lg flex gap-2 items-center" +
+              "p-2 rounded-lg flex gap-2 items-center" +
               ` ${isActive && " bg-gradient-to-r from-blue-600 to-purple-600 text-white"}`
             }>
             <tool.Icon className="w-4 h-4" />

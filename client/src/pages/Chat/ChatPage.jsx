@@ -241,7 +241,7 @@ const ChatPage = () => {
         <div
           className={classNames(
             "!sm:w-[280px] max-sm:w-full h-full overflow-y-auto",
-            mobileChatOpen && "max-sm:hidden"
+            mobileChatOpen && currentChat.current?._id && "max-sm:hidden"
           )}>
           {/* Create Group Modal */}
           {!!openAddChat && (
@@ -410,9 +410,9 @@ const ChatPage = () => {
             <form
               onSubmit={handleSendMessage}
               className="w-full py-2 px-4 flex gap-2 items-center sticky -bottom-1 bg-white">
-              <div className="relative w-full">
+              <div className="h-[40px] px-2 rounded-2xl border border-gray-300 w-full flex items-center">
                 <Input
-                  className="rounded-full !p-2 !px-5"
+                  className="border-none"
                   name="message"
                   placeholder="Enter a message"
                   value={message}
@@ -421,8 +421,8 @@ const ChatPage = () => {
                 <label
                   title="send files with limit 5"
                   htmlFor="attachment"
-                  className="absolute bg-gray-100 right-2 top-1 font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center cursor-pointer">
-                  <ImageUp size={20} />
+                  className="cursor-pointer p-2">
+                  <ImageUp className="w-5 h-5" />
                   <input
                     type="file"
                     multiple={true}
@@ -436,7 +436,7 @@ const ChatPage = () => {
               <button
                 disabled={messageSendLoading}
                 type="submit"
-                className="bg-indigo-600 text-white font-semibold flex gap-2 rounded-full px-5 py-2 hover:opacity-80 items-center">
+                className="bg-indigo-600 text-white h-[40px] flex gap-2 rounded-2xl px-5 hover:opacity-80 items-center">
                 {messageSendLoading ? (
                   <svg
                     className="animate-spin h-4 w-4 text-white"

@@ -8,7 +8,7 @@ const NavbarBottom = () => {
   const navigate = useNavigate();
 
   return (
-    <footer className="sm:hidden sticky bottom-0 left-0 w-full px-4 py-2 backdrop-blur-2xl">
+    <footer className="sm:hidden sticky bottom-0 left-0 w-full px-4 py-2 bg-slate-50">
       <div className="flex items-center flex-wrap justify-between text-xs">
         <NavLink to={"/"} className="flex items-center justify-center flex-col">
           <Home className="w-5 h-5" /> Home

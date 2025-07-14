@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { dummyCreationData } from "../../assets/assets.js";
 
 const AIDashboard = () => {
   const [selectedArticle, setSelectedArticle] = useState("");
@@ -35,29 +36,18 @@ const AIDashboard = () => {
       {/* Recent Creations */}
       <p>Recent Creations</p>
 
-      {[
-        {
-          title:
-            "Write an article about How rest api works in simple and point wise with under 800 words in Short (500-800 word).",
-          createdAt: "invalid date",
-        },
-        {
-          title:
-            "Write an article aboutWrite an article about How rest api works in simple and point wise with under 800 words in Short (500-800 word).",
-          createdAt: "invalid date",
-        },
-      ].map((create) => (
-        <div className="card sm:px-6 max-sm:!pl-6" key={create._id}>
+      {dummyCreationData.map((create) => (
+        <div className="card sm:px-6 max-sm:!pl-6" key={create.id}>
           <div className="w-full">
             <button
-              onClick={() => setSelectedArticle(create._id)}
+              onClick={() => setSelectedArticle(create.id)}
               className="btn-primary float-right !rounded-2xl !text-sm sm:px-5 m-2">
               Article
             </button>
-            <p>{create.title}</p>
-            <p className="text-gray-500">{create.createdAt}</p>
+            <p>{create.prompt}</p>
+            <p className="text-gray-500">{create.created_at}</p>
           </div>
-          {create._id === selectedArticle && <div>{create.content}</div>}
+          {create.id === selectedArticle && <div>{create.content}</div>}
         </div>
       ))}
     </div>

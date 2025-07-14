@@ -1,4 +1,4 @@
-import { Star, StarHalf } from "lucide-react";
+import { Star } from "lucide-react";
 import { dummyTestimonialData } from "../../assets/assets";
 
 const Testimonial = () => {
@@ -24,7 +24,7 @@ const Testimonial = () => {
                   <Star
                     fill={i < testimonial.rating ? "#4f39f6" : "#fff"}
                     key={i}
-                    className="w-4 h-4"
+                    className="w-4 h-4 text-[#4f39f6]"
                   />
                 ))}
             </div>
