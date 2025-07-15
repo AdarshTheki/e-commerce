@@ -1,40 +1,18 @@
-import { axios, errorHandler } from "../helper";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { login } from "../redux/authSlice";
-import { useDispatch } from "react-redux";
+import useLogin from "../hooks/useLogin";
 
 const Login = () => {
   const [email, setEmail] = useState("guest-user@gmail.com");
   const [password, setPassword] = useState("12345");
-  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [visible, setVisible] = useState(false);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { loading, handleLogin } = useLogin();
 
-  const handelSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      setLoading(true);
-      if (!email || !password)
-        return toast.error("please fill the valid inputs");
-      const { data } = await axios.post("/user/sign-in", {
-        email,
-        password,
-      });
-      if (data) {
-        localStorage.setItem("accessToken", data.accessToken);
-        dispatch(login(data.user));
-        navigate("/");
-      }
-    } catch (err) {
-      errorHandler(err);
-    } finally {
-      setLoading(false);
-    }
+    handleLogin(email, password, rememberMe);
   };
 
   return (
@@ -44,7 +22,7 @@ const Login = () => {
           Sign In
         </h1>
 
-        <form id="loginForm" className="space-y-6" onSubmit={handelSubmit}>
+        <form id="loginForm" className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -57,7 +35,7 @@ const Login = () => {
               type="email"
               id="email"
               name="email"
-              required=""
+              required
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter your email"
             />
@@ -67,7 +45,7 @@ const Login = () => {
             <label
               htmlFor="password"
               className="block text-sm font-medium text-gray-700 mb-2">
-              Password{" "}
+              Password
             </label>
             <input
               value={password}
@@ -75,37 +53,58 @@ const Login = () => {
               type={visible ? "text" : "password"}
               id="password"
               name="password"
-              required=""
+              required
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter your password"
             />
             <button
               type="button"
-              className="top-10 right-5 absolute avg-btn"
+              className="absolute top-14 right-4 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               onClick={() => setVisible(!visible)}>
-              {!visible ? <Eye /> : <EyeOff />}
+              {visible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900">
+                Remember me
+              </label>
+            </div>
+
+            <div className="text-sm">
+              <a
+                href="#"
+                className="font-medium text-blue-600 hover:text-blue-500">
+                Forgot your password?
+              </a>
+            </div>
           </div>
 
           <button
             disabled={loading}
             type="submit"
-            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-            {loading ? "Loading..." : "Sign In"}
+            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+            {loading ? "Signing In..." : "Sign In"}
           </button>
         </form>
-
-        <div className="mt-6 flex items-center">
-          <div className="flex-1 border-t border-gray-300"></div>
-        </div>
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?
             <Link
               to="/register"
-              className="text-blue-600 pl-2 hover:text-blue-800 font-medium"
-              target="_self">
+              className="text-blue-600 pl-2 hover:text-blue-800 font-medium">
               Sign up
             </Link>
           </p>

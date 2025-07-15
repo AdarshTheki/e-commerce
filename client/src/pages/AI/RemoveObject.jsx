@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
 
-const AIImage = () => {
+const RemoveObject = () => {
   const [input, setInput] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -91,4 +91,4 @@ const AIImage = () => {
   );
 };
 
-export default AIImage;
+export default RemoveObject;

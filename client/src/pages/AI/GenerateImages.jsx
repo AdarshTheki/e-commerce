@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
 
-const AIImage = () => {
+const GenerateImage = () => {
   const styleData = [
     "Realistic",
     "Ghibli style",
@@ -128,4 +128,4 @@ const AIImage = () => {
   );
 };
 
-export default AIImage;
+export default GenerateImage;

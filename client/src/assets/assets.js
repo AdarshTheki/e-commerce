@@ -16,7 +16,7 @@ export const AiToolsData = [
       "Generate high-quality, engaging articles on any topic with our AI writing technology.",
     Icon: SquarePen,
     bg: { from: "#3588F2", to: "#0BB0D7" },
-    path: "/ai/write-article",
+    path: "/ai/write-articles",
   },
   {
     title: "Blog Title Generator",

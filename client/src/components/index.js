@@ -1,5 +1,4 @@
 import Footer from "./Footer";
-import PrivateRoute from "./PrivateRoute";
 import HeartFavorite from "./HeartFavorite";
 import ProductItem from "./ProductItem";
 import ProductReview from "./ProductReview";
@@ -17,7 +16,6 @@ export {
   ImageGallery,
   HomeCertificate,
   ProductReviewLike,
-  PrivateRoute,
   HeartFavorite,
   Footer,
   ProductItem,

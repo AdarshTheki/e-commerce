@@ -14,7 +14,7 @@ const menuItems = [
   {
     id: 2,
     name: "Product",
-    path: "/product",
+    path: "/products",
   },
   {
     id: 3,

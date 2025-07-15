@@ -1,100 +1,99 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouterProvider,
+  useLocation,
+} from "react-router-dom";
+import { useSelector } from "react-redux";
+
+// Import Pages
+import {
+  FavoritePage,
+  GalleryPage,
+  HomePage,
   LoginPage,
   Notfound,
-  RegisterPage,
-  SettingPage,
-  CartsPage,
-  HomePage,
-  ProductsPage,
-  SingleProductPage,
-  FavoritePage,
   OrderFailed,
   OrderListing,
   OrderSuccess,
+  ProductsPage,
+  RegisterPage,
+  Setting,
   ShippingAddress,
-  GalleryPage,
+  ShoppingCartPage,
+  SingleProductPage,
   ChatPage,
-  WriteArticles,
-  ResumeReviewer,
-  ObjectRemover,
-  BackgroundRemover,
-  AIImage,
-  BlogTitle,
+} from "./pages";
+import RootLayout from "./RootLayout";
+
+import {
   AIDashboard,
   AILayout,
-} from "./pages";
-import useFetch from "./hooks/useFetch";
-import { Footer, NavbarBottom, NavbarTop, PrivateRoute } from "./components";
-import { Loading } from "./utils";
-import { useDispatch } from "react-redux";
-import { login } from "./redux/authSlice";
-import { fetchCategories } from "./redux/categorySlice";
-import { fetchBrands } from "./redux/brandSlice";
-import { fetchCarts } from "./redux/cartSlice";
-import { fetchAddresses } from "./redux/addressSlice";
-import { fetchProducts } from "./redux/productSlice";
-import AITools from "./pages/Home/AITools";
+  BlogTitles,
+  GenerateImages,
+  RemoveBackground,
+  RemoveObject,
+  ReviewResume,
+  WriteArticles,
+} from "./pages/AI";
+
+// Protected Layout for authenticated routes
+const ProtectedLayout = () => {
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+};
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "products/:id", element: <SingleProductPage /> },
+      { path: "gallery", element: <GalleryPage /> },
+      {
+        element: <ProtectedLayout />,
+        children: [
+          { path: "cart", element: <ShoppingCartPage /> },
+          { path: "shipping-address", element: <ShippingAddress /> },
+          { path: "setting", element: <Setting /> },
+          { path: "favorite", element: <FavoritePage /> },
+          { path: "order/failed", element: <OrderFailed /> },
+          { path: "order/success", element: <OrderSuccess /> },
+          { path: "orders", element: <OrderListing /> },
+          { path: "message", element: <ChatPage /> },
+          {
+            path: "ai",
+            element: <AILayout />,
+            children: [
+              { index: true, element: <AIDashboard /> },
+              { path: "write-articles", element: <WriteArticles /> },
+              { path: "blog-titles", element: <BlogTitles /> },
+              { path: "generate-images", element: <GenerateImages /> },
+              { path: "remove-background", element: <RemoveBackground /> },
+              { path: "remove-object", element: <RemoveObject /> },
+              { path: "review-resume", element: <ReviewResume /> },
+            ],
+          },
+        ],
+      },
+      { path: "*", element: <Notfound /> },
+    ],
+  },
+]);
 
 const App = () => {
-  const { data, loading } = useFetch("/user/current-user");
-  const dispatch = useDispatch();
-  let auth = data?._id;
-
-  useEffect(() => {
-    if (auth) {
-      dispatch(login(data));
-    }
-  }, [data, auth, dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchCategories());
-    dispatch(fetchBrands());
-    dispatch(fetchCarts());
-    dispatch(fetchAddresses());
-    dispatch(fetchProducts());
-  }, [dispatch]);
-
-  if (loading) return <Loading />;
-
-  return (
-    <div className="bg-slate-50 text-slate-700">
-      <Router>
-        <NavbarTop />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/product" element={<ProductsPage />} />
-          <Route path="/product/:id" element={<SingleProductPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route element={<PrivateRoute isAuth={auth} />}>
-            <Route path="/cart" element={<CartsPage />} />
-            <Route path="/shipping-address" element={<ShippingAddress />} />
-            <Route path="/setting" element={<SettingPage />} />
-            <Route path="/favorite" element={<FavoritePage />} />
-            <Route path="/order/failed" element={<OrderFailed />} />
-            <Route path="/order/success" element={<OrderSuccess />} />
-            <Route path="/orders" element={<OrderListing />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/message" element={<ChatPage />} />
-            <Route path="/ai" element={<AILayout />}>
-              <Route index element={<AIDashboard />} />
-              <Route path="write-article" element={<WriteArticles />} />
-              <Route path="blog-titles" element={<BlogTitle />} />
-              <Route path="generate-images" element={<AIImage />} />
-              <Route path="remove-background" element={<BackgroundRemover />} />
-              <Route path="remove-object" element={<ObjectRemover />} />
-              <Route path="review-resume" element={<ResumeReviewer />} />
-            </Route>
-          </Route>
-          <Route path="*" element={<Notfound />} />
-        </Routes>
-        <Footer />
-        <NavbarBottom />
-      </Router>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;
