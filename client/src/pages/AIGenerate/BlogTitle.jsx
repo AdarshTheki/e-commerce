@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import useTypewriter from "../../hooks/useTypewriter";
+import Markdown from "react-markdown";
+import { axios, errorHandler } from "../../helper";
 
 const BlogTitles = () => {
   const styleData = [
@@ -18,19 +21,34 @@ const BlogTitles = () => {
   const [loading, setLoading] = useState(false);
   const aiTool = AiToolsData[1];
 
+  const [data, setData] = useState(null);
+  const { displayText } = useTypewriter({
+    text: data?.response || "",
+    speed: 10,
+  });
+
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(input, selected);
-    setTimeout(() => {
+    setData(null);
+    try {
+      const res = await axios.post("/openai/generate-blog-title", {
+        prompt: `Generate a Blog title about this "${input}" in the category ${selected}.`,
+      });
+      if (res.data) {
+        setData(res.data.result);
+        setSelected(styleData[0]);
+        setInput("");
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
       setLoading(false);
-      setInput("");
-      setSelected("General");
-    }, 1000);
+    }
   };
 
   return (
-    <div className="flex gap-4 p-4 max-sm:flex-col">
+    <div className="gap-4 p-4 grid sm:grid-cols-2">
       {/* Left Create Form */}
       <form className="card !px-5 flex-1 space-y-5" onSubmit={handleSubmitForm}>
         <div className="flex gap-2 items-center">
@@ -74,6 +92,7 @@ const BlogTitles = () => {
         </div>
 
         <button
+          disabled={loading}
           style={{
             background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
           }}
@@ -100,12 +119,20 @@ const BlogTitles = () => {
           />
           <p className="font-medium">{aiTool.title}</p>
         </div>
-        <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <small className="text-gray-400">
-            Enter a topic and click “{aiTool.title}” to get started
-          </small>
-        </div>
+        {!data?.response ? (
+          <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
+            <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <small className="text-gray-400">
+              Enter a topic and click “{aiTool.title}” to get started
+            </small>
+          </div>
+        ) : (
+          <div className="mt-3 overflow-y-auto text-sm text-slate-600">
+            <div className="reset-tw">
+              <Markdown>{displayText}</Markdown>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

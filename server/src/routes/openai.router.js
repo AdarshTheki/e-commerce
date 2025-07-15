@@ -1,5 +1,9 @@
 import express from "express";
 import twilio from "twilio";
+import FormData from "form-data";
+import axios from "axios";
+import fs from "fs";
+import pdf from "pdf-parse/lib/pdf-parse.js";
 import { openai, haggingFace } from "../utils/api.js";
 import { AI as AIModal } from "../models/ai.model.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -8,9 +12,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import OpenAI from "openai";
 import { cloudinary } from "../utils/cloudinary.js";
-import FormData from "form-data";
-import axios from "axios";
 import { upload } from "../middlewares/multer.middleware.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -22,19 +25,19 @@ const AI = new OpenAI({
 
 const generateArticle = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const { prompt, length, word } = req.body;
+  const { prompt, length } = req.body;
+
+  if (!prompt || !length)
+    throw new ApiError(404, "Prompt and word length not define");
 
   const response = await AI.chat.completions.create({
     model: "gemini-2.0-flash",
-    messages: [
-      {
-        role: "user",
-        content: `Write a article about this "${prompt}" in ${word}"`,
-      },
-    ],
+    messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
     max_tokens: length,
   });
+
+  if (!response) throw new ApiError(404, "openai response failed");
 
   const newAIModal = await AIModal.create({
     createdBy: userId,
@@ -44,6 +47,8 @@ const generateArticle = asyncHandler(async (req, res) => {
     prompt,
   });
 
+  if (!newAIModal) throw new ApiError(404, "new Ai model create failed");
+
   res
     .status(201)
     .json({ result: newAIModal, message: "generate articles successfully" });
@@ -51,18 +56,20 @@ const generateArticle = asyncHandler(async (req, res) => {
 
 const generateBlogTitle = asyncHandler(async (req, res) => {
   const userId = req.user._id;
-  const { prompt, category } = req.body;
+  const { prompt } = req.body;
+
+  if (!prompt) throw new ApiError(404, "Prompt not define");
 
   const response = await AI.chat.completions.create({
     model: "gemini-2.0-flash",
     messages: [
       {
         role: "user",
-        content: `Generate a Blog title about this "${prompt}" in the category ${category}.`,
+        content: prompt,
       },
     ],
     temperature: 0.7,
-    max_tokens: 100,
+    max_tokens: 500,
   });
 
   const newAIModal = await AIModal.create({
@@ -174,6 +181,63 @@ const objectRemovalImage = asyncHandler(async (req, res) => {
   res.status(201).json({
     result: newAIModal,
     message: "object removal image successfully",
+  });
+});
+
+const reviewResume = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const resume = req?.file;
+
+  if (resume?.size > 5 * 1024 * 1024)
+    throw new ApiError(404, "file size upload under 5mb");
+
+  const dataBuffer = fs.readFileSync(resume.path);
+  const pdfData = await pdf(dataBuffer);
+
+  const prompt = `Review the following resume and provide a constructive feedback on its strengths, weaknesses and areas for improvement. Resume content:\n\ ${pdfData.text}`;
+
+  const response = await AI.chat.completions.create({
+    model: "gemini-2.0-flash",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
+    max_tokens: 1000,
+  });
+
+  const content = response.choices[0].message.content;
+
+  if (!content) throw new ApiError(404, "openai response failed");
+
+  const newAIModal = await AIModal.create({
+    createdBy: userId,
+    model: "review-resume",
+    prompt: prompt.substring(0, 500),
+    response: content,
+  });
+
+  res.status(201).json({
+    result: newAIModal,
+    message: "review resume create successfully",
+  });
+});
+
+const toggleLikesCreation = asyncHandler(async (req, res) => {
+  const userId = req.user._id.toString();
+  const aiPostId = req.params?.aiPostId;
+
+  const checkLiked = await AIModal.findById(aiPostId);
+  if (!checkLiked) throw new ApiError(404, "AI modal post not found");
+
+  const isLiked = checkLiked.likes.map((i) => i.toString()).includes(userId);
+
+  const updatedPost = await AIModal.findByIdAndUpdate(
+    checkLiked._id,
+    isLiked ? { $pull: { likes: userId } } : { $push: { likes: userId } },
+    { new: true }
+  );
+
+  res.status(200).json({
+    message: `User has ${isLiked ? "unliked" : "liked"} the post.`,
+    totalLikes: updatedPost.likes.length,
   });
 });
 
@@ -337,6 +401,7 @@ router.post("/hugging-ai", async (req, res) => {
   }
 });
 
+router.get("/like/:aiPostId", verifyJWT(), toggleLikesCreation);
 router.post("/generate-article", verifyJWT(), generateArticle);
 router.post("/generate-blog-title", verifyJWT(), generateBlogTitle);
 router.post("/generate-text-to-image", verifyJWT(), generateTextToImage);
@@ -351,6 +416,13 @@ router.post(
   verifyJWT(),
   upload.single("image"),
   backgroundRemovalImage
+);
+
+router.post(
+  "/review-resume",
+  verifyJWT(),
+  upload.single("resume"),
+  reviewResume
 );
 
 export default router;

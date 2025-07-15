@@ -16,7 +16,7 @@ const AIImage = () => {
   };
 
   return (
-    <div className="flex gap-4 p-4 max-sm:flex-col">
+    <div className="gap-4 p-4 grid sm:grid-cols-2">
       {/* Left Create Form */}
       <form className="card !px-5 flex-1 space-y-5" onSubmit={handleSubmitForm}>
         <div className="flex gap-2 items-center">

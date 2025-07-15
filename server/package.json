@@ -27,6 +27,7 @@
     "mongoose-paginate-v2": "^1.9.1",
     "multer": "^2.0.1",
     "openai": "^5.9.0",
+    "pdf-parse": "^1.1.1",
     "socket.io": "^4.8.1",
     "stripe": "^18.2.1",
     "twilio": "^5.7.1"

@@ -1,33 +1,59 @@
 import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import { axios, errorHandler } from "../../helper";
+import { toast } from "react-toastify";
+import Markdown from "react-markdown";
+import useTypewriter from "../../hooks/useTypewriter";
 
 const WriteArticle = () => {
   const styleData = [
-    "Short (500-800 word)",
-    "Medium (800-1200 word)",
+    "Short (200-300 word)",
+    "Medium (600-800 word)",
     "Long (1200+ word)",
   ];
-  const [selected, setSelected] = useState("Short (500-800 word)");
+  const [selected, setSelected] = useState(styleData[0]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const aiTool = AiToolsData[0];
 
+  const [data, setData] = useState(null);
+  const { displayText } = useTypewriter({
+    text: data?.response || "",
+    speed: 5,
+  });
+
   const handleSubmitForm = async (e) => {
     e.preventDefault();
+    if (!input.trim()) return toast.error("Enter a valid article topic");
     setLoading(true);
-    console.log(input, selected);
-    setTimeout(() => {
+    setData(null);
+    try {
+      const res = await axios.post("/openai/generate-article", {
+        prompt: `Write a article about this "${input}" in ${selected}"`,
+        length:
+          styleData[0] === selected
+            ? 1000
+            : styleData[1] === selected
+              ? 3000
+              : 8000,
+      });
+      if (res.data) {
+        setData(res.data.result);
+        setSelected(styleData[0]);
+        setInput("");
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
       setLoading(false);
-      setInput("");
-      setSelected("Short (500-800 word)");
-    }, 1000);
+    }
   };
 
   return (
-    <div className="flex gap-4 p-4 max-sm:flex-col">
+    <div className="gap-4 p-4 grid sm:grid-cols-2">
       {/* Left Create Form */}
-      <form className="card !px-5 flex-1 space-y-5" onSubmit={handleSubmitForm}>
+      <form className="card !px-5 space-y-5" onSubmit={handleSubmitForm}>
         <div className="flex gap-2 items-center">
           <Sparkles className={`w-6 h-6`} style={{ color: aiTool.bg.from }} />
           <p className="font-medium">{aiTool.title}</p>
@@ -69,6 +95,7 @@ const WriteArticle = () => {
         </div>
 
         <button
+          disabled={loading}
           style={{
             background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
           }}
@@ -85,7 +112,7 @@ const WriteArticle = () => {
       </form>
 
       {/* Right Generate Content */}
-      <div className="card !px-5 flex-1">
+      <div className="card !px-5">
         <div className="flex gap-2 items-center">
           <aiTool.Icon
             className="lucide lucide-square-pen w-7 h-7 p-1 text-white rounded-xl"
@@ -95,12 +122,21 @@ const WriteArticle = () => {
           />
           <p className="font-medium">{aiTool.title}</p>
         </div>
-        <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <small className="text-gray-400">
-            Enter a topic and click “{aiTool.title}” to get started
-          </small>
-        </div>
+
+        {!data?.response ? (
+          <div className="h-full text-center flex items-center justify-center flex-col">
+            <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <small className="text-gray-400">
+              Enter a topic and click “{aiTool.title}” to get started
+            </small>
+          </div>
+        ) : (
+          <div className="mt-3 overflow-y-auto text-sm text-slate-600">
+            <div className="reset-tw">
+              <Markdown>{displayText}</Markdown>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

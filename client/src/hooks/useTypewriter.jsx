@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 
-const Typewriter = ({
-  text = "",
-  className = "",
-  speed = 100,
-  name = "demo",
-  infinite = false,
-}) => {
+const useTypewriter = ({ text = "", speed = 100, infinite = false }) => {
   const [displayText, setDisplayText] = useState("");
   const [index, setIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,11 +31,7 @@ const Typewriter = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, isDeleting, text, speed]);
 
-  return (
-    <p id={name} className={`text-lg text-white ${className}`}>
-      {displayText}
-    </p>
-  );
+  return { displayText };
 };
 
-export default Typewriter;
+export default useTypewriter;

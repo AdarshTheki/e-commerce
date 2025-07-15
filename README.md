@@ -83,7 +83,9 @@ Welcome to the E-commerce Store project! This application is built using the MER
 3. Install dependencies of each folder structure: `npm install`
 4. Start the development server: `npm run dev`
 5. Open the website in your browser: `http://localhost:5173`
-6. Project hosted [client](https://cartifycommerce.vercel.app), [server](https://cartify-server.koyeb.app) & [admin](https://cartifyadmin.vercel.app)
+6. Project hosted on Vercel [client](https://cartifycommerce.vercel.app) & [admin](https://cartifyadmin.vercel.app)
+7. Project hosted on firebase [client](https://cartify-client.web.app) & [admin](https://cartifyadmin.vercel.app)
+8. Server hosted on Koyeb [server](https://cartify-server.koyeb.app)
 
 ### MIT License
 

@@ -70,7 +70,7 @@ const App = () => {
           <Route path="/register" element={<RegisterPage />} />
           <Route element={<PrivateRoute isAuth={auth} />}>
             <Route path="/cart" element={<CartsPage />} />
-            <Route path="/shipping" element={<ShippingAddress />} />
+            <Route path="/shipping-address" element={<ShippingAddress />} />
             <Route path="/setting" element={<SettingPage />} />
             <Route path="/favorite" element={<FavoritePage />} />
             <Route path="/order/failed" element={<OrderFailed />} />

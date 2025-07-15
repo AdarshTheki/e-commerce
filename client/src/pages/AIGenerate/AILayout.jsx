@@ -6,7 +6,7 @@ import { classNames } from "../../helper";
 
 const AILayout = () => {
   return (
-    <div className="sm:flex gap-5 w-full min-h-[80dvh]">
+    <div className="sm:flex w-full min-h-[80dvh]">
       {/* mobile menu */}
       <div className="sm:hidden p-2 py-4 overflow-hidden flex gap-1 overflow-x-auto scrollbar-hidden">
         <NavLink
@@ -33,7 +33,7 @@ const AILayout = () => {
       </div>
 
       {/* desktop menu */}
-      <div className="flex flex-col w-[300px] p-4 sticky gap-2 text-sm top-14 h-full max-sm:hidden">
+      <div className="flex flex-col min-w-[260px] bg-white p-4 sticky gap-2 text-sm top-14 min-h-[80dvh] h-full max-sm:hidden">
         <NavLink
           to={"/ai"}
           className={"p-2 rounded-lg flex gap-2 items-center"}>
@@ -53,9 +53,7 @@ const AILayout = () => {
           </NavLink>
         ))}
       </div>
-      <div className="w-full">
-        <Outlet />
-      </div>
+      <Outlet />
     </div>
   );
 };

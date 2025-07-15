@@ -134,9 +134,9 @@ const AddressForm = ({ item, loading, onSubmit, onClose }) => {
   };
 
   return (
-    <div className=" fixed inset-0 w-full h-full flex items-center justify-center bg-black/10">
+    <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-black/10">
       <form
-        className="space-y-4 max-w-2xl w-full p-5 mx-3 shadow-2xl bg-white rounded-xl"
+        className="space-y-4 max-w-2xl w-full p-5 sm:p-10 mx-3 shadow-2xl bg-white rounded-xl"
         onSubmit={handleSubmit}>
         <p className="text-2xl font-semibold">
           {item?._id ? "Update Address" : "Add New Address"}

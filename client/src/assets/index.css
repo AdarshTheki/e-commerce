@@ -12,6 +12,12 @@ html {
   @apply outline-indigo-300;
 }
 
+/* Disable taiwind class */
+.reset-tw,
+.reset-tw * {
+  all: revert !important;
+}
+
 p,
 span,
 button,
