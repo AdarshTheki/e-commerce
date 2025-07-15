@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import useApi from "../../hooks/useApi";
 
 const ReviewResume = () => {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, data, callApi } = useApi();
   const aiTool = AiToolsData[5];
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    setLoading(false);
-    console.log(input, loading);
+    const formData = new FormData();
+    formData.append("pdf", input);
+    const result = await callApi("/openai/resume-review", formData);
+    if (result) {
+      setInput("");
+    }
   };
 
   return (
@@ -65,10 +70,16 @@ const ReviewResume = () => {
           <p className="font-medium">{aiTool.title}</p>
         </div>
         <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <small className="text-gray-400">
-            Enter a topic and click “{aiTool.title}” to get started
-          </small>
+          {data ? (
+            <pre>{data}</pre>
+          ) : (
+            <>
+              <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <small className="text-gray-400">
+                Enter a topic and click “{aiTool.title}” to get started
+              </small>
+            </>
+          )}
         </div>
       </div>
     </div>

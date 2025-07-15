@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import useApi from "../../hooks/useApi";
 
 const RemoveBackground = () => {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, data, callApi } = useApi();
   const aiTool = AiToolsData[3];
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    console.log(input);
-    setLoading(true);
-    setTimeout(() => {
+    const formData = new FormData();
+    formData.append("image", input);
+    const result = await callApi("/cloudinary/remove-bg", formData);
+    if (result) {
       setInput("");
-      setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -69,10 +70,16 @@ const RemoveBackground = () => {
           <p className="font-medium">{aiTool.title}</p>
         </div>
         <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <small className="text-gray-400">
-            Enter a topic and click “{aiTool.title}” to get started
-          </small>
+          {data ? (
+            <img src={data} alt="Generated" className="rounded-lg shadow-md" />
+          ) : (
+            <>
+              <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <small className="text-gray-400">
+                Enter a topic and click “{aiTool.title}” to get started
+              </small>
+            </>
+          )}
         </div>
       </div>
     </div>

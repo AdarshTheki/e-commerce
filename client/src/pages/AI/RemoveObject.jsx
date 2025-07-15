@@ -1,18 +1,25 @@
 import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import useApi from "../../hooks/useApi";
 
 const RemoveObject = () => {
   const [input, setInput] = useState("");
   const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { loading, data, callApi } = useApi();
 
   const aiTool = AiToolsData[4];
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
-    setLoading(false);
-    console.log(description, input, loading);
+    const formData = new FormData();
+    formData.append("image", input);
+    formData.append("prompt", description);
+    const result = await callApi("/cloudinary/remove-object", formData);
+    if (result) {
+      setInput("");
+      setDescription("");
+    }
   };
 
   return (
@@ -81,10 +88,16 @@ const RemoveObject = () => {
           <p className="font-medium">{aiTool.title}</p>
         </div>
         <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <small className="text-gray-400">
-            Enter a topic and click “{aiTool.title} ” to get started
-          </small>
+          {data ? (
+            <img src={data} alt="Generated" className="rounded-lg shadow-md" />
+          ) : (
+            <>
+              <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+              <small className="text-gray-400">
+                Enter a topic and click “{aiTool.title} ” to get started
+              </small>
+            </>
+          )}
         </div>
       </div>
     </div>
