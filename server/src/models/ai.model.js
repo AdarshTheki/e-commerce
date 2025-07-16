@@ -1,11 +1,10 @@
-// models/ChatHistory.js
 import mongoose from "mongoose";
 
 const aiSchema = new mongoose.Schema(
   {
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // optional if you have user authentication
+      ref: "User",
       required: true,
     },
     prompt: {
@@ -33,4 +32,4 @@ const aiSchema = new mongoose.Schema(
   }
 );
 
-export const AI = mongoose.model("Ai", aiSchema);
+export const AIModel = mongoose.model("AIModel", aiSchema);
