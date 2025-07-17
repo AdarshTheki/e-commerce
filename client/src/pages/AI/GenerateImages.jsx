@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Sparkles, Image as ImageIcon } from "lucide-react";
 import useApi from "../../hooks/useApi";
+import { AiToolsData } from "../../assets/assets";
+import { Sparkles } from "lucide-react";
 
 const GenerateImage = () => {
   const styleData = [
@@ -15,79 +16,125 @@ const GenerateImage = () => {
   const [selectedStyle, setSelectedStyle] = useState("Realistic");
   const [prompt, setPrompt] = useState("");
   const [isPublic, setIsPublic] = useState(false);
-  const { loading, data: generatedImage, callApi } = useApi();
+  const { loading, data, callApi, setData } = useApi();
 
-  const handleSubmit = (e) => {
+  const aiTool = {
+    ...AiToolsData[2],
+    inputLabel: "Describe Your Image",
+    placeholder: "eg., a cute cate playing with a boll of yarn",
+    styleLabel: "Style",
+  };
+
+  // checkbox = Make this image public
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    callApi("/cloudinary/generate-image", { prompt, style: selectedStyle, isPublic });
+    const result = await callApi("/cloudinary/generate-image", {
+      prompt,
+      isPublic,
+      style: selectedStyle,
+    });
+    if (result) {
+      setData(result);
+      setPrompt("");
+      setSelectedStyle(styleData[0]);
+    }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-      {/* Form Section */}
-      <div className="bg-white rounded-2xl shadow-lg p-8">
-        <div className="flex items-center mb-6">
-          <Sparkles className="w-8 h-8 text-purple-600 mr-3" />
-          <h2 className="text-2xl font-bold text-gray-800">Generate Image</h2>
+    <div className="gap-4 p-4 grid sm:grid-cols-2">
+      {/* Left Create Form */}
+      <form className="card !px-5 flex-1 space-y-5" onSubmit={handleSubmit}>
+        <div className="flex gap-2 items-center">
+          <Sparkles className={`w-6 h-6`} style={{ color: aiTool.bg.from }} />
+          <p className="font-medium">{aiTool.title}</p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 mb-2">Describe Your Image</label>
-            <textarea
-              id="prompt"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
-              rows="4"
-              placeholder="e.g., a cute cat playing with a ball of yarn"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Style</label>
-            <div className="flex flex-wrap gap-3">
-              {styleData.map((style) => (
-                <button
-                  key={style}
-                  type="button"
-                  onClick={() => setSelectedStyle(style)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${selectedStyle === style ? "bg-purple-600 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}>
-                  {style}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center">
-            <input
-              id="is-public"
-              type="checkbox"
-              checked={isPublic}
-              onChange={(e) => setIsPublic(e.target.checked)}
-              className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-            />
-            <label htmlFor="is-public" className="ml-2 block text-sm text-gray-900">Make this image public</label>
-          </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-purple-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
-            {loading ? "Generating..." : "Generate Image"}
-          </button>
-        </form>
-      </div>
+        <label htmlFor="ai-input" className="font-medium text-sm">
+          {aiTool.inputLabel}
+        </label>
+        <textarea
+          rows={4}
+          name="ai-input"
+          id="ai-input"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder={aiTool.placeholder}
+          className="w-full text-sm p-2 px-5 rounded-lg border outline-none"
+          style={{ borderColor: aiTool.bg.from }}></textarea>
 
-      {/* Image Display Section */}
-      <div className="bg-white rounded-2xl shadow-lg p-8 flex items-center justify-center">
-        {loading ? (
-          <div className="flex flex-col items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
-            <p className="mt-4 text-gray-600">Generating your image...</p>
+        <div>
+          <p className="text-sm font-medium">{aiTool.styleLabel}</p>
+          <div className="flex flex-wrap gap-3 mt-2">
+            {styleData.map((style, i) => (
+              <button
+                type="button"
+                key={i}
+                onClick={() => setSelectedStyle(style)}
+                style={
+                  selectedStyle === style
+                    ? {
+                        border: `1px solid ${aiTool.bg.from}`,
+                        color: aiTool.bg.from,
+                      }
+                    : { border: "1px solid #aaa" }
+                }
+                className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
+                {style}
+              </button>
+            ))}
           </div>
-        ) : generatedImage ? (
-          <img src={generatedImage} alt="Generated" className="rounded-lg shadow-md" />
+        </div>
+
+        <label htmlFor="isPublic">
+          <input
+            type="checkbox"
+            name="isPublic"
+            id="isPublic"
+            value={isPublic}
+            checked={isPublic}
+            onChange={(e) => setIsPublic(e.target.checked ? true : false)}
+          />
+          <small className="cursor-pointer pl-2">Make this image public</small>
+        </label>
+
+        <button
+          disabled={loading}
+          style={{
+            background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
+          }}
+          className="py-2 mt-8 hover:opacity-85 flex text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+            </div>
+          ) : (
+            <aiTool.Icon className="w-4 h-4" />
+          )}
+          {aiTool.title}
+        </button>
+      </form>
+
+      {/* Right Generate Content */}
+      <div className="card !px-5 flex-1">
+        <div className="flex gap-2 items-center">
+          <aiTool.Icon
+            className="lucide lucide-square-pen w-7 h-7 p-1 text-white rounded-xl"
+            style={{
+              background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to}`,
+            }}
+          />
+          <p className="font-medium">{aiTool.title}</p>
+        </div>
+        {!data?.response ? (
+          <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
+            <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <small className="text-gray-400">
+              Enter a topic and click “{aiTool.title}” to get started
+            </small>
+          </div>
         ) : (
-          <div className="text-center text-gray-500">
-            <ImageIcon size={64} className="mx-auto mb-4" />
-            <p>Your generated image will appear here.</p>
+          <div className="mt-3 overflow-y-auto text-sm text-slate-600">
+            <img src="" alt="" />
           </div>
         )}
       </div>

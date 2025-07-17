@@ -50,13 +50,17 @@ const cartSlice = createSlice({
     builder
       .addCase(fetchCarts.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.items = [];
       })
       .addCase(fetchCarts.fulfilled, (state, action) => {
         state.loading = false;
+        state.error = null;
         state.items = action.payload;
       })
       .addCase(fetchCarts.rejected, (state, action) => {
         state.loading = false;
+        state.items = [];
         state.error = action.error.message;
       });
   },

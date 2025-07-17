@@ -73,7 +73,7 @@ const ShoppingCartPage = () => {
           description="Looks like you haven’t added anything to your cart yet."
           linkName="Start Shopping"
           linkClass="bg-indigo-600"
-          linkTo="/product"
+          linkTo="/products"
           mainClass="min-h-[100px]"
         />
       )}

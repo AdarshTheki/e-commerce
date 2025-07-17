@@ -95,7 +95,7 @@ const ProductListing = () => {
 
   return (
     <section className="p-2 container mx-auto">
-      <div className="lg:grid gap-5" style={{ gridTemplateColumns: "1fr 3fr" }}>
+      <div className="lg:grid gap-2" style={{ gridTemplateColumns: "1fr 3fr" }}>
         {/* <!-- Filters Sidebar --> */}
         <div
           className={
@@ -388,8 +388,8 @@ const ProductListing = () => {
 
         <div className="flex-1 flex flex-col gap-4 overflow-hidden">
           {/* Pagination */}
-          <div className="flex gap-4 flex-wrap justify-between items-center card !px-4">
-            <p>
+          <div className="flex gap-4 justify-between items-center card !px-2">
+            <p className="text-sm pl-2">
               <span className="max-sm:hidden">Showing</span>{" "}
               {(page - 1) * limit + 1} to{" "}
               {Math.min(page * limit, data?.totalDocs || 0)} of{" "}
@@ -398,12 +398,12 @@ const ProductListing = () => {
             <div className="flex gap-2 items-center justify-center">
               <button
                 onClick={() => data?.hasPrevPage && setPage((prev) => prev - 1)}
-                className="flex items-center justify-center p-2">
+                className="flex items-center justify-center hover:bg-gray-100 rounded-full p-2">
                 <ArrowLeft className="h-4 w-4" />
               </button>
-              <button className="p-1">{page}</button>
+              <span className="w-5 text-center">{page}</span>
               <button
-                className="flex items-center justify-center p-2"
+                className="flex items-center justify-center hover:bg-gray-100 rounded-full p-2"
                 onClick={() =>
                   data?.hasNextPage && setPage((prev) => prev + 1)
                 }>
@@ -411,7 +411,7 @@ const ProductListing = () => {
               </button>
             </div>
             <button
-              className="flex sm:hidden items-center justify-center gap-2"
+              className="flex sm:hidden items-center justify-center py-2 px-3 hover:bg-gray-200 rounded-full gap-2"
               onClick={() => setMobileView(true)}>
               <Settings className="w-4 h-4" />
               <span>Filter</span>

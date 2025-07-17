@@ -62,12 +62,18 @@ const removeSingleImg = async (url = "") => {
     const publicId = url.split("/").pop().split(".")[0];
     const result = await cloudinary.uploader.destroy(publicId);
     if (result.result !== "ok") {
-      throw new ApiError(500, `Failed to delete image from Cloudinary: ${result.result}`);
+      throw new ApiError(
+        500,
+        `Failed to delete image from Cloudinary: ${result.result}`
+      );
     }
     return true;
   } catch (error) {
     console.error("Error deleting single image:", error.message);
-    throw new ApiError(error.statusCode || 500, error.message || "Failed to delete image from Cloudinary.");
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Failed to delete image from Cloudinary."
+    );
   }
 };
 
@@ -76,25 +82,32 @@ const removeMultiImg = async (images = []) => {
     throw new ApiError(400, "Image URLs are required for deletion.");
   }
   try {
-    const publicIds = images.map((url) => url.split("/").pop().split(".")[0]);
+    const publicIds = images.map((url) => /^(cartify(-demo)?\/.+)$/.test(url));
     const deletionResults = await Promise.allSettled(
       publicIds.map((publicId) => cloudinary.uploader.destroy(publicId))
     );
 
-    const failedDeletions = deletionResults.filter(
-      (result) => result.status === "rejected" || result.value.result !== "ok"
-    );
+    // const failedDeletions = deletionResults.filter(
+    //   (result) => result.status === "rejected" || result.value.result !== "ok"
+    // );
 
-    if (failedDeletions.length > 0) {
-      const errors = failedDeletions.map(
-        (result) => result.reason?.message || result.value?.result || "Unknown error"
-      );
-      throw new ApiError(500, `Failed to delete some images from Cloudinary: ${errors.join(", ")}`);
-    }
+    // if (failedDeletions.length > 0) {
+    //   const errors = failedDeletions.map(
+    //     (result) =>
+    //       result.reason?.message || result.value?.result || "Unknown error"
+    //   );
+    //   throw new ApiError(
+    //     500,
+    //     `Failed to delete some images from Cloudinary: ${errors.join(", ")}`
+    //   );
+    // }
     return true;
   } catch (error) {
     console.error("Error deleting multiple images:", error.message);
-    throw new ApiError(error.statusCode || 500, error.message || "Failed to delete images from Cloudinary.");
+    throw new ApiError(
+      error.statusCode || 500,
+      error.message || "Failed to delete images from Cloudinary."
+    );
   }
 };
 

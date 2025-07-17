@@ -23,14 +23,8 @@ const WriteArticle = () => {
 
   const handleSubmit = async () => {
     if (!input.trim()) return toast.error("Enter a valid article topic");
-    const result = await callApi("/openai/generate-article", {
-      prompt: `Write a article about this "${input}" in ${selected}`,
-      length:
-        styleData[0] === selected
-          ? 1000
-          : styleData[1] === selected
-          ? 3000
-          : 8000,
+    const result = await callApi("/openai/generate-text", {
+      prompt: `Write an article about "${input}" in ${selected}.`,
     });
     if (result) {
       setData(result);
