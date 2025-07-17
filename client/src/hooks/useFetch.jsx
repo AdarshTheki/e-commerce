@@ -15,7 +15,7 @@ const useFetch = (url) => {
 
     try {
       const res = await axios.get(url, { signal });
-      if (res.data) setData(res.data);
+      if (res.data) setData(res?.data?.data);
     } catch (err) {
       setError(err?.response?.data?.message || "An internal error occurred");
     } finally {

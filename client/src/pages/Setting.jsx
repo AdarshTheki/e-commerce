@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { User, Lock, LogOut } from "lucide-react";
-import useSettings from "../hooks/useSettings";
+import useAuth from "../hooks/useAuth";
 
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
-  const { user, handleLogout } = useSettings();
 
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <ProfileTab user={user} />;
+        return <ProfileTab />;
       case "password":
         return <PasswordTab />;
       case "logout":
-        return <LogoutTab handleLogout={handleLogout} />;
+        return <LogoutTab />;
       default:
         return null;
     }
@@ -53,13 +52,14 @@ const ProfileSettings = () => {
   );
 };
 
-const ProfileTab = ({ user }) => {
+const ProfileTab = () => {
   const {
+    user,
     handleUpdateProfile,
     handleUploadAvatar,
     fullNameAndEmailLoading,
     avatarLoading,
-  } = useSettings();
+  } = useAuth();
   const [fullName, setFullName] = useState(user?.fullName || "");
   const [email, setEmail] = useState(user?.email || "");
 
@@ -141,7 +141,7 @@ const ProfileTab = ({ user }) => {
 };
 
 const PasswordTab = () => {
-  const { handleChangePassword, passwordLoading } = useSettings();
+  const { handleChangePassword, passwordLoading } = useAuth();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
@@ -193,7 +193,8 @@ const PasswordTab = () => {
   );
 };
 
-const LogoutTab = ({ handleLogout }) => {
+const LogoutTab = () => {
+  const { handleLogout } = useAuth();
   const [showModal, setShowModal] = useState(false);
 
   return (

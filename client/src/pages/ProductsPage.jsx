@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import useFetch from "../hooks/useFetch";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
+import useApi from "../hooks/useApi";
 import useDebounce from "../hooks/useDebounce";
 import { Loading, Input } from "../utils";
 import { ProductItem } from "../components";
@@ -40,8 +41,8 @@ const ratingOptions = [
 
 const ProductListing = () => {
   const [params] = useSearchParams();
-  const { list: categories } = useSelector((state) => state.categories);
-  const { list: brands } = useSelector((state) => state.brands);
+  const { items: categories } = useSelector((state) => state.categories);
+  const { items: brands } = useSelector((state) => state.brands);
   const [limit, setLimit] = useState(10);
   const [category, setCategory] = useState(params.get("category") || "");
   const [brand, setBrand] = useState(params.get("brand") || "");
@@ -55,23 +56,42 @@ const ProductListing = () => {
   const [isOpenSort, setIsOpenSort] = React.useState(false);
   const [mobileView, setMobileView] = React.useState(false);
 
-  const queryParams = new URLSearchParams({
-    ...(category && { category }),
-    ...(brand && { brand }),
-    minPrice: minPrice.toString(),
-    maxPrice: maxPrice.toString(),
-    ...(rating && {
-      minRating: (rating === 5 ? rating - 0.5 : rating).toString(),
-      maxRating: (rating === 5 ? rating : rating + 1).toString(),
-    }),
-    sortBy: sortBy.split("-")[0],
-    order: sortBy.split("-")[1],
+  const { data, loading, callApi } = useApi();
+
+  // const { data } = useFetch(`/product?${queryParams}`);
+
+  useEffect(() => {
+    callApi(
+      `/product`,
+      {
+        ...(category && { category }),
+        ...(brand && { brand }),
+        minPrice: minPrice.toString(),
+        maxPrice: maxPrice.toString(),
+        ...(rating && {
+          minRating: (rating === 5 ? rating - 0.5 : rating).toString(),
+          maxRating: (rating === 5 ? rating : rating + 1).toString(),
+        }),
+        sortBy: sortBy.split("-")[0],
+        order: sortBy.split("-")[1],
+        page,
+        limit,
+        title: params.get("title") || query,
+      },
+      "get"
+    );
+  }, [
+    category,
+    brand,
+    minPrice,
+    maxPrice,
+    rating,
+    sortBy,
     page,
     limit,
-    title: params.get("title") || query,
-  }).toString();
-
-  const { data } = useFetch(`/product?${queryParams}`);
+    params,
+    query,
+  ]);
 
   return (
     <section className="p-2 container mx-auto">
@@ -202,8 +222,8 @@ const ProductListing = () => {
                   }
                   className="w-full flex justify-between text-left">
                   <span className="capitalize">
-                    {categories?.items?.find((i) => i?.title === category)
-                      ?.title || "Select"}
+                    {categories?.find((i) => i?.title === category)?.title ||
+                      "Select"}
                   </span>
                   {isOpenSort === "category" ? (
                     <ChevronUp className="w-4 h-4" />
@@ -215,7 +235,7 @@ const ProductListing = () => {
 
               {isOpenSort === "category" && (
                 <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
-                  {categories?.items?.map((sort) => (
+                  {categories?.map((sort) => (
                     <li
                       key={sort?._id}
                       className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
@@ -241,8 +261,7 @@ const ProductListing = () => {
                   }
                   className="w-full flex justify-between text-left">
                   <span className="capitalize">
-                    {brands?.items?.find((i) => i?.title === brand)?.title ||
-                      "Select"}
+                    {brands?.find((i) => i?.title === brand)?.title || "Select"}
                   </span>
                   {isOpenSort === "brand" ? (
                     <ChevronUp className="w-4 h-4" />
@@ -254,7 +273,7 @@ const ProductListing = () => {
 
               {isOpenSort === "brand" && (
                 <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
-                  {brands?.items?.map((sort) => (
+                  {brands?.map((sort) => (
                     <li
                       key={sort?._id}
                       className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
@@ -368,21 +387,17 @@ const ProductListing = () => {
         </div>
 
         <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-          {!data?.totalItems && <Loading className="h-[70vh]" />}
-
           {/* Pagination */}
           <div className="flex gap-4 flex-wrap justify-between items-center card !px-4">
             <p>
               <span className="max-sm:hidden">Showing</span>{" "}
               {(page - 1) * limit + 1} to{" "}
-              {Math.min(page * limit, data?.totalItems || 0)} of{" "}
-              {data?.totalItems}
+              {Math.min(page * limit, data?.totalDocs || 0)} of{" "}
+              {data?.totalDocs}
             </p>
             <div className="flex gap-2 items-center justify-center">
               <button
-                onClick={() =>
-                  data?.hasPreviousPage && setPage((prev) => prev - 1)
-                }
+                onClick={() => data?.hasPrevPage && setPage((prev) => prev - 1)}
                 className="flex items-center justify-center p-2">
                 <ArrowLeft className="h-4 w-4" />
               </button>
@@ -403,11 +418,19 @@ const ProductListing = () => {
             </button>
           </div>
 
+          {loading && <Loading className="h-[70vh]" />}
+
+          {!loading && !data?.totalDocs && (
+            <p className="flex items-center justify-center min-h-[50dvh]">
+              Product not found
+            </p>
+          )}
+
           {/* <!-- Products Grid --> */}
           <div className={`grid md:grid-cols-3 grid-cols-2 gap-2 sm:gap-4`}>
             {/* <!-- Product Card --> */}
-            {data?.items?.length &&
-              data?.items?.map((item, index) => (
+            {data?.docs?.length &&
+              data?.docs?.map((item, index) => (
                 <ProductItem
                   key={item?._id}
                   {...item}

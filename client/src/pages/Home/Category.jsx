@@ -4,9 +4,7 @@ import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 const Category = () => {
-  const {
-    list: { items },
-  } = useSelector((state) => state.categories);
+  const { items } = useSelector((state) => state.categories);
 
   return (
     <div className="mx-auto container" id="categories">
@@ -38,7 +36,7 @@ const Category = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">48 Products</span>
                     <NavLink
-                      to={`/product?category=${item.title}`}
+                      to={`/products?category=${item.title}`}
                       className="text-white bg-indigo-600 hover:bg-indigo-700 rounded-full p-2 transition-colors duration-300">
                       <ArrowRightIcon />
                     </NavLink>

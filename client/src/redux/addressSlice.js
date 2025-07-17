@@ -11,7 +11,7 @@ export const fetchAddresses = createAsyncThunk(
   "addresses/fetchAddresses",
   async () => {
     const response = await axios.get(`/address`);
-    return response?.data;
+    return response?.data?.data;
   }
 );
 

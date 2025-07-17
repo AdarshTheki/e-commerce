@@ -20,10 +20,19 @@ export default function Item({ delay = "100ms", ...item }) {
     { name: "sale", bg: "bg-red-100", text: "text-red-800" },
   ];
 
-  const handleAddToCart = async (productId) => {
+  const randomType = types[Math.floor(Math.random() * types.length)];
+
+  const handleAddToCart = async () => {
     try {
       if (!user?._id) return toast.error("Un-Authorized User");
-      const res = await axios.post(`/cart`, { productId, quantity: 1 });
+      if (!item?._id) return toast.error("Product ID not found");
+
+      dispatch(addItem(item));
+
+      const res = await axios.post(`/cart`, {
+        productId: item._id,
+        quantity: 1,
+      });
       if (res.data) {
         toast.success("Cart Added");
       }
@@ -32,14 +41,12 @@ export default function Item({ delay = "100ms", ...item }) {
     }
   };
 
-  const randomType = types[Math.floor(Math.random() * types.length)];
-
   return (
     <div
       className="w-full bg-white rounded-lg shadow-sm hover:shadow-md transition duration-300 group animate-fadeIn"
       style={{ animationDelay: delay }}>
       <div className="relative overflow-hidden rounded-t-lg">
-        <NavLink to={`/product/${item._id}`}>
+        <NavLink to={`/products/${item._id}`}>
           <LazyImage
             src={item.thumbnail}
             fallback={"/placeholder.jpg"}
@@ -53,10 +60,7 @@ export default function Item({ delay = "100ms", ...item }) {
         />
 
         <button
-          onClick={() => {
-            dispatch(addItem(item));
-            handleAddToCart(item._id);
-          }}
+          onClick={handleAddToCart}
           className="text-indigo-600 absolute top-12 right-2 sm:hidden p-1.5 bg-transparent">
           <ShoppingBag className="w-5 h-5" />
         </button>
@@ -82,10 +86,7 @@ export default function Item({ delay = "100ms", ...item }) {
         <div className="flex items-center mt-2 justify-between">
           <span className="text-lg font-bold">${item.price}</span>
           <button
-            onClick={() => {
-              dispatch(addItem(item));
-              handleAddToCart(item._id);
-            }}
+            onClick={handleAddToCart}
             className="py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition duration-300 sm:flex hidden items-center gap-2">
             <ShoppingBag className="w-4 h-4" />
             Add

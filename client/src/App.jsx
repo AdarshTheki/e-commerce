@@ -13,7 +13,6 @@ import {
   GalleryPage,
   HomePage,
   LoginPage,
-  Notfound,
   OrderFailed,
   OrderListing,
   OrderSuccess,
@@ -37,13 +36,14 @@ import {
   ReviewResume,
   WriteArticles,
 } from "./pages/AI";
+import { NotFound } from "./utils";
 
 // Protected Layout for authenticated routes
 const ProtectedLayout = () => {
-  const { user } = useSelector((state) => state.auth);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const location = useLocation();
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -87,7 +87,7 @@ const router = createBrowserRouter([
           },
         ],
       },
-      { path: "*", element: <Notfound /> },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

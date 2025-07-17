@@ -10,7 +10,6 @@ import { initializeSocketIO } from "./socket/index.js";
 import userRoute from "./routes/user.router.js";
 import productRoute from "./routes/product.router.js";
 import commentRoute from "./routes/comment.router.js";
-import reviewRoute from "./routes/review.router.js"; // delete
 import categoryRoute from "./routes/category.router.js";
 import brandRoute from "./routes/brand.router.js";
 import cartRoute from "./routes/cart.router.js";
@@ -22,6 +21,7 @@ import galleryRoute from "./routes/gallery.router.js";
 import messageRoute from "./routes/message.router.js";
 import chatRoute from "./routes/chat.router.js";
 import orderRoute from "./routes/order.router.js";
+// import reviewRoute from "./routes/review.router.js"; // delete
 
 const app = express();
 
@@ -62,7 +62,6 @@ initializeSocketIO(io);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
-app.use("/api/v1/review", reviewRoute);
 app.use("/api/v1/comments", commentRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/brand", brandRoute);
@@ -73,6 +72,7 @@ app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/gallery", galleryRoute);
 app.use("/api/v1/chats", chatRoute);
 app.use("/api/v1/messages", messageRoute);
+// app.use("/api/v1/review", reviewRoute);
 app.use("/", health_checkRoute);
 
 // Global Error Handler

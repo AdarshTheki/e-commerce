@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ArrowLeft,
   ImageUp,
@@ -8,31 +8,16 @@ import {
   Trash2Icon,
   X,
 } from "lucide-react";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 import ChatItem from "./ChatItem";
 import MessageItem from "./MessageItem";
 import AddChatModal from "./AddChatModal";
-import useFetch from "../../hooks/useFetch";
 import { Avatar, Input, Loading } from "../../utils";
-import {
-  axios,
-  socket,
-  LocalStorage,
-  errorHandler,
-  classNames,
-  getChatObjectMetadata,
-} from "../../helper";
+import { socket, classNames, getChatObjectMetadata } from "../../helper";
+import useChat from "../../hooks/useChat";
 
 const JOIN_CHAT_EVENT = "joinChat";
-const NEW_CHAT_EVENT = "newChat";
-const LEAVE_CHAT_EVENT = "leaveChat";
-const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
-const MESSAGE_RECEIVED_EVENT = "messageReceived";
-const MESSAGE_DELETE_EVENT = "messageDeleted";
-const SOCKET_ERROR_EVENT = "socketError";
 // const CONNECTED_EVENT = "connected";
 // const DISCONNECT_EVENT = "disconnect";
 // const TYPING_EVENT = "typing";
@@ -40,21 +25,31 @@ const SOCKET_ERROR_EVENT = "socketError";
 
 const ChatPage = () => {
   const [message, setMessage] = useState("");
-  const [messageSendLoading, setMessageSendLoading] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [unReadMessages, setUnReadMessages] = useState([]);
-  const [chats, setChats] = useState([]);
   const [updateChat, setUpdateChat] = useState(null);
-  const [chatsLoading, setChatsLoading] = useState(false);
-  const [messagesLoading, setMessagesLoading] = useState(false);
-  const currentChat = useRef(null);
   const [openAddChat, setOpenAddChat] = useState(false);
   const [searchUserChat, setSearchUserChat] = useState("");
-  const { data: usersData } = useFetch("/chats/users");
-  const { user } = useSelector((state) => state.auth);
   const [previews, setPreviews] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [mobileChatOpen, setMobileChatOpen] = useState(true);
+  const {
+    onCreateOrGetChat,
+    onFetchMessages,
+    onSendMessage,
+    setChats,
+    setUnReadMessages,
+    handleChatDeleted,
+    handleMessageDelete,
+    unReadMessages,
+    sendMessageLoading,
+    messagesLoading,
+    chatsLoading,
+    users,
+    chats,
+    messages,
+    chat,
+    setChat,
+  } = useChat();
+  const { user } = useSelector((state) => state.auth);
 
   const handlePreviewAttachments = (e) => {
     const files = e.target.files;
@@ -71,177 +66,14 @@ const ChatPage = () => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const onSocketError = (message) => {
-    toast.error(`${JSON.stringify(message)}`);
-  };
-
-  const fetchChats = async () => {
-    try {
-      setChatsLoading(true);
-      const { data } = await axios.get("/chats");
-      setChats(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setChatsLoading(false);
-    }
-  };
-
-  const fetchMessages = async (chatId) => {
-    try {
-      setMessagesLoading(true);
-      const { data } = await axios.get(`/messages/${chatId}`);
-      setMessages(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setMessagesLoading(false);
-    }
-  };
-
-  const onNewChat = (chat) => {
-    // console.log("new chat", chat);
-    setChats((prev) => [chat, ...prev]);
-  };
-
-  const onChatLeave = (chat) => {
-    // console.log("chat leave", chat);
-    setChats((prev) => prev.filter((c) => c._id !== chat._id));
-    if (chat._id === currentChat.current?._id) {
-      LocalStorage.set("currentChat", null);
-      currentChat.current = null; // Clear current chat reference
-    } else {
-      console.log(chat._id, currentChat.current?._id);
-    }
-  };
-
-  const onGroupUpdate = (chat) => {
-    // console.log("update group chat", chat);
-    if (chat._id === currentChat.current?._id) {
-      // update chat details
-    }
-    setChats((prev) => [
-      ...prev.map((c) => {
-        if (c._id === chat._id) {
-          return chat;
-        }
-        return c;
-      }),
-    ]);
-  };
-
-  const onMessageDelete = (message) => {
-    // console.log(message, "delete");
-    setMessages((prev) => prev.filter((msg) => msg._id !== message._id));
-    // update chat last message
-  };
-
-  const onMessageRetrieved = (msg) => {
-    if (msg?.chat === currentChat.current?._id) {
-      setMessages((prev) => [...prev, msg]);
-    } else {
-      setUnReadMessages((prev) => [...prev, msg]);
-    }
-  };
-
-  const handleCreateOrGetChat = async (id) => {
-    try {
-      const res = await axios.post(`/chats/chat/${id}`);
-      if (res.data) {
-        LocalStorage.set("currentChat", res.data);
-        setSearchUserChat("");
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
-  const handleChatDeleted = async (chatId) => {
-    try {
-      if (!chatId) return;
-      const res = await axios.delete(`/chats/chat/${chatId}`);
-      if (res.data) {
-        toast.success("chat deleted success");
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    try {
-      setMessageSendLoading(true);
-      if (!message.trim()) return;
-      const formData = new FormData();
-      formData.append("content", message);
-      if (attachments?.length > 0) {
-        attachments?.forEach((file, i) => {
-          formData.append("attachments", attachments[i]);
-        });
-      }
-      const res = await axios.post(
-        `/messages/${currentChat.current?._id}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      if (res.data) {
-        setAttachments([]);
-        setPreviews([]);
-        setMessage("");
-      }
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setMessageSendLoading(false);
-    }
-  };
-
-  const handleDeleteMessage = async (messageId) => {
-    try {
-      if (!messageId) return;
-      const res = await axios.delete(`/messages/${messageId}`);
-      if (res.data) {
-        toast.success("Message deleted successfully");
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchChats();
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on(NEW_CHAT_EVENT, onNewChat);
-    socket.on(LEAVE_CHAT_EVENT, onChatLeave);
-    socket.on(UPDATE_GROUP_NAME_EVENT, onGroupUpdate);
-    socket.on(MESSAGE_RECEIVED_EVENT, onMessageRetrieved);
-    socket.on(MESSAGE_DELETE_EVENT, onMessageDelete);
-    socket.on(SOCKET_ERROR_EVENT, onSocketError);
-
-    return () => {
-      socket.off(NEW_CHAT_EVENT, onNewChat);
-      socket.off(LEAVE_CHAT_EVENT, onChatLeave);
-      socket.off(UPDATE_GROUP_NAME_EVENT, onGroupUpdate);
-      socket.off(MESSAGE_RECEIVED_EVENT, onMessageRetrieved);
-      socket.off(MESSAGE_DELETE_EVENT, onMessageDelete);
-      socket.off(SOCKET_ERROR_EVENT, onSocketError);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket]);
-
   return (
     <div className="fixed top-12 w-full sm:bottom-0 bottom-10 pt-4 pb-2 bg-slate-50">
       <div className="flex max-sm:flex-col h-full">
         {/* Chat Left Side */}
         <div
           className={classNames(
-            "!sm:w-[280px] max-sm:w-full h-full overflow-y-auto",
-            mobileChatOpen && currentChat.current?._id && "max-sm:hidden"
+            "!sm:max-w-[280px] max-sm:w-full h-full overflow-y-auto",
+            mobileChatOpen && chat?._id && "max-sm:hidden"
           )}>
           {/* Create Group Modal */}
           {!!openAddChat && (
@@ -250,7 +82,6 @@ const ChatPage = () => {
                 setOpenAddChat(false);
                 setUpdateChat(null);
               }}
-              usersData={usersData}
               chat={updateChat}
             />
           )}
@@ -282,13 +113,16 @@ const ChatPage = () => {
           {/* Display Search User Listing*/}
           {!!searchUserChat?.length && (
             <div className="flex flex-col absolute z-10 w-[350px] bg-white h-1/2 overflow-y-auto">
-              {[...usersData]
+              {[...users]
                 .filter((i) =>
                   i?.fullName?.toLowerCase().includes(searchUserChat)
                 )
                 .map((item) => (
                   <button
-                    onClick={() => handleCreateOrGetChat(item._id)}
+                    onClick={() => {
+                      onCreateOrGetChat(item._id);
+                      setSearchUserChat("");
+                    }}
                     className="text-left w-full flex gap-2 items-center hover:bg-gray-100 py-1 px-4 rounded-2xl"
                     key={item?._id}>
                     <div className="scale-75">
@@ -307,33 +141,26 @@ const ChatPage = () => {
             <ChatItem
               key={item?._id}
               item={item}
-              chatWith={
-                item?.participants?.filter(
-                  (p) => p._id.toString() !== user._id.toString()
-                )[0]
-              }
               unreadCount={
                 [...unReadMessages].filter((n) => n.chat === item._id).length
               }
-              isActive={currentChat.current?._id === item?._id}
+              isActive={chat?._id === item?._id}
               onUpdate={() => {
                 setUpdateChat(item);
                 setOpenAddChat(true);
               }}
-              onDelete={(chatId) => handleChatDeleted(chatId)}
+              onDelete={() => handleChatDeleted(item._id)}
               onLeave={(chatId) => {
                 setChats((prev) => prev.filter((c) => c._id !== chatId));
-                if (currentChat.current?._id === chatId) {
-                  currentChat.current = null;
-                  LocalStorage.remove("currentChat");
+                if (chat?._id === chatId) {
+                  setChat(null);
                 }
               }}
               onClick={() => {
-                currentChat.current = item;
                 setMobileChatOpen(true);
-                LocalStorage.set("currentChat", item);
                 socket.emit(JOIN_CHAT_EVENT, item._id);
-                fetchMessages(item._id);
+                setChat({ ...item });
+                onFetchMessages(item._id);
                 setUnReadMessages((prev) =>
                   prev.filter((n) => n.chat !== item._id)
                 );
@@ -342,8 +169,16 @@ const ChatPage = () => {
           ))}
         </div>
 
+        {!chat?._id && (
+          <div className="w-full max-sm:hidden flex items-center justify-center border-l border-slate-200 overflow-y-auto flex-col">
+            <p className="flex items-center justify-center">
+              Get chat messages
+            </p>
+          </div>
+        )}
+
         {/* Messages Listing*/}
-        {!!currentChat.current?._id && (
+        {!!chat?._id && (
           <div
             className={classNames(
               "w-full max-sm:hidden border-l border-slate-200 overflow-y-auto flex flex-col",
@@ -356,16 +191,14 @@ const ChatPage = () => {
                 <ArrowLeft />
               </button>
               <Avatar
-                name={getChatObjectMetadata(currentChat.current, user).title}
-                avatarUrl={
-                  getChatObjectMetadata(currentChat.current, user).avatar
-                }
+                name={getChatObjectMetadata(chat, user).title}
+                avatarUrl={getChatObjectMetadata(chat, user).avatar}
               />
               <div>
-                <p>{getChatObjectMetadata(currentChat.current, user).title}</p>
-                {currentChat.current.isGroupChat && (
+                <p>{getChatObjectMetadata(chat, user).title}</p>
+                {chat.isGroupChat && (
                   <p className="text-xs font-light">
-                    {currentChat.current.participants?.length} members
+                    {chat.participants?.length} members
                   </p>
                 )}
               </div>
@@ -378,8 +211,8 @@ const ChatPage = () => {
                   <MessageItem
                     key={item?._id}
                     item={item}
+                    onDelete={() => handleMessageDelete(item?._id)}
                     sender={item?.sender?._id === user?._id}
-                    onDelete={() => handleDeleteMessage(item?._id)}
                   />
                 ))}
                 {!messages?.length && (
@@ -408,7 +241,14 @@ const ChatPage = () => {
             )}
 
             <form
-              onSubmit={handleSendMessage}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!message.trim()) return;
+                onSendMessage(message, attachments, chat?._id);
+                setMessage("");
+                setAttachments([]);
+                setPreviews([]);
+              }}
               className="w-full py-2 px-4 flex gap-2 items-center sticky -bottom-1 bg-white">
               <div className="h-[40px] px-2 rounded-2xl border border-gray-300 w-full flex items-center">
                 <Input
@@ -420,24 +260,24 @@ const ChatPage = () => {
                 />
                 <label
                   title="send files with limit 5"
-                  htmlFor="attachment"
+                  htmlFor="attachments"
                   className="cursor-pointer p-2">
                   <ImageUp className="w-5 h-5" />
                   <input
                     type="file"
                     multiple={true}
                     onChange={handlePreviewAttachments}
-                    id="attachment"
-                    name="attachment"
+                    id="attachments"
+                    name="attachments"
                     className="hidden"
                   />
                 </label>
               </div>
               <button
-                disabled={messageSendLoading}
+                disabled={sendMessageLoading}
                 type="submit"
                 className="bg-indigo-600 text-white h-[40px] flex gap-2 rounded-2xl px-5 hover:opacity-80 items-center">
-                {messageSendLoading ? (
+                {sendMessageLoading ? (
                   <svg
                     className="animate-spin h-4 w-4 text-white"
                     fill="none"

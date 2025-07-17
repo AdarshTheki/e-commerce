@@ -51,9 +51,9 @@ const ShippingAddress = () => {
 
       if (res.data) {
         if (item._id) {
-          dispatch(updateAddress(res.data.shipping));
+          dispatch(updateAddress(res.data.data));
         } else {
-          dispatch(addAddress(res.data.shipping));
+          dispatch(addAddress(res.data.data));
         }
 
         setIsOpenForm(false);
@@ -68,8 +68,8 @@ const ShippingAddress = () => {
 
   const handleDeleteAddress = async (id) => {
     try {
-      dispatch(removeAddress(id));
       await axios.delete(`/address/${id}`);
+      dispatch(removeAddress(id));
     } catch (error) {
       errorHandler(error);
     }

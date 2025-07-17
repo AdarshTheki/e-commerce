@@ -2,7 +2,7 @@ import React from "react";
 import { classNames, formatChatTime } from "../../helper";
 import { Trash2Icon } from "lucide-react";
 
-const MessageItem = ({ item, onDelete, sender }) => {
+const Message = ({ item, onDelete, sender }) => {
   return (
     <div
       className={classNames(
@@ -49,4 +49,4 @@ const MessageItem = ({ item, onDelete, sender }) => {
   );
 };
 
-export default MessageItem;
+export default Message;

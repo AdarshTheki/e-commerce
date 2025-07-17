@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import useRegister from "../hooks/useRegister";
+import useAuth from "../hooks/useAuth";
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
@@ -9,7 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [visible, setVisible] = useState(false);
-  const { loading, handleRegister } = useRegister();
+  const { registerLoading, handleRegister } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,8 +27,7 @@ const Register = () => {
           <div>
             <label
               htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+              className="block text-sm font-medium text-gray-700 mb-2">
               Full Name
             </label>
             <input
@@ -45,8 +44,7 @@ const Register = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+              className="block text-sm font-medium text-gray-700 mb-2">
               Email Address
             </label>
             <input
@@ -64,8 +62,7 @@ const Register = () => {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+              className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <input
@@ -81,16 +78,14 @@ const Register = () => {
             <button
               type="button"
               className="absolute top-10 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              onClick={() => setVisible(!visible)}
-            >
+              onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           <div className="relative">
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
+              className="block text-sm font-medium text-gray-700 mb-2">
               Confirm Password
             </label>
             <input
@@ -106,11 +101,10 @@ const Register = () => {
           </div>
 
           <button
-            disabled={loading}
+            disabled={registerLoading}
             type="submit"
-            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Creating Account..." : "Sign Up"}
+            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+            {registerLoading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
@@ -119,8 +113,7 @@ const Register = () => {
             Already have an account?
             <Link
               to="/login"
-              className="text-blue-600 pl-2 hover:text-blue-800 font-medium"
-            >
+              className="text-blue-600 pl-2 hover:text-blue-800 font-medium">
               Sign In
             </Link>
           </p>

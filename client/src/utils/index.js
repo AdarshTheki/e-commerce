@@ -1,21 +1,8 @@
 import Input from "./Input";
 import Loading from "./Loading";
-import PaginationBtn from "./PaginationBtn";
 import Select from "./Select";
-import StarRating from "./StarRating";
-import StarSelected from "./StarSelected";
 import LazyImage from "./LazyImage";
 import Avatar from "./Avatar";
 import NotFound from "./NotFound";
 
-export {
-  NotFound,
-  Avatar,
-  LazyImage,
-  StarSelected,
-  StarRating,
-  Input,
-  Loading,
-  PaginationBtn,
-  Select,
-};
+export { NotFound, Avatar, LazyImage, Loading, Input, Select };

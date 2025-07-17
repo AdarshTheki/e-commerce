@@ -24,15 +24,8 @@ const authSlice = createSlice({
         user: null,
       };
     },
-    // chatId
-    handleChatId: (state, action) => {
-      return {
-        ...state,
-        chatId: action.payload,
-      };
-    },
   },
 });
 
-export const { login, logout, handleChatId } = authSlice.actions;
+export const { login, logout } = authSlice.actions;
 export default authSlice.reducer;

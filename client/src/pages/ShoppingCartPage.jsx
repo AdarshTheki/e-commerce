@@ -35,6 +35,28 @@ const ShoppingCartPage = () => {
     }
   };
 
+  const handleUpdateQty = async (id, qty) => {
+    try {
+      const res = await axios.put("/cart", { productId: id, quantity: qty });
+      if (res.data) {
+        dispatch(updateItemQuantity({ _id: id, quantity: qty }));
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
+  const handleRemoveItem = async (id) => {
+    try {
+      const res = await axios.delete(`/cart/${id}`);
+      if (res.data) {
+        dispatch(removeItem(id));
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+  };
+
   const totals =
     items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);
 
@@ -64,10 +86,8 @@ const ShoppingCartPage = () => {
                 <CartListing
                   key={item._id}
                   {...item}
-                  onQtyChange={(quantity) =>
-                    dispatch(updateItemQuantity({ _id: item._id, quantity }))
-                  }
-                  onRemove={() => dispatch(removeItem(item._id))}
+                  onQtyChange={(qty) => handleUpdateQty(item._id, qty)}
+                  onRemove={() => handleRemoveItem(item._id)}
                 />
               );
             })}
@@ -145,32 +165,6 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
   const { _id, thumbnail, title, price, category, brand } = productId;
   const [qty, setQty] = useState(quantity);
 
-  const handleDelete = async () => {
-    try {
-      if (!_id) return;
-      const res = await axios.delete(`/cart/${_id}`);
-      if (res.data) {
-        onRemove();
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-  const handleUpdateQty = async () => {
-    try {
-      if (!_id || !qty) return;
-      const res = await axios.put(`/cart`, {
-        productId: _id,
-        quantity: qty,
-      });
-      if (res.data) {
-        onQtyChange(qty);
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
   return (
     <div className="flex max-sm:flex-col gap-5 items-start border-b text-slate-700 border-gray-300 py-4">
       <NavLink to={`/product/${_id}`} className="bg-gray-300 max-sm:w-full">
@@ -210,9 +204,11 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
               }}>
               +
             </button>
-            {quantity !== qty && <button onClick={handleUpdateQty}>Set</button>}
+            {quantity !== qty && (
+              <button onClick={() => onQtyChange(qty)}>Set</button>
+            )}
           </div>
-          <button onClick={handleDelete} className="text-red-600 svg-btn !p-2">
+          <button onClick={onRemove} className="text-red-600 svg-btn !p-2">
             <Trash2Icon />
           </button>
         </div>

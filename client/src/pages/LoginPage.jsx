@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import useLogin from "../hooks/useLogin";
+import useAuth from "../hooks/useAuth";
 
 const Login = () => {
   const [email, setEmail] = useState("guest-user@gmail.com");
   const [password, setPassword] = useState("12345");
   const [rememberMe, setRememberMe] = useState(false);
   const [visible, setVisible] = useState(false);
-  const { loading, handleLogin } = useLogin();
+  const { loginLoading, handleLogin } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -92,10 +92,10 @@ const Login = () => {
           </div>
 
           <button
-            disabled={loading}
+            disabled={loginLoading}
             type="submit"
             className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
-            {loading ? "Signing In..." : "Sign In"}
+            {loginLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 

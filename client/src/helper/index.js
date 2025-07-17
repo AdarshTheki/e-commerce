@@ -82,14 +82,14 @@ export const getChatObjectMetadata = (
         }`
       : "No messages yet"; // Placeholder text if there are no messages.
 
-  if (chat.isGroupChat) {
+  if (chat?.isGroupChat) {
     // Case: Group chat
     // Return metadata specific to group chats.
     return {
       // Default avatar for group chats.
       avatar: "/placeholder.jpg",
       title: chat.name, // Group name serves as the title.
-      description: `${chat.participants.length} members in the chat`, // Description indicates the number of members.
+      description: `${chat?.participants.length} members in the chat`, // Description indicates the number of members.
       lastMessage: chat?.lastMessage
         ? chat?.lastMessage?.sender?.username + ": " + lastMessage
         : lastMessage,
@@ -97,7 +97,7 @@ export const getChatObjectMetadata = (
   } else {
     // Case: Individual chat
     // Identify the participant other than the logged-in user.
-    const participant = chat.participants.find(
+    const participant = chat?.participants.find(
       (p) => p._id !== loggedInUser?._id
     );
     // Return metadata specific to individual chats.

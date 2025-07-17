@@ -3,13 +3,13 @@ import { axios } from "../helper";
 
 export const fetchBrands = createAsyncThunk("brands/fetchBrands", async () => {
   const response = await axios.get(`/brand`);
-  return response.data;
+  return response?.data?.data?.docs;
 });
 
 const brandSlice = createSlice({
   name: "brands",
   initialState: {
-    list: [],
+    items: [],
     loading: false,
     error: null,
   },
@@ -21,7 +21,7 @@ const brandSlice = createSlice({
       })
       .addCase(fetchBrands.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload;
+        state.items = action.payload;
       })
       .addCase(fetchBrands.rejected, (state, action) => {
         state.loading = false;

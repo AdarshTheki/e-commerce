@@ -5,7 +5,7 @@ export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async () => {
     const response = await axios.get(`/product?limit=50`);
-    return response.data?.items;
+    return response?.data?.data?.docs;
   }
 );
 

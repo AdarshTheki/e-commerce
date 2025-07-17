@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import useFetch from "../hooks/useFetch";
+import { useEffect } from "react";
+import useApi from "../hooks/useApi";
 import { format } from "date-fns";
 import { NavLink } from "react-router-dom";
 import { Loading } from "../utils";
@@ -27,8 +27,7 @@ const OrderEmpty = () => {
 };
 
 const OrderListing = () => {
-  const { data, loading } = useFetch("/order/user");
-  const [orders, setOrders] = useState([]);
+  const { data, loading, callApi } = useApi();
 
   const orderStatusMessages = {
     pending:
@@ -41,12 +40,9 @@ const OrderListing = () => {
   };
 
   useEffect(() => {
-    if (data?.totalItems) {
-      setOrders(data?.items);
-    }
-  }, [data]);
-
-  if (data?.totalItems === 0) return <OrderEmpty />;
+    callApi("/order/user");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -55,9 +51,11 @@ const OrderListing = () => {
 
         {loading && <Loading />}
 
+        {data?.length === 0 && <OrderEmpty />}
+
         <div className="flex flex-col gap-5">
-          {orders?.length &&
-            orders.map((order) => (
+          {data?.docs?.length &&
+            data?.docs?.map((order) => (
               <div key={order._id} className="sm:p-4 border-b border-gray-300">
                 <div className="flex max-sm:flex-col gap-2 text-gray-700">
                   {order?.items?.map((item, i) => (

@@ -13,9 +13,9 @@ const FavoritePage = () => {
     <div>
       <div className="relative mx-auto px-2 container">
         <p className="font-medium text-xl my-5">Favorite Item Gallery</p>
-        {data?.length > 0 ? (
+        {data?.totalDocs > 0 ? (
           <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2 w-full">
-            {data?.map((item) => (
+            {data?.docs?.map((item) => (
               <ProductItem key={item.id} {...item} />
             ))}
           </div>

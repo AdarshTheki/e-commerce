@@ -4,7 +4,6 @@ import SingleProductPage from "./SingleProductPage";
 import ProductsPage from "./ProductsPage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
-import Notfound from "./Notfound";
 import FavoritePage from "./FavoritePage";
 import OrderFailed from "./OrderFailed";
 import OrderSuccess from "./OrderSuccess";
@@ -19,7 +18,6 @@ export {
   GalleryPage,
   HomePage,
   LoginPage,
-  Notfound,
   OrderFailed,
   OrderListing,
   OrderSuccess,

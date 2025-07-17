@@ -6,6 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { removeSingleImg } from "../utils/cloudinary.js";
 import { ChatEvents, emitSocketEvent } from "../socket/index.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 // ----delete chat message----
 const deleteChatMessages = async (chatId) => {
@@ -94,7 +95,10 @@ export const getChats = asyncHandler(async (req, res) => {
     .populate("participants", "fullName avatar email")
     .populate("lastMessage")
     .sort({ updatedAt: -1 });
-  res.status(200).json(chats);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, chats, "chats retrieved successfully"));
 });
 
 // ----delete one on one chat with message deleted all----
@@ -111,8 +115,7 @@ export const deleteChat = asyncHandler(async (req, res) => {
     (p) => p._id.toString() !== req.user._id.toString()
   );
 
-  if (!otherParticipate)
-    throw new ApiError(404, "Other participant not found");
+  if (!otherParticipate) throw new ApiError(404, "Other participant not found");
 
   await Chat.findByIdAndDelete(chatId);
   await deleteChatMessages(chatId);

@@ -5,14 +5,14 @@ export const fetchCategories = createAsyncThunk(
   "categories/fetchCategories",
   async () => {
     const response = await axios.get(`/category`);
-    return response.data;
+    return response?.data?.data?.docs;
   }
 );
 
 const categorySlice = createSlice({
   name: "categories",
   initialState: {
-    list: [],
+    items: [],
     loading: false,
     error: null,
   },
@@ -24,7 +24,7 @@ const categorySlice = createSlice({
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.list = action.payload;
+        state.items = action.payload;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;

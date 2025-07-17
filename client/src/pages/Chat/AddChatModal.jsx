@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-import { axios } from "../../helper";
 import { Input } from "../../utils";
+import useChat from "../../hooks/useChat";
 
-const AddChatModal = ({ usersData, onClose, chat }) => {
-  const [users, setUsers] = React.useState(usersData || []);
+const AddChatModal = ({ onClose, chat }) => {
+  const { users, onCreateGroupChat, onCreateOrGetChat } = useChat();
   const [groupName, setGroupName] = React.useState(chat?.name || "");
-  const [isGroupChat, setIsGroupChat] = React.useState(
-    chat?.isGroupChat || false
-  );
+  const [isGroupChat, setIsGroupChat] = React.useState(!!chat?.isGroupChat);
 
   const [selectUserId, setSelectUserId] = React.useState("");
   const [selectedValues, setSelectedValues] = useState(
@@ -30,35 +28,21 @@ const AddChatModal = ({ usersData, onClose, chat }) => {
     }
   };
 
-  const handleCreateChat = async () => {
+  const handleOneChat = async () => {
     if (!selectUserId) return toast.error("Please select a user");
-    const res = await axios.post(`/chats/chat/${selectUserId}`);
-    if (res.data) {
-      toast.success("Chat created successfully");
-      handleClose();
-    }
+    onCreateOrGetChat(selectUserId);
+    handleClose();
   };
 
-  const handleCreateGroupChat = async () => {
+  const handleGroupChat = async () => {
     if (!groupName || selectedValues.length === 0) {
       return toast.error("Please provide a Group Name and add Participants");
     }
-    const method = chat?._id ? "patch" : "post";
-    const url = chat?._id ? `/chats/group/${chat?._id}` : "/chats/group";
-
-    const res = await axios[method](url, {
-      name: groupName,
-      participants: selectedValues,
-    });
-
-    if (res.data) {
-      toast.success(`Chat ${chat?._id ? "updated" : "created"}  successfully`);
-      handleClose();
-    }
+    onCreateGroupChat(groupName, selectedValues, chat?._id);
+    handleClose();
   };
 
   const handleClose = () => {
-    setUsers([]);
     setSelectUserId("");
     setGroupName("");
     setIsGroupChat(false);
@@ -94,7 +78,7 @@ const AddChatModal = ({ usersData, onClose, chat }) => {
 
         <div className="max-h-[200px] overflow-y-auto">
           <p className="mb-1">Participants:</p>
-          {users.map((option) => (
+          {users?.map((option) => (
             <div key={option._id}>
               <label htmlFor={option._id} className="block">
                 <input
@@ -122,7 +106,7 @@ const AddChatModal = ({ usersData, onClose, chat }) => {
           </button>
           <button
             className="btn-primary flex-1"
-            onClick={isGroupChat ? handleCreateGroupChat : handleCreateChat}>
+            onClick={isGroupChat ? handleGroupChat : handleOneChat}>
             {chat?._id ? "Update" : "Create"}
           </button>
         </div>

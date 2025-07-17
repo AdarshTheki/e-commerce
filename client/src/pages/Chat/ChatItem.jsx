@@ -96,7 +96,7 @@ const ChatItem = ({
                   Edit Group
                 </button>
                 <button
-                  onClick={() => onDelete(item._id)}
+                  onClick={onDelete}
                   className="btn text-rose-600 hover:bg-slate-100">
                   Delete {item?.isGroupChat ? "Group" : "Chat"}
                 </button>
@@ -104,7 +104,7 @@ const ChatItem = ({
             )}
             {!item?.isGroupChat && item?.admin === user?._id && (
               <button
-                onClick={() => onDelete(item._id)}
+                onClick={onDelete}
                 className="btn text-rose-600 hover:bg-slate-100">
                 Delete {item?.isGroupChat ? "Group" : "Chat"}
               </button>
