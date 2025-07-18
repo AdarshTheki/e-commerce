@@ -6,7 +6,7 @@ import useApi from "../../hooks/useApi";
 const ReviewResume = () => {
   const [input, setInput] = useState("");
   const { loading, data, callApi } = useApi();
-  const aiTool = AiToolsData[5];
+  const aiTool = AiToolsData[4];
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();

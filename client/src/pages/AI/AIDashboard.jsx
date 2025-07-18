@@ -53,7 +53,9 @@ const AIDashboard = () => {
                   </p>
                   <small>
                     AI model :{" "}
-                    <span className="status-active !py-1">#{create.model}</span>
+                    <span className="status-active !lowercase !py-1">
+                      #{create.model}
+                    </span>
                   </small>
                   <small className="text-gray-500">
                     {format(new Date(create?.createdAt), "dd MMM yyyy, h:mm a")}

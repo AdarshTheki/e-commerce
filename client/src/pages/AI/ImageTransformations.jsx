@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Trash2, Wand2 } from "lucide-react";
 import useApi from "../../hooks/useApi";
 import { toast } from "react-toastify";
+import { AiToolsData } from "../../assets/assets";
 
 const ImageTransformations = () => {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
+  const [prompt, setPrompt] = useState("");
   const [selectedTransformations, setSelectedTransformations] = useState([]);
   const { loading, data, callApi, setData } = useApi();
+  const [endpoint, setEndpoint] = useState("/cloudinary/image-effect");
 
   const aiTool = {
-    title: "AI Image Transformations",
-    Icon: Sparkles,
-    bg: { from: "#4ade80", to: "#3b82f6" },
+    ...AiToolsData[3],
   };
 
   const transformationOptions = [
@@ -48,20 +49,31 @@ const ImageTransformations = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleTransformationSubmit = async () => {
+    if (loading) return;
     if (!image) {
       return toast.error("Please upload an image first.");
-    }
-    if (selectedTransformations.length === 0) {
-      return toast.error("Please select at least one transformation.");
     }
 
     const formData = new FormData();
     formData.append("image", image);
-    formData.append("transformations", JSON.stringify(selectedTransformations));
 
-    const result = await callApi("/openai/image-effect", formData);
+    if (endpoint === "/cloudinary/remove-object") {
+      if (!prompt) {
+        return toast.error("Please enter a prompt to remove an object.");
+      }
+      formData.append("prompt", prompt);
+    } else {
+      if (selectedTransformations.length === 0) {
+        return toast.error("Please select at least one transformation.");
+      }
+      formData.append(
+        "transformations",
+        JSON.stringify(selectedTransformations)
+      );
+    }
+
+    const result = await callApi(endpoint, formData);
     if (result) {
       setData(result);
     }
@@ -70,7 +82,7 @@ const ImageTransformations = () => {
   return (
     <div className="gap-4 p-4 grid sm:grid-cols-2">
       {/* Left Form */}
-      <form className="card !px-5 flex-1 space-y-5" onSubmit={handleSubmit}>
+      <div className="card !px-5 flex-1 space-y-5 !w-full">
         <div className="flex gap-2 items-center">
           <Sparkles className={`w-6 h-6`} style={{ color: aiTool.bg.from }} />
           <p className="font-medium">{aiTool.title}</p>
@@ -101,47 +113,143 @@ const ImageTransformations = () => {
           </div>
         )}
 
-        <div>
-          <p className="text-sm font-medium">Select Transformations</p>
-          <div className="flex flex-wrap gap-3 mt-2">
-            {transformationOptions.map((trans, i) => (
-              <button
-                type="button"
-                key={i}
-                onClick={() => toggleTransformation(trans.value)}
-                style={
-                  selectedTransformations.some(
-                    (t) => JSON.stringify(t) === JSON.stringify(trans.value)
-                  )
-                    ? {
-                        border: `1px solid ${aiTool.bg.from}`,
-                        color: aiTool.bg.from,
-                      }
-                    : { border: "1px solid #aaa" }
-                }
-                className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
-                {trans.name}
-              </button>
-            ))}
-          </div>
+        <div className="flex flex-col items-start gap-2">
+          <label
+            className="text-sm flex gap-1 items-center capitalize"
+            htmlFor="/cloudinary/image-effect">
+            <input
+              type="radio"
+              name="/cloudinary/image-effect"
+              id="/cloudinary/image-effect"
+              checked={endpoint === "/cloudinary/image-effect"}
+              value="/cloudinary/image-effect"
+              onChange={(e) => setEndpoint(e.target.value)}
+            />
+            image effect
+          </label>
+          <label
+            className="text-sm flex gap-1 items-center capitalize"
+            htmlFor="/cloudinary/remove-object">
+            <input
+              type="radio"
+              name="/cloudinary/remove-object"
+              id="/cloudinary/remove-object"
+              checked={endpoint === "/cloudinary/remove-object"}
+              value="/cloudinary/remove-object"
+              onChange={(e) => setEndpoint(e.target.value)}
+            />
+            remove object
+          </label>
+          <label
+            className="text-sm flex gap-1 items-center capitalize"
+            htmlFor="/cloudinary/remove-background">
+            <input
+              type="radio"
+              name="/cloudinary/remove-background"
+              id="/cloudinary/remove-background"
+              checked={endpoint === "/cloudinary/remove-background"}
+              value="/cloudinary/remove-background"
+              onChange={(e) => setEndpoint(e.target.value)}
+            />
+            remove background
+          </label>
         </div>
 
-        <button
-          disabled={loading}
-          style={{
-            background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
-          }}
-          className="py-2 mt-8 hover:opacity-85 flex text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+        {endpoint === "/cloudinary/image-effect" && (
+          <>
+            <div>
+              <p className="text-sm font-medium">Select Transformations</p>
+              <div className="flex flex-wrap gap-3 mt-2">
+                {transformationOptions.map((trans, i) => (
+                  <button
+                    type="button"
+                    key={i}
+                    onClick={() => toggleTransformation(trans.value)}
+                    style={
+                      selectedTransformations.some(
+                        (t) => JSON.stringify(t) === JSON.stringify(trans.value)
+                      )
+                        ? {
+                            border: `1px solid ${aiTool.bg.from}`,
+                            color: aiTool.bg.from,
+                          }
+                        : { border: "1px solid #aaa" }
+                    }
+                    className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
+                    {trans.name}
+                  </button>
+                ))}
+              </div>
             </div>
-          ) : (
-            <aiTool.Icon className="w-4 h-4" />
+
+            <button
+              disabled={loading}
+              onClick={handleTransformationSubmit}
+              style={{
+                background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
+              }}
+              className="py-2 mt-8 hover:opacity-85 flex text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+                </div>
+              ) : (
+                <aiTool.Icon className="w-4 h-4" />
+              )}
+              Apply Transformations
+            </button>
+          </>
+        )}
+
+        <div className="flex flex-col gap-4">
+          {endpoint === "/cloudinary/remove-background" && (
+            <button
+              disabled={loading}
+              onClick={handleTransformationSubmit}
+              className="py-2 hover:opacity-85 flex bg-red-500 text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+                </div>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Remove Background
+                </>
+              )}
+            </button>
           )}
-          {aiTool.title}
-        </button>
-      </form>
+
+          {endpoint === "/cloudinary/remove-object" && (
+            <div className="flex flex-col gap-2">
+              <input
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="e.g., a cat, a car"
+                className="w-full text-sm p-2 px-5 rounded-lg border outline-none"
+              />
+              <button
+                disabled={loading}
+                onClick={() =>
+                  handleTransformationSubmit("/cloudinary/remove-object")
+                }
+                className="py-2 hover:opacity-85 flex bg-purple-500 text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+                  </div>
+                ) : (
+                  <>
+                    <Wand2 className="w-4 h-4" />
+                    Remove Object
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Right Content */}
       <div className="card !px-5 flex-1">
@@ -154,7 +262,7 @@ const ImageTransformations = () => {
           />
           <p className="font-medium">Transformed Images</p>
         </div>
-        {!data || data.length === 0 ? (
+        {!data?.response ? (
           <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
             <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />
             <small className="text-gray-400">
@@ -162,20 +270,11 @@ const ImageTransformations = () => {
             </small>
           </div>
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-4 overflow-y-auto max-h-[70vh]">
-            {data.map((img, index) => (
-              <div key={index}>
-                <img
-                  src={img.secure_url}
-                  alt={`Transformation ${index + 1}`}
-                  className="w-full rounded-lg shadow-md"
-                />
-                <p className="text-xs text-center mt-1 capitalize">
-                  {img.transformation.replace(/[:_]/g, " ")}
-                </p>
-              </div>
-            ))}
-          </div>
+          <img
+            src={data?.response}
+            alt="Transformed Image"
+            className="w-full rounded-lg shadow-md"
+          />
         )}
       </div>
     </div>

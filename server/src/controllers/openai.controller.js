@@ -99,37 +99,6 @@ export const generateTextToImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, newAIModel, "Image generated successfully"));
 });
 
-// @desc    Apply Cloudinary image effect
-// @route   POST /api/v1/openai/cloudinary-effect
-// @access  Private
-export const cloudinaryImageEffect = asyncHandler(async (req, res) => {
-  const { imageUrl, transformations } = req.body;
-  const image = req?.file?.path;
-
-  if (!(imageUrl || image) || !transformations) {
-    throw new ApiError(
-      400,
-      "Image URL or image file, and transformation are required"
-    );
-  }
-
-  let url;
-  if (image) {
-    const { secure_url } = await cloudinary.uploader.upload(image);
-    url = secure_url;
-  }
-
-  const transformedUrl = cloudinary.url(url || imageUrl, {
-    transformation: JSON.parse(transformations),
-  });
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, transformedUrl, "Image effect applied successfully")
-    );
-});
-
 // @desc    Toggle like on an AI generated post
 // @route   POST /api/v1/openai/toggle-like/:aiPostId
 // @access  Private

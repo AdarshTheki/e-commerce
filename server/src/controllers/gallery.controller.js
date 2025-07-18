@@ -78,5 +78,7 @@ export const getCloudinaryImages = asyncHandler(async (req, res) => {
   const urls = await getImageUrls(expression, limit);
   return res
     .status(200)
-    .json(new ApiResponse(200, urls, "Cloudinary images retrieved successfully"));
+    .json(
+      new ApiResponse(200, urls, "Cloudinary images retrieved successfully")
+    );
 });

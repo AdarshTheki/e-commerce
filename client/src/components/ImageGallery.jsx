@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import useFetch from "../hooks/useFetch";
+import useApi from "../hooks/useApi";
 import { socialFormats } from "../helper";
 import { LazyImage, Loading } from "../utils";
 import { Download, Trash2Icon } from "lucide-react";
@@ -13,35 +13,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/Select";
+import { useEffect } from "react";
 
 const GalleryImage = () => {
-  const [query, setQuery] = useState({
-    page: 1,
-    limit: 10,
-  });
-  const { data, loading } = useFetch(
-    `/gallery/all?page=${query.page}&limit=${query.limit}`
-  );
+  const [limit, setLimit] = useState(10);
   const [selectedFormat, setSelectedFormat] = useState(
     "Instagram Square (1:1)"
   );
+  const { data, loading, callApi, setData } = useApi();
 
-  const handleDownload = (imageRef) => {
-    if (!imageRef.current) return;
-    // download image on current page
-    fetch(imageRef.current.src)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `${selectedFormat.replace(/\s+/g, "_").toLowerCase()}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      });
-  };
+  useEffect(() => {
+    callApi(
+      `/cloudinary/search?expression=resource_type:image&sort=created_at&order=desc&limit=${limit}`,
+      {},
+      "get"
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit]);
 
   if (loading) return <Loading />;
 
@@ -62,14 +50,13 @@ const GalleryImage = () => {
           </Select>
         </div>
         <div className="w-[180px]">
-          <Select
-            onValueChange={(value) => setQuery({ ...query, limit: value })}>
+          <Select onValueChange={(value) => setLimit(value)}>
             <SelectTrigger>
-              <SelectValue placeholder={`${query.limit} / pages`} />
+              <SelectValue placeholder={`${limit} / page`} />
             </SelectTrigger>
             <SelectContent className="bg-white border-gray-300 ">
               {[10, 20, 30, 50, 100].map((item) => (
-                <SelectItem value={item}>{`${item} / pages`}</SelectItem>
+                <SelectItem value={item}>{`${item} / page`}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -77,22 +64,26 @@ const GalleryImage = () => {
       </div>
 
       <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-5">
-        {data?.totalItems &&
-          data.items?.map((img, index) => {
-            const path = img.image_url.split("/upload").length
-              ? img.image_url
+        {data?.length > 0 &&
+          data?.map((img, index) => {
+            const path = img?.secure_url?.split("/upload").length
+              ? img.secure_url
                   .split("/upload")
                   .join(
                     `/upload/w_${socialFormats[selectedFormat].width},h_${socialFormats[selectedFormat].height},ar_${socialFormats[selectedFormat].aspectRatio},c_fill`
                   )
-              : img.image_url;
+              : img.secure_url;
+
             return (
               <Card
                 key={index}
-                item={img}
-                url={path}
-                index={index}
-                onDownload={handleDownload}
+                {...img}
+                secure_url={path}
+                onDelete={() =>
+                  setData((prev) =>
+                    prev.filter((i) => i.public_id !== img.public_id)
+                  )
+                }
               />
             );
           })}
@@ -103,15 +94,42 @@ const GalleryImage = () => {
 
 export default GalleryImage;
 
-const Card = ({ url, index, onDownload, item }) => {
+const Card = ({
+  public_id,
+  created_at,
+  uploaded_at,
+  resource_type,
+  secure_url,
+  onDelete,
+}) => {
   const imageRef = useRef(null);
   const user = useSelector((state) => state.auth?.user);
 
+  const handleDownload = () => {
+    if (!imageRef.current) return;
+    // download image on current page
+    fetch(imageRef.current.src)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `download.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      });
+  };
+
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/gallery/single/${item._id}`);
+      const res = await axios.post(`/cloudinary/delete`, {
+        publicId: public_id,
+      });
       if (res.data) {
         toast.success("Image delete succeed");
+        onDelete();
       }
     } catch (error) {
       errorHandler(error);
@@ -119,16 +137,16 @@ const Card = ({ url, index, onDownload, item }) => {
   };
 
   return (
-    <div key={index} className="w-full relative border border-gray-300">
+    <div title={public_id} className="w-full relative border border-gray-300">
       <LazyImage
         placeholder="/placeholder.jpg"
-        src={url}
-        alt={`file_${index}`}
+        src={secure_url}
+        alt={`file_${public_id}`}
         ref={imageRef}
       />
       <button
         className="btn btn-primary !p-1 absolute top-1 left-1"
-        onClick={() => onDownload(imageRef)}>
+        onClick={handleDownload}>
         <Download />
       </button>
       {user && user?.role == "admin" && (

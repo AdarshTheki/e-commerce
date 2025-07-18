@@ -21,6 +21,7 @@ import galleryRoute from "./routes/gallery.router.js";
 import messageRoute from "./routes/message.router.js";
 import chatRoute from "./routes/chat.router.js";
 import orderRoute from "./routes/order.router.js";
+import cloudinaryRoute from "./routes/cloudinary.routes.js";
 // import reviewRoute from "./routes/review.router.js"; // delete
 
 const app = express();
@@ -72,6 +73,7 @@ app.use("/api/v1/dashboard", dashboardRoute);
 app.use("/api/v1/gallery", galleryRoute);
 app.use("/api/v1/chats", chatRoute);
 app.use("/api/v1/messages", messageRoute);
+app.use("/api/v1/cloudinary", cloudinaryRoute);
 // app.use("/api/v1/review", reviewRoute);
 app.use("/", health_checkRoute);
 

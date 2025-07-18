@@ -115,7 +115,7 @@ const getImageUrls = async (expression = "folder:gallery", limit = 100) => {
   try {
     const result = await cloudinary.search
       .expression(expression)
-      .sort_by("public_id", "desc")
+      .sort_by("created_at", "desc")
       .max_results(parseInt(limit)) // You can paginate if you have more than 100
       .execute();
     const urls = result.resources.map((file) => file.secure_url);

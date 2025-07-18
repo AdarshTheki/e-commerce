@@ -1,11 +1,4 @@
-import {
-  SquarePen,
-  Hash,
-  Image,
-  Eraser,
-  Scissors,
-  FileText,
-} from "lucide-react";
+import { SquarePen, Hash, Image, Eraser, FileText } from "lucide-react";
 
 import profile_img from "./profile_img_1.png";
 
@@ -35,23 +28,15 @@ export const AiToolsData = [
     path: "/ai/generate-images",
   },
   {
-    title: "Background Removal",
+    title: "AI Image Transformations",
     description:
       "Effortlessly remove backgrounds from your images with our AI-driven tool.",
     Icon: Eraser,
-    bg: { from: "#F76C1C", to: "#F04A3C" },
-    path: "/ai/remove-background",
+    bg: { from: "#f76c1c", to: "#ed4961" },
+    path: "/ai/image-transformation",
   },
   {
-    title: "Object Removal",
-    description:
-      "Remove unwanted objects from your images seamlessly with our AI object removal tool.",
-    Icon: Scissors,
-    bg: { from: "#5C6AF1", to: "#427DF5" },
-    path: "/ai/remove-object",
-  },
-  {
-    title: "Resume Reviewer",
+    title: "AI Resume Reviewer",
     description:
       "Get your resume reviewed by AI to improve your chances of landing your dream job.",
     Icon: FileText,

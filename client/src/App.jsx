@@ -31,8 +31,7 @@ import {
   AILayout,
   BlogTitles,
   GenerateImages,
-  RemoveBackground,
-  RemoveObject,
+  ImageTransformations,
   ReviewResume,
   WriteArticles,
 } from "./pages/AI";
@@ -80,8 +79,10 @@ const router = createBrowserRouter([
               { path: "write-articles", element: <WriteArticles /> },
               { path: "blog-titles", element: <BlogTitles /> },
               { path: "generate-images", element: <GenerateImages /> },
-              { path: "remove-background", element: <RemoveBackground /> },
-              { path: "remove-object", element: <RemoveObject /> },
+              {
+                path: "image-transformation",
+                element: <ImageTransformations />,
+              },
               { path: "review-resume", element: <ReviewResume /> },
             ],
           },
