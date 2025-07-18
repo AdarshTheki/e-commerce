@@ -26,7 +26,7 @@ const BlogTitles = () => {
   };
 
   const handleSubmit = async () => {
-    const result = await callApi("/openai/generate-blog-title", {
+    const result = await callApi("/openai/generate-text", {
       prompt: `Generate an blog title about "${input}" in category of ${selected} with in 50 words in a point wise.`,
     });
     if (result) {

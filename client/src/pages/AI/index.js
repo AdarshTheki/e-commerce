@@ -6,6 +6,7 @@ import BlogTitles from "./BlogTitles";
 import RemoveObject from "./RemoveObject";
 import ReviewResume from "./ReviewResume";
 import WriteArticles from "./WriteArticles";
+import ImageTransformations from "./ImageTransformations";
 
 export {
   AIDashboard,
@@ -16,4 +17,5 @@ export {
   RemoveObject,
   ReviewResume,
   WriteArticles,
+  ImageTransformations,
 };

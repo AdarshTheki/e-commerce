@@ -18,20 +18,6 @@ html {
   all: revert !important;
 }
 
-p,
-span,
-button,
-a {
-  font-family: "Inter", sans-serif;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: "Edu NSW ACT Hand Pre", "cursive";
-}
-
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }

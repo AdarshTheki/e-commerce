@@ -2,18 +2,50 @@ import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
 import useApi from "../../hooks/useApi";
+import ImageTransformations from "./ImageTransformations";
 
 const RemoveBackground = () => {
   const [input, setInput] = useState("");
-  const { loading, data, callApi } = useApi();
+  const [openImgUrl, setOpenImgUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const { loading, data, callApi, setData } = useApi();
   const aiTool = AiToolsData[3];
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("image", input);
-    const result = await callApi("/cloudinary/remove-bg", formData);
+    formData.append(
+      "imageUrl",
+      "https://res.cloudinary.com/dlf3lb48n/image/upload/v1752826654/zqkv9ferx8jdha5jcrjm.png"
+    );
+    formData.append(
+      "transformation",
+      JSON.stringify([
+        { effect: "grayscale" },
+        { effect: "blur:200" },
+        { width: 500, crop: "scale" },
+      ])
+    );
+
+    const result = await callApi("/image-effect", {
+      imageUrl:
+        "https://res.cloudinary.com/dlf3lb48n/image/upload/v1752826654/zqkv9ferx8jdha5jcrjm.png",
+      transformation: [
+        {
+          effect: "grayscale",
+        },
+        {
+          effect: "blur:200",
+        },
+        {
+          width: 500,
+          crop: "scale",
+        },
+      ],
+    });
+    console.log(result);
     if (result) {
+      setData(result);
       setInput("");
     }
   };
@@ -86,4 +118,4 @@ const RemoveBackground = () => {
   );
 };
 
-export default RemoveBackground;
+export default ImageTransformations;

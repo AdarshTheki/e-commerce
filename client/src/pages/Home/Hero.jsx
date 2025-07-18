@@ -20,7 +20,7 @@ const Hero = () => {
             </p>
             <div className="flex max-sm:flex-col text-center gap-4">
               <NavLink
-                to="/product"
+                to="/products"
                 className="bg-indigo-600 flex-1 hover:bg-indigo-700 text-white px-8 py-3 rounded-md font-medium transition-all duration-300 transform hover:scale-105">
                 Shop Now
               </NavLink>

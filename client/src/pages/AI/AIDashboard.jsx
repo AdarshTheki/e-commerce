@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
-import useFetch from "../../hooks/useFetch";
+import useApi from "../../hooks/useApi";
 import { Loading } from "../../utils";
 import Markdown from "react-markdown";
 import { format } from "date-fns";
-
-const textViews = ["gpt-4", "generate-article", "generate-blog-title"];
+import { classNames } from "../../helper";
 
 const AIDashboard = () => {
-  const { data, loading, error } = useFetch("/openai/generate-ai");
   const [selectedArticle, setSelectedArticle] = useState("");
+  const { callApi, data, loading } = useApi();
+
+  useEffect(() => {
+    callApi("/openai/generate-text", {}, "get");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) return <Loading />;
 
@@ -20,7 +24,7 @@ const AIDashboard = () => {
           <p>Total Creations</p>
           <p>{data?.length}</p>
         </div>
-        <div class="p-2 rounded-lg bg-gradient-to-br from-[#3588F2] to-[#0BB0D7] text-white flex justify-center items-center">
+        <div className="p-2 rounded-lg bg-gradient-to-br from-[#3588F2] to-[#0BB0D7] text-white flex justify-center items-center">
           <Sparkles className="w-6 h-6" />
         </div>
       </div>
@@ -28,7 +32,7 @@ const AIDashboard = () => {
       {/* Recent Creations */}
       <p>Recent Creations</p>
 
-      <div className="flex flex-wrap gap-5 items-start">
+      <div className="flex flex-wrap gap-5">
         {data &&
           data?.map((create) => (
             <div className="card sm:!flex-1/3 w-full" key={create._id}>
@@ -39,14 +43,23 @@ const AIDashboard = () => {
                   )
                 }
                 className="w-full flex justify-between gap-2 items-center cursor-pointer">
-                <div>
-                  <p>{create.prompt}</p>
+                <div className="flex flex-col gap-1">
+                  <p
+                    className={classNames(
+                      selectedArticle === create?._id ? "" : "line-clamp-1",
+                      "font-medium"
+                    )}>
+                    {create.prompt}
+                  </p>
                   <small>
                     AI model :{" "}
-                    <span className="status-active">#{create.model}</span>
+                    <span className="status-active !py-1">#{create.model}</span>
                   </small>
-                  <small className="text-gray-500 m-2">
+                  <small className="text-gray-500">
                     {format(new Date(create?.createdAt), "dd MMM yyyy, h:mm a")}
+                  </small>
+                  <small className="text-gray-500">
+                    User: {create?.createdBy?.email}
                   </small>
                 </div>
                 {create._id === selectedArticle ? (
@@ -56,7 +69,7 @@ const AIDashboard = () => {
                 )}
               </div>
               {create._id === selectedArticle &&
-                textViews.includes(create.model) && (
+                create?.model !== "text-to-image" && (
                   <div className="p-2 overflow-y-auto max-h-[50dvh] w-full text-sm">
                     <div className="reset-tw">
                       <Markdown>{create.response}</Markdown>
@@ -65,7 +78,7 @@ const AIDashboard = () => {
                 )}
 
               {create._id === selectedArticle &&
-                !textViews.includes(create.model) && (
+                create?.model === "text-to-image" && (
                   <img
                     src={create.response}
                     alt="model_Pic"

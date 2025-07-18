@@ -4,9 +4,23 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import axios from "axios";
+import FormData from "form-data";
+
+// gen_remove:
+// background_removal
+
+// review prompt
+// `Generate a e-commerce product review under 200 characters for this prompt "${prompt}"`;
+
+// description prompt
+// `Generate a e-commerce product description under ${size ? parseInt(size) : 500} characters for a ${category} product with the title "${title}" and the brand "${brand}"`;
+
+// `Review the following resume and provide a constructive feedback on its strengths, weaknesses and areas for improvement. Resume content:\n\ ${pdfData.text}`;
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
 });
 
 // @desc    Generate text using OpenAI
@@ -20,8 +34,9 @@ export const generateText = asyncHandler(async (req, res) => {
   }
 
   const response = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gemini-2.0-flash",
     messages: [{ role: "user", content: prompt }],
+    temperature: 0.7,
   });
 
   const aiResponse = response.choices[0].message.content;
@@ -46,31 +61,56 @@ export const generateTextToImage = asyncHandler(async (req, res) => {
   const { prompt } = req.body;
 
   if (!prompt) {
-    throw new ApiError(400, "Prompt is required");
+    throw new ApiError(400, "Prompt is required to generate an image");
   }
 
-  const image = await openai.images.generate({
-    prompt: prompt,
-    n: 1,
-    size: "1024x1024",
-  });
+  const formData = new FormData();
+  formData.append("prompt", prompt);
 
-  const imageUrl = image.data[0].url;
+  const clipdropRes = await axios.post(
+    "https://clipdrop-api.co/text-to-image/v1",
+    formData,
+    {
+      headers: {
+        ...formData.getHeaders(),
+        "x-api-key": process.env.CLIPDROP_API_KEY,
+      },
+      responseType: "arraybuffer",
+    }
+  );
+
+  const base64Image = `data:image/png;base64,${Buffer.from(clipdropRes.data).toString("base64")}`;
+
+  const cloudinaryUpload = await cloudinary.uploader.upload(base64Image);
+
+  if (!cloudinaryUpload.secure_url)
+    throw new ApiError(404, "image upload failed");
+
+  const newAIModel = await AIModel.create({
+    response: cloudinaryUpload.secure_url,
+    prompt,
+    createdBy: req.user._id,
+    model: "text-to-image",
+    publish: true,
+  });
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { imageUrl }, "Image generated successfully"));
+    .json(new ApiResponse(200, newAIModel, "Image generated successfully"));
 });
 
 // @desc    Apply Cloudinary image effect
 // @route   POST /api/v1/openai/cloudinary-effect
 // @access  Private
 export const cloudinaryImageEffect = asyncHandler(async (req, res) => {
-  const { imageUrl, effect } = req.body;
+  const { imageUrl, transformations } = req.body;
   const image = req?.file?.path;
 
-  if (!(imageUrl || image) || !effect) {
-    throw new ApiError(400, "Image URL or image file, and effect are required");
+  if (!(imageUrl || image) || !transformations) {
+    throw new ApiError(
+      400,
+      "Image URL or image file, and transformation are required"
+    );
   }
 
   let url;
@@ -80,17 +120,13 @@ export const cloudinaryImageEffect = asyncHandler(async (req, res) => {
   }
 
   const transformedUrl = cloudinary.url(url || imageUrl, {
-    effect: effect,
+    transformation: JSON.parse(transformations),
   });
 
   return res
     .status(200)
     .json(
-      new ApiResponse(
-        200,
-        { transformedUrl },
-        "Image effect applied successfully"
-      )
+      new ApiResponse(200, transformedUrl, "Image effect applied successfully")
     );
 });
 
@@ -129,9 +165,11 @@ export const toggleLikesCreation = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/openai/user-generations
 // @access  Private
 export const getUserGenerate = asyncHandler(async (req, res) => {
-  const posts = await AIModel.find({ createdBy: req.user._id }).sort({
-    createdAt: -1,
-  });
+  const posts = await AIModel.find({ createdBy: req.user._id })
+    .populate("createdBy", "email fullName")
+    .sort({
+      createdAt: -1,
+    });
   return res
     .status(200)
     .json(

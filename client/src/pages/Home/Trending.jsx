@@ -23,7 +23,7 @@ const Trending = ({ heading = "Trending Products", size = 8 }) => {
       <div className="flex justify-between items-center mb-6">
         <p className="text-xl md:text-2xl font-semibold">{heading}</p>
         <NavLink
-          to="/product"
+          to="/products"
           className="text-indigo-600 hover:text-indigo-800 flex items-center transition duration-300">
           View All
           <ChevronRight className="ml-2 w-5 h-5" />

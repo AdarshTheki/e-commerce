@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import useApi from "../../hooks/useApi";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
+import useApi from "../../hooks/useApi";
 
 const GenerateImage = () => {
   const styleData = [
@@ -15,8 +15,7 @@ const GenerateImage = () => {
   ];
   const [selectedStyle, setSelectedStyle] = useState("Realistic");
   const [prompt, setPrompt] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
-  const { loading, data, callApi, setData } = useApi();
+  const { data, loading, setData, callApi } = useApi();
 
   const aiTool = {
     ...AiToolsData[2],
@@ -29,10 +28,8 @@ const GenerateImage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await callApi("/cloudinary/generate-image", {
-      prompt,
-      isPublic,
-      style: selectedStyle,
+    const result = await callApi("/openai/generate-image", {
+      prompt: `"${prompt}" in style of "${selectedStyle}"`,
     });
     if (result) {
       setData(result);
@@ -85,18 +82,6 @@ const GenerateImage = () => {
           </div>
         </div>
 
-        <label htmlFor="isPublic">
-          <input
-            type="checkbox"
-            name="isPublic"
-            id="isPublic"
-            value={isPublic}
-            checked={isPublic}
-            onChange={(e) => setIsPublic(e.target.checked ? true : false)}
-          />
-          <small className="cursor-pointer pl-2">Make this image public</small>
-        </label>
-
         <button
           disabled={loading}
           style={{
@@ -134,7 +119,11 @@ const GenerateImage = () => {
           </div>
         ) : (
           <div className="mt-3 overflow-y-auto text-sm text-slate-600">
-            <img src="" alt="" />
+            <img
+              src={data?.response}
+              alt="preview_url"
+              className="w-full overflow-hidden"
+            />
           </div>
         )}
       </div>

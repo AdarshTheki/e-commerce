@@ -157,14 +157,14 @@ const NavbarTop = () => {
 
         {!!searchOpen && (
           <div className="p-2 flex gap-2 items-center justify-center left-0 w-full">
-            <div class="flex items-center border pl-4 gap-2 bg-white border-gray-500/30 h-[40px] rounded-full overflow-hidden max-w-md w-full">
+            <div className="flex items-center border pl-4 gap-2 bg-white border-gray-500/30 h-[40px] rounded-full overflow-hidden max-w-md w-full">
               <Search className="w-5 h-5" />
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 type="text"
                 placeholder="Search"
-                class="w-full h-full outline-none text-gray-500 placeholder-gray-500 text-sm"
+                className="w-full h-full outline-none text-gray-500 placeholder-gray-500 text-sm"
               />
             </div>
             <button
