@@ -20,7 +20,7 @@ const HeartFavorite = ({ id, className }) => {
 
       const res = await axios.patch(`/user/favorite/${id}`);
       if (res.data) {
-        const check = res.data.favorites.includes(id);
+        const check = res.data?.data?.favorites.includes(id);
         setIsLiked(check);
         toast.success(`${check ? "Add Liked" : "Remove Liked"}`);
       }

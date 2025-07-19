@@ -25,11 +25,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.1",
     "mongoose-paginate-v2": "^1.9.1",
+    "morgan": "^1.10.1",
     "multer": "^2.0.1",
     "openai": "^5.9.0",
     "pdf-parse": "^1.1.1",
     "socket.io": "^4.8.1",
-    "stripe": "^18.2.1"
+    "stripe": "^18.2.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",

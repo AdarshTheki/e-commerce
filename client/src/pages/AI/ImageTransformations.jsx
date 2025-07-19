@@ -155,50 +155,48 @@ const ImageTransformations = () => {
           </label>
         </div>
 
-        {endpoint === "/cloudinary/image-effect" && (
-          <>
-            <div>
-              <p className="text-sm font-medium">Select Transformations</p>
-              <div className="flex flex-wrap gap-3 mt-2">
-                {transformationOptions.map((trans, i) => (
-                  <button
-                    type="button"
-                    key={i}
-                    onClick={() => toggleTransformation(trans.value)}
-                    style={
-                      selectedTransformations.some(
-                        (t) => JSON.stringify(t) === JSON.stringify(trans.value)
-                      )
-                        ? {
-                            border: `1px solid ${aiTool.bg.from}`,
-                            color: aiTool.bg.from,
-                          }
-                        : { border: "1px solid #aaa" }
-                    }
-                    className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
-                    {trans.name}
-                  </button>
-                ))}
-              </div>
-            </div>
+        <div>
+          <p className="text-sm font-medium">Select Transformations</p>
+          <div className="flex flex-wrap gap-3 mt-2">
+            {transformationOptions.map((trans, i) => (
+              <button
+                type="button"
+                key={i}
+                onClick={() => toggleTransformation(trans.value)}
+                style={
+                  selectedTransformations.some(
+                    (t) => JSON.stringify(t) === JSON.stringify(trans.value)
+                  )
+                    ? {
+                        border: `1px solid ${aiTool.bg.from}`,
+                        color: aiTool.bg.from,
+                      }
+                    : { border: "1px solid #aaa" }
+                }
+                className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
+                {trans.name}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            <button
-              disabled={loading}
-              onClick={handleTransformationSubmit}
-              style={{
-                background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
-              }}
-              className="py-2 mt-8 hover:opacity-85 flex text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
-                </div>
-              ) : (
-                <aiTool.Icon className="w-4 h-4" />
-              )}
-              Apply Transformations
-            </button>
-          </>
+        {endpoint === "/cloudinary/image-effect" && (
+          <button
+            disabled={loading}
+            onClick={handleTransformationSubmit}
+            style={{
+              background: `linear-gradient(to bottom, ${aiTool.bg.from}, ${aiTool.bg.to})`,
+            }}
+            className="py-2 mt-8 hover:opacity-85 flex text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>
+              </div>
+            ) : (
+              <aiTool.Icon className="w-4 h-4" />
+            )}
+            Apply Transformations
+          </button>
         )}
 
         <div className="flex flex-col gap-4">

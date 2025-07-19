@@ -1,4 +1,5 @@
-import { User } from "../models/user.model.js";
+import { User } from "../features/user/user.model.js";
+import { logger } from "../middlewares/logger.middleware.js";
 import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 
@@ -29,7 +30,7 @@ export const ChatEvents = Object.freeze({
 
 const mountJoinChatEvent = (socket) => {
   socket.on(ChatEvents.JOIN_CHAT_EVENT, (chatId) => {
-    console.log(`User joined the chat 🤝. chatId: `, chatId);
+    logger.warn(`User joined the chat 🤝. chatId: `, chatId);
     socket.join(chatId);
   });
 };
@@ -89,7 +90,7 @@ export const initializeSocketIO = (io) => {
 
       socket.join(user._id.toString()); // user join yourself room with self notification used
       socket.emit(ChatEvents.CONNECTED_EVENT); // emit the connected event so that client is aware
-      console.log("User connected 🗼. userId: ", user._id.toString());
+      logger.warn("User connected 🗼. userId: ", user._id.toString());
 
       // Common events that needs to be mounted on the initialization
       mountJoinChatEvent(socket);
@@ -97,13 +98,13 @@ export const initializeSocketIO = (io) => {
       mountParticipantStoppedTypingEvent(socket);
 
       socket.on(ChatEvents.DISCONNECT_EVENT, () => {
-        console.log("user has disconnected 🚫. userId: " + socket.user?._id);
+        logger.warn("user has disconnected 🚫. userId: " + socket.user?._id);
         if (socket.user?._id) {
           socket.leave(socket.user._id);
         }
       });
     } catch (error) {
-      console.log(error?.message);
+      logger.error(error?.message);
       socket.emit(
         ChatEvents.SOCKET_ERROR_EVENT,
         error?.message || "Something went wrong while connecting to the socket."

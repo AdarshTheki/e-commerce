@@ -6,8 +6,8 @@ import ProductReviewLike from "./ProductReviewLike";
 import HomeCertificate from "./HomeCertificate";
 import NavbarTop from "./NavbarTop";
 import NavbarBottom from "./NavbarBottom";
-import ImageGallery from "./ImageGallery";
-import ImageUpload from "./ImageUpload";
+import ImageGallery from "../pages/Gallery/ImageGallery";
+import ImageUpload from "../pages/Gallery/ImageUpload";
 
 export {
   NavbarBottom,

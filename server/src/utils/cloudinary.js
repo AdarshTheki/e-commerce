@@ -1,136 +1,117 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import { ApiError } from "./ApiError.js";
+import { logger } from "../middlewares/logger.middleware.js";
 
-const cloud_name = "dlf3lb48n";
-const api_key = "996239776893621";
-const api_secret = "i_PNYOejURBRtp8Rx3DKRoSCd5Q";
-const folder = "cartify-demo";
-
+// Configs
 cloudinary.config({
-  cloud_name,
-  api_key,
-  api_secret,
+  cloud_name: "dlf3lb48n",
+  api_key: "996239776893621",
+  api_secret: "i_PNYOejURBRtp8Rx3DKRoSCd5Q",
 });
 
-const uploadMultiImg = async (images = [], folderName = "") => {
-  if (images.length === 0) return [];
+const defaultFolder = "cartify";
+
+// Upload Single Image
+const uploadSingleImg = async (localFilePath = "", folder = "") => {
+  if (!localFilePath) return false;
+
+  try {
+    const result = await cloudinary.uploader.upload(localFilePath, {
+      folder: folder || defaultFolder,
+    });
+
+    fs.unlinkSync(localFilePath); // Clean temp file
+    return result.secure_url;
+  } catch (error) {
+    logger.error("Upload Error:", error.message);
+    return false;
+  }
+};
+
+// Upload Multiple Images
+const uploadMultiImg = async (images = [], folder = "") => {
+  if (!Array.isArray(images) || images.length === 0) return [];
+
   try {
     const uploadResults = await Promise.allSettled(
       images.map((file) =>
         cloudinary.uploader.upload(file.path, {
-          folder: folderName || folder,
+          folder: folder || defaultFolder,
         })
       )
     );
 
     const urls = uploadResults
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => result.value.secure_url);
+      .filter((res) => res.status === "fulfilled")
+      .map((res) => res.value.secure_url);
 
-    images.forEach((img) => fs.unlinkSync(img.path));
+    images.forEach((img) => fs.unlinkSync(img.path)); // Clean all temp files
 
     return urls;
   } catch (error) {
-    console.error("Error uploading images:", error.message);
+    logger.error("Upload Error:", error.message);
     return [];
   }
 };
 
-const uploadSingleImg = async (localFilePath = "") => {
+// Delete Single Image
+const removeSingleImg = async (url = "") => {
+  if (!url) return false;
+
   try {
-    if (!localFilePath) return false;
+    const publicId = extractPublicId(url);
+    const result = await cloudinary.uploader.destroy(publicId);
 
-    const res = await cloudinary.uploader.upload(localFilePath, {
-      folder,
-    });
+    if (result.result === "ok" || result.result === "not found") return true;
 
-    fs.unlinkSync(localFilePath);
-
-    return res.secure_url;
+    logger.error(result.result);
+    return false;
   } catch (error) {
-    console.log(error.message);
+    logger.error("Delete Error:", error.message);
     return false;
   }
 };
 
-const removeSingleImg = async (url = "") => {
-  if (!url) {
-    throw new ApiError(400, "Image URL is required for deletion.");
-  }
+// Delete Multiple Images
+const removeMultiImg = async (imageUrls = []) => {
+  if (!Array.isArray(imageUrls) || imageUrls.length === 0) return false;
+
   try {
-    const publicId = url.split("/").pop().split(".")[0];
-    const result = await cloudinary.uploader.destroy(publicId);
-    if (result.result !== "ok") {
-      throw new ApiError(
-        500,
-        `Failed to delete image from Cloudinary: ${result.result}`
-      );
-    }
-    return true;
-  } catch (error) {
-    console.error("Error deleting single image:", error.message);
-    throw new ApiError(
-      error.statusCode || 500,
-      error.message || "Failed to delete image from Cloudinary."
+    const publicIds = imageUrls.map((url) => extractPublicId(url));
+
+    const results = await Promise.allSettled(
+      publicIds.map((id) => cloudinary.uploader.destroy(id))
     );
+
+    const hasFailures = results.some(
+      (r) => r.status === "rejected" || r.value?.result !== "ok"
+    );
+
+    return !hasFailures;
+  } catch (error) {
+    logger.error(error.message);
+    return false;
   }
 };
 
-const removeMultiImg = async (images = []) => {
-  if (images.length === 0) {
-    throw new ApiError(400, "Image URLs are required for deletion.");
-  }
-  try {
-    const publicIds = images.map((url) => /^(cartify(-demo)?\/.+)$/.test(url));
-    const deletionResults = await Promise.allSettled(
-      publicIds.map((publicId) => cloudinary.uploader.destroy(publicId))
-    );
+// Extract Cloudinary Public ID from URL
+const extractPublicId = (url = "") => {
+  // Expected format: https://res.cloudinary.com/xxx/image/upload/v12345678/folder/filename.jpg
+  const parts = url.split("/");
+  const filename = parts.pop()?.split(".")[0];
+  const folder =
+    parts.slice(-1)[0] === defaultFolder
+      ? defaultFolder
+      : parts.slice(-2).join("/");
 
-    // const failedDeletions = deletionResults.filter(
-    //   (result) => result.status === "rejected" || result.value.result !== "ok"
-    // );
-
-    // if (failedDeletions.length > 0) {
-    //   const errors = failedDeletions.map(
-    //     (result) =>
-    //       result.reason?.message || result.value?.result || "Unknown error"
-    //   );
-    //   throw new ApiError(
-    //     500,
-    //     `Failed to delete some images from Cloudinary: ${errors.join(", ")}`
-    //   );
-    // }
-    return true;
-  } catch (error) {
-    console.error("Error deleting multiple images:", error.message);
-    throw new ApiError(
-      error.statusCode || 500,
-      error.message || "Failed to delete images from Cloudinary."
-    );
-  }
-};
-
-const getImageUrls = async (expression = "folder:gallery", limit = 100) => {
-  try {
-    const result = await cloudinary.search
-      .expression(expression)
-      .sort_by("created_at", "desc")
-      .max_results(parseInt(limit)) // You can paginate if you have more than 100
-      .execute();
-    const urls = result.resources.map((file) => file.secure_url);
-    return urls;
-  } catch (error) {
-    console.log(error.message);
-    return [];
-  }
+  return `${folder}/${filename}`;
 };
 
 export {
   cloudinary,
   uploadSingleImg,
-  removeSingleImg,
   uploadMultiImg,
+  removeSingleImg,
   removeMultiImg,
-  getImageUrls,
+  extractPublicId,
 };

@@ -24,21 +24,6 @@ const sortByOptions = [
   { label: "Price (High to Low)", value: "price-desc" },
 ];
 
-// const pageSizeOptions = [
-//   { label: "10 Items per Page", value: 10 },
-//   { label: "30 Items per Page", value: 30 },
-//   { label: "50 Items per Page", value: 50 },
-//   { label: "100 Items per Page", value: 100 },
-// ];
-
-const ratingOptions = [
-  { value: 1, label: "1.0 ★ below 2 to 1" },
-  { value: 2, label: "2.0 ★ below 3 to 2" },
-  { value: 3, label: "3.0 ★ below 4 to 3" },
-  { value: 4, label: "4.0 ★ below 5 to 4" },
-  { value: 5, label: "5.0 ★ below 5 to 4.5" },
-];
-
 const ProductListing = () => {
   const [params] = useSearchParams();
   const { items: categories } = useSelector((state) => state.categories);
@@ -323,19 +308,17 @@ const ProductListing = () => {
             <div className="flex flex-col w-full text-sm relative">
               <fieldset className="border border-gray-300 rounded-md py-2 px-4">
                 <legend className="font-medium uppercase">Rating</legend>
-                {ratingOptions.map((it) => (
+                {[3, 4, 5].map((it) => (
                   <label
-                    htmlFor={it.value}
-                    key={it.value}
+                    htmlFor={it}
+                    key={it}
                     className="flex items-center mb-2 gap-2 capitalize text-sm cursor-pointer">
                     <input
-                      onChange={(e) =>
-                        setRating(e.target.checked ? it.value : 0)
-                      }
+                      onChange={(e) => setRating(e.target.checked ? it : 0)}
                       value={rating}
-                      checked={rating === it.value}
-                      id={it.value}
-                      name={it.value}
+                      checked={rating === it}
+                      id={it}
+                      name={it}
                       type="radio"
                       className="form-checkbox text-blue-600"
                     />
@@ -345,16 +328,12 @@ const ProductListing = () => {
                         .map((_, i) => (
                           <Star
                             key={i}
-                            fill={
-                              i < it.value
-                                ? "oklch(85.2% 0.199 91.936)"
-                                : "#fff"
-                            }
+                            fill={i < it ? "oklch(85.2% 0.199 91.936)" : "#fff"}
                             className="w-4 h-4 text-yellow-400"
                           />
                         ))}
                     </div>
-                    ({it.value})
+                    ({it})
                   </label>
                 ))}
               </fieldset>
@@ -411,7 +390,7 @@ const ProductListing = () => {
               </button>
             </div>
             <button
-              className="flex sm:hidden items-center justify-center py-2 px-3 hover:bg-gray-200 rounded-full gap-2"
+              className="flex lg:hidden items-center justify-center py-2 px-3 hover:bg-gray-200 rounded-full gap-2"
               onClick={() => setMobileView(true)}>
               <Settings className="w-4 h-4" />
               <span>Filter</span>

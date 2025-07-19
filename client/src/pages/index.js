@@ -9,7 +9,7 @@ import OrderFailed from "./OrderFailed";
 import OrderSuccess from "./OrderSuccess";
 import OrderListing from "./OrderListing";
 import ShippingAddress from "./ShippingAddress";
-import GalleryPage from "./GalleryPage";
+import GalleryPage from "./Gallery/GalleryPage";
 import Setting from "./Setting";
 import ChatPage from "./Chat/ChatPage";
 
