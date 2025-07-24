@@ -7,7 +7,6 @@ import RegisterPage from "./RegisterPage";
 import FavoritePage from "./FavoritePage";
 import OrderFailed from "./OrderFailed";
 import OrderSuccess from "./OrderSuccess";
-import OrderListing from "./OrderListing";
 import ShippingAddress from "./ShippingAddress";
 import GalleryPage from "./Gallery/GalleryPage";
 import Setting from "./Setting";
@@ -19,7 +18,6 @@ export {
   HomePage,
   LoginPage,
   OrderFailed,
-  OrderListing,
   OrderSuccess,
   ProductsPage,
   RegisterPage,

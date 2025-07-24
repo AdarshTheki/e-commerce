@@ -18,7 +18,7 @@ const useFetch = <T,>(url: string): UseFetchResult<T> => {
         setError(null);
         try {
             const res = await axiosInstance.get(url);
-            if (res.data) setData(res.data);
+            if (res.data) setData(res.data.data || res.data);
         } catch (err) {
             setError((err as Error).message);
         } finally {

@@ -14,7 +14,6 @@ import {
   HomePage,
   LoginPage,
   OrderFailed,
-  OrderListing,
   OrderSuccess,
   ProductsPage,
   RegisterPage,
@@ -69,7 +68,6 @@ const router = createBrowserRouter([
           { path: "shipping-address", element: <ShippingAddress /> },
           { path: "setting", element: <Setting /> },
           { path: "favorite", element: <FavoritePage /> },
-          { path: "orders", element: <OrderListing /> },
           { path: "message", element: <ChatPage /> },
           {
             path: "ai",

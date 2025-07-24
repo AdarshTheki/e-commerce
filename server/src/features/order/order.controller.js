@@ -33,7 +33,8 @@ const orderAggregation = [
     $group: {
       _id: "$_id",
       customer: { $first: "$customer" },
-      shipping: { $first: "$shipping" },
+      shipping_address: { $first: "$shipping_address" },
+      payment: { $first: "$payment" },
       status: { $first: "$status" },
       createdAt: { $first: "$createdAt" },
       updatedAt: { $first: "$updatedAt" },
@@ -90,13 +91,13 @@ export const getUserOrders = asyncHandler(async (req, res) => {
   const sort = req.query?.sortBy || "createdAt";
   const order = req.query?.orderBy || "desc";
 
-  const options = {
-    page,
-    limit,
-    sort: { [sort]: order === "asc" ? 1 : -1 },
-  };
-
-  const orders = await Order.paginate({ customer: req.user._id }, options);
+  const orders = await Order.aggregate([
+    { $match: { customer: req.user._id } },
+    ...orderAggregation,
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+    { $sort: { [sort]: order === "asc" ? 1 : -1 } },
+  ]);
 
   if (!orders) {
     throw new ApiError(404, "Orders not found");

@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import { User, Lock, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
+import { User, Lock, LogOut, ListOrdered, PackageSearch } from "lucide-react";
 import useAuth from "../hooks/useAuth";
+import useApi from "../hooks/useApi";
+import { Loading } from "../utils";
+import { NavLink } from "react-router-dom";
 
-const ProfileSettings = () => {
+export default function ProfileSettings() {
   const [activeTab, setActiveTab] = useState("profile");
 
   const renderContent = () => {
@@ -13,6 +16,8 @@ const ProfileSettings = () => {
         return <PasswordTab />;
       case "logout":
         return <LogoutTab />;
+      case "order":
+        return <Orders />;
       default:
         return null;
     }
@@ -43,6 +48,12 @@ const ProfileSettings = () => {
                 <LogOut className="mr-3" size={20} />
                 Logout
               </button>
+              <button
+                onClick={() => setActiveTab("order")}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "order" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
+                <ListOrdered className="mr-3" size={20} />
+                Order
+              </button>
             </nav>
           </div>
           <div className="w-full md:w-3/4 p-8">{renderContent()}</div>
@@ -50,7 +61,7 @@ const ProfileSettings = () => {
       </div>
     </div>
   );
-};
+}
 
 const ProfileTab = () => {
   const {
@@ -235,4 +246,105 @@ const LogoutTab = () => {
   );
 };
 
-export default ProfileSettings;
+const Orders = () => {
+  const { data, loading, callApi } = useApi();
+
+  useEffect(() => {
+    callApi("/order/user", {}, "get");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (loading) return <Loading />;
+
+  if (!data || data?.length === 0) return <OrderEmpty />;
+
+  return (
+    <div className="container mx-auto p-2">
+      <h1 className="text-2xl font-bold mb-6">Order Listing</h1>
+      {data?.map((order) => (
+        <OrderCard key={order._id} order={order} />
+      ))}
+    </div>
+  );
+};
+
+const OrderEmpty = () => {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <div className="p-8 max-w-md text-center">
+        <PackageSearch className="w-20 h-20 text-gray-400 mb-4 mx-auto" />
+        <h2 className="text-2xl font-semibold mb-2">No Orders Yet</h2>
+        <p className="text-gray-600 mb-6">
+          You haven’t placed any orders. Start shopping to place your first
+          order.
+        </p>
+        <NavLink
+          to="/"
+          className="bg-indigo-600 text-white px-6 py-2 rounded-xl font-medium hover:bg-indigo-700 transition">
+          Shop Now
+        </NavLink>
+      </div>
+    </div>
+  );
+};
+
+const OrderCard = ({ order }) => {
+  const orderStatusMessages = {
+    pending:
+      "Your order has been placed successfully and is pending confirmation.",
+    shipped: "Good news! Your order has been shipped and is on its way.",
+    delivered:
+      "Your order has been delivered. We hope you enjoy your purchase!",
+    cancelled:
+      "Your order has been cancelled. If this was a mistake, please contact support.",
+  };
+
+  return (
+    <div className="border-b border-gray-300 pb-3 mb-6">
+      <h2 className="text-xl font-semibold my-2">Order ID: {order._id}</h2>
+      <div className="mb-2">
+        <strong>Status:</strong>{" "}
+        <span className="capitalize">{orderStatusMessages[order?.status]}</span>
+      </div>
+
+      <div className="mb-2">
+        <strong>Payment:</strong> {order.payment.method} -{" "}
+        {order.payment.status}
+      </div>
+
+      <div className="mb-2">
+        <strong>Customer:</strong> {order.shipping_address.name} (
+        {order.shipping_address.email})
+      </div>
+
+      <div className="mb-2">
+        <strong>Shipping:</strong>
+        <div className="text-sm ml-2">
+          {order.shipping_address.line1}, {order.shipping_address.line2},<br />
+          {order.shipping_address.city} - {order.shipping_address.postal_code},{" "}
+          {order.shipping_address.state}, {order.shipping_address.country}
+        </div>
+      </div>
+
+      <div className="mt-2">
+        <strong>Items:</strong>
+        <ul className="ml-4 list-disc">
+          {order.items.map((item, index) => (
+            <li key={index} className="flex gap-3 items-center mt-2">
+              <img
+                src={item.product.thumbnail}
+                alt={item.product.title}
+                className="w-12 h-12 object-contain"
+              />
+              <div>
+                <p>{item.product.title}</p>
+                <p>Qty: {item.quantity}</p>
+                <p>${item.product.price.toFixed(2)}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
