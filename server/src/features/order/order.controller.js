@@ -81,60 +81,6 @@ export const getAllOrders = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, orders, "Orders retrieved successfully"));
 });
 
-// @desc    Create a new order
-// @route   POST /api/v1/orders
-// @access  Private
-export const createOrder = asyncHandler(async (req, res) => {
-  const { shipping } = req.body;
-
-  const cart = await Cart.findOne({ createdBy: req.user._id });
-
-  if (!cart || !cart.items?.length) {
-    throw new ApiError(400, "Cart is empty");
-  }
-
-  let tempAddress;
-  if (!shipping) {
-    tempAddress = await Address.findOne({
-      createdBy: req.user._id,
-      isDefault: true,
-    });
-  } else {
-    tempAddress = await Address.create({
-      createdBy: req.user._id,
-      addressLine: shipping.addressLine,
-      city: shipping.city,
-      countryCode: shipping.countryCode,
-      postalCode: parseInt(shipping.postalCode),
-    });
-  }
-
-  if (!tempAddress) {
-    throw new ApiError(404, "Shipping address not found");
-  }
-
-  const order = await Order.create({
-    customer: req.user._id,
-    shipping: {
-      addressLine: tempAddress.addressLine,
-      city: tempAddress.city,
-      countryCode: tempAddress.countryCode?.toUpperCase(),
-      postalCode: tempAddress.postalCode,
-    },
-    items: cart?.items || [],
-    status: "pending",
-  });
-
-  if (order) {
-    cart.items = [];
-    await cart.save();
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse(201, order, "Order created successfully"));
-});
-
 // @desc    Get user's orders
 // @route   GET /api/v1/orders/my
 // @access  Private
@@ -189,72 +135,86 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 // @desc    Stripe webhook handler
 // @route   POST /api/v1/orders/webhook
 // @access  Public (Stripe)
-export const stripeWebhook = asyncHandler(async (req, res) => {
-  const stripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+export const stripeWebhook = async (req, res) => {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   const sig = req.headers["stripe-signature"];
-
-  if (!stripeWebhookSecret || !sig) {
-    throw new ApiError(400, "Missing webhook secret or signature");
-  }
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, stripeWebhookSecret);
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err) {
-    throw new ApiError(400, `Webhook Error: ${err.message}`);
+    logger.error("signature verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  switch (event.type) {
-    case "checkout.session.completed":
-      const session = event.data.object;
-      const { userId, addressId } = session.metadata || {};
+  const { type, data } = event;
 
-      if (!userId || !addressId) {
-        throw new ApiError(400, "Missing userId or addressId in metadata");
+  try {
+    switch (type) {
+      case "payment_intent.succeeded":
+        break;
+
+      case "checkout.session.completed": {
+        const session = data.object;
+
+        const cart = await Cart.findOne({
+          createdBy: session?.metadata?.userId,
+        });
+
+        if (!cart || !cart.items?.length) {
+          return res.status(404).json({ message: "Cart is Empty" });
+        }
+
+        const order = new Order({
+          customer: session.metadata.userId,
+          items: cart.items,
+          shipping_address: {
+            line1: session.customer_details.address.line1,
+            line2: session.customer_details.address.line2,
+            city: session.customer_details.address.city,
+            country: session.customer_details.address.country,
+            postal_code: session.customer_details.address.postal_code,
+            state: session.customer_details.address.state,
+            name: session.customer_details.name,
+            email: session.customer_details.email,
+          },
+          payment: {
+            id: session.id,
+            method: session.payment_method_types[0],
+            status: session.payment_status,
+          },
+        });
+
+        await order.save();
+
+        cart.items = [];
+
+        await cart.save();
+
+        logger.info("✅ Order created via webhook:", order._id);
+        break;
       }
 
-      const cart = await Cart.findOne({ createdBy: userId });
+      default:
+        logger.warn(`Unhandled event type: ${type}`);
+    }
 
-      if (!cart || !cart.items?.length) {
-        throw new ApiError(400, "Cart not found or empty");
-      }
-
-      const address = await Address.findById(addressId);
-
-      if (!address) {
-        throw new ApiError(400, "Address not found");
-      }
-
-      const order = new Order({
-        customer: userId,
-        items: cart.items,
-        shipping: {
-          addressLine: address.addressLine,
-          city: address.city,
-          countryCode: address.countryCode?.toUpperCase(),
-          postalCode: address.postalCode,
-        },
-        status: "pending",
-      });
-
-      await order.save();
-
-      cart.items = [];
-      await cart.save();
-      logger.info("Order created successfully via webhook");
-      break;
-    default:
-      logger.error(`Unhandled event type ${event.type}`);
+    return res.status(200).json({ success: true, message: "Webhook received" });
+  } catch (err) {
+    logger.error("Webhook handler:", err.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
-
-  return res.status(200).json(new ApiResponse(200, null, "Webhook received"));
-});
+};
 
 // @desc    Create Stripe checkout session
 // @route   POST /api/v1/orders/checkout
 // @access  Private
 export const stripeCheckout = asyncHandler(async (req, res) => {
-  const { addressId, userId } = req.body;
+  const userId = req.user._id.toString();
+
+  if (!userId) throw new ApiError(404, "user not found");
 
   const cart = await Cart.findOne({
     createdBy: userId,
@@ -267,16 +227,15 @@ export const stripeCheckout = asyncHandler(async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
+    client_reference_id: cart._id.toString(),
     shipping_address_collection: { allowed_countries: ["IN"] },
-    metadata: {
-      userId,
-      addressId,
-    },
+    metadata: { userId },
     line_items: cart.items?.map((item) => ({
       price_data: {
         currency: "usd",
         product_data: {
           name: item.productId.title,
+          images: [item.productId.thumbnail],
         },
         unit_amount: Math.floor(item.productId.price * 100),
       },

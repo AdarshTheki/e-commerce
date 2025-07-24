@@ -1,25 +1,20 @@
 import express from "express";
 import { verifyJWT } from "../../middlewares/auth.middleware.js";
 import {
-  createOrder,
   getAllOrders,
   getUserOrders,
   stripeCheckout,
-  stripeWebhook,
   updateOrderStatus,
 } from "./order.controller.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllOrders).post(verifyJWT(), createOrder);
-router.get("/user", verifyJWT(), getUserOrders);
-router.patch("/:orderId/status", updateOrderStatus);
-router.post("/stripe-checkout", stripeCheckout);
+router.route("/").get(verifyJWT(["admin"]), getAllOrders);
 
-router.post(
-  "/stripe-webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhook
-);
+router.patch("/:orderId/status", verifyJWT(["admin"]), updateOrderStatus);
+
+router.get("/user", verifyJWT(), getUserOrders);
+
+router.post("/stripe-checkout", verifyJWT(), stripeCheckout);
 
 export default router;

@@ -22,9 +22,16 @@ import chatRoute from "./features/chat/chat.router.js";
 import orderRoute from "./features/order/order.router.js";
 import cloudinaryRoute from "./features/cloudinary/cloudinary.router.js";
 import reviewRoute from "./features/review/review.router.js";
+import { stripeWebhook } from "./features/order/order.controller.js";
 import { logger, morganMiddleware } from "./middlewares/logger.middleware.js";
 
 const app = express();
+
+app.post(
+  "/api/v1/order/stripe-webhook",
+  express.raw({ type: "application/json" }),
+  stripeWebhook
+);
 
 app.use(morganMiddleware);
 

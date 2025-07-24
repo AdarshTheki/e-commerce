@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Heart } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { errorHandler, axios } from "../helper";
 
 const HeartFavorite = ({ id, className }) => {
@@ -22,7 +21,6 @@ const HeartFavorite = ({ id, className }) => {
       if (res.data) {
         const check = res.data?.data?.favorites.includes(id);
         setIsLiked(check);
-        toast.success(`${check ? "Add Liked" : "Remove Liked"}`);
       }
     } catch (error) {
       errorHandler(error);

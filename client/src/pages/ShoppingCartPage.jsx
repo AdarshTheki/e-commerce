@@ -1,20 +1,16 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ShoppingCart, Trash2Icon } from "lucide-react";
 import { Loading, NotFound } from "../utils";
 import { HomeCertificate } from "../components";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { axios, errorHandler } from "../helper";
 import { useDispatch, useSelector } from "react-redux";
+import Trending from "./Home/Trending";
 import { fetchCarts, removeItem, updateItemQuantity } from "../redux/cartSlice";
 
 const ShoppingCartPage = () => {
-  const { items, loading } = useSelector((state) => state.cart);
-  const { items: addresses } = useSelector((state) => state.address);
   const dispatch = useDispatch();
-  const [selectAddress, setSelectAddress] = useState(null);
-  const { user } = useSelector((s) => s.auth);
-  const navigate = useNavigate();
+  const { items, loading } = useSelector((state) => state.cart);
 
   useEffect(() => {
     dispatch(fetchCarts());
@@ -22,11 +18,7 @@ const ShoppingCartPage = () => {
 
   const handleCheckout = async () => {
     try {
-      if (!selectAddress) return toast.error("User Address not Defined");
-      const res = await axios.post("/order/stripe-checkout", {
-        addressId: selectAddress._id,
-        userId: user._id,
-      });
+      const res = await axios.post("/order/stripe-checkout");
       if (res.data) {
         window.location.href = res.data?.data?.url;
       }
@@ -58,12 +50,16 @@ const ShoppingCartPage = () => {
   };
 
   const totals =
-    items && items?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0);
+    (items &&
+      items
+        ?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0)
+        ?.toFixed(2)) ||
+    0;
 
   if (loading) return <Loading />;
 
   return (
-    <section className="min-h-screen sm:p-4 p-3 max-w-6xl mx-auto">
+    <section className="min-h-screen mx-auto container px-2">
       {items?.length === 0 && (
         <NotFound
           canvas={
@@ -94,30 +90,7 @@ const ShoppingCartPage = () => {
               );
             })}
 
-          <p className="font-semibold text-2xl py-4">Shipping Address</p>
-
-          <div
-            onClick={() => navigate("/shipping-address")}
-            className="font-semibold capitalize border border-gray-300 cursor-pointer !px-5 mb-4 card !bg-transparent">
-            Add New Address
-          </div>
-
-          {addresses?.map((i) => (
-            <div
-              key={i._id}
-              onClick={() => setSelectAddress(i._id)}
-              className={`capitalize border border-gray-300 cursor-pointer !px-5 mb-4 card ${selectAddress === i._id ? "!bg-blue-100" : "!bg-transparent"}`}>
-              {i.isDefault && (
-                <p className="status-active w-fit mb-2">Default</p>
-              )}
-              <p className="font-semibold">{i.addressLine}</p>
-              <p>
-                {i.city}, {i.postalCode}, {i?.countryCode?.toUpperCase()}
-              </p>
-            </div>
-          ))}
-
-          {selectAddress && !!items?.length && (
+          {!!items?.length && (
             <div className="flex gap-6 font-semibold mt-10 ">
               <NavLink
                 to={"/product"}
@@ -138,7 +111,7 @@ const ShoppingCartPage = () => {
             <h3>This Order shipping Fee!</h3>
             <div className="flex justify-between font-semibold text-xl">
               <span>({items?.length}) Item</span>
-              <span>${totals | 1}</span>
+              <span>${totals}</span>
             </div>
             <div className="flex justify-between">
               <span>Shipping:</span>
@@ -150,13 +123,15 @@ const ShoppingCartPage = () => {
             </div>
             <div className="flex justify-between font-semibold text-3xl">
               <span>Total:</span>
-              <span>${((totals + 5) | 0).toFixed(2)}</span>
+              <span>${parseInt(totals) + 5}</span>
             </div>
           </div>
         )}
       </div>
 
       <HomeCertificate />
+
+      <Trending heading="Suggest you Wishlist" size={4} />
     </section>
   );
 };

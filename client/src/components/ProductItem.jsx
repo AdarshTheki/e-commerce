@@ -27,14 +27,12 @@ export default function Item({ delay = "100ms", ...item }) {
       if (!user?._id) return toast.error("Un-Authorized User");
       if (!item?._id) return toast.error("Product ID not found");
 
-      dispatch(addItem(item));
-
       const res = await axios.post(`/cart`, {
         productId: item._id,
         quantity: 1,
       });
       if (res.data) {
-        toast.success("Cart Added");
+        dispatch(addItem(res.data.data.items));
       }
     } catch (error) {
       errorHandler(error);

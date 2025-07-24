@@ -1,7 +1,6 @@
 import { ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 
 import { HeartFavorite } from "../../components";
 import { Loading, NotFound } from "../../utils";
@@ -9,18 +8,21 @@ import { errorHandler, axios } from "../../helper";
 import useFetch from "../../hooks/useFetch";
 import Trending from "../Home/Trending";
 import ProductComment from "./ProductComment";
+import { useDispatch } from "react-redux";
+import { addItem } from "../../redux/cartSlice";
 
 const SingleProductPage = () => {
   const { id } = useParams();
   const { data: product, loading, error } = useFetch(`/product/${id}`);
   const [color, setColor] = useState("black");
   const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
 
   const handleAddToCart = async (productId, quantity) => {
     try {
       const res = await axios.post(`/cart`, { productId, quantity });
       if (res.data) {
-        toast.success("Add to cart success");
+        dispatch(addItem(res.data.data.items));
       }
     } catch (error) {
       errorHandler(error);

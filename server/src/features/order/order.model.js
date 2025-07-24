@@ -15,11 +15,15 @@ const orderSchema = new Schema(
       enum: orderStatus,
       default: "pending",
     },
-    shipping: {
-      addressLine: String,
-      postalCode: Number,
-      countryCode: String,
+    shipping_address: {
+      name: String,
+      email: String,
+      line1: String,
+      line2: String,
       city: String,
+      country: String,
+      postal_code: String,
+      state: String,
     },
     items: [
       {
@@ -36,6 +40,11 @@ const orderSchema = new Schema(
         },
       },
     ],
+    payment: {
+      id: String,
+      status: String,
+      method: String,
+    },
   },
   { timestamps: true }
 );

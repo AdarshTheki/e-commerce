@@ -1,7 +1,6 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useSelector } from "react-redux";
 import useApi from "../../hooks/useApi";
-import { toast } from "react-toastify";
 import { errorHandler } from "../../helper";
 import { Download, Loader, Trash2Icon } from "lucide-react";
 import { LazyImage } from "../../utils";
@@ -36,7 +35,6 @@ const GalleryCard = ({ secure_url, public_id, onDelete }) => {
         "delete"
       );
       if (result) {
-        toast.success("Image delete succeed");
         onDelete();
       }
     } catch (error) {

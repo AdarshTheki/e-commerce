@@ -82,7 +82,6 @@ const useAuth = () => {
       const data = res?.data?.data;
       if (data) {
         dispatch(login({ ...user, email, fullName }));
-        toast.success("Profile updated successfully!");
       }
     } catch (error) {
       errorHandler(error);
@@ -94,14 +93,10 @@ const useAuth = () => {
   const handleChangePassword = async (oldPassword, newPassword) => {
     try {
       setPasswordLoading(true);
-      const res = await axios.post("/user/password", {
+      await axios.post("/user/password", {
         oldPassword,
         newPassword,
       });
-      const data = res?.data?.data;
-      if (data) {
-        toast.success("Password updated successfully!");
-      }
     } catch (error) {
       errorHandler(error);
     } finally {
@@ -118,7 +113,6 @@ const useAuth = () => {
       const data = res?.data?.data;
       if (data) {
         dispatch(login({ ...user, avatar: data.avatar }));
-        toast.success("Avatar updated successfully!");
       }
     } catch (error) {
       errorHandler(error);
@@ -133,7 +127,6 @@ const useAuth = () => {
       localStorage.removeItem("accessToken");
       sessionStorage.removeItem("accessToken");
       dispatch(logout());
-      toast.success("Logged out successfully!");
     } catch (error) {
       errorHandler(error);
     }

@@ -94,7 +94,6 @@ const useChat = () => {
       const res = await axios.post(`/chats/chat/${userId}`);
       if (res.data) {
         setChat(res.data.chat);
-        toast.success("Chat created successfully");
       }
     } catch (error) {
       errorHandler(error);
@@ -105,13 +104,10 @@ const useChat = () => {
     try {
       const method = chatId ? "patch" : "post";
       const url = chatId ? `/chats/group/${chatId}` : "/chats/group";
-      const res = await axios[method](url, {
+      await axios[method](url, {
         name,
         participants,
       });
-      if (res.data) {
-        toast.success(`Chat ${chatId ? "updated" : "created"}  successfully`);
-      }
     } catch (error) {
       errorHandler(error);
     }
@@ -142,11 +138,7 @@ const useChat = () => {
 
   const handleMessageDelete = async (messageId) => {
     try {
-      if (!messageId) return;
-      const res = await axios.delete(`/messages/${messageId}`);
-      if (res.data) {
-        toast.success("Message deleted successfully");
-      }
+      await axios.delete(`/messages/${messageId}`);
     } catch (error) {
       errorHandler(error);
     }
@@ -154,11 +146,7 @@ const useChat = () => {
 
   const handleChatDeleted = async (chatId) => {
     try {
-      if (!chatId) return;
-      const res = await axios.delete(`/chats/chat/${chatId}`);
-      if (res.data) {
-        toast.success("chat deleted success");
-      }
+      await axios.delete(`/chats/chat/${chatId}`);
     } catch (error) {
       errorHandler(error);
     }

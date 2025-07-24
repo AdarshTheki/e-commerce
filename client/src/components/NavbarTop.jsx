@@ -47,6 +47,10 @@ const NavbarTop = () => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  const itemsCount = Array.isArray(items)
+    ? items?.reduce((p, c) => c?.quantity + p, 0)
+    : 0;
+
   return (
     <header
       id="header"
@@ -93,7 +97,7 @@ const NavbarTop = () => {
               <ShoppingCart className="w-5 h-5" />
               {!!items?.length && (
                 <span className="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {items?.length}
+                  {itemsCount}
                 </span>
               )}
             </button>
