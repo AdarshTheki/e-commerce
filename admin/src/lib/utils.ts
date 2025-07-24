@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { Box, ShoppingBag, Users, HousePlug, Cat, Gift } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -47,7 +47,7 @@ export const errorHandler = (error: AxiosError) => {
     }
 };
 
-export const axiosInstance = axios.create({
+export const axiosInstance: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     timeout: 50000,
     headers: {

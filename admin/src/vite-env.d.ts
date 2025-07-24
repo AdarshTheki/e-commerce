@@ -31,10 +31,10 @@ interface PaginationTypeWithDocs<T> {
 }
 
 interface UserType {
-    _id: string;
     fullName: string;
     email: string;
-    password: string;
+    _id?: string;
+    password?: string;
     role: 'customer' | 'admin' | 'seller';
     status: 'active' | 'inactive';
     avatar: string;
