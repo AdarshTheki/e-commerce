@@ -3,11 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { axios, errorHandler } from "../helper";
 import { login, logout } from "../redux/authSlice";
-import { useNavigate } from "react-router-dom";
 
 const useAuth = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -29,12 +27,12 @@ const useAuth = () => {
       if (data) {
         if (rememberMe) {
           localStorage.setItem("accessToken", data.accessToken);
+          sessionStorage.clear("accessToken");
         } else {
           sessionStorage.setItem("accessToken", data.accessToken);
+          localStorage.removeItem("accessToken");
         }
-        dispatch(login(data.user));
-        toast.success("Login successful!");
-        navigate("/", { replace: true });
+        window.location.href = "/";
       }
     } catch (error) {
       errorHandler(error);
@@ -64,14 +62,7 @@ const useAuth = () => {
       });
 
       if (data) {
-        const res = await axios.post("/user/sign-in", { email, password });
-        const data = res?.data?.data;
-        if (data) {
-          localStorage.setItem("accessToken", data.accessToken);
-          dispatch(login(data.user));
-          toast.success("Registration successful!");
-          navigate("/", { replace: true });
-        }
+        await handleLogin(email, password);
       }
     } catch (error) {
       errorHandler(error);

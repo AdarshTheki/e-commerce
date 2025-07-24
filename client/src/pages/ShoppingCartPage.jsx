@@ -24,22 +24,22 @@ const ShoppingCartPage = () => {
     try {
       if (!selectAddress) return toast.error("User Address not Defined");
       const res = await axios.post("/order/stripe-checkout", {
-        addressId: selectAddress,
+        addressId: selectAddress._id,
         userId: user._id,
       });
       if (res.data) {
-        window.location.href = res.data?.url;
+        window.location.href = res.data?.data?.url;
       }
     } catch (error) {
       errorHandler(error);
     }
   };
 
-  const handleUpdateQty = async (id, qty) => {
+  const handleUpdateQty = async (id, productId, quantity) => {
     try {
-      const res = await axios.put("/cart", { productId: id, quantity: qty });
+      const res = await axios.put("/cart", { productId, quantity });
       if (res.data) {
-        dispatch(updateItemQuantity({ _id: id, quantity: qty }));
+        dispatch(updateItemQuantity({ _id: id, quantity }));
       }
     } catch (error) {
       errorHandler(error);
@@ -86,7 +86,9 @@ const ShoppingCartPage = () => {
                 <CartListing
                   key={item._id}
                   {...item}
-                  onQtyChange={(qty) => handleUpdateQty(item._id, qty)}
+                  onQtyChange={(qty) =>
+                    handleUpdateQty(item._id, item.productId._id, qty)
+                  }
                   onRemove={() => handleRemoveItem(item._id)}
                 />
               );
@@ -144,7 +146,7 @@ const ShoppingCartPage = () => {
             </div>
             <div className="flex justify-between">
               <span>Estimate Tax:</span>
-              <span>$5</span>
+              <span className="text-red-600">$5</span>
             </div>
             <div className="flex justify-between font-semibold text-3xl">
               <span>Total:</span>
@@ -167,7 +169,7 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
 
   return (
     <div className="flex max-sm:flex-col gap-5 items-start border-b text-slate-700 border-gray-300 py-4">
-      <NavLink to={`/product/${_id}`} className="bg-gray-300 max-sm:w-full">
+      <NavLink to={`/products/${_id}`} className="bg-gray-300 max-sm:w-full">
         <img
           src={thumbnail || "https://placehold.co/120x120"}
           alt="Product"
@@ -185,14 +187,17 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
           </span>
         </div>
         <p>
-          Totals: <span className="font-bold">${price * qty}</span>
+          Totals: <span className="font-bold">${(price * qty).toFixed(2)}</span>
         </p>
         <div className="flex gap-5 items-center mt-3">
           <div className="py-1 gap-6 flex items-center justify-center px-6 border border-slate-300 rounded-full w-fit font-medium">
             <button
               className="text-center text-xl"
               onClick={() => {
-                if (qty !== 1) setQty((prev) => prev - 1);
+                if (qty !== 1) {
+                  onQtyChange(qty - 1);
+                  setQty((prev) => prev - 1);
+                }
               }}>
               -
             </button>
@@ -200,13 +205,13 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
             <button
               className="text-center text-xl"
               onClick={() => {
-                if (qty < 5) setQty((prev) => prev + 1);
+                if (qty < 5) {
+                  onQtyChange(qty + 1);
+                  setQty((prev) => prev + 1);
+                }
               }}>
               +
             </button>
-            {quantity !== qty && (
-              <button onClick={() => onQtyChange(qty)}>Set</button>
-            )}
           </div>
           <button onClick={onRemove} className="text-red-600 svg-btn !p-2">
             <Trash2Icon />

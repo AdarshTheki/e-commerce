@@ -1,15 +1,16 @@
-import { Star } from "lucide-react";
+import { ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { HeartFavorite, ProductReview } from "../components";
-import { Loading, NotFound } from "../utils";
-import { errorHandler, axios } from "../helper";
-import useFetch from "../hooks/useFetch";
-import Trending from "./Home/Trending";
+import { HeartFavorite } from "../../components";
+import { Loading, NotFound } from "../../utils";
+import { errorHandler, axios } from "../../helper";
+import useFetch from "../../hooks/useFetch";
+import Trending from "../Home/Trending";
+import ProductComment from "./ProductComment";
 
-const ProductDetail = () => {
+const SingleProductPage = () => {
   const { id } = useParams();
   const { data: product, loading, error } = useFetch(`/product/${id}`);
   const [color, setColor] = useState("black");
@@ -155,21 +156,22 @@ const ProductDetail = () => {
             <div className="flex space-x-4">
               <button
                 onClick={() => handleAddToCart(product?._id || "", quantity)}
-                className="flex-1 bg-blue-600 max-w-56 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                className="btn-primary flex items-center gap-2">
+                <ShoppingCart />
                 Add to Cart
               </button>
 
-              <HeartFavorite id={id} className="py-2 px-3" />
+              <HeartFavorite id={id} className="pl-4" />
             </div>
           </div>
         </div>
       </div>
 
-      <ProductReview />
+      <ProductComment />
 
       <Trending size={4} heading="Related Products" />
     </section>
   );
 };
 
-export default ProductDetail;
+export default SingleProductPage;

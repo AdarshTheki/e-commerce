@@ -60,6 +60,8 @@ const router = createBrowserRouter([
       { path: "products", element: <ProductsPage /> },
       { path: "products/:id", element: <SingleProductPage /> },
       { path: "gallery", element: <GalleryPage /> },
+      { path: "order/failed", element: <OrderFailed /> },
+      { path: "order/success", element: <OrderSuccess /> },
       {
         element: <ProtectedLayout />,
         children: [
@@ -67,8 +69,6 @@ const router = createBrowserRouter([
           { path: "shipping-address", element: <ShippingAddress /> },
           { path: "setting", element: <Setting /> },
           { path: "favorite", element: <FavoritePage /> },
-          { path: "order/failed", element: <OrderFailed /> },
-          { path: "order/success", element: <OrderSuccess /> },
           { path: "orders", element: <OrderListing /> },
           { path: "message", element: <ChatPage /> },
           {

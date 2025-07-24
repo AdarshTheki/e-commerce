@@ -104,7 +104,7 @@ export const updateComment = asyncHandler(async (req, res) => {
   }
 
   comment.text = text || comment.text;
-  await comment.save({ validateBeforeSave: false });
+  await comment.save();
 
   return res
     .status(200)
@@ -136,7 +136,7 @@ export const likeComment = asyncHandler(async (req, res) => {
     );
   }
 
-  await comment.save({ validateBeforeSave: false });
+  await comment.save();
 
   return res
     .status(200)
@@ -172,11 +172,16 @@ export const replyToComment = asyncHandler(async (req, res) => {
   }
 
   comment.replies.push({ createdBy, text });
-  await comment.save({ validateBeforeSave: false });
+  await comment.save();
+
+  const commentPopulated = await Comment.findById(commentId)
+    .populate("createdBy", "fullName avatar email")
+    .populate("replies.createdBy", "fullName avatar email")
+    .populate("reports.createdBy", "fullName avatar email");
 
   return res
     .status(201)
-    .json(new ApiResponse(201, comment.replies, "Reply added successfully"));
+    .json(new ApiResponse(201, commentPopulated, "Reply added successfully"));
 });
 
 // @desc    Report a comment
@@ -202,11 +207,16 @@ export const reportComment = asyncHandler(async (req, res) => {
   }
 
   comment.reports.push({ createdBy, reason });
-  await comment.save({ validateBeforeSave: false });
+  await comment.save();
+
+  const commentPopulated = await Comment.findById(commentId)
+    .populate("createdBy", "fullName avatar email")
+    .populate("replies.createdBy", "fullName avatar email")
+    .populate("reports.createdBy", "fullName avatar email");
 
   return res
     .status(201)
     .json(
-      new ApiResponse(201, comment.reports, "Comment reported successfully")
+      new ApiResponse(201, commentPopulated, "Comment reported successfully")
     );
 });

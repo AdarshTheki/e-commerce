@@ -2,18 +2,26 @@ import React, { useState } from "react";
 import { AiToolsData } from "../../assets/assets";
 import { Sparkles } from "lucide-react";
 import useApi from "../../hooks/useApi";
+import useTypewriter from "../../hooks/useTypewriter";
+import { toast } from "react-toastify";
+import Markdown from "react-markdown";
 
 const ReviewResume = () => {
   const [input, setInput] = useState("");
-  const { loading, data, callApi } = useApi();
+  const { loading, data, callApi, setData } = useApi();
   const aiTool = AiToolsData[4];
+  const { displayText } = useTypewriter({ text: data?.response, speed: 5 });
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
+    if (input?.size > 5 * 1024 * 1024) {
+      return toast.error("Pdf file size under 5MB");
+    }
     const formData = new FormData();
-    formData.append("pdf", input);
-    const result = await callApi("/openai/resume-review", formData);
+    formData.append("file", input);
+    const result = await callApi("/openai/resume-reviewer", formData);
     if (result) {
+      setData(result);
       setInput("");
     }
   };
@@ -69,9 +77,13 @@ const ReviewResume = () => {
           />
           <p className="font-medium">{aiTool.title}</p>
         </div>
-        <div className="min-h-[300px] h-full text-center flex items-center justify-center flex-col">
-          {data ? (
-            <pre>{data}</pre>
+        <div className="min-h-[300px] h-full flex items-center justify-center flex-col">
+          {displayText ? (
+            <div className="mt-3 overflow-y-auto text-sm text-slate-600">
+              <div className="reset-tw">
+                <Markdown>{displayText}</Markdown>
+              </div>
+            </div>
           ) : (
             <>
               <aiTool.Icon className="w-12 h-12 mx-auto mb-4 text-gray-400" />

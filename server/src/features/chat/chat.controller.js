@@ -30,7 +30,7 @@ export const createOrGetChat = asyncHandler(async (req, res) => {
   const { receiverId } = req.params;
 
   const receiver = await User.findById(receiverId);
-  if (!receiver) throw new ApiError(403, "User is does not exits");
+  if (!receiver) throw new ApiError(404, "User is does not exits");
 
   // check if receiver is not the user who is requesting a chat
   if (receiverId.toString() === req.user._id.toString()) {
@@ -105,7 +105,7 @@ export const getChats = asyncHandler(async (req, res) => {
 export const deleteChat = asyncHandler(async (req, res) => {
   const { chatId } = req.params;
 
-  if (!isValidObjectId(chatId)) throw new ApiError(403, "Invalid chat ID");
+  if (!isValidObjectId(chatId)) throw new ApiError(404, "Invalid chat ID");
 
   const chat = await Chat.findById(chatId);
 

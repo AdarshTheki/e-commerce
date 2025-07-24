@@ -1,43 +1,35 @@
 import jwt from "jsonwebtoken";
 import { User } from "../features/user/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
 
-export const verifyJWT = (roles = []) =>
-  asyncHandler(async (req, res, next) => {
-    const token =
-      req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+export const verifyJWT =
+  (roles = []) =>
+  async (req, res, next) => {
+    try {
+      const token =
+        req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
-    if (!token) {
-      throw new ApiError(401, "No token access with cookies & Bearer");
-    }
+      if (!token) {
+        throw new ApiError(401, "No token access with cookies & Bearer");
+      }
 
-    const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
+      const decodedToken = jwt.verify(token, process.env.SECRET_TOKEN);
 
-    const user = await User.findById(decodedToken._id).select(
-      "-password -refreshToken"
-    );
+      const user = await User.findById(decodedToken._id).select(
+        "-password -refreshToken"
+      );
 
-    if (!user) {
-      throw new ApiError(401, "Invalid Access Token: User not found");
-    }
+      if (!user) {
+        throw new ApiError(401, "Invalid Access Token: User not found");
+      }
 
-    if (roles && roles.length && !roles.includes(user.role)) {
-      throw new ApiError(403, "Permission not allowed to this Role");
-    }
+      if (roles && roles.length && !roles.includes(user.role)) {
+        throw new ApiError(403, "Permission not allowed to this Role");
+      }
 
-    req.user = user;
-    next();
-  });
-
-export const verifyRole = (roles = []) =>
-  asyncHandler(async (req, res, next) => {
-    if (!req?.user._id) {
-      throw new ApiError(401, "Unauthorized request");
-    }
-    if (roles.includes(req.user?.role)) {
+      req.user = user;
       next();
-    } else {
-      throw new ApiError(403, "You are not allowed to perform this action");
+    } catch (error) {
+      throw new ApiError(401, error.message);
     }
-  });
+  };

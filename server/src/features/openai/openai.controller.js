@@ -6,7 +6,9 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { cloudinary } from "../../utils/cloudinary.js";
 import axios from "axios";
 import FormData from "form-data";
-import pdf from "pdf-parse";
+import pdf from "pdf-parse/lib/pdf-parse.js";
+import fs from "fs";
+import { isValidObjectId } from "mongoose";
 
 // gen_remove:
 // background_removal
@@ -100,16 +102,30 @@ export const generateTextToImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, newAIModel, "Image generated successfully"));
 });
 
+// @desc    Review Resume AI generated post
+// @route   POST /api/v1/openai/resume-reviewer
+// @access  Private
 export const resumeReviewer = asyncHandler(async (req, res) => {
-  if (!req.file) {
-    throw new ApiError(400, "Resume PDF file is required");
+  if (!req.file) throw new ApiError(400, "Resume PDF file is required");
+
+  if (req.file.size > 5 * 1024 * 1024) {
+    fs.unlinkSync(req.file.path); // clean up
+    throw new ApiError(400, "Resume must be under 5MB");
   }
 
-  // Read and parse the uploaded PDF
-  const pdfBuffer = fs.readFileSync(req.file.path);
-  const { text: resumeText } = await pdf(pdfBuffer);
+  let pdfBuffer;
+  let parsed;
 
-  fs.unlinkSync(req.file.path);
+  try {
+    pdfBuffer = fs.readFileSync(req.file.path);
+    parsed = await pdf(pdfBuffer);
+  } finally {
+    fs.unlinkSync(req.file.path);
+  }
+
+  if (parsed?.text?.length < 20) {
+    throw new ApiError(404, "invalid Text pdf parse");
+  }
 
   const prompt = `
     You are a professional HR resume reviewer. Please review the following resume text and give constructive feedback.
@@ -119,7 +135,7 @@ export const resumeReviewer = asyncHandler(async (req, res) => {
     - Suggestions for different job roles
     
     Resume:
-    ${resumeText}
+    ${parsed.text}
   `;
 
   const response = await openai.chat.completions.create({
@@ -131,7 +147,7 @@ export const resumeReviewer = asyncHandler(async (req, res) => {
 
   const newAIModel = await AIModel.create({
     response: feedback,
-    prompt: resumeText.substring(0, 500),
+    prompt: parsed?.text?.substring(0, 500),
     createdBy: req.user._id,
     model: "generate-text",
     publish: true,
@@ -173,6 +189,31 @@ export const toggleLikesCreation = asyncHandler(async (req, res) => {
         `User has ${isLiked ? "unliked" : "liked"} the post.`
       )
     );
+});
+
+// @desc    Delete an AI generated post
+// @route   DELETE /api/v1/openai/post/:openaiId
+// @access  Private
+export const deletedOpenaiById = asyncHandler(async (req, res) => {
+  const { openaiId } = req.params;
+  if (!isValidObjectId(openaiId)) throw new ApiError("Openai Id is invalid");
+
+  if (
+    ["adminuser@gmail.com", "guest-user@gmail.com"].includes(req.user.email)
+  ) {
+    throw new ApiError(404, "This user not deleted of any that account posts");
+  }
+
+  const post = await AIModel.findOneAndDelete({
+    createdBy: req.user._id,
+    _id: openaiId,
+  });
+
+  if (!post) throw new ApiError(404, "Not found on databases");
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, post, "Deleted this post successfully"));
 });
 
 // @desc    Get user's generated AI posts

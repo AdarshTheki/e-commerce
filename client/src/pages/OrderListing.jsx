@@ -61,7 +61,7 @@ const OrderListing = () => {
                   {order?.items?.map((item, i) => (
                     <NavLink
                       title={item.product.title}
-                      to={`/product/${item.productId}`}
+                      to={`/products/${item.productId}`}
                       key={i}
                       className="sm:max-w-[260px] relative bg-white flex flex-col gap-2">
                       <img

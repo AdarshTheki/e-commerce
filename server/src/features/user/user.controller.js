@@ -297,7 +297,7 @@ export const changePassword = asyncHandler(async (req, res) => {
   }
 
   if (["guest-user@gmail.com", "useradmin@gmail.com"].includes(user.email)) {
-    throw new ApiError(403, "Access denied for this user");
+    throw new ApiError(404, "Access denied for this user");
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
@@ -325,7 +325,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   }
 
   if (["guest-user@gmail.com", "useradmin@gmail.com"].includes(user.email)) {
-    throw new ApiError(403, "Access denied for this user");
+    throw new ApiError(404, "Access denied for this user");
   }
 
   user.phoneNumber = phoneNumber || user.phoneNumber;

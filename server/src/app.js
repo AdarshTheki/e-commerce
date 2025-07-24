@@ -6,7 +6,7 @@ import { Server } from "socket.io";
 import { initializeSocketIO } from "./socket/index.js";
 // import rateLimit from "express-rate-limit";
 
-// import all routing files
+// Import All Routing Files
 import userRoute from "./features/user/user.router.js";
 import productRoute from "./features/product/product.router.js";
 import commentRoute from "./features/comment/comment.router.js";
@@ -47,7 +47,7 @@ app.use(cookieParser());
 
 // app.use(limiter);
 
-// ----Connect and Serve the Socket.Io-----
+// Connect and Serve the Socket.Io
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -56,12 +56,12 @@ const io = new Server(server, {
   },
 });
 
-// Save io instance in app for global access
+// Instance in App for Global Access
 app.set("io", io);
 
 initializeSocketIO(io);
 
-// used all base url
+// Used All Route URLS
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
@@ -78,7 +78,7 @@ app.use("/api/v1/cloudinary", cloudinaryRoute);
 app.use("/api/v1/review", reviewRoute);
 app.use("/", health_checkRoute);
 
-// ---Check API is Valid Endpoints----
+// Check API is Valid Endpoints
 app.use((req, res) => {
   res.status(404).json({
     message: "API Endpoint Not Found",
@@ -90,7 +90,13 @@ app.use((req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl}`);
-  res.status(err.status || 500).json({ error: err.message });
+  return res.status(err.statusCode || 500).json({
+    statusCode: err.statusCode || 500,
+    message: err.message || "Internal Server Error",
+    errors: err.errors || [],
+    path: req.originalUrl,
+    stack: process.env.NODE_ENV === "DEVELOPMENT" ? err.stack : undefined,
+  });
 });
 
 export default server;

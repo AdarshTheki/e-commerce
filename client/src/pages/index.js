@@ -1,6 +1,6 @@
 import ShoppingCartPage from "./ShoppingCartPage";
 import HomePage from "./Home/HomePage";
-import SingleProductPage from "./SingleProductPage";
+import SingleProductPage from "./SingleProduct/Page";
 import ProductsPage from "./ProductsPage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
