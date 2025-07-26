@@ -1,19 +1,34 @@
-import { useRef } from "react";
 import { useSelector } from "react-redux";
 import useApi from "../../hooks/useApi";
 import { errorHandler } from "../../helper";
-import { Download, Loader, Trash2Icon } from "lucide-react";
-import { LazyImage } from "../../utils";
+import {
+  Download,
+  Folder,
+  Globe2Icon,
+  Image,
+  Loader,
+  Trash2Icon,
+} from "lucide-react";
+import { Button } from "../../utils";
 
-const GalleryCard = ({ secure_url, public_id, onDelete }) => {
-  const imageRef = useRef(null);
+const GalleryCard = ({
+  secure_url,
+  public_id,
+  onDelete,
+  filename,
+  folder,
+  format,
+  bytes,
+  height,
+  width,
+}) => {
   const { callApi, loading } = useApi();
   const user = useSelector((state) => state.auth?.user);
 
   const handleDownload = () => {
-    if (!imageRef.current) return;
+    if (!secure_url) return;
     // download image on current page
-    fetch(imageRef.current.src)
+    fetch(secure_url)
       .then((response) => response.blob())
       .then((blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -43,26 +58,42 @@ const GalleryCard = ({ secure_url, public_id, onDelete }) => {
   };
 
   return (
-    <div title={public_id} className="w-full relative border border-gray-300">
-      <LazyImage
-        placeholder="/placeholder.jpg"
-        src={secure_url}
-        alt={`file_${public_id}`}
-        ref={imageRef}
-      />
-      <button
-        className="btn btn-primary !p-1 absolute top-1 left-1"
-        onClick={handleDownload}>
-        <Download />
-      </button>
-      {user && user?.role == "admin" && (
-        <button
-          disabled={loading}
-          className="btn btn-secondary !p-1 absolute top-1 right-1"
-          onClick={handleDelete}>
-          {loading ? <Loader /> : <Trash2Icon />}
-        </button>
-      )}
+    <div className="relative w-full rounded-xl overflow-hidden shadow-xl">
+      <a href={secure_url} target="_blank">
+        <img src={secure_url} alt={public_id} className="w-full" />
+      </a>
+      <div className="flex items-center justify-between absolute top-2 px-2 w-full">
+        <Button
+          onClick={handleDownload}
+          svg={<Download size={16} />}
+          className="text-white bg-slate-800 border-none"
+        />
+        {user && user?.role === "admin" && (
+          <Button
+            disabled={loading}
+            onClick={handleDelete}
+            svg={loading ? <Loader size={16} /> : <Trash2Icon size={16} />}
+            className="text-red-600 !border-red-600"
+          />
+        )}
+      </div>
+      <div className="py-2 px-4 space-y-2 bg-white">
+        <p className="text-sm font-medium">{filename}</p>
+        <div className="flex gap-2 text-xs items-center border-b border-gray-300">
+          <Folder size={14} /> {folder || "/"}
+        </div>
+        <div className="flex flex-wrap gap-1 items-center justify-between text-xs">
+          <div className="flex gap-2 items-center">
+            <Image size={14} />
+            {format}
+          </div>
+          <span>{(bytes / 1024).toFixed(0)} kb</span>
+          <span>
+            {width}x{height}
+          </span>
+          <Globe2Icon size={14} />
+        </div>
+      </div>
     </div>
   );
 };

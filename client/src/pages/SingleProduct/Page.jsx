@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { HeartFavorite } from "../../components";
-import { Loading, NotFound } from "../../utils";
+import { Button, Loading, NotFound } from "../../utils";
 import { errorHandler, axios } from "../../helper";
 import useFetch from "../../hooks/useFetch";
 import Trending from "../Home/Trending";
@@ -156,14 +156,18 @@ const SingleProductPage = () => {
             </div>
 
             <div className="flex space-x-4">
-              <button
-                onClick={() => handleAddToCart(product?._id || "", quantity)}
-                className="btn-primary flex items-center gap-2">
-                <ShoppingCart />
-                Add to Cart
-              </button>
+              <Button
+                onClick={() => handleAddToCart(product._id, quantity)}
+                name="Add to cart"
+                svg={<ShoppingCart size={16} />}
+                className="bg-indigo-600 text-white !text-base"
+              />
 
-              <HeartFavorite id={id} className="pl-4" />
+              <HeartFavorite
+                id={id}
+                name="Favorite"
+                className="flex items-center gap-2.5 border px-3 rounded-lg"
+              />
             </div>
           </div>
         </div>

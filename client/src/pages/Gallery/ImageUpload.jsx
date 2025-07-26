@@ -4,6 +4,7 @@ import { Sheet, Trash2Icon } from "lucide-react";
 import { socialFormats } from "../../helper";
 import useApi from "../../hooks/useApi";
 import GalleryCard from "./GalleryCard";
+import { toast } from "react-toastify";
 
 const ImageUpload = () => {
   const [image, setImage] = useState(null);
@@ -22,6 +23,8 @@ const ImageUpload = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    console.log(image);
+    if (!image?.name) return toast.error("upload image not found");
     const formData = new FormData();
     formData.append("image", image);
     const result = await callApi("/cloudinary", formData);
@@ -33,24 +36,22 @@ const ImageUpload = () => {
   }
 
   return (
-    <div className="min-h-[40vh] max-w-4xl mx-auto grid gap-5 sm:grid-cols-2">
+    <div className="mb-12 max-w-sm">
+      <h2 className="text-xl font-medium">Upload Image</h2>
       <form className="space-y-4">
-        <label className="flex flex-col gap-2">
-          <span className="font-medium">Upload Image</span>
-          <Input
-            id="fileInput"
-            type="file"
-            accept="image/*"
-            placeholder="upload"
-            className="!w-[228px] !cursor-pointer"
-            onChange={handleImageChange}
-          />
-        </label>
+        <Input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          placeholder="upload"
+          className="hidden"
+          onChange={handleImageChange}
+        />
 
         {!preview && (
           <label
             htmlFor="fileInput"
-            className="border bg-white rounded-md text-sm w-80 border-indigo-600/60 p-8 flex flex-col items-center gap-4  cursor-pointer hover:border-indigo-500 transition">
+            className="border bg-white rounded-md text-sm w-full max-w-80 border-indigo-600/60 p-8 flex flex-col items-center gap-4  cursor-pointer hover:border-indigo-500 transition">
             <Sheet />
             <p className="text-gray-500">Drag & drop your files here</p>
             <p className="text-gray-400">
@@ -81,11 +82,14 @@ const ImageUpload = () => {
           </div>
         )}
 
-        <button
-          onClick={handleSubmit}
-          className="btn !bg-green-600 !text-white">
-          {loading ? "loading..." : `Upload Images`}
-        </button>
+        {!!image?.name && (
+          <button
+            disabled={loading || !image}
+            onClick={handleSubmit}
+            className="btn !bg-green-600 !text-white !disabled:cursor-none">
+            {loading ? "loading..." : `Upload`}
+          </button>
+        )}
       </form>
 
       <div className="flex flex-col gap-2">

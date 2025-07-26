@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { errorHandler, axios } from "../helper";
 
-const HeartFavorite = ({ id, className }) => {
+const HeartFavorite = ({ id, className, name = "" }) => {
   const router = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
@@ -32,8 +32,9 @@ const HeartFavorite = ({ id, className }) => {
   return (
     <button
       onClick={handleLike}
-      className={`${className} !bg-transparent`}
+      className={`${className} bg-transparent`}
       title="favorite">
+      {!!name && name}
       {loading ? (
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full border-t-2 border-blue-1 border-solid h-5 w-5"></div>

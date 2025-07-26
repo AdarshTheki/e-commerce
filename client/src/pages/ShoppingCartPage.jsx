@@ -1,6 +1,12 @@
-import { NavLink } from "react-router-dom";
-import { ShoppingCart, Trash2Icon } from "lucide-react";
-import { Loading, NotFound } from "../utils";
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Loader,
+  ShoppingBag,
+  ShoppingCart,
+  Trash2Icon,
+} from "lucide-react";
+import { Button, Loading, NotFound } from "../utils";
 import { HomeCertificate } from "../components";
 import { useEffect, useState } from "react";
 import { axios, errorHandler } from "../helper";
@@ -10,6 +16,8 @@ import { fetchCarts, removeItem, updateItemQuantity } from "../redux/cartSlice";
 
 const ShoppingCartPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const { items, loading } = useSelector((state) => state.cart);
 
   useEffect(() => {
@@ -18,9 +26,11 @@ const ShoppingCartPage = () => {
 
   const handleCheckout = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post("/order/stripe-checkout");
       if (res.data) {
         window.location.href = res.data?.data?.url;
+        setIsLoading(false);
       }
     } catch (error) {
       errorHandler(error);
@@ -49,18 +59,17 @@ const ShoppingCartPage = () => {
     }
   };
 
-  const totals =
-    (items &&
-      items
-        ?.reduce((p, c) => c?.productId?.price * c?.quantity + p, 0)
-        ?.toFixed(2)) ||
-    0;
+  const carts = [...items];
+
+  const totals = carts
+    .reduce((p, c) => c?.productId?.price * c?.quantity + p, 0)
+    .toFixed(2);
 
   if (loading) return <Loading />;
 
   return (
     <section className="min-h-screen mx-auto container px-2">
-      {items?.length === 0 && (
+      {!carts?.length && (
         <NotFound
           canvas={
             <ShoppingCart className="w-20 h-20 text-gray-400 mb-4 mx-auto" />
@@ -75,38 +84,41 @@ const ShoppingCartPage = () => {
       )}
       <div className="flex max-sm:flex-col gap-5">
         <div className="md:flex-1 w-full">
-          {items &&
-            items?.map((item) => {
-              if (!item?.productId) return null;
-              return (
-                <CartListing
-                  key={item._id}
-                  {...item}
-                  onQtyChange={(qty) =>
-                    handleUpdateQty(item._id, item.productId._id, qty)
-                  }
-                  onRemove={() => handleRemoveItem(item._id)}
-                />
-              );
-            })}
+          {carts.map((item) => {
+            if (!item?.productId) return null;
+            return (
+              <CartListing
+                key={item._id}
+                {...item}
+                onQtyChange={(qty) =>
+                  handleUpdateQty(item._id, item.productId._id, qty)
+                }
+                onRemove={() => handleRemoveItem(item._id)}
+              />
+            );
+          })}
 
-          {!!items?.length && (
+          {!!carts.length && (
             <div className="flex gap-6 font-semibold mt-10 ">
-              <NavLink
-                to={"/product"}
-                className="text-red-600 btn !text-base text-nowrap border">
-                Go Product
-              </NavLink>
-              <button
+              <Button
+                svg={<ArrowLeft size={16} />}
+                onClick={() => navigate("/products")}
+                name="Go to products"
+              />
+              <Button
+                disabled={isLoading}
+                svg={
+                  isLoading ? <Loader size={16} /> : <ShoppingBag size={16} />
+                }
+                name="Checkout payment"
                 onClick={handleCheckout}
-                className="bg-indigo-600 text-white btn">
-                Checkout Payment
-              </button>
+                className="bg-indigo-600 text-white hover:opacity-90"
+              />
             </div>
           )}
         </div>
 
-        {!!items?.length && (
+        {!!carts.length && (
           <div className="p-4 md:w-1/3 space-y-3 w-full sticky top-20 h-fit">
             <h3>This Order shipping Fee!</h3>
             <div className="flex justify-between font-semibold text-xl">
@@ -141,16 +153,19 @@ export default ShoppingCartPage;
 const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
   const { _id, thumbnail, title, price, category, brand } = productId;
   const [qty, setQty] = useState(quantity);
+  const navigate = useNavigate();
 
   return (
     <div className="flex max-sm:flex-col gap-5 items-start border-b text-slate-700 border-gray-300 py-4">
-      <NavLink to={`/products/${_id}`} className="bg-gray-300 max-sm:w-full">
+      <div
+        onClick={() => navigate(`/products/${_id}`)}
+        className="bg-gray-300 max-sm:w-full cursor-pointer">
         <img
           src={thumbnail || "https://placehold.co/120x120"}
           alt="Product"
           className="w-[200px] mx-auto object-cover rounded transition-opacity duration-300 opacity-100"
         />
-      </NavLink>
+      </div>
       <div className="sm:flex-1 max-sm:px-4 w-full space-y-2 capitalize">
         <p className="font-medium text-lg">{title || "Smartphone X Pro"}</p>
         <p>Category : {category || "other"}</p>

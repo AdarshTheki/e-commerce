@@ -7,6 +7,12 @@ import { NavLink } from "react-router-dom";
 
 export default function ProfileSettings() {
   const [activeTab, setActiveTab] = useState("profile");
+  const { data, callApi } = useApi();
+
+  useEffect(() => {
+    callApi("/order/user", {}, "get");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -16,47 +22,49 @@ export default function ProfileSettings() {
         return <PasswordTab />;
       case "logout":
         return <LogoutTab />;
-      case "order":
-        return <Orders />;
+      case "orders":
+        return <Orders orders={data || []} />;
       default:
         return null;
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div className="max-w-4xl mx-auto lg:p-8">
+      <div className="bg-white shadow-lg overflow-hidden">
         <div className="md:flex">
           <div className="w-full md:w-1/4 bg-gray-50 p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Settings</h2>
-            <nav className="space-y-2">
+            <h2 className="text-xl pl-4 font-bold text-gray-800 mb-6">
+              Settings
+            </h2>
+            <nav className="space-y-2  gap-2">
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "profile" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "profile" ? "bg-indigo-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
                 <User className="mr-3" size={20} />
                 Profile
               </button>
               <button
                 onClick={() => setActiveTab("password")}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "password" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "password" ? "bg-indigo-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
                 <Lock className="mr-3" size={20} />
                 Password
               </button>
               <button
                 onClick={() => setActiveTab("logout")}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "logout" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "logout" ? "bg-indigo-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
                 <LogOut className="mr-3" size={20} />
                 Logout
               </button>
               <button
-                onClick={() => setActiveTab("order")}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "order" ? "bg-blue-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
+                onClick={() => setActiveTab("orders")}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === "orders" ? "bg-indigo-500 text-white" : "text-gray-600 hover:bg-gray-200"}`}>
                 <ListOrdered className="mr-3" size={20} />
-                Order
+                Orders
               </button>
             </nav>
           </div>
-          <div className="w-full md:w-3/4 p-8">{renderContent()}</div>
+          <div className="w-full md:w-3/4 p-6">{renderContent()}</div>
         </div>
       </div>
     </div>
@@ -99,7 +107,7 @@ const ProfileTab = () => {
         <div>
           <label
             htmlFor="avatar-upload"
-            className="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200">
+            className="cursor-pointer bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors duration-200">
             {avatarLoading ? "Uploading..." : "Change Avatar"}
           </label>
           <input
@@ -123,7 +131,7 @@ const ProfileTab = () => {
             id="fullName"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <div>
@@ -137,13 +145,13 @@ const ProfileTab = () => {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <button
           type="submit"
           disabled={fullNameAndEmailLoading}
-          className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+          className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
           {fullNameAndEmailLoading ? "Saving..." : "Save Changes"}
         </button>
       </form>
@@ -176,7 +184,7 @@ const PasswordTab = () => {
             id="oldPassword"
             value={oldPassword}
             onChange={(e) => setOldPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <div>
@@ -190,13 +198,13 @@ const PasswordTab = () => {
             id="newPassword"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <button
           type="submit"
           disabled={passwordLoading}
-          className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
+          className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
           {passwordLoading ? "Saving..." : "Save Changes"}
         </button>
       </form>
@@ -246,22 +254,12 @@ const LogoutTab = () => {
   );
 };
 
-const Orders = () => {
-  const { data, loading, callApi } = useApi();
-
-  useEffect(() => {
-    callApi("/order/user", {}, "get");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (loading) return <Loading />;
-
-  if (!data || data?.length === 0) return <OrderEmpty />;
-
+const Orders = ({ orders = [] }) => {
   return (
-    <div className="container mx-auto p-2">
-      <h1 className="text-2xl font-bold mb-6">Order Listing</h1>
-      {data?.map((order) => (
+    <div className="container mx-auto">
+      <h1 className="text-xl font-bold text-gray-800 mb-6">Order Listing</h1>
+      {!orders?.length && <OrderEmpty />}
+      {orders?.map((order) => (
         <OrderCard key={order._id} order={order} />
       ))}
     </div>
@@ -301,7 +299,7 @@ const OrderCard = ({ order }) => {
 
   return (
     <div className="border-b border-gray-300 pb-3 mb-6">
-      <h2 className="text-xl font-semibold my-2">Order ID: {order._id}</h2>
+      <h2 className="text-xl font-semibold my-2">Id: {order._id}</h2>
       <div className="mb-2">
         <strong>Status:</strong>{" "}
         <span className="capitalize">{orderStatusMessages[order?.status]}</span>
