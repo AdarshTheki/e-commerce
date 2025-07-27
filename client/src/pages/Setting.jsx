@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { User, Lock, LogOut, ListOrdered, PackageSearch } from "lucide-react";
 import useAuth from "../hooks/useAuth";
 import useApi from "../hooks/useApi";
-import { Loading } from "../utils";
 import { NavLink } from "react-router-dom";
 
 export default function ProfileSettings() {

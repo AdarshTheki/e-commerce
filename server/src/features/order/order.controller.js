@@ -1,5 +1,4 @@
 import Stripe from "stripe";
-import { Address } from "../address/address.model.js";
 import { Cart } from "../cart/cart.model.js";
 import { Order, orderStatus } from "./order.model.js";
 import { ApiError } from "../../utils/ApiError.js";
@@ -62,16 +61,13 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   const sort = req.query?.sortBy || "createdAt";
   const order = req.query?.orderBy || "desc";
 
-  const options = {
-    page,
-    limit,
-    sort: { [sort]: order === "asc" ? 1 : -1 },
-  };
-
-  const orders = await Order.paginate(
-    { status: { $in: orderStatus } },
-    options
-  );
+  const orders = await Order.aggregate([
+    { $match: { _id: { $ne: null } } },
+    ...orderAggregation,
+    { $skip: (page - 1) * limit },
+    { $limit: limit },
+    { $sort: { [sort]: order === "asc" ? 1 : -1 } },
+  ]);
 
   if (!orders) {
     throw new ApiError(404, "Orders not found");
@@ -79,7 +75,7 @@ export const getAllOrders = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, orders, "Orders retrieved successfully"));
+    .json(new ApiResponse(200, orders, "User orders retrieved successfully"));
 });
 
 // @desc    Get user's orders

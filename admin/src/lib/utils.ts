@@ -48,7 +48,7 @@ export const errorHandler = (error: AxiosError) => {
 };
 
 export const axiosInstance: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: `${import.meta.env.VITE_API_BASE_URL}/api/v1`,
     timeout: 50000,
     headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
