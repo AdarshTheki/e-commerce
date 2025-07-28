@@ -1,14 +1,11 @@
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Plus, SquarePen, Trash2 } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import { useSelector } from 'react-redux';
 
 import { Input, Loading, DeleteModal, NotFound } from '../components/ui';
-import { RootState } from '@/redux/store';
 import { useFetch, useDebounce, useTitle } from '../hooks';
-import { CategoryCard } from '@/components';
-import { errorHandler, axiosInstance, cn } from '@/lib/utils';
+import { errorHandler, axiosInstance } from '@/lib/utils';
 import {
   Select,
   SelectContent,
@@ -16,15 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/Select';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
+import { format } from 'date-fns';
 
 const sortByOptions = [
   { label: 'Title (A to Z)', value: 'title-asc' },
@@ -33,44 +22,19 @@ const sortByOptions = [
   { label: 'Date (Newest)', value: 'createdAt-desc' },
 ];
 
-const pageSizeOptions = [
-  { label: '10 items per page', value: 10 },
-  { label: '30 items per page', value: 30 },
-  { label: '50 items per page', value: 50 },
-  { label: '100 items per page', value: 100 },
-];
-
 const CategoryListing = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
   const { pathname } = useLocation();
+  const path = pathname.split('/').join('');
   const [sortBy, setSortBy] = useState<string>('title-asc');
-  const [limit, setLimit] = useState<number>(10);
-  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>('');
   const query = useDebounce(search, 500);
-  const path = pathname.split('/').join('');
-  const [deleteIsOpen, setDeleteIsOpen] = useState(false);
   useTitle(`Cartify: ${path} listing`);
 
-  const { data, error, loading, refetch } = useFetch<
-    PaginationType<CategoryType>
-  >(
-    `/${path}?limit=${limit}&page=${page}&title=${query}&sort=${
+  const { data, error, loading } = useFetch<PaginationType<CategoryType>>(
+    `/${path}?limit=200&title=${query}&sort=${
       sortBy.split('-')[0]
     }&order=${sortBy.split('-')[1]}`
   );
-
-  const handleDelete = async (id: string) => {
-    try {
-      if (!id) return;
-      const res = await axiosInstance.delete(`/${path}/${id}`);
-      if (res.data) {
-        refetch();
-      }
-    } catch (error) {
-      errorHandler(error as AxiosError);
-    }
-  };
 
   return (
     <div className="space-y-5 py-2">
@@ -84,7 +48,7 @@ const CategoryListing = () => {
       </div>
 
       {/* Filter products */}
-      <div className="flex gap-4 max-sm:flex-wrap items-center sm:justify-between">
+      <div className="max-w-xl flex items-center gap-4">
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -93,7 +57,7 @@ const CategoryListing = () => {
           placeholder="Search..."
         />
         <Select onValueChange={(value) => setSortBy(value)}>
-          <SelectTrigger className="w-1/3">
+          <SelectTrigger className="w-1/2">
             <SelectValue
               placeholder={
                 sortByOptions.filter((i) => i.value === sortBy)[0]?.label
@@ -106,125 +70,117 @@ const CategoryListing = () => {
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={(value) => setLimit(parseInt(value))}>
-          <SelectTrigger className="w-1/3">
-            <SelectValue placeholder={`${limit} items per page`} />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {pageSizeOptions.map((item) => (
-              <SelectItem value={item.value.toString()}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
       </div>
 
       {loading && <Loading />}
 
       {error && <NotFound title={JSON.stringify(error)} />}
 
-      {/* Show results */}
-      {data?.totalDocs && (
-        <div className="grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 sm:gap-4 gap-2">
-          {data?.docs?.map((item: CategoryType) => (
-            <div key={item._id} className="group relative">
-              <CategoryCard key={item._id} {...item} />
-
-              {/* Hover Modal */}
-              {(user?.role === 'admin' || user?._id === item?.createdBy) && (
-                <div className="absolute right-0 top-0 mt-2 mr-2 w-fit opacity-0 group-hover:opacity-100">
-                  <div className="flex items-center">
-                    <NavLink
-                      to={`/${path}/${item._id}`}
-                      className="svg-btn p-2 text-blue-600 cursor-pointer">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="24px"
-                        viewBox="0 -960 960 960"
-                        width="24px"
-                        fill="#2563eb">
-                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h357l-80 80H200v560h560v-278l80-80v358q0 33-23.5 56.5T760-120H200Zm280-360ZM360-360v-170l367-367q12-12 27-18t30-6q16 0 30.5 6t26.5 18l56 57q11 12 17 26.5t6 29.5q0 15-5.5 29.5T897-728L530-360H360Zm481-424-56-56 56 56ZM440-440h56l232-232-28-28-29-28-231 231v57Zm260-260-29-28 29 28 28 28-28-28Z" />
-                      </svg>
-                    </NavLink>
-                    <Trash2
-                      onClick={() => setDeleteIsOpen(true)}
-                      className="svg-btn p-2 text-red-600 cursor-pointer"
-                    />
-                  </div>
-
-                  <DeleteModal
-                    isOpen={deleteIsOpen}
-                    onClose={() => setDeleteIsOpen(false)}
-                    onConfirm={() => handleDelete(item._id)}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      <Pagination className="text-gray-800 cursor-pointer">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              className={cn(!data?.hasPrevPage && '!cursor-not-allowed')}
-              onClick={() => {
-                if (data?.hasPrevPage) setPage((prev) => prev - 1);
-              }}
-            />
-          </PaginationItem>
-
-          {data?.hasPrevPage && page - 1 && (
-            <PaginationItem>
-              <PaginationLink onClick={() => setPage((prev) => prev - 1)}>
-                {page - 1}
-              </PaginationLink>
-            </PaginationItem>
-          )}
-          <PaginationItem>
-            <PaginationLink
-              href="#"
-              className={'bg-gray-800 text-white hover:opacity-80'}>
-              {page}
-            </PaginationLink>
-          </PaginationItem>
-          {(data?.totalPages || 0) > page && (
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                onClick={() =>
-                  data?.hasNextPage && setPage((prev) => prev + 1)
-                }>
-                {page + 1}
-              </PaginationLink>
-            </PaginationItem>
-          )}
-
-          {(data?.totalPages || 0) > page + 2 && (
-            <PaginationItem>
-              <PaginationEllipsis onClick={() => setPage((prev) => prev + 4)} />
-            </PaginationItem>
-          )}
-
-          <PaginationItem>
-            <PaginationNext
-              className={cn(
-                data?.hasNextPage && data?.totalPages > page
-                  ? ''
-                  : '!cursor-not-allowed'
-              )}
-              onClick={() => {
-                if (data?.hasNextPage && data?.totalPages > page)
-                  setPage((prev) => prev + 1);
-              }}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      {!loading && data?.totalDocs && <CategoryList items={data?.docs} />}
     </div>
   );
 };
 export default CategoryListing;
+
+const CategoryList = ({ items }: { items: CategoryType[] }) => {
+  const [categories, setCategories] = useState<CategoryType[]>(
+    () => items || []
+  );
+  const { pathname } = useLocation();
+  const path = pathname.split('/').join('');
+  const [showModel, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      const res = await axiosInstance.delete(`/${path}/${id}`);
+      if (res.data) {
+        setCategories((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (error) {
+      errorHandler(error as AxiosError);
+    }
+  };
+
+  const handleStatusChange = async (id: string, status: ActiveOrInActive) => {
+    try {
+      const res = await axiosInstance.patch(`/${path}/${id}`, { status });
+      if (res.data) {
+        setCategories((prev) =>
+          prev.map((p) => (p._id === id ? { ...p, status } : p))
+        );
+      }
+    } catch (error) {
+      errorHandler(error as AxiosError);
+    }
+  };
+
+  return (
+    <div className="w-full" style={{ overflow: 'auto' }}>
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-300 text-slate-700">
+            <th className="text-left py-3 px-4">#</th>
+            <th className="text-left py-3 px-4">Category</th>
+            <th className="text-left py-3 px-4">Date</th>
+            <th className="text-left py-3 px-4">Status</th>
+            <th className="text-left py-3 px-4">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {categories.map((category, index) => (
+            <tr
+              key={index}
+              className="border-b text-sm border-gray-100 hover:bg-gray-50 capitalize">
+              <td className="py-3 px-4">{index + 1}</td>
+              <td className="py-3 px-4 flex items-center gap-2">
+                <img
+                  src={category.thumbnail || '/placeholder.jpg'}
+                  alt={'category_' + index}
+                  className="w-14 h-14 rounded-lg object-cover"
+                />
+                <span className="text-nowrap line-clamp-1">
+                  {category.title}
+                </span>
+              </td>
+              <td className="py-3 px-4 text-nowrap">
+                {format(new Date(category.updatedAt), 'MMM d, yyyy')}
+              </td>
+              <td className="py-3 px-4">
+                <select
+                  id={category._id}
+                  name={category._id}
+                  className="cursor-pointer"
+                  value={category.status}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      category._id,
+                      e.target.value as ActiveOrInActive
+                    )
+                  }>
+                  <option value="active">Active</option>
+                  <option value="inactive">In-Active</option>
+                </select>
+              </td>
+              <td className="flex items-center gap-2 pb-5">
+                <DeleteModal
+                  isOpen={showModel}
+                  onClose={() => setShowModal(false)}
+                  onConfirm={() => handleDeleteCategory(category._id)}
+                />
+                <SquarePen
+                  onClick={() => navigate(`/${path}/${category._id}`)}
+                  className="svg-btn p-2 text-blue-600 !m-0 cursor-pointer"
+                />
+                <Trash2
+                  onClick={() => setShowModal(true)}
+                  className="svg-btn p-2 text-red-600 !m-0 cursor-pointer"
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};

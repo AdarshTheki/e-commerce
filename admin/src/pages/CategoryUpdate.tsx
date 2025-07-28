@@ -4,21 +4,21 @@ import useFetch from '../hooks/useFetch';
 import { Loading, NotFound } from '../components/ui';
 
 const CategoryUpdate = () => {
-    const path = useLocation().pathname.split('/');
+  const path = useLocation().pathname.split('/');
 
-    const { data, loading, error } = useFetch<CategoryType | BrandType>(
-        `/${path[1]}/${path[2]}`
-    );
+  const { data, loading, error } = useFetch<CategoryType | BrandType>(
+    `/${path[1]}/${path[2]}`
+  );
 
-    if (loading) return <Loading />;
+  if (loading) return <Loading />;
 
-    if (error) return <NotFound title={JSON.stringify(error)} />;
+  if (error) return <NotFound title={JSON.stringify(error)} />;
 
-    return (
-        <div>
-            <CategoryForm item={data ?? undefined} />
-        </div>
-    );
+  return (
+    <div>
+      <CategoryForm item={data ?? undefined} />
+    </div>
+  );
 };
 
 export default CategoryUpdate;

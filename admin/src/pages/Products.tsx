@@ -125,15 +125,17 @@ export default function Product() {
 
       {error && <NotFound title={JSON.stringify(error)} />}
 
-      {loading && <Loading />}
-
-      {data?.totalDocs && (
+      {!loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {data?.docs?.map((item) => (
+          {data?.docs?.map((item, index) => (
             <div
               className="border relative group rounded-lg overflow-hidden"
               key={item._id}>
-              <ProductCard key={item._id} item={item} />
+              <ProductCard
+                key={item._id}
+                item={item}
+                delay={`${index + 1}00ms`}
+              />
 
               {/* Hover Modal */}
               {(user?.role === 'admin' || user?._id === item?.createdBy) && (
@@ -167,6 +169,8 @@ export default function Product() {
             </div>
           ))}
         </div>
+      ) : (
+        <Loading />
       )}
 
       {/* Pagination */}

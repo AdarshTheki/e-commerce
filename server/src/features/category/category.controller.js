@@ -113,8 +113,8 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
   let thumbnail;
   if (filePath) {
-    await removeSingleImg(category.thumbnail);
     thumbnail = await uploadSingleImg(filePath);
+    await removeSingleImg(category.thumbnail);
     if (!thumbnail) {
       throw new ApiError(500, "Thumbnail upload failed");
     }

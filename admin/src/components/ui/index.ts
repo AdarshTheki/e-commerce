@@ -10,14 +10,14 @@ import DeleteModal from './DeleteModal';
 import NotFound from './NotFound';
 
 export {
-    DeleteModal,
-    LazyImage,
-    Loading,
-    PaginationBtn,
-    Breadcrumb,
-    DropdownMenu,
-    SpinnerBtn,
-    Input,
-    Textarea,
-    NotFound,
+  DeleteModal,
+  LazyImage,
+  Loading,
+  PaginationBtn,
+  Breadcrumb,
+  DropdownMenu,
+  SpinnerBtn,
+  Input,
+  Textarea,
+  NotFound,
 };

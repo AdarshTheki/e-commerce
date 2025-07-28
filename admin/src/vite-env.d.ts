@@ -2,10 +2,28 @@
 /// <reference types="vite/client" />
 
 enum OrderStatus {
-  Pending = 'pending',
-  Shipped = 'shipped',
-  Delivered = 'delivered',
-  Cancelled = 'cancelled',
+  pending = 'pending',
+  shipped = 'shipped',
+  delivered = 'delivered',
+  cancelled = 'cancelled',
+}
+
+enum UserRole {
+  customer = 'customer',
+  admin = 'admin',
+  seller = 'seller',
+}
+
+enum ProductStatus {
+  active = 'active',
+  inactive = 'inactive',
+  outOfStock = 'out-of-stock',
+  pending = 'pending',
+}
+
+enum ActiveOrInActive {
+  active = 'active',
+  inactive = 'inactive',
 }
 
 interface PromiseResponseType<T = any> {
@@ -28,22 +46,13 @@ interface PaginationType<T> {
   prevPage: number | null;
 }
 
-interface PaginationTypeWithDocs<T> {
-  items: T[];
-  page: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  totalPages: number;
-  totalItems: number;
-}
-
 interface UserType {
   fullName: string;
   email: string;
   _id?: string;
   password?: string;
-  role: 'customer' | 'admin' | 'seller';
-  status: 'active' | 'inactive';
+  role: UserRole;
+  status: ActiveOrInActive;
   avatar: string;
   phoneNumber: string;
   favorite: [string];
@@ -56,7 +65,7 @@ interface UserType {
 interface AddressType {
   _id: string;
   createdBy: UserType | string;
-  status: 'active' | 'inactive';
+  status: ActiveOrInActive;
   addressLine1: string;
   addressLine2: string;
   city: string;
@@ -67,7 +76,7 @@ interface AddressType {
 
 interface ProductType {
   _id: string;
-  status: 'active' | 'inactive' | 'out-of-stock' | 'pending';
+  status: ProductStatus;
   title: string;
   category: string;
   brand: string;
@@ -85,7 +94,7 @@ interface ProductType {
 
 interface BrandType {
   _id: string;
-  status: 'active' | 'inactive';
+  status: ActiveOrInActive;
   title: string;
   description: string;
   thumbnail: string;
@@ -96,7 +105,7 @@ interface BrandType {
 
 interface CategoryType {
   _id: string;
-  status: 'active' | 'inactive';
+  status: ActiveOrInActive;
   title: string;
   description: string;
   thumbnail: string;

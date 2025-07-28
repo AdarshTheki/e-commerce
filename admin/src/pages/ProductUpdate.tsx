@@ -4,14 +4,14 @@ import { useParams } from 'react-router-dom';
 import { Loading, NotFound } from '../components/ui';
 
 const ProductUpdate = () => {
-    const { id } = useParams();
-    const { data, loading, error } = useFetch<ProductType>(`/product/${id}`);
+  const { id } = useParams();
+  const { data, loading, error } = useFetch<ProductType>(`/product/${id}`);
 
-    if (loading) return <Loading />;
+  if (loading) return <Loading />;
 
-    if (error) return <NotFound title={JSON.stringify(error)} />;
+  if (error) return <NotFound title={JSON.stringify(error)} />;
 
-    return <ProductForm data={data ?? undefined} />;
+  return <ProductForm data={data ?? undefined} />;
 };
 
 export default ProductUpdate;

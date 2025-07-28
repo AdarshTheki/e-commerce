@@ -3,19 +3,19 @@ import { Navigate } from 'react-router-dom';
 import Layout from './Layout';
 
 type PrivateRouteProp = {
-    isAuth: boolean;
+  isAuth: boolean;
 };
 
 const PrivateRoute: React.FC<PrivateRouteProp> = ({ isAuth }) => {
-    if (
-        isAuth &&
-        (window.location.pathname === '/login' ||
-            window.location.pathname === '/register')
-    ) {
-        return <Navigate to="/" />;
-    }
+  if (
+    isAuth &&
+    (window.location.pathname === '/login' ||
+      window.location.pathname === '/register')
+  ) {
+    return <Navigate to="/" />;
+  }
 
-    return isAuth ? <Layout /> : <Navigate to="/login" />;
+  return isAuth ? <Layout /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

@@ -13,23 +13,26 @@ import {
 
 const router = Router();
 
-router
-  .route("/")
-  .get(getAllBrands)
-  .post(
-    upload.single("thumbnail"),
-    verifyJWT(["admin", "seller"]),
-    createBrand
-  );
+router.get("/", getAllBrands);
+
+router.post(
+  "/",
+  upload.single("thumbnail"),
+  verifyJWT(["admin", "seller"]),
+  createBrand
+);
+
 router.get("/list", getBrandList);
-router
-  .route("/:id")
-  .get(getBrandById)
-  .patch(
-    verifyJWT(["admin", "seller"]),
-    upload.single("thumbnail"),
-    updateBrand
-  )
-  .delete(verifyJWT(["admin", "seller"]), deleteBrand);
+
+router.get("/:id", getBrandById);
+
+router.patch(
+  "/:id",
+  verifyJWT(["admin", "seller"]),
+  upload.single("thumbnail"),
+  updateBrand
+);
+
+router.delete("/:id", verifyJWT(["admin", "seller"]), deleteBrand);
 
 export default router;
