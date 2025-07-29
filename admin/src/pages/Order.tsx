@@ -7,7 +7,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 export default function Orders() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [sortBy, setSortBy] = useState('createdAt-asc');
+  const sortBy = 'createdAt-asc';
+
   useTitle('Cartify: Order History');
 
   const params = new URLSearchParams({
