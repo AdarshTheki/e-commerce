@@ -1,19 +1,10 @@
 import { useState } from 'react';
-import { Plus, SquarePen, Trash2 } from 'lucide-react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { AxiosError } from 'axios';
+import { ChevronLeftIcon, ChevronRightIcon, Plus } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
 
-import { Input, Loading, DeleteModal, NotFound } from '../components/ui';
+import { Input, Loading, NotFound } from '../components/ui';
 import { useFetch, useDebounce, useTitle } from '../hooks';
-import { errorHandler, axiosInstance } from '@/lib/utils';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/Select';
-import { format } from 'date-fns';
+import { CategoryCard, MultiSelect } from '@/components';
 
 const sortByOptions = [
   { label: 'Title (A to Z)', value: 'title-asc' },
@@ -27,19 +18,28 @@ const CategoryListing = () => {
   const path = pathname.split('/').join('');
   const [sortBy, setSortBy] = useState<string>('title-asc');
   const [search, setSearch] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
   const query = useDebounce(search, 500);
-  useTitle(`Cartify: ${path} listing`);
+
+  useTitle(`Cartify: ${path} Listing`);
+
+  const params = new URLSearchParams({
+    limit: String(limit),
+    page: String(page),
+    title: query || '',
+    sort: sortBy.split('-')[0],
+    order: sortBy.split('-')[1],
+  });
 
   const { data, error, loading } = useFetch<PaginationType<CategoryType>>(
-    `/${path}?limit=200&title=${query}&sort=${
-      sortBy.split('-')[0]
-    }&order=${sortBy.split('-')[1]}`
+    `/${path}?${params.toString()}`
   );
 
   return (
-    <div className="space-y-5 py-2">
-      <div className="flex items-center justify-between pb-5">
-        <h2 className="text-xl font-bold text-gray-700 capitalize">{path}</h2>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold capitalize">{path} Listing</h2>
         <NavLink
           to={`${pathname}/create`}
           className="btn bg-[--primary] text-white text-sm flex items-center gap-2 capitalize">
@@ -56,131 +56,55 @@ const CategoryListing = () => {
           className="w-full text-sm py-1.5 pl-4"
           placeholder="Search..."
         />
-        <Select onValueChange={(value) => setSortBy(value)}>
-          <SelectTrigger className="w-1/2">
-            <SelectValue
-              placeholder={
-                sortByOptions.filter((i) => i.value === sortBy)[0]?.label
-              }
-            />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {sortByOptions.map((item) => (
-              <SelectItem value={item.value}>{item.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <MultiSelect
+          className="!w-[150px] max-md:right-0"
+          selected={
+            sortByOptions.find((i) => sortBy === i.value)?.label || 'Select'
+          }
+          listOption={sortByOptions}
+          onSelected={setSortBy}
+          label="Filters"
+        />
       </div>
 
-      {loading && <Loading />}
+      {loading ? <Loading /> : null}
 
-      {error && <NotFound title={JSON.stringify(error)} />}
+      {error ? <NotFound title={JSON.stringify(error)} /> : null}
 
-      {!loading && data?.totalDocs && <CategoryList items={data?.docs} />}
+      {!loading && data?.totalDocs ? <CategoryCard items={data?.docs} /> : null}
+
+      <div className="flex gap-4 items-center justify-end text-sm">
+        <label htmlFor="limits">
+          Rows per page:
+          <select
+            name="limits"
+            id="limits"
+            value={limit}
+            onChange={(e) => setLimit(parseInt(e.target.value))}
+            className="py-2 cursor-pointer focus:outline-none">
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={50}>50</option>
+          </select>
+        </label>
+        <p>
+          {(page - 1) * limit || 1} - {limit * page} of {data?.totalDocs}
+        </p>
+        <button
+          disabled={!data?.hasPrevPage}
+          onClick={() => setPage((p) => p - 1)}
+          className="svg-btn">
+          <ChevronLeftIcon size={18} />
+        </button>
+        <button
+          disabled={!data?.hasNextPage}
+          onClick={() => setPage((p) => p + 1)}
+          className="svg-btn">
+          <ChevronRightIcon size={18} />
+        </button>
+      </div>
     </div>
   );
 };
 export default CategoryListing;
-
-const CategoryList = ({ items }: { items: CategoryType[] }) => {
-  const [categories, setCategories] = useState<CategoryType[]>(
-    () => items || []
-  );
-  const { pathname } = useLocation();
-  const path = pathname.split('/').join('');
-  const [showModel, setShowModal] = useState(false);
-  const navigate = useNavigate();
-
-  const handleDeleteCategory = async (id: string) => {
-    try {
-      const res = await axiosInstance.delete(`/${path}/${id}`);
-      if (res.data) {
-        setCategories((prev) => prev.filter((p) => p._id !== id));
-      }
-    } catch (error) {
-      errorHandler(error as AxiosError);
-    }
-  };
-
-  const handleStatusChange = async (id: string, status: ActiveOrInActive) => {
-    try {
-      const res = await axiosInstance.patch(`/${path}/${id}`, { status });
-      if (res.data) {
-        setCategories((prev) =>
-          prev.map((p) => (p._id === id ? { ...p, status } : p))
-        );
-      }
-    } catch (error) {
-      errorHandler(error as AxiosError);
-    }
-  };
-
-  return (
-    <div className="w-full" style={{ overflow: 'auto' }}>
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-300 text-slate-700">
-            <th className="text-left py-3 px-4">#</th>
-            <th className="text-left py-3 px-4">Category</th>
-            <th className="text-left py-3 px-4">Date</th>
-            <th className="text-left py-3 px-4">Status</th>
-            <th className="text-left py-3 px-4">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((category, index) => (
-            <tr
-              key={index}
-              className="border-b text-sm border-gray-100 hover:bg-gray-50 capitalize">
-              <td className="py-3 px-4">{index + 1}</td>
-              <td className="py-3 px-4 flex items-center gap-2">
-                <img
-                  src={category.thumbnail || '/placeholder.jpg'}
-                  alt={'category_' + index}
-                  className="w-14 h-14 rounded-lg object-cover"
-                />
-                <span className="text-nowrap line-clamp-1">
-                  {category.title}
-                </span>
-              </td>
-              <td className="py-3 px-4 text-nowrap">
-                {format(new Date(category.updatedAt), 'MMM d, yyyy')}
-              </td>
-              <td className="py-3 px-4">
-                <select
-                  id={category._id}
-                  name={category._id}
-                  className="cursor-pointer"
-                  value={category.status}
-                  onChange={(e) =>
-                    handleStatusChange(
-                      category._id,
-                      e.target.value as ActiveOrInActive
-                    )
-                  }>
-                  <option value="active">Active</option>
-                  <option value="inactive">In-Active</option>
-                </select>
-              </td>
-              <td className="flex items-center gap-2 pb-5">
-                <DeleteModal
-                  isOpen={showModel}
-                  onClose={() => setShowModal(false)}
-                  onConfirm={() => handleDeleteCategory(category._id)}
-                />
-                <SquarePen
-                  onClick={() => navigate(`/${path}/${category._id}`)}
-                  className="svg-btn p-2 text-blue-600 !m-0 cursor-pointer"
-                />
-                <Trash2
-                  onClick={() => setShowModal(true)}
-                  className="svg-btn p-2 text-red-600 !m-0 cursor-pointer"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};

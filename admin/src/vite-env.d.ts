@@ -47,9 +47,9 @@ interface PaginationType<T> {
 }
 
 interface UserType {
+  _id: string;
   fullName: string;
   email: string;
-  _id?: string;
   password?: string;
   role: UserRole;
   status: ActiveOrInActive;

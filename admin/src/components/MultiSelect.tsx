@@ -1,4 +1,3 @@
-import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
 import React from 'react';
 
@@ -27,11 +26,11 @@ const Select: React.FC<SelectProp> = ({
   };
 
   return (
-    <div className={cn(className, 'relative text-sm')}>
+    <div className="relative text-sm">
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-2.5 text-left px-4 pr-2 py-2 border rounded bg-white text-gray-800 border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none">
+        className="w-full flex items-center justify-between gap-2.5 text-left px-4 pr-2 py-2 border rounded bg-white text-gray-800 border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none">
         <span className="text-nowrap capitalize">{label || selected}</span>
         <svg
           className={`w-4 h-4 inline float-right transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -53,35 +52,38 @@ const Select: React.FC<SelectProp> = ({
       )}
 
       {isOpen && (
-        <ul className="w-full top-10 absolute z-30 bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
-          {!!list?.length &&
-            list.map((country) => (
-              <li
-                key={country}
-                className="px-4 capitalize py-2 hover:bg-indigo-500 hover:text-white cursor-pointer flex items-center gap-1"
-                onClick={() => handleSelect(country)}>
-                {country === selected ? (
-                  <Check size={12} />
-                ) : (
-                  <Check size={12} style={{ visibility: 'hidden' }} />
-                )}
-                {country}
-              </li>
-            ))}
-          {!!listOption?.length &&
-            listOption?.map((li) => (
-              <li
-                key={li.value}
-                className="px-4 capitalize py-2 hover:bg-indigo-500 hover:text-white cursor-pointer flex items-center gap-1"
-                onClick={() => handleSelect(li.value)}>
-                {li.value === listOption.find((i) => i.value)?.label ? (
-                  <Check size={12} className="text-indigo-600" />
-                ) : (
-                  <Check size={12} style={{ visibility: 'hidden' }} />
-                )}
-                {li.label}
-              </li>
-            ))}
+        <ul
+          className={`top-10 absolute z-30 bg-white border border-gray-300 w-full rounded shadow-md mt-1 py-2 ${className}`}>
+          {list?.length
+            ? list.map((country) => (
+                <li
+                  key={country}
+                  className="px-4 capitalize py-2 hover:bg-indigo-500 hover:text-white cursor-pointer flex items-center gap-1"
+                  onClick={() => handleSelect(country)}>
+                  {country === selected ? (
+                    <Check size={16} />
+                  ) : (
+                    <Check size={16} style={{ visibility: 'hidden' }} />
+                  )}
+                  {country}
+                </li>
+              ))
+            : null}
+          {listOption?.length
+            ? listOption?.map((li) => (
+                <li
+                  key={li.value}
+                  className="px-4 capitalize py-2 hover:bg-indigo-500 hover:text-white cursor-pointer flex items-center gap-1"
+                  onClick={() => handleSelect(li.value)}>
+                  {li.label === selected ? (
+                    <Check size={16} className="text-indigo-600" />
+                  ) : (
+                    <Check size={16} style={{ visibility: 'hidden' }} />
+                  )}
+                  {li.label}
+                </li>
+              ))
+            : null}
         </ul>
       )}
     </div>

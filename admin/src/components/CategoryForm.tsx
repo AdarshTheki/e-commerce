@@ -14,7 +14,9 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
   const { pathname } = useLocation();
   const path = pathname.split('/')[1];
   const navigate = useNavigate();
-  useTitle(`Cartify: ${path} form`);
+
+  useTitle(`Cartify: ${item?._id ? `Update ${path}` : `Add New ${path}`}`);
+
   const [formData, setFormData] = useState({
     title: item?.title || '',
     description: item?.description || '',

@@ -1,9 +1,12 @@
 import { User, Lock, LogOut } from 'lucide-react';
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
+import { useTitle } from '@/hooks';
 
 export default function ProfileSettings() {
   const [activeTab, setActiveTab] = useState('profile');
+
+  useTitle('Cartify: User Setting');
 
   const renderContent = () => {
     switch (activeTab) {
@@ -22,10 +25,7 @@ export default function ProfileSettings() {
     <div className="max-w-4xl mx-auto lg:p-8">
       <div className="bg-white shadow-lg overflow-hidden">
         <div className="md:flex">
-          <div className="w-full md:w-1/4 bg-gray-50 p-6">
-            <h2 className="text-xl pl-4 font-bold text-gray-800 mb-6">
-              Settings
-            </h2>
+          <div className="w-full md:w-1/4 bg-gray-50 p-6 min-h-[80dvh]">
             <nav className="space-y-2  gap-2">
               <button
                 onClick={() => setActiveTab('profile')}

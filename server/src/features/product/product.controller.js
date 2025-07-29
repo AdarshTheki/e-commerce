@@ -136,6 +136,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     rating,
     stock,
     discount,
+    status,
   } = req.body;
 
   const product = await Product.findById(productId);
@@ -165,6 +166,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
   product.rating = rating || product.rating;
   product.stock = stock || product.stock;
   product.discount = discount || product.discount;
+  product.status = status || product.status;
 
   await product.save({ validateBeforeSave: false });
 

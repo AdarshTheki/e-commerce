@@ -1,40 +1,113 @@
-import { LazyImage } from '@/components/ui';
-import { cn } from '@/lib/utils';
+import { axiosInstance, errorHandler } from '@/lib/utils';
+import { AxiosError } from 'axios';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { DeleteModal } from './ui';
+import { SquarePen, Trash2 } from 'lucide-react';
 
-const CategoryCard = ({
-  status,
-  title,
-  createdAt,
-  thumbnail,
-}: CategoryType) => {
+export default function CategoryList({ items }: { items: CategoryType[] }) {
+  const [categories, setCategories] = useState<CategoryType[]>(
+    () => items || []
+  );
+  const { pathname } = useLocation();
+  const path = pathname.split('/').join('');
+  const [showModel, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleDeleteCategory = async (id: string) => {
+    try {
+      const res = await axiosInstance.delete(`/${path}/${id}`);
+      if (res.data) {
+        setCategories((prev) => prev.filter((p) => p._id !== id));
+      }
+    } catch (error) {
+      errorHandler(error as AxiosError);
+    }
+  };
+
+  const handleStatusChange = async (id: string, status: ActiveOrInActive) => {
+    try {
+      const res = await axiosInstance.patch(`/${path}/${id}`, { status });
+      if (res.data) {
+        setCategories((prev) =>
+          prev.map((p) => (p._id === id ? { ...p, status } : p))
+        );
+      }
+    } catch (error) {
+      errorHandler(error as AxiosError);
+    }
+  };
+
   return (
-    <div
-      className="w-full bg-white overflow-hidden rounded-lg text-slate-700 shadow-sm hover:shadow-md transition duration-300 group animate-fadeIn"
-      style={{ animationDelay: '100ms' }}>
-      <LazyImage
-        src={thumbnail}
-        placeholder={'/placeholder.jpg'}
-        alt={title}
-        className="w-full h-[200px] object-cover transform group-hover:scale-105 transition duration-500"
-      />
-
-      <div className="p-4 bg-white">
-        <p className="sm:text-lg text-base text-gray-600 capitalize leading-[1.4] font-medium sm:line-clamp-1 line-clamp-2">
-          {title}
-        </p>
-        <div className="text-sm mt-2 text-slate-500 flex items-center justify-between">
-          <span>{format(new Date(createdAt), 'dd MMM yyyy, h:mm a')}</span>
-          <span
-            className={cn(
-              status === 'active' ? 'status-active' : 'status-inactive'
-            )}>
-            {status}
-          </span>
-        </div>
-      </div>
+    <div className="w-full" style={{ overflow: 'auto' }}>
+      <table className="w-full">
+        <thead>
+          <tr className="border-b border-gray-300 text-slate-700">
+            <th className="text-left sm:py-3 sm:px-4">#</th>
+            <th className="text-left py-3 px-4 min-w-[200px]">Category</th>
+            <th className="text-left py-3 px-4">Date</th>
+            <th className="text-left py-3 px-4">Status</th>
+            <th className="py-3 px-4 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {categories.map((category, index) => (
+            <tr
+              key={index}
+              className="border-b text-sm border-gray-100 hover:bg-gray-50 capitalize">
+              <td className="sm:py-3 sm:px-4">{index + 1}</td>
+              <td className="py-3 px-4 flex items-center gap-2">
+                <img
+                  src={category.thumbnail || '/placeholder.jpg'}
+                  alt={'category_' + index}
+                  className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                />
+                <span className="text-nowrap line-clamp-1">
+                  {category.title}
+                </span>
+              </td>
+              <td className="py-3 px-4 text-nowrap">
+                {format(new Date(category.updatedAt), 'MMM d, yyyy')}
+              </td>
+              <td className="py-3">
+                <select
+                  onChange={(e) =>
+                    handleStatusChange(
+                      category._id,
+                      e.target.value as ActiveOrInActive
+                    )
+                  }
+                  value={category.status}
+                  name={category._id}
+                  id={category._id}
+                  className="p-2 cursor-pointer rounded-full capitalize">
+                  {['active', 'inactive'].map((s) => (
+                    <option value={s} key={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td className="flex items-center gap-2 pb-5 justify-center">
+                <DeleteModal
+                  isOpen={showModel}
+                  onClose={() => setShowModal(false)}
+                  onConfirm={() => handleDeleteCategory(category._id)}
+                />
+                <SquarePen
+                  onClick={() => navigate(`/${path}/${category._id}`)}
+                  className="svg-btn p-2 text-blue-600 !m-0 cursor-pointer"
+                />
+                <Trash2
+                  onClick={() => setShowModal(true)}
+                  className="svg-btn p-2 text-red-600 !m-0 cursor-pointer"
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default CategoryCard;
+}

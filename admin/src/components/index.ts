@@ -7,12 +7,14 @@ import Counter from './Counter';
 import UserCard from './UserCard';
 import ProductCard from './ProductCard';
 import CategoryCard from './CategoryCard';
+import OrderCard from './OrderCard';
 import MultiSelect from './MultiSelect';
 
 export {
   PrivateRoute,
   Layout,
   MultiSelect,
+  OrderCard,
   CategoryForm,
   ProductForm,
   UserForm,

@@ -84,8 +84,8 @@ export const getAllOrders = asyncHandler(async (req, res) => {
 export const getUserOrders = asyncHandler(async (req, res) => {
   const page = +req.query?.page || 1;
   const limit = +req.query?.limit || 10;
-  const sort = req.query?.sortBy || "createdAt";
-  const order = req.query?.orderBy || "desc";
+  const sort = req.query?.sort || "createdAt";
+  const order = req.query?.order || "desc";
 
   const orders = await Order.aggregate([
     { $match: { customer: req.user._id } },
