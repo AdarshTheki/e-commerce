@@ -127,6 +127,7 @@ interface OrderType {
     postal_code: string;
     state: string;
   };
+  totalPrice: number;
   status: OrderStatus;
   items: {
     productId: string;

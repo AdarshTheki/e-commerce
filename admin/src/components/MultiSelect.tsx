@@ -53,7 +53,7 @@ const Select: React.FC<SelectProp> = ({
 
       {isOpen && (
         <ul
-          className={`top-10 absolute z-30 bg-white border border-gray-300 w-full rounded shadow-md mt-1 py-2 ${className}`}>
+          className={`top-10 absolute max-h-[300px] overflow-y-auto z-30 bg-white border border-gray-300 w-full rounded shadow-md mt-1 py-2 ${className}`}>
           {list?.length
             ? list.map((country) => (
                 <li

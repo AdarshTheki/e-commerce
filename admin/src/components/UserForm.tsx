@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
-import { Input, SpinnerBtn } from './ui';
+import { Input } from './ui';
 import { useNavigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 import useTitle from '../hooks/useTitle';
 import { AxiosError } from 'axios';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/Select';
+
 import { axiosInstance, countries, errorHandler } from '@/lib/utils';
+import { MultiSelect } from '.';
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
@@ -20,7 +15,7 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
     fullName: userData?.fullName || '',
     role: userData?.role || '',
     status: userData?.status || '',
-    code: userData?.phoneNumber?.split('-')[0] || '+91',
+    code: userData?.phoneNumber?.split('-')[0] || '',
     phone: userData?.phoneNumber?.split('-')[1] || '',
   });
   const navigate = useNavigate();
@@ -61,7 +56,7 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
   };
 
   return (
-    <form className="max-w-lg space-y-6 p-3" onSubmit={handleSubmit}>
+    <form className="max-w-lg space-y-5" onSubmit={handleSubmit}>
       <h2 className="text-2xl font-medium">
         {user?.email ? 'User Update' : 'Create User'}
       </h2>
@@ -72,6 +67,27 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
         value={user.fullName}
         required={true}
       />
+
+      <div className="grid grid-cols-3 gap-4">
+        <MultiSelect
+          className="w-[120px]"
+          list={['customer', 'seller', 'user']}
+          onSelected={(e) => setUser({ ...user, role: e })}
+          selected={user.role || 'select role'}
+        />
+        <MultiSelect
+          className="w-[120px]"
+          list={['active', 'inactive']}
+          onSelected={(e) => setUser({ ...user, status: e })}
+          selected={user.status || 'select status'}
+        />
+        <MultiSelect
+          className="w-[190px] right-0"
+          list={countries.map((i) => i.title)}
+          selected={user.code || 'select country'}
+          onSelected={(e) => setUser({ ...user, code: e })}
+        />
+      </div>
 
       <Input
         name="email"
@@ -90,71 +106,22 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
           required={true}
         />
       )}
-      <div className="flex gap-3 items-end">
-        <Input
-          type="number"
-          name="phone"
-          placeholder="Enter Phone Number"
-          onChange={handleChange}
-          value={user.phone}
-          required={true}
-        />
-        <Select onValueChange={(value) => setUser({ ...user, code: value })}>
-          <SelectTrigger className="w-xl">
-            <SelectValue placeholder={user.code} />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {countries.map((item) => (
-              <SelectItem value={item.id}>
-                {item.id} - {item.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex gap-3">
-        <Select
-          onValueChange={(value) =>
-            setUser({
-              ...user,
-              role: value as 'customer' | 'admin' | 'seller',
-            })
-          }>
-          <SelectTrigger className="">
-            <SelectValue placeholder={user.role || 'Select Role'} />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {[
-              { id: 'customer', title: 'Customer' },
-              { id: 'seller', title: 'Seller' },
-              { id: 'user', title: 'User' },
-            ].map((item) => (
-              <SelectItem value={item.id}>{item.title}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select onValueChange={(value) => setUser({ ...user, status: value })}>
-          <SelectTrigger className="">
-            <SelectValue placeholder={user.status || 'Select Status'} />
-          </SelectTrigger>
-          <SelectContent className="bg-white">
-            {[
-              { id: 'active', title: 'Active' },
-              { id: 'inActive', title: 'In-Active' },
-            ].map((item) => (
-              <SelectItem value={item.id}>{item.title}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
+      <Input
+        type="number"
+        name="phone"
+        placeholder="Enter Phone Number"
+        onChange={handleChange}
+        value={user.phone}
+        required={true}
+      />
       <div className="flex gap-5 items-center mt-5">
-        <SpinnerBtn
-          className="!btn"
-          type="submit"
-          loading={loading}
-          primaryName={userData?._id ? 'Update User' : 'Create User'}
-        />
+        <button className="btn capitalize border bg-indigo-600 text-white">
+          {loading
+            ? 'loading...'
+            : userData?._id
+              ? 'update user'
+              : 'create user'}
+        </button>
         <NavLink to={'/customer'} className="btn bg-red-600 !text-white">
           Cancel
         </NavLink>

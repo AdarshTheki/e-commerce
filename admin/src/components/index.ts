@@ -9,6 +9,7 @@ import ProductCard from './ProductCard';
 import CategoryCard from './CategoryCard';
 import OrderCard from './OrderCard';
 import MultiSelect from './MultiSelect';
+import Skeleton from './Skeleton';
 
 export {
   PrivateRoute,
@@ -22,4 +23,5 @@ export {
   UserCard,
   ProductCard,
   CategoryCard,
+  Skeleton,
 };

@@ -14,20 +14,19 @@ const sortByOptions = [
 ];
 
 const CategoryListing = () => {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const path = pathname.split('/').join('');
   const [sortBy, setSortBy] = useState<string>('title-asc');
-  const [search, setSearch] = useState<string>('');
+  const [query, setQuery] = useState<string>(search.replace('?q=', '') || '');
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const query = useDebounce(search, 500);
-
+  const q = useDebounce(query, 500);
   useTitle(`Cartify: ${path} Listing`);
 
   const params = new URLSearchParams({
     limit: String(limit),
     page: String(page),
-    title: query || '',
+    title: q || '',
     sort: sortBy.split('-')[0],
     order: sortBy.split('-')[1],
   });
@@ -50,8 +49,8 @@ const CategoryListing = () => {
       {/* Filter products */}
       <div className="max-w-xl flex items-center gap-4">
         <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           type="text"
           className="w-full text-sm py-1.5 pl-4"
           placeholder="Search..."

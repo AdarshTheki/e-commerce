@@ -97,7 +97,7 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
       {/* item form data */}
       <form
         onSubmit={handleSubmit}
-        className="space-y-10 text-gray-700 max-w-3xl mx-auto">
+        className="space-y-6 text-gray-700 max-w-3xl mx-auto">
         <h2 className="text-xl font-bold text-gray-700 capitalize">{path}</h2>
         <div className="flex gap-5 max-sm:flex-col sm:items-end">
           <Input
@@ -108,9 +108,10 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
             onChange={handleChange}
           />
           <MultiSelect
+            className="right-0"
             list={['active', 'inactive']}
             onSelected={(e) => setFormData({ ...formData, status: e })}
-            selected={formData.status}
+            selected={formData.status || 'select status'}
           />
         </div>
         <div className="flex flex-col gap-1">

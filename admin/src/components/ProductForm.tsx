@@ -3,18 +3,18 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 
 import { Input, SpinnerBtn, Textarea } from './ui';
-import {
-  Select,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from './ui/Select';
 
 import { toast } from 'react-toastify';
 import useTitle from '../hooks/useTitle';
 import { AxiosError } from 'axios';
-import { errorHandler, axiosInstance } from '@/lib/utils';
+import {
+  errorHandler,
+  axiosInstance,
+  categories,
+  brands,
+  productStatus,
+} from '@/lib/utils';
+import MultiSelect from './MultiSelect';
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const navigate = useNavigate();
@@ -144,44 +144,22 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             onChange={handleChange}
             value={formData?.title}
           />
-          <div className="grid sm:grid-cols-3 grid-cols-2 gap-5 items-end">
-            <Input
-              required
-              name="category"
-              onChange={handleChange}
-              value={formData?.category}
+          <div className="grid sm:grid-cols-3 grid-cols-2 gap-5 py-1">
+            <MultiSelect
+              onSelected={(e) => setFormData({ ...formData, category: e })}
+              list={categories}
+              selected={formData.category || 'select category'}
             />
-            <Input
-              required
-              name="brand"
-              onChange={handleChange}
-              value={formData?.brand}
+            <MultiSelect
+              onSelected={(e) => setFormData({ ...formData, brand: e })}
+              list={brands}
+              selected={formData.brand || 'select brand'}
             />
-            <Select
-              onValueChange={(value) =>
-                setFormData({ ...formData, status: value })
-              }>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue
-                  placeholder={formData?.status || 'Select Status'}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {[
-                  { id: 'active', title: 'Active' },
-                  { id: 'inactive', title: 'Inactive' },
-                  {
-                    id: 'out-of-stock',
-                    title: 'Out of Stock',
-                  },
-                  { id: 'pending', title: 'Pending' },
-                ].map((item) => (
-                  <SelectItem value={item.id} className="bg-white">
-                    {item.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              onSelected={(e) => setFormData({ ...formData, status: e })}
+              list={productStatus}
+              selected={formData.status || 'select status'}
+            />
           </div>
           <div className="grid sm:grid-cols-4 grid-cols-2 gap-5">
             <Input

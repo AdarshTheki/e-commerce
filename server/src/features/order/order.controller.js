@@ -29,12 +29,20 @@ const orderAggregation = [
     },
   },
   {
+    $addFields: {
+      itemTotal: {
+        $multiply: ["$items.quantity", "$items.product.price"],
+      },
+    },
+  },
+  {
     $group: {
       _id: "$_id",
       customer: { $first: "$customer" },
       shipping_address: { $first: "$shipping_address" },
       payment: { $first: "$payment" },
       status: { $first: "$status" },
+      totalPrice: { $sum: "$itemTotal" },
       createdAt: { $first: "$createdAt" },
       updatedAt: { $first: "$updatedAt" },
       items: {
