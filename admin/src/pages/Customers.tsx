@@ -61,7 +61,7 @@ const Customers = () => {
               sortByOptions.find((i) => sortBy === i.value)?.label || 'Select'
             }
             label="Filters"
-            listOption={sortByOptions}
+            list={sortByOptions.map((i) => i.value)}
             onSelected={setSortBy}
           />
         </div>
@@ -70,7 +70,7 @@ const Customers = () => {
             list={['10', '20', '30', '40', '50']}
             label={'Rows - ' + limit.toString()}
             selected={limit.toString()}
-            onSelected={(e) => setLimit(+e)}
+            onSelected={(e: string) => setLimit(+e)}
           />
           <p>
             {(page - 1) * limit || 1} - {limit * page} of {data?.totalDocs}

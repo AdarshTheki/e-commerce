@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { Input } from './ui';
-import { useNavigate } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
-import useTitle from '../hooks/useTitle';
 import { AxiosError } from 'axios';
 
 import { axiosInstance, countries, errorHandler } from '@/lib/utils';
-import Select from './ui/Select';
+import { useNavigate } from 'react-router-dom';
+import useTitle from '../hooks/useTitle';
+import { Select, Input } from '@/components/ui';
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
@@ -72,20 +70,20 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
         <Select
           className="w-[120px]"
           list={['customer', 'seller', 'user']}
-          onSelected={(e) => setUser({ ...user, role: e })}
+          onSelected={(e: string) => setUser({ ...user, role: e })}
           selected={user.role || 'select role'}
         />
         <Select
           className="w-[120px]"
           list={['active', 'inactive']}
-          onSelected={(e) => setUser({ ...user, status: e })}
+          onSelected={(e: string) => setUser({ ...user, status: e })}
           selected={user.status || 'select status'}
         />
         <Select
-          className="w-[190px] right-0"
+          className="right-0 !w-[160px]"
           list={countries.map((i) => i.title)}
           selected={user.code || 'select country'}
-          onSelected={(e) => setUser({ ...user, code: e })}
+          onSelected={(e: string) => setUser({ ...user, code: e })}
         />
       </div>
 
@@ -115,16 +113,15 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
         required={true}
       />
       <div className="flex gap-5 items-center mt-5">
-        <button className="btn capitalize border bg-indigo-600 text-white">
-          {loading
-            ? 'loading...'
-            : userData?._id
-              ? 'update user'
-              : 'create user'}
-        </button>
-        <NavLink to={'/customer'} className="btn bg-red-600 !text-white">
+        <button
+          type="button"
+          onClick={() => navigate('/customer')}
+          className="border border-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100 duration-300">
           Cancel
-        </NavLink>
+        </button>
+        <button className="bg-gray-800 border border-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 duration-300">
+          {loading ? 'loading...' : 'Save User'}
+        </button>
       </div>
     </form>
   );

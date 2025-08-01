@@ -4,15 +4,13 @@ import React from 'react';
 type SelectProp = {
   onSelected: (v: string) => void;
   selected: string;
-  list?: string[];
-  listOption?: { value: string; label: string }[];
+  list: string[];
   label?: string;
   className?: string;
 };
 
 const Select: React.FC<SelectProp> = ({
   list = [],
-  listOption,
   onSelected,
   selected,
   label,
@@ -56,36 +54,19 @@ const Select: React.FC<SelectProp> = ({
       {isOpen && (
         <ul
           className={`top-10 absolute max-h-[300px] overflow-y-auto z-30 bg-white border border-gray-200 shadow-lg w-full rounded-lg mt-1 py-2 ${className}`}>
-          {list?.length
-            ? list.map((country) => (
-                <li
-                  key={country}
-                  className="px-4 capitalize py-2 hover:bg-gray-800 hover:text-white cursor-pointer flex items-center gap-1 duration-300"
-                  onClick={() => handleSelect(country)}>
-                  {country === selected ? (
-                    <Check size={16} />
-                  ) : (
-                    <Check size={16} style={{ visibility: 'hidden' }} />
-                  )}
-                  {country}
-                </li>
-              ))
-            : null}
-          {listOption?.length
-            ? listOption?.map((li) => (
-                <li
-                  key={li.value}
-                  className="px-4 capitalize py-2 hover:bg-gray-800 hover:text-white cursor-pointer flex items-center gap-1 duration-300"
-                  onClick={() => handleSelect(li.value)}>
-                  {li.label === selected ? (
-                    <Check size={16} />
-                  ) : (
-                    <Check size={16} style={{ visibility: 'hidden' }} />
-                  )}
-                  {li.label}
-                </li>
-              ))
-            : null}
+          {list.map((country) => (
+            <li
+              key={country}
+              className="px-4 capitalize py-2 hover:bg-gray-800 hover:text-white cursor-pointer flex items-center gap-1 duration-300"
+              onClick={() => handleSelect(country)}>
+              {country === selected ? (
+                <Check size={16} />
+              ) : (
+                <Check size={16} style={{ visibility: 'hidden' }} />
+              )}
+              {country}
+            </li>
+          ))}
         </ul>
       )}
     </div>

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DeleteModal } from './ui';
 import { SquarePen, Trash2 } from 'lucide-react';
-import Select from './ui/Select';
+import { Select } from '@/components/ui';
 
 export default function CategoryList({ items }: { items: CategoryType[] }) {
   const [categories, setCategories] = useState<CategoryType[]>(
@@ -48,8 +48,8 @@ export default function CategoryList({ items }: { items: CategoryType[] }) {
             <th className="text-left sm:py-3 sm:px-4">#</th>
             <th className="text-left py-3 px-4 min-w-[200px]">Category</th>
             <th className="text-left py-3 px-4">Date</th>
-            <th className="text-left py-3 px-4">Status</th>
-            <th className="py-3 px-4 text-center">Action</th>
+            <th className="text-center py-3 px-4">Status</th>
+            <th className="py-3 px-4 text-right">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -71,16 +71,16 @@ export default function CategoryList({ items }: { items: CategoryType[] }) {
               <td className="py-3 px-4 text-nowrap">
                 {format(new Date(category.updatedAt), 'MMM d, yyyy')}
               </td>
-              <td className="px-4 max-w-[70px]">
+              <td className="px-4">
                 <Select
-                  onSelected={(e) =>
+                  onSelected={(e: string) =>
                     handleStatusChange(category._id, e as ActiveOrInActive)
                   }
                   list={['active', 'inactive']}
                   selected={category.status}
                 />
               </td>
-              <td className="flex items-center gap-2 pb-5 justify-center">
+              <td className="flex items-center pb-5 justify-end">
                 <DeleteModal
                   isOpen={showModel}
                   onClose={() => setShowModal(false)}

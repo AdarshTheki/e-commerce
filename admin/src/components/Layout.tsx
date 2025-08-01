@@ -5,6 +5,7 @@ import { RootState } from '@/redux/store';
 import { Menu, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
 import { menuItems } from '@/lib/utils';
+import { Footer } from './ui';
 
 const Layout: React.FC = () => {
   const { user } = useSelector((s: RootState) => s.auth);
@@ -63,14 +64,22 @@ const Layout: React.FC = () => {
           <img src="/logo.png" alt="logo" className="w-10 h-8" />
           <span className="text-xl font-semibold">Cartify</span>
         </div>
-        <button onClick={() => setOpen(true)} className="svg-btn">
-          <Menu />
-        </button>
+        <div className="flex gap-2 items-center">
+          <NavLink to={'/profile'}>
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user?.avatar} alt="avatar" />
+              <AvatarFallback>{user?.fullName.substring(0, 2)}</AvatarFallback>
+            </Avatar>
+          </NavLink>
+          <button onClick={() => setOpen(true)} className="svg-btn">
+            <Menu />
+          </button>
+        </div>
       </div>
       <div
         className={`
           fixed inset-0 h-screen z-50 bg-gray-700/30 shadow-lg overflow-hidden rounded-b-2xl
-          transform duration-300 ease-linear lg:hidden
+          transform duration-100 ease-linear lg:hidden
           ${open ? 'left-0 opacity-100' : 'left-[100%] opacity-0'}
         `}>
         <div className="p-4 bg-white w-full h-full">
@@ -97,8 +106,11 @@ const Layout: React.FC = () => {
       </div>
 
       {/* Main Body */}
-      <main className="min-h-screen sm:overflow-y-auto w-full p-4">
-        <Outlet />
+      <main className="min-h-screen sm:overflow-y-auto w-full">
+        <div className="w-full p-4">
+          <Outlet />
+        </div>
+        <Footer />
       </main>
     </div>
   );

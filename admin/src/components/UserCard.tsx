@@ -58,9 +58,9 @@ export default function UserCard({ items }: { items: UserType[] }) {
             <th className="text-left sm:py-3 sm:px-4">#</th>
             <th className="text-left py-3 px-4">Users</th>
             <th className="text-left py-3 px-4">Creation</th>
-            <th className="text-left py-3 px-4">Role</th>
-            <th className="text-left py-3 px-4">Status</th>
-            <th className="text-left py-3 px-4">Action</th>
+            <th className="text-center py-3 px-4">Role</th>
+            <th className="text-center py-3 px-4">Status</th>
+            <th className="text-right py-3 px-4">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -69,13 +69,13 @@ export default function UserCard({ items }: { items: UserType[] }) {
               key={index}
               className="border-b text-sm border-gray-100 hover:bg-gray-50 capitalize">
               <td className="sm:py-3 sm:px-4">{index + 1}</td>
-              <td className="py-3 px-4 flex items-center gap-2 max-w-[200px]">
+              <td className="py-3 px-4 flex items-center gap-2 min-w-[200px]">
                 <img
                   src={category.avatar || '/placeholder.jpg'}
                   alt={'category_' + index}
                   className="w-12 h-12 rounded-lg object-cover"
                 />
-                <span>{category.fullName}</span>
+                <p>{category.fullName}</p>
               </td>
               <td className="py-3 px-4 text-nowrap">
                 {format(
@@ -83,7 +83,7 @@ export default function UserCard({ items }: { items: UserType[] }) {
                   'MMM d, yyyy'
                 )}
               </td>
-              <td className="px-4 max-w-[90px]">
+              <td className="px-4">
                 <Select
                   onSelected={(e) =>
                     handleRoleChange(category._id, e as UserRole)
@@ -92,7 +92,7 @@ export default function UserCard({ items }: { items: UserType[] }) {
                   selected={category.role}
                 />
               </td>
-              <td className="px-4 max-w-[70px]">
+              <td className="px-4">
                 <Select
                   onSelected={(e) =>
                     handleStatusChange(category._id, e as ActiveOrInActive)
@@ -101,7 +101,7 @@ export default function UserCard({ items }: { items: UserType[] }) {
                   selected={category.status}
                 />
               </td>
-              <td className="flex items-center pb-5 justify-center">
+              <td className="flex items-center pb-5 justify-end">
                 <DeleteModal
                   isOpen={showModel}
                   onClose={() => setShowModal(false)}

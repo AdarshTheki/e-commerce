@@ -61,12 +61,12 @@ export default function Product() {
             placeholder="Search..."
           />
           <Select
-            className="w-[200px] max-md:right-0"
+            className="!w-[200px] max-sm:right-0 max-h-[400px]"
             selected={
               sortByOptions.find((i) => sortBy === i.value)?.label || 'Select'
             }
             label="Filters"
-            listOption={sortByOptions}
+            list={sortByOptions.map((i) => i.value)}
             onSelected={setSortBy}
           />
         </div>
@@ -75,7 +75,7 @@ export default function Product() {
             list={['10', '20', '30', '40', '50']}
             label={'Rows - ' + limit.toString()}
             selected={limit.toString()}
-            onSelected={(e) => setLimit(+e)}
+            onSelected={(e: string) => setLimit(+e)}
           />
           <p>
             {(page - 1) * limit || 1} - {limit * page} of {data?.totalDocs}

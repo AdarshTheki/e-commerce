@@ -1,244 +1,136 @@
-import { NavLink } from 'react-router-dom';
-
-const Footer = () => {
+export default function Example() {
   return (
-    <footer id="footer" className="bg-gray-900 text-gray-300">
-      {/* <!-- Main Footer --> */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* <!-- Company Info --> */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white mb-4">Cartify</h3>
-            <p className="text-sm">
-              Your one-stop destination for all your shopping needs. Quality
-              products, great prices, and excellent service.
-            </p>
-            <div className="flex space-x-4">
-              <NavLink
-                to={'/'}
-                className="hover:text-white transition-colors duration-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                </svg>
-              </NavLink>
-              <NavLink
-                to={'/'}
-                className="hover:text-white transition-colors duration-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                </svg>
-              </NavLink>
-              <NavLink
-                to={'/'}
-                className="hover:text-white transition-colors duration-300">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                </svg>
-              </NavLink>
-            </div>
-          </div>
-
-          {/* <!-- Quick Links --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <NavLink
-                  to={'/'}
-                  className="hover:text-white transition-colors duration-300">
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/'}
-                  className="hover:text-white transition-colors duration-300">
-                  Shop
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/categories'}
-                  className="hover:text-white transition-colors duration-300">
-                  Categories
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/brands'}
-                  className="hover:text-white transition-colors duration-300">
-                  Brands
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/about'}
-                  className="hover:text-white transition-colors duration-300">
-                  About Us
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/contact'}
-                  className="hover:text-white transition-colors duration-300">
-                  Contact
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* <!-- Customer Service --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Customer Service
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <NavLink
-                  to={'/setting'}
-                  className="hover:text-white transition-colors duration-300">
-                  My Account
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/order'}
-                  className="hover:text-white transition-colors duration-300">
-                  Track Order
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/wishlist'}
-                  className="hover:text-white transition-colors duration-300">
-                  Wishlist
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/return-policy'}
-                  className="hover:text-white transition-colors duration-300">
-                  Returns Policy
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/product'}
-                  className="hover:text-white transition-colors duration-300">
-                  Shipping Info
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={'/faq'}
-                  className="hover:text-white transition-colors duration-300">
-                  FAQs
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* <!-- Newsletter --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Newsletter
-            </h4>
-            <p className="text-sm mb-4">
-              Subscribe to our newsletter for the latest updates and exclusive
-              offers.
-            </p>
-            <form className="space-y-3">
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="w-full px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 border-gray-700"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors duration-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                </button>
-              </div>
-            </form>
-          </div>
+    <>
+      <footer className="flex flex-col items-center justify-center w-full py-5">
+        <div className="flex items-center space-x-1">
+          <img src="/logo.png" alt="logo" className="w-10 h-8" />
+          <span className="text-2xl font-medium text-gray-700 uppercase">
+            Cartify
+          </span>
         </div>
-      </div>
-
-      {/* <!-- Bottom Footer --> */}
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="md:flex md:items-center md:justify-between">
-            <div className="text-sm">
-              <p>© 2024 Cartify. All rights reserved.</p>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <div className="flex space-x-6">
-                <NavLink
-                  to={'/'}
-                  className="hover:text-white transition-colors duration-300">
-                  Privacy Policy
-                </NavLink>
-                <NavLink
-                  to={'/'}
-                  className="hover:text-white transition-colors duration-300">
-                  Terms of Service
-                </NavLink>
-                <NavLink
-                  to={'/'}
-                  className="hover:text-white transition-colors duration-300">
-                  Cookie Policy
-                </NavLink>
-              </div>
-            </div>
-          </div>
+        <p className="mt-4 text-center">
+          Copyright © 2025 <a href="https://prebuiltui.com">Cartify</a>. All
+          rights reservered.
+        </p>
+        <div className="flex items-center gap-4 mt-5">
+          <a
+            href="https://www.facebook.com/adarsh.verma.541746"
+            title="facebook"
+            className="hover:-translate-y-0.5 transition-all duration-300">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            title="instagram"
+            href="#"
+            className="hover:-translate-y-0.5 transition-all duration-300">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M16 11.37a4 4 0 1 1-7.914 1.173A4 4 0 0 1 16 11.37m1.5-4.87h.01"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            title="linkedIn"
+            href="https://www.linkedin.com/in/adarshvermadeveloper"
+            className="hover:-translate-y-0.5 transition-all duration-300">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6M6 9H2v12h4zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://x.com/AdarshV85809682"
+            title="X.com"
+            className="hover:-translate-y-0.5 transition-all duration-300">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://github.com/AdarshTheki"
+            title="github"
+            className="hover:-translate-y-0.5 transition-all duration-300">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M9 18c-4.51 2-5-2-7-2"
+                stroke="#111"
+                strokeOpacity=".5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
-};
-
-export default Footer;
+}

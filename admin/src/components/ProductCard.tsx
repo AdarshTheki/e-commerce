@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteModal } from './ui';
 import { SquarePen, Trash2 } from 'lucide-react';
-import Select from './ui/Select';
+import { Select } from '@/components/ui';
 
 export default function ProductCard({ items }: { items: ProductType[] }) {
   const [products, setProducts] = useState<ProductType[]>(() => items || []);
@@ -70,11 +70,11 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
           <tr className="border-b border-gray-300 text-slate-700">
             <th className="text-left sm:py-3 sm:px-4">#</th>
             <th className="text-left py-3 px-4">Products</th>
-            <th className="text-left py-3 px-4">Category</th>
-            <th className="text-left py-3 px-4">Brand</th>
+            <th className="text-center py-3 px-4">Category</th>
+            <th className="text-center py-3 px-4">Brand</th>
             <th className="text-left py-3 px-4">Stock</th>
-            <th className="text-left py-3 px-4">Status</th>
-            <th className="text-left py-3 px-4">Action</th>
+            <th className="text-center py-3 px-4">Status</th>
+            <th className="text-right py-3 px-4">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +94,9 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
               <td className="py-3 px-2">
                 <Select
                   className="!w-[200px]"
-                  onSelected={(e) => handleCategoryChange(product._id, e)}
+                  onSelected={(e: string) =>
+                    handleCategoryChange(product._id, e)
+                  }
                   list={categories}
                   selected={product.category}
                 />
@@ -102,7 +104,7 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
               <td className="py-3 px-2 max-w-fit">
                 <Select
                   className="!w-[200px]"
-                  onSelected={(e) => handleBrandChange(product._id, e)}
+                  onSelected={(e: string) => handleBrandChange(product._id, e)}
                   list={brands}
                   selected={product.brand || '--select--'}
                 />
@@ -111,14 +113,14 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
               <td className="px-2">
                 <Select
                   className="!w-[150px]"
-                  onSelected={(e) =>
+                  onSelected={(e: string) =>
                     handleStatusChange(product._id, e as ProductStatus)
                   }
                   list={statusOptions}
                   selected={product.status}
                 />
               </td>
-              <td className="flex items-center gap-2 pb-5 justify-center">
+              <td className="flex items-center pb-5 justify-end">
                 <DeleteModal
                   title="Delete Product"
                   isOpen={showModel}

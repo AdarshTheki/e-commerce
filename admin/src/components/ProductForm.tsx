@@ -140,7 +140,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
         return toast.error('AI to enter at least 50 char entered');
       setAILoading(true);
       const res = await axiosInstance.post('/openai/generate-text', {
-        prompt: formData.description,
+        prompt: `Generate a e-commerce product description under 1000 characters simple text formate of this context "${formData.description}"`,
       });
       if (res.data.data) {
         setFormData({ ...formData, description: res.data.data.response });
@@ -168,17 +168,21 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
           />
           <div className="grid sm:grid-cols-3 grid-cols-2 gap-5 py-1">
             <Select
-              onSelected={(e) => setFormData({ ...formData, category: e })}
+              onSelected={(e: string) =>
+                setFormData({ ...formData, category: e })
+              }
               list={categories}
               selected={formData.category || 'select category'}
             />
             <Select
-              onSelected={(e) => setFormData({ ...formData, brand: e })}
+              onSelected={(e: string) => setFormData({ ...formData, brand: e })}
               list={brands}
               selected={formData.brand || 'select brand'}
             />
             <Select
-              onSelected={(e) => setFormData({ ...formData, status: e })}
+              onSelected={(e: string) =>
+                setFormData({ ...formData, status: e })
+              }
               list={productStatus}
               selected={formData.status || 'select status'}
             />
