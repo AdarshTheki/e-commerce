@@ -1,203 +1,157 @@
-import {
-  Facebook,
-  Instagram,
-  LucideCircleArrowRight,
-  TwitterIcon,
-} from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-const Footer = () => {
+export default function Example() {
+  const menus = [
+    {
+      id: "/",
+      label: "Home",
+    },
+    { id: "/products", label: "Products" },
+    { id: "/favorite", label: "Favorite" },
+    { id: "/cart", label: "Cart" },
+    { id: "/setting", label: "Setting" },
+    { id: "/gallery", label: "Gallery" },
+    { id: "/message", label: "Message" },
+    { id: "/ai", label: "AI Generate" },
+  ];
   return (
-    <footer id="footer" className="bg-gray-900 text-gray-300">
-      {/* <!-- Main Footer --> */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* <!-- Company Info --> */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-white mb-4">Cartify</h3>
-            <p className="text-sm">
-              Your one-stop destination for all your shopping needs. Quality
-              products, great prices, and excellent service.
-            </p>
-            <div className="flex space-x-4">
-              <NavLink
-                to={"/"}
-                className="hover:text-white transition-colors duration-300">
-                <Facebook />
-              </NavLink>
-              <NavLink
-                to={"/"}
-                className="hover:text-white transition-colors duration-300">
-                <TwitterIcon />
-              </NavLink>
-              <NavLink
-                to={"/"}
-                className="hover:text-white transition-colors duration-300">
-                <Instagram />
-              </NavLink>
-            </div>
-          </div>
-
-          {/* <!-- Quick Links --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Quick Links
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <NavLink
-                  to={"/"}
-                  className="hover:text-white transition-colors duration-300">
-                  Home
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/"}
-                  className="hover:text-white transition-colors duration-300">
-                  Shop
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/categories"}
-                  className="hover:text-white transition-colors duration-300">
-                  Categories
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/brands"}
-                  className="hover:text-white transition-colors duration-300">
-                  Brands
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/about"}
-                  className="hover:text-white transition-colors duration-300">
-                  About Us
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/contact"}
-                  className="hover:text-white transition-colors duration-300">
-                  Contact
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* <!-- Customer Service --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Customer Service
-            </h4>
-            <ul className="space-y-2">
-              <li>
-                <NavLink
-                  to={"/setting"}
-                  className="hover:text-white transition-colors duration-300">
-                  My Account
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/order"}
-                  className="hover:text-white transition-colors duration-300">
-                  Track Order
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/favorite"}
-                  className="hover:text-white transition-colors duration-300">
-                  Wishlist
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/return-policy"}
-                  className="hover:text-white transition-colors duration-300">
-                  Returns Policy
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/products"}
-                  className="hover:text-white transition-colors duration-300">
-                  Shipping Info
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to={"/faq"}
-                  className="hover:text-white transition-colors duration-300">
-                  FAQs
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* <!-- Newsletter --> */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-4">
-              Newsletter
-            </h4>
-            <p className="text-sm mb-4">
-              Subscribe to our newsletter for the latest updates and exclusive
-              offers.
-            </p>
-            <form className="space-y-3">
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="w-full px-4 py-2 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 border-gray-700"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 transition-colors duration-300">
-                  <LucideCircleArrowRight />
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+    <footer className="flex flex-col bg-slate-50 items-center justify-around w-full pb-5 pt-10 text-sm text-gray-800/70">
+      <div className="flex items-center sm:gap-8 max-w-[90vw] gap-2 flex-wrap justify-center">
+        {menus.map((menu) => (
+          <NavLink
+            key={menu.label}
+            to={menu.id}
+            className="font-medium text-gray-500 hover:text-black transition-all">
+            {menu.label}
+          </NavLink>
+        ))}
       </div>
-
-      {/* <!-- Bottom Footer --> */}
-      <div className="border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="md:flex md:items-center md:justify-between">
-            <div className="text-sm">
-              <p>© 2024 Cartify. All rights reserved.</p>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <div className="flex space-x-6">
-                <NavLink
-                  to={"/"}
-                  className="hover:text-white transition-colors duration-300">
-                  Privacy Policy
-                </NavLink>
-                <NavLink
-                  to={"/"}
-                  className="hover:text-white transition-colors duration-300">
-                  Terms of Service
-                </NavLink>
-                <NavLink
-                  to={"/"}
-                  className="hover:text-white transition-colors duration-300">
-                  Cookie Policy
-                </NavLink>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center gap-8 mt-8 text-indigo-500">
+        <a
+          href="https://www.facebook.com/adarsh.verma.541746"
+          title="facebook"
+          target="_blank"
+          className="hover:-translate-y-0.5 transition-all duration-300">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/adarshvermadeveloper"
+          title="linkedIn"
+          target="_blank"
+          className="hover:-translate-y-0.5 transition-all duration-300">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M16 11.37a4 4 0 1 1-7.914 1.173A4 4 0 0 1 16 11.37m1.5-4.87h.01"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://www.linkedin.com/in/adarshvermadeveloper"
+          title="linkedIn"
+          target="_blank"
+          className="hover:-translate-y-0.5 transition-all duration-300">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6M6 9H2v12h4zM4 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://x.com/AdarshV85809682"
+          title="twitter"
+          target="_blank"
+          className="hover:-translate-y-0.5 transition-all duration-300">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://github.com/AdarshTheki"
+          title="github"
+          target="_blank"
+          className="hover:-translate-y-0.5 transition-all duration-300">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65S8.93 17.38 9 18v4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M9 18c-4.51 2-5-2-7-2"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
       </div>
+      <p className="mt-8 text-center">
+        Copyright © 2025{" "}
+        <a
+          href="https://github.com/AdarshTheki"
+          target="_blank"
+          className="text-indigo-600 font-medium">
+          @Cartify.com
+        </a>
+        . All rights reservered.
+      </p>
     </footer>
   );
-};
-
-export default Footer;
+}

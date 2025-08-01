@@ -52,15 +52,14 @@ const NavbarTop = () => {
     : 0;
 
   return (
-    <header
-      id="header"
-      className="shadow-md sticky top-0 left-0 w-full z-50 bg-white">
+    <header className="shadow sticky top-0 w-full z-50 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
           {/* Logo  */}
           <h2
             onClick={() => navigate("/")}
-            className="text-xl font-bold text-gray-800 cursor-pointer">
+            className="text-xl font-bold text-gray-800 flex gap-2 items-center cursor-pointer">
+            <img src={"./logo.png"} className="w-8 h-6" />
             Cartify
           </h2>
 

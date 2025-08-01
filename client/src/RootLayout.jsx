@@ -35,12 +35,12 @@ const RootLayout = () => {
   }, [dispatch]);
 
   return (
-    <div className="bg-slate-50 text-slate-700">
+    <div className="bg-slate-50 text-slate-700 w-full flex flex-col">
       <NavbarTop />
-      <main>
+      <main className="min-h-screen w-full">
         <Outlet />
+        <Footer />
       </main>
-      <Footer />
       <NavbarBottom />
     </div>
   );

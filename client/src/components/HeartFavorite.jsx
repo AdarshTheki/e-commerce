@@ -32,7 +32,7 @@ const HeartFavorite = ({ id, className, name = "" }) => {
   return (
     <button
       onClick={handleLike}
-      className={`${className} bg-transparent`}
+      className={`!bg-transparent ${className}`}
       title="favorite">
       {!!name && name}
       {loading ? (
