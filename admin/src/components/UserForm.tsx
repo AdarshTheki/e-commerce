@@ -6,7 +6,7 @@ import useTitle from '../hooks/useTitle';
 import { AxiosError } from 'axios';
 
 import { axiosInstance, countries, errorHandler } from '@/lib/utils';
-import { MultiSelect } from '.';
+import Select from './ui/Select';
 
 const UserForm = ({ userData }: { userData?: UserType }) => {
   const [user, setUser] = React.useState({
@@ -69,19 +69,19 @@ const UserForm = ({ userData }: { userData?: UserType }) => {
       />
 
       <div className="grid grid-cols-3 gap-4">
-        <MultiSelect
+        <Select
           className="w-[120px]"
           list={['customer', 'seller', 'user']}
           onSelected={(e) => setUser({ ...user, role: e })}
           selected={user.role || 'select role'}
         />
-        <MultiSelect
+        <Select
           className="w-[120px]"
           list={['active', 'inactive']}
           onSelected={(e) => setUser({ ...user, status: e })}
           selected={user.status || 'select status'}
         />
-        <MultiSelect
+        <Select
           className="w-[190px] right-0"
           list={countries.map((i) => i.title)}
           selected={user.code || 'select country'}

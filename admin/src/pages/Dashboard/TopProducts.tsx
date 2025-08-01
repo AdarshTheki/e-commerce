@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import { useFetch } from '@/hooks';
-import { Counter } from '@/components';
-import { Loading } from '@/components/ui';
+import { Loading, Counter } from '@/components/ui';
 import { downloadProductsAsCSV } from '@/lib/action';
 import { axiosInstance, errorHandler } from '@/lib/utils';
 
@@ -44,16 +43,16 @@ function TopProducts() {
   if (loading) return <Loading />;
 
   return (
-    <div className="bg-white rounded-lg border">
-      <div className="p-6 border-b flex items-center justify-between">
+    <div className="pt-6">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Top Products</h2>
         <button
           onClick={handleDownloadCSV}
-          className="w-fit flex items-center justify-between gap-1 text-sm px-4 py-2 border rounded bg-white text-gray-800 border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none">
+          className="border text-sm flex items-center gap-2 border-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 duration-300">
           {isLoading ? <Loader size={16} /> : <Download size={16} />} Export
         </button>
       </div>
-      <div className="p-6">
+      <div className="py-6">
         <div className="space-y-4">
           {data
             ? data?.map((product) => (
@@ -70,10 +69,10 @@ function TopProducts() {
                     <div>
                       <NavLink
                         to={`/product/${product._id}`}
-                        className="font-medium">
+                        className="font-medium max-sm:max-w-[180px] line-clamp-1">
                         {product.title || 'Wireless Earbuds'}
                       </NavLink>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 max-sm:max-w-[150px] line-clamp-1">
                         {product.category}, {product.brand}
                       </p>
                     </div>
@@ -82,7 +81,7 @@ function TopProducts() {
                     <p className="font-medium">
                       $<Counter target={product.totalRevenue || 239} />
                       <span className="text-xs text-gray-400 px-2">
-                        {product.unitPrice}
+                        {product.unitPrice.toFixed(0)}
                       </span>
                     </p>
                     <p className="text-sm text-green-500">

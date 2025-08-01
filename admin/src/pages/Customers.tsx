@@ -3,8 +3,8 @@ import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
 import { useFetch, useTitle } from '../hooks';
-import { Input, Loading, NotFound } from '../components/ui';
-import { MultiSelect, UserCard } from '@/components';
+import { Input, Loading, NotFound, Select } from '../components/ui';
+import { UserCard } from '@/components';
 
 const sortByOptions = [
   { label: 'Name (A-Z)', value: 'fullName-asc' },
@@ -41,29 +41,53 @@ const Customers = () => {
         <h2 className="text-lg font-semibold">Users Listing</h2>
         <NavLink
           to={`/customer/create`}
-          className="bg-indigo-600 capitalize flex items-center justify-center gap-2 text-white text-sm px-4 py-2 rounded-lg hover:bg-indigo-700">
-          <Plus size={16} /> <span>Add User</span>
+          className="bg-gray-800 border text-sm flex items-center gap-2 border-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 duration-300">
+          <Plus size={16} /> Add User
         </NavLink>
       </div>
 
       {/* Filter products */}
-      <div className="max-w-xl flex gap-4">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          type="text"
-          className="w-full text-sm py-1.5 pl-4"
-          placeholder="User search..."
-        />
-        <MultiSelect
-          className="!w-[150px] max-md:right-0"
-          selected={
-            sortByOptions.find((i) => sortBy === i.value)?.label || 'Select'
-          }
-          label="Filters"
-          listOption={sortByOptions}
-          onSelected={setSortBy}
-        />
+      <div className="flex gap-4 justify-between max-md:flex-col">
+        <div className="flex gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type="text"
+            placeholder="User search..."
+          />
+          <Select
+            className="!w-[150px] max-md:right-0"
+            selected={
+              sortByOptions.find((i) => sortBy === i.value)?.label || 'Select'
+            }
+            label="Filters"
+            listOption={sortByOptions}
+            onSelected={setSortBy}
+          />
+        </div>
+        <div className="flex gap-2 text-nowrap items-center justify-between">
+          <Select
+            list={['10', '20', '30', '40', '50']}
+            label={'Rows - ' + limit.toString()}
+            selected={limit.toString()}
+            onSelected={(e) => setLimit(+e)}
+          />
+          <p>
+            {(page - 1) * limit || 1} - {limit * page} of {data?.totalDocs}
+          </p>
+          <button
+            disabled={!data?.hasPrevPage}
+            onClick={() => setPage((p) => p - 1)}
+            className="svg-btn">
+            <ChevronLeftIcon />
+          </button>
+          <button
+            disabled={!data?.hasNextPage}
+            onClick={() => setPage((p) => p + 1)}
+            className="svg-btn">
+            <ChevronRightIcon />
+          </button>
+        </div>
       </div>
 
       {loading && <Loading />}
@@ -71,38 +95,6 @@ const Customers = () => {
       {error && <NotFound title={JSON.stringify(error)} />}
 
       {!loading && data?.totalDocs && <UserCard items={data.docs} />}
-
-      <div className="flex gap-4 items-center justify-end text-sm">
-        <label htmlFor="limits">
-          Rows per page:
-          <select
-            name="limits"
-            id="limits"
-            value={limit}
-            onChange={(e) => setLimit(parseInt(e.target.value))}
-            className="py-2 cursor-pointer focus:outline-none">
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={30}>30</option>
-            <option value={50}>50</option>
-          </select>
-        </label>
-        <p>
-          {(page - 1) * limit || 1} - {limit * page} of {data?.totalDocs}
-        </p>
-        <button
-          disabled={!data?.hasPrevPage}
-          onClick={() => setPage((p) => p - 1)}
-          className="svg-btn">
-          <ChevronLeftIcon size={18} />
-        </button>
-        <button
-          disabled={!data?.hasNextPage}
-          onClick={() => setPage((p) => p + 1)}
-          className="svg-btn">
-          <ChevronRightIcon size={18} />
-        </button>
-      </div>
     </div>
   );
 };

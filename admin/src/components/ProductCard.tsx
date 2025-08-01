@@ -1,17 +1,15 @@
-import { axiosInstance, errorHandler } from '@/lib/utils';
+import { axiosInstance, brands, categories, errorHandler } from '@/lib/utils';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteModal } from './ui';
 import { SquarePen, Trash2 } from 'lucide-react';
-import { useFetch } from '@/hooks';
+import Select from './ui/Select';
 
 export default function ProductCard({ items }: { items: ProductType[] }) {
   const [products, setProducts] = useState<ProductType[]>(() => items || []);
   const [showModel, setShowModal] = useState(false);
   const navigate = useNavigate();
-  const { data: categories } = useFetch<string[]>('/category/list');
-  const { data: brands } = useFetch<string[]>('/brand/list');
 
   const handleDeleteProduct = async (id: string) => {
     try {
@@ -63,15 +61,7 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
     }
   };
 
-  const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'In-Active' },
-    {
-      value: 'out-of-stock',
-      label: 'Empty',
-    },
-    { value: 'pending', label: 'Pending' },
-  ];
+  const statusOptions = ['active', 'inactive', 'out-of-stock', 'pending'];
 
   return (
     <div className="w-full !overflow-x-auto">
@@ -101,63 +91,32 @@ export default function ProductCard({ items }: { items: ProductType[] }) {
                 />
                 <p className=" line-clamp-2">{product.title}</p>
               </td>
-              <td className="py-3 px-4 text-nowrap">
-                <select
-                  onChange={(e) =>
-                    handleCategoryChange(product._id, e.target.value)
-                  }
-                  value={product.category}
-                  name="categories"
-                  id="categories"
-                  className="p-2 cursor-pointer capitalize rounded-full w-fit">
-                  <option value={''}>-- Select --</option>
-                  {categories
-                    ? categories?.map((s) => (
-                        <option value={s} key={s}>
-                          {s.split('-').join(' ')}
-                        </option>
-                      ))
-                    : null}
-                </select>
+              <td className="py-3 px-2">
+                <Select
+                  className="!w-[200px]"
+                  onSelected={(e) => handleCategoryChange(product._id, e)}
+                  list={categories}
+                  selected={product.category}
+                />
               </td>
-              <td className="py-3 px-4 text-nowrap">
-                <select
-                  onChange={(e) =>
-                    handleBrandChange(product._id, e.target.value)
-                  }
-                  value={product?.brand}
-                  name="brands"
-                  id="brands"
-                  className="p-2 cursor-pointer capitalize rounded-full w-fit">
-                  <option value={''}>-- Select --</option>
-                  {brands
-                    ? brands?.map((s) => (
-                        <option value={s} key={s}>
-                          {s.split('-').join(' ')}
-                        </option>
-                      ))
-                    : null}
-                </select>
+              <td className="py-3 px-2 max-w-fit">
+                <Select
+                  className="!w-[200px]"
+                  onSelected={(e) => handleBrandChange(product._id, e)}
+                  list={brands}
+                  selected={product.brand || '--select--'}
+                />
               </td>
-              <td className="py-3 px-4 text-nowrap">{product.stock}</td>
+              <td className="py-3 px-4">{product.stock}</td>
               <td className="px-2">
-                <select
-                  onChange={(e) =>
-                    handleStatusChange(
-                      product._id,
-                      e.target.value as ProductStatus
-                    )
+                <Select
+                  className="!w-[150px]"
+                  onSelected={(e) =>
+                    handleStatusChange(product._id, e as ProductStatus)
                   }
-                  value={product.status}
-                  name={product._id}
-                  id={product._id}
-                  className="p-2 cursor-pointer rounded-full w-fit">
-                  {statusOptions.map((s) => (
-                    <option value={s.value} key={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
+                  list={statusOptions}
+                  selected={product.status}
+                />
               </td>
               <td className="flex items-center gap-2 pb-5 justify-center">
                 <DeleteModal

@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { PackageSearch } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import Select from './ui/Select';
 
 export default function OrderCard({ items }: { items: OrderType[] }) {
   const [users, setUsers] = useState<OrderType[]>(() => items || []);
@@ -93,24 +94,14 @@ export default function OrderCard({ items }: { items: OrderType[] }) {
               <td className="py-3 px-4 text-nowrap">
                 {category.payment.method} - {category.payment.status}
               </td>
-              <td className="py-3 text-nowrap">
-                <select
-                  onChange={(e) =>
-                    handleStatusChange(
-                      category._id,
-                      e.target.value as OrderStatus
-                    )
+              <td className="py-3 text-nowrap w-fit">
+                <Select
+                  selected={category.status}
+                  list={['pending', 'shipped', 'delivered', 'cancelled']}
+                  onSelected={(e) =>
+                    handleStatusChange(category._id, e as OrderStatus)
                   }
-                  value={category.status}
-                  name={category._id}
-                  id={category._id}
-                  className="p-2 cursor-pointer rounded-full capitalize">
-                  {['pending', 'shipped', 'delivered', 'cancelled'].map((s) => (
-                    <option value={s} key={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                />
               </td>
               <td className="px-4 py-3">
                 <p className="text-nowrap">

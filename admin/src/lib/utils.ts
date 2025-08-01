@@ -1,6 +1,13 @@
 import { toast } from 'react-toastify';
 import axios, { AxiosError, AxiosInstance } from 'axios';
-import { Box, ShoppingBag, Users, HousePlug, Cat, Gift } from 'lucide-react';
+import {
+  Users,
+  LayoutDashboard,
+  Tags,
+  Boxes,
+  Package,
+  ShoppingCart,
+} from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -22,12 +29,12 @@ export const countries = [
 ];
 
 export const menuItems = [
-  { id: 1, title: 'Dashboard', path: '/', icon: HousePlug },
-  { id: 5, title: 'Brands', path: '/brand', icon: Gift },
-  { id: 6, title: 'Products', path: '/product', icon: Box },
-  { id: 7, title: 'Categories', path: '/category', icon: Cat },
+  { id: 1, title: 'Dashboard', path: '/', icon: LayoutDashboard }, // Better than HousePlug
+  { id: 5, title: 'Brands', path: '/brand', icon: Tags }, // Tags is a better fit for Brands
+  { id: 6, title: 'Products', path: '/product', icon: Boxes }, // Boxes or Package work well
+  { id: 7, title: 'Categories', path: '/category', icon: Package }, // Grouped package for categories
   { id: 8, title: 'Customers', path: '/customer', icon: Users },
-  { id: 9, title: 'Orders', path: '/order', icon: ShoppingBag },
+  { id: 9, title: 'Orders', path: '/order', icon: ShoppingCart }, // ShoppingCart is more intuitive
 ];
 
 export const errorHandler = (error: AxiosError) => {

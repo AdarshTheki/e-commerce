@@ -1,4 +1,4 @@
-import { Counter, MultiSelect, Skeleton } from '@/components';
+import { Counter, Select, Skeleton } from '@/components/ui';
 import { useFetch } from '@/hooks';
 import { cn } from '@/lib/utils';
 import { Box, CircleDollarSign, ShoppingBag, Users } from 'lucide-react';
@@ -43,7 +43,7 @@ const Dashboard = () => {
     <div>
       <div className="flex items-center pb-6 justify-between">
         <h2 className="text-lg font-semibold">Dashboard</h2>
-        <MultiSelect
+        <Select
           className="min-w-[150px] right-0"
           selected={select}
           onSelected={(e) => setSelected(e)}
@@ -133,27 +133,22 @@ const DashboardStatCard: React.FC<DashboardStatCardProps> = ({
   value = 10,
   lastMonthValue = 4,
   icon,
-  iconBg,
   iconColor,
   isCurrency,
 }) => {
   return (
     <div className="p-4 rounded-lg border">
-      <div className="flex justify-between items-center">
-        <div className="space-y-2">
-          <p className="text-sm text-slate-800">{title}</p>
-          <h3 className="text-2xl font-semibold">
-            {isCurrency && '$'}
-            <Counter target={value} />
-          </h3>
-          <p className="text-green-500 text-sm">
-            +
-            <Counter target={lastMonthValue} />% from last month
-          </p>
-        </div>
-        <div className={`p-2 rounded-lg ${iconBg}`}>
+      <div className="flex flex-col gap-2 justify-start">
+        <p className="text-sm text-slate-800">{title}</p>
+        <h3 className="text-2xl font-semibold flex items-center justify-between">
+          {isCurrency && '$'}
+          <Counter target={value} />
           <span className={cn(iconColor)}>{icon}</span>
-        </div>
+        </h3>
+        <p className="text-green-500 text-sm">
+          +
+          <Counter target={lastMonthValue} />% from last month
+        </p>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Loader, Sparkles, Trash2 } from 'lucide-react';
 
-import { Input, SpinnerBtn, Textarea } from './ui';
+import { Input, Textarea } from './ui';
 
 import { toast } from 'react-toastify';
 import useTitle from '../hooks/useTitle';
@@ -14,11 +14,12 @@ import {
   brands,
   productStatus,
 } from '@/lib/utils';
-import MultiSelect from './MultiSelect';
+import { Select } from './ui';
 
 const ProductForm = ({ data }: { data?: ProductType }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
+  const [AILoading, setAILoading] = useState<boolean>(false);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>(
     data?.images.length ? data?.images : []
@@ -73,16 +74,19 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     e.preventDefault();
     setLoading(true);
     // Validation
-    if (!preview?.length) {
-      toast.error('Upload the product thumbnail');
+
+    if (Number(thumbnail?.size || 1) > 5 * 1024 * 1024) {
+      toast.error('Upload thumbnail upto 5MB');
       setLoading(false);
       return;
     }
-    if (!previews?.length) {
-      toast.error('Upload the product gallery images');
+
+    if (images.reduce((p, c) => p + c.size, 0) > 10 * 1024 * 1024) {
+      toast.error('Upload gallery upto 10MB');
       setLoading(false);
       return;
     }
+
     if (
       !formData.title ||
       !formData.category ||
@@ -130,9 +134,27 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
     }
   };
 
+  const handleDescriptionGenerate = async () => {
+    try {
+      if (formData.description.length < 50)
+        return toast.error('AI to enter at least 50 char entered');
+      setAILoading(true);
+      const res = await axiosInstance.post('/openai/generate-text', {
+        prompt: formData.description,
+      });
+      if (res.data.data) {
+        setFormData({ ...formData, description: res.data.data.response });
+      }
+    } catch (error) {
+      errorHandler(error as AxiosError);
+    } finally {
+      setAILoading(false);
+    }
+  };
+
   return (
     <>
-      <form onSubmit={handelSubmit} className="bg-white p-2 sm:p-6 rounded-lg">
+      <form onSubmit={handelSubmit}>
         <h3 className="text-xl font-semibold mb-10">
           {data?._id ? 'Update Product' : 'Add New Product'}
         </h3>
@@ -145,17 +167,17 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             value={formData?.title}
           />
           <div className="grid sm:grid-cols-3 grid-cols-2 gap-5 py-1">
-            <MultiSelect
+            <Select
               onSelected={(e) => setFormData({ ...formData, category: e })}
               list={categories}
               selected={formData.category || 'select category'}
             />
-            <MultiSelect
+            <Select
               onSelected={(e) => setFormData({ ...formData, brand: e })}
               list={brands}
               selected={formData.brand || 'select brand'}
             />
-            <MultiSelect
+            <Select
               onSelected={(e) => setFormData({ ...formData, status: e })}
               list={productStatus}
               selected={formData.status || 'select status'}
@@ -196,41 +218,40 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
               value={formData.stock}
             />
           </div>
+          <div className="flex gap-1 flex-col">
+            <Textarea
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  description: e.target.value,
+                })
+              }
+              value={formData.description}
+              name="description"
+              rows={5}
+              placeholder="Please enter a description char between 100 to 1000"
+              maxLength={1000}
+              minLength={100}
+            />
 
-          <Textarea
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                description: e.target.value,
-              })
-            }
-            value={formData.description}
-            name="description"
-            rows={5}
-            placeholder="Please enter a description char between 100 to 1000"
-            maxLength={1000}
-            minLength={100}
-          />
+            <small className="text-gray-500">
+              {formData.description.length} char, If you generate description
+              with AI to enter at least 50 char entered.
+            </small>
+            <button
+              onClick={handleDescriptionGenerate}
+              type="button"
+              disabled={AILoading}
+              className="text-xs flex items-center gap-1 px-6 w-fit py-2 rounded-full hover:bg-gray-100 text-gray-800 border border-gray-800 font-semibold duration-300">
+              {AILoading ? <Loader size={14} /> : <Sparkles size={14} />}
+              Generate AI
+            </button>
+          </div>
 
           {/* select images */}
-          <label className="block text-sm font-medium text-gray-700 mt-5">
+          <label className="block text-sm font-medium text-gray-700">
             Product Gallery Images
-            {previews?.length ? (
-              <span>
-                <label
-                  htmlFor="image-uploads"
-                  className="ml-6 border text-xs text-indigo-600 hover:bg-gray-100 p-2 rounded cursor-pointer">
-                  Another Upload files
-                </label>
-                <input
-                  type="file"
-                  id="image-uploads"
-                  onChange={handleImageChange}
-                  multiple
-                  className="sr-only"
-                />
-              </span>
-            ) : (
+            {previews?.length ? null : (
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
                 <div className="space-y-1 text-center">
                   <div className="flex text-sm text-gray-600">
@@ -240,6 +261,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
                       </label>
                       <input
                         type="file"
+                        accept="image/*"
                         id="upload-multi-files"
                         onChange={handleImageChange}
                         multiple
@@ -249,7 +271,8 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
                     <p className="pl-1">or drag and drop</p>
                   </div>
                   <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF up to 10MB
+                    PNG, JPG, GIF up to{' '}
+                    <span className="text-red-600">10MB</span>
                   </p>
                 </div>
               </div>
@@ -258,14 +281,14 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
 
           {/* show previews */}
           {previews.length ? (
-            <div className="grid md:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-5">
+            <div className="flex flex-wrap">
               {previews?.map((preview, index) => (
-                <div className="border p-1 flex items-center justify-center relative rounded-md">
+                <div key={index} className="relative sm:w-1/3 w-1/2 p-1">
                   <img
                     key={index}
                     src={preview}
                     alt={`Image ${index + 1}`}
-                    width={200}
+                    className="object-cover w-full md:h-[15vw] h-[25vw]"
                   />
                   <button
                     type="button"
@@ -281,7 +304,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             </div>
           ) : null}
 
-          <div className="flex flex-col gap-3 py-5">
+          <div className="flex flex-col gap-3">
             <label
               htmlFor="thumbnail"
               className="block text-sm font-medium text-gray-700">
@@ -289,8 +312,12 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
             </label>
             {/* show preview */}
             {preview ? (
-              <div className="border p-1 relative rounded-md w-fit">
-                <img src={preview} alt="thumbnail" width={200} />
+              <div className="relative sm:w-1/3 w-full p-1">
+                <img
+                  src={preview}
+                  alt="thumbnail"
+                  className="object-cover w-full max-h-[200px] h-[50vw]"
+                />
                 <button
                   type="button"
                   className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
@@ -313,14 +340,16 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
                       <input
                         type="file"
                         id="thumbnail"
+                        accept="image/*"
                         className="sr-only"
                         onChange={handleThumbnailChange}
                       />
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, GIF up to 10MB
+                  <p className="text-xs text-gray-500 font-medium">
+                    PNG, JPG, GIF up to{' '}
+                    <span className="text-red-600">5MB</span>
                   </p>
                 </div>
               </div>
@@ -329,18 +358,15 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
         </div>
 
         <div className="mt-6 flex justify-end space-x-3">
-          <NavLink
-            to={'/products'}
+          <button
             type="button"
-            className="btn border border-red-600 text-red-600">
+            onClick={() => navigate('/product')}
+            className="px-4 py-2 border border-gray-800 rounded-lg hover:bg-gray-100 duration-300">
             Cancel
-          </NavLink>
-          {/* spinner button */}
-          <SpinnerBtn
-            loading={loading}
-            primaryName="Save Product"
-            type="submit"
-          />
+          </button>
+          <button className="bg-gray-800 border border-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 duration-300">
+            {loading ? 'Loading...' : 'Save Product'}
+          </button>
         </div>
       </form>
     </>

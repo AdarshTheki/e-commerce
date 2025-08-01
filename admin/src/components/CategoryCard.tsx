@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DeleteModal } from './ui';
 import { SquarePen, Trash2 } from 'lucide-react';
+import Select from './ui/Select';
 
 export default function CategoryList({ items }: { items: CategoryType[] }) {
   const [categories, setCategories] = useState<CategoryType[]>(
@@ -70,24 +71,14 @@ export default function CategoryList({ items }: { items: CategoryType[] }) {
               <td className="py-3 px-4 text-nowrap">
                 {format(new Date(category.updatedAt), 'MMM d, yyyy')}
               </td>
-              <td className="py-3">
-                <select
-                  onChange={(e) =>
-                    handleStatusChange(
-                      category._id,
-                      e.target.value as ActiveOrInActive
-                    )
+              <td className="px-4 max-w-[70px]">
+                <Select
+                  onSelected={(e) =>
+                    handleStatusChange(category._id, e as ActiveOrInActive)
                   }
-                  value={category.status}
-                  name={category._id}
-                  id={category._id}
-                  className="p-2 cursor-pointer rounded-full capitalize">
-                  {['active', 'inactive'].map((s) => (
-                    <option value={s} key={s}>
-                      {s}
-                    </option>
-                  ))}
-                </select>
+                  list={['active', 'inactive']}
+                  selected={category.status}
+                />
               </td>
               <td className="flex items-center gap-2 pb-5 justify-center">
                 <DeleteModal

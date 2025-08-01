@@ -23,9 +23,9 @@ export default function ProfileSettings() {
 
   return (
     <div className="max-w-4xl mx-auto lg:p-8">
-      <div className="bg-white shadow-lg overflow-hidden">
+      <div className="bg-white shadow-lg overflow-hidden min-h-[80dvh]">
         <div className="md:flex">
-          <div className="w-full md:w-1/4 bg-gray-50 p-6 min-h-[80dvh]">
+          <div className="w-full md:w-1/4 bg-gray-50 p-6">
             <nav className="space-y-2  gap-2">
               <button
                 onClick={() => setActiveTab('profile')}

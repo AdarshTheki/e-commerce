@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Input, SpinnerBtn, Textarea } from './ui';
-
-import { MultiSelect } from '@/components';
-import { Trash2 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
-import useTitle from '../hooks/useTitle';
-import { errorHandler, axiosInstance } from '@/lib/utils';
+import { Input, Textarea } from './ui';
+import { Loader, Sparkle, Trash2 } from 'lucide-react';
 import { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
+
+import { errorHandler, axiosInstance } from '@/lib/utils';
+import { Select } from '@/components/ui';
+import useTitle from '../hooks/useTitle';
 
 const CategoryForm = ({ item }: { item?: CategoryType }) => {
   const { pathname } = useLocation();
@@ -107,7 +106,7 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
             value={formData.title}
             onChange={handleChange}
           />
-          <MultiSelect
+          <Select
             className="right-0"
             list={['active', 'inactive']}
             onSelected={(e) => setFormData({ ...formData, status: e })}
@@ -138,37 +137,76 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
           <button
             onClick={handleDescriptionGenerate}
             type="button"
-            className="text-xs mt-2 w-fit px-6 py-2 rounded-full text-indigo-600 border border-indigo-600 font-semibold hover:opacity-80">
-            {AILoading ? 'Generate....' : 'Generate with AI'}
+            disabled={AILoading}
+            className="text-xs flex items-center gap-1 px-6 w-fit py-2 rounded-full hover:bg-gray-100 text-gray-800 border border-gray-800 font-semibold duration-300">
+            {AILoading ? <Loader /> : <Sparkle size={14} />}
+            Generate AI
           </button>
         </div>
 
-        <Input type="file" name="thumbnail" onChange={handleChange} />
-        {preview && (
-          <div className="relative">
-            <img src={preview} alt="preview" width={300} />
-            <button
-              type="button"
-              onClick={() => {
-                setImage(null);
-                setPreview('');
-              }}
-              className="svg-btn text-red-600 absolute top-2 left-2">
-              <Trash2 size={18} />
-            </button>
-          </div>
-        )}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Thumbnail
+            {preview?.length ? null : (
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg">
+                <div className="space-y-1 text-center">
+                  <div className="flex text-sm text-gray-600">
+                    <span className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+                      <label htmlFor="upload-multi-files">
+                        Upload single image
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="upload-multi-files"
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                    </span>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, GIF up to{' '}
+                    <span className="text-red-600">5MB</span>
+                  </p>
+                </div>
+              </div>
+            )}
+          </label>
+
+          {preview && (
+            <div className="relative w-full max-w-[400px] p-1">
+              <img
+                src={preview}
+                alt="thumbnail"
+                className="object-cover w-full max-h-[200px]"
+              />
+              <button
+                type="button"
+                className="svg-btn text-red-600 absolute top-1 right-1 cursor-pointer">
+                <Trash2
+                  size={18}
+                  strokeWidth={2}
+                  onClick={() => {
+                    setPreview('');
+                    setImage(null);
+                  }}
+                />
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center justify-end gap-5 pt-10">
-          <NavLink
-            to={'/' + path}
-            className="btn !text-red-600 border border-red-600  text-sm">
+          <button
+            onClick={() => navigate(`/${path}`)}
+            type="button"
+            className="border text-gray-800 border-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100 duration-300">
             Cancel
-          </NavLink>
-          <SpinnerBtn
-            loading={loading}
-            type="submit"
-            primaryName={'save ' + path}
-          />
+          </button>
+          <button className="bg-gray-800 border border-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 duration-300">
+            {loading ? 'Loading...' : 'Save Item'}
+          </button>
         </div>
       </form>
     </div>

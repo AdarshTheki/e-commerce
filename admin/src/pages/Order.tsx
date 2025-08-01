@@ -1,5 +1,5 @@
 import { useFetch, useTitle } from '@/hooks';
-import { Loading } from '@/components/ui';
+import { Loading, Select } from '@/components/ui';
 import { OrderCard } from '@/components';
 import { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
@@ -26,39 +26,32 @@ export default function Orders() {
     <div className="space-y-4 min-h-screen">
       <h2 className="text-lg font-semibold">Orders Listing</h2>
 
-      {loading ? <Loading /> : <OrderCard items={data || []} />}
-
-      <div className="flex gap-4 items-center justify-end text-sm">
-        <label htmlFor="limits">
-          Rows per page:
-          <select
-            name="limits"
-            id="limits"
-            value={limit}
-            onChange={(e) => setLimit(parseInt(e.target.value))}
-            className="py-2 cursor-pointer focus:outline-none">
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={30}>30</option>
-            <option value={50}>50</option>
-          </select>
-        </label>
+      {/* Filter products */}
+      <div className="flex gap-2 sm:justify-end items-center">
+        <Select
+          list={['10', '20', '30', '40', '50']}
+          label={'Rows - ' + limit.toString()}
+          selected={limit.toString()}
+          onSelected={(e) => setLimit(+e)}
+        />
         <p>
-          {(page - 1) * limit || 1} - {limit * page}
+          {(page - 1) * limit || 1} - {limit * page} of {data?.length}
         </p>
         <button
-          disabled={!((page - 1) * limit)}
+          disabled={true}
           onClick={() => setPage((p) => p - 1)}
           className="svg-btn">
-          <ChevronLeftIcon size={18} />
+          <ChevronLeftIcon />
         </button>
         <button
-          disabled={!(Number(data?.length || 1) == limit)}
+          disabled={true}
           onClick={() => setPage((p) => p + 1)}
           className="svg-btn">
-          <ChevronRightIcon size={18} />
+          <ChevronRightIcon />
         </button>
       </div>
+
+      {loading ? <Loading /> : <OrderCard items={data || []} />}
     </div>
   );
 }
