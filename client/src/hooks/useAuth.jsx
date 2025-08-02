@@ -122,14 +122,10 @@ const useAuth = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await axios.post("/user/logout");
-      localStorage.removeItem("accessToken");
-      sessionStorage.removeItem("accessToken");
-      dispatch(logout());
-    } catch (error) {
-      errorHandler(error);
-    }
+    await axios.post("/user/logout");
+    localStorage.removeItem("accessToken");
+    sessionStorage.removeItem("accessToken");
+    dispatch(logout());
   };
 
   return {

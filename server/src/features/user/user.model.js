@@ -7,7 +7,7 @@ const userSchema = new Schema(
   {
     fullName: {
       type: String,
-      required: true,
+      required: [true, "FullName is required"],
       trim: true,
       minlength: 5,
       maxlength: 50,
@@ -15,11 +15,15 @@ const userSchema = new Schema(
     email: {
       type: String,
       lowercase: true,
-      required: true,
-      unique: true,
+      required: [true, "Email is required"],
       trim: true,
     },
-    password: { type: String, required: true, minlength: 5, trim: true },
+    loginType: {
+      type: String,
+      enum: ["EMAIL_PASSWORD", "GITHUB", "GOOGLE"],
+      default: "EMAIL_PASSWORD",
+    },
+    password: { type: String, minlength: 5, trim: true },
     role: {
       type: String,
       enum: ["customer", "admin", "seller", "user"],

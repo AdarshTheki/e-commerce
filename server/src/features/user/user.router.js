@@ -9,7 +9,6 @@ import {
   getCurrentUser,
   getFavorites,
   getUserById,
-  googleAuth,
   logout,
   refreshToken,
   removeAvatar,
@@ -19,15 +18,32 @@ import {
   updateAvatar,
   updateUser,
   updateUserProfile,
+  handleGoogleOAuthCallback,
+  handleGithubOAuthCallback,
 } from "./user.controller.js";
+import passport from "passport";
 
 const router = Router();
+
+// SOS
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get("/google/callback", handleGoogleOAuthCallback);
+
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] })
+);
+
+router.get("/github/callback", handleGithubOAuthCallback);
 
 // Unauthenticated routes
 router.post("/sign-up", signUp);
 router.post("/sign-in", signIn);
 router.post("/refresh-token", refreshToken);
-router.post("/google", googleAuth);
 
 // Authenticated routes
 router.use(verifyJWT());

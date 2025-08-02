@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "http";
+import passport from "passport";
+import "./passport/index.js";
 import { Server } from "socket.io";
 import { initializeSocketIO } from "./socket/index.js";
 // import rateLimit from "express-rate-limit";
@@ -53,6 +55,8 @@ app.use(cookieParser());
 // });
 
 // app.use(limiter);
+
+app.use(passport.initialize());
 
 // Connect and Serve the Socket.Io
 const server = http.createServer(app);

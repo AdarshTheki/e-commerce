@@ -5,6 +5,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { removeSingleImg, uploadSingleImg } from "../../utils/cloudinary.js";
+import passport from "passport";
 
 // @desc    Get all users (admin only)
 // @route   GET /api/v1/users
@@ -214,7 +215,10 @@ export const signIn = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and password are required");
   }
 
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({
+    email,
+    loginType: "EMAIL_PASSWORD",
+  }).select("+password");
   if (!user) {
     throw new ApiError(404, "User not found");
   }
@@ -404,22 +408,6 @@ export const refreshToken = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Google OAuth callback
-// @route   GET /api/v1/users/auth/google
-// @access  Public
-export const googleAuth = asyncHandler(async (req, res) => {
-  const scope = ["profile", "email"];
-
-  const authUrl =
-    `https://accounts.google.com/o/oauth2/v2/auth?` +
-    `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
-    `redirect_uri=${encodeURIComponent(process.env.REDIRECT_URI)}&` +
-    `response_type=code&` +
-    `scope=${encodeURIComponent(scope.join(" "))}`;
-
-  res.redirect(authUrl);
-});
-
 // @desc    Update user avatar
 // @route   PUT /api/v1/users/avatar
 // @access  Private
@@ -531,3 +519,63 @@ export const getFavorites = asyncHandler(async (req, res) => {
       )
     );
 });
+
+export const handleGoogleOAuthCallback = (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { session: false },
+    async (err, user, info) => {
+      if (err || !user) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Authentication failed" });
+      }
+
+      try {
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+
+        await user.save({ validateBeforeSave: false });
+
+        // Send token via redirect or JSON as you like
+        res.redirect(`${process.env.REDIRECT_URL}/login?token=${accessToken}`);
+      } catch (error) {
+        res.redirect(
+          `${process.env.REDIRECT_URL}/login?error=google_authentication_failed&message=${error.message}`
+        );
+      }
+    }
+  )(req, res, next);
+};
+
+export const handleGithubOAuthCallback = (req, res, next) => {
+  passport.authenticate(
+    "github",
+    { session: false },
+    async (err, user, info) => {
+      if (err || !user) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Authentication failed" });
+      }
+
+      try {
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+
+        await user.save({ validateBeforeSave: false });
+
+        // Send token via redirect or JSON as you like
+        res.redirect(`${process.env.REDIRECT_URL}/login?token=${accessToken}`);
+      } catch (error) {
+        res.redirect(
+          `${process.env.REDIRECT_URL}/login?error=github_authentication_failed&message=${error.message}`
+        );
+      }
+    }
+  )(req, res, next);
+};

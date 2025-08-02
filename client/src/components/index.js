@@ -6,8 +6,10 @@ import NavbarTop from "./NavbarTop";
 import NavbarBottom from "./NavbarBottom";
 import ImageGallery from "../pages/Gallery/ImageGallery";
 import ImageUpload from "../pages/Gallery/ImageUpload";
+import OAuthButtons from "./OAuthButtons";
 
 export {
+  OAuthButtons,
   NavbarBottom,
   NavbarTop,
   ImageUpload,

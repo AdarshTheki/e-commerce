@@ -12,8 +12,10 @@ export const getCart = asyncHandler(async (req, res) => {
 
   const cart = await Cart.findOne({ createdBy }).populate("items.productId");
 
-  if (!cart) {
-    throw new ApiError(404, "Cart not found");
+  if (!cart || cart.items.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { items: [] }, "Cart retrieved successfully"));
   }
 
   return res

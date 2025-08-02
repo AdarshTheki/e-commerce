@@ -2,12 +2,15 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import useAuth from "../hooks/useAuth";
+import { useEffect } from "react";
+import { OAuthButtons } from "../components";
 
 const Login = () => {
   const [email, setEmail] = useState("guest-user@gmail.com");
   const [password, setPassword] = useState("12345");
   const [rememberMe, setRememberMe] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [error, setError] = useState(null);
   const { loginLoading, handleLogin } = useAuth();
 
   const handleSubmit = (e) => {
@@ -15,12 +18,30 @@ const Login = () => {
     handleLogin(email, password, rememberMe);
   };
 
+  useEffect(() => {
+    setError(null);
+    const urlParams = new URLSearchParams(window.location.search);
+    const t = urlParams.get("token");
+    const e = urlParams.get("error");
+    if (t) {
+      localStorage.setItem("accessToken", t);
+      window.location.href = "/";
+    }
+    if (e) {
+      setError(e);
+    }
+  }, []);
+
   return (
     <section className="flex items-center justify-center p-4 min-h-[80dvh]">
       <div className="max-w-md w-full bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
         <h1 className="text-3xl text-center pb-5 font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
           Sign In
         </h1>
+
+        {error && <h2 className="status-inactive !text-center">{error}</h2>}
+
+        <OAuthButtons />
 
         <form id="loginForm" className="space-y-6" onSubmit={handleSubmit}>
           <div>
