@@ -61,11 +61,13 @@ router
 router.route("/favorite").get(getFavorites);
 router.route("/favorite/:id").patch(toggleFavorite);
 
+router.route("/admin").get(getAllUsers);
+
 // Admin routes
 
 router.use(verifyJWT(["admin", "seller"]));
 
-router.route("/admin").get(getAllUsers).post(createUser);
+router.route("/admin").post(createUser);
 
 router
   .route("/admin/:id")

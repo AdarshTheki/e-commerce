@@ -62,15 +62,50 @@ Welcome to the E-commerce Store project! This application is built using the MER
 
 ### Admin Panel
 
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380850/cartify-demo/hjd8gdzyrme8d8lqbwej.png" alt="admin" width="45%"/>
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380866/cartify-demo/zsxrjsplyhjahnicpnzi.png" alt="category" width="45%"/>
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380940/cartify-demo/mkowvh1lvcadmdmtzxu0.png" alt="profile" width="45%"/>
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380893/cartify-demo/bkrualmqfxtujfb7nzs0.png" alt="delete" width="45%"/>
+<table>
+<tr>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(48).png" alt="admin" width="100%"/>
+</td>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(50).png" alt="category" width="100%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(49).png" alt="profile" width="100%"/>
+</td>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(51).png" alt="delete" width="100%"/>
+</td>
+</tr>
+</table>
 
 ### E-Cartify Store
 
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380913/cartify-demo/pvmgiexlpzgs72ortera.png" alt="delete" width="45%"/>
-<img src="https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380927/cartify-demo/tkspaeepi3s7jipq87tm.png" alt="delete" width="45%"/>
+<table>
+<tr>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(42).png?updatedAt=1754203140912" alt="delete" width="100%"/>
+</td>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(44).png?updatedAt=1754203141129" alt="delete" width="100%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(45).png?updatedAt=1754203140648" alt="delete" width="100%"/>
+</td>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(46).png?updatedAt=1754203140580" alt="delete" width="100%"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833" alt="delete" width="100%"/>
+</td>
+</tr>
+</table>
 
 ### Database Management
 
@@ -78,14 +113,13 @@ Welcome to the E-commerce Store project! This application is built using the MER
 
 ### Installation
 
-1. Clone the repository: `https://github.com/AdarshTheki/full-stack-ecommerce-app.git`
+1. Clone the repository: `https://github.com/AdarshTheki/e-commerce.git`
 2. Set up the folder: `cd ../client`, `cd ../server` & `cd ../admin`
 3. Install dependencies of each folder structure: `npm install`
 4. Start the development server: `npm run dev`
-5. Open the website in your browser: `http://localhost:5173`
-6. Project hosted on Vercel [client](https://cartifycommerce.vercel.app) & [admin](https://cartifyadmin.vercel.app)
-7. Project hosted on firebase [client](https://cartify-client.web.app) & [admin](https://cartify-admin.web.app)
-8. Server hosted on Koyeb [server1](https://cartify-server.koyeb.app), Render [server2](https://e-commerce-szso.onrender.com)
+5. Open the website in your browser: `http://localhost:3000`
+6. Project hosted with [client](https://cartify-client.web.app) & [admin](https://cartify-admin.web.app)
+7. Server hosted on Koyeb [server1](https://cartify-server.koyeb.app), Render [server2](https://e-commerce-szso.onrender.com)
 
 ### MIT License
 
