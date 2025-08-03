@@ -10,7 +10,6 @@ const Login = () => {
   const [password, setPassword] = useState("12345");
   const [rememberMe, setRememberMe] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [error, setError] = useState(null);
   const { loginLoading, handleLogin } = useAuth();
 
   const handleSubmit = (e) => {
@@ -19,16 +18,11 @@ const Login = () => {
   };
 
   useEffect(() => {
-    setError(null);
     const urlParams = new URLSearchParams(window.location.search);
     const t = urlParams.get("token");
-    const e = urlParams.get("error");
     if (t) {
       localStorage.setItem("accessToken", t);
       window.location.href = "/";
-    }
-    if (e) {
-      setError(e);
     }
   }, []);
 
@@ -38,8 +32,6 @@ const Login = () => {
         <h1 className="text-3xl text-center pb-5 font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
           Sign In
         </h1>
-
-        {error && <h2 className="status-inactive !text-center">{error}</h2>}
 
         <OAuthButtons />
 

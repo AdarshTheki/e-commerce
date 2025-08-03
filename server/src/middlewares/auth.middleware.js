@@ -6,8 +6,7 @@ export const verifyJWT =
   (roles = []) =>
   async (req, res, next) => {
     try {
-      const token =
-        req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+      const token = req.headers.authorization.replace("Bearer ", "");
 
       if (!token) {
         throw new ApiError(401, "No token access with cookies & Bearer");
