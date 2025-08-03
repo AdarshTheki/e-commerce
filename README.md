@@ -128,18 +128,3 @@ This project is licensed under the [MIT License]().
 ### Author
 
 **[Adarsh Verma]()**
-
-<div style="display: flex; gap: 16px;">
-
-![image](<https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833>)
-
-![image](<https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833>)
-
-</div>
-<div style="display: flex; gap: 16px;">
-
-![image](<https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833>)
-
-![image](<https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833>)
-
-</div>
