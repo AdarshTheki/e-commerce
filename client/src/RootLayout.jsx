@@ -4,7 +4,6 @@ import useApi from "./hooks/useApi";
 import { useDispatch } from "react-redux";
 import { fetchCategories } from "./redux/categorySlice";
 import { fetchBrands } from "./redux/brandSlice";
-import { fetchAddresses } from "./redux/addressSlice";
 import { fetchProducts } from "./redux/productSlice";
 import { fetchCarts } from "./redux/cartSlice";
 import { Footer, NavbarBottom, NavbarTop } from "./components";
@@ -21,9 +20,8 @@ const RootLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (data) {
+    if (data?._id) {
       dispatch(login(data));
-      dispatch(fetchAddresses());
     }
   }, [dispatch, data]);
 

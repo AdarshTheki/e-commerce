@@ -35,7 +35,10 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/api/v1/user/google/callback",
+      callbackURL:
+        process.env.NODE_ENV === "DEVELOPMENT"
+          ? "/api/v1/user/google/callback"
+          : "https://e-commerce-szso.onrender.com/api/v1/user/google/callback",
     },
     callbackHandler
   )
@@ -46,7 +49,10 @@ passport.use(
     {
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackURL: "/api/v1/user/github/callback",
+      callbackURL:
+        process.env.NODE_ENV === "DEVELOPMENT"
+          ? "/api/v1/user/github/callback"
+          : "https://e-commerce-szso.onrender.com/api/v1/user/github/callback",
     },
     callbackHandler
   )

@@ -122,10 +122,10 @@ const useAuth = () => {
   };
 
   const handleLogout = async () => {
+    dispatch(logout());
     await axios.post("/user/logout");
     localStorage.removeItem("accessToken");
     sessionStorage.removeItem("accessToken");
-    dispatch(logout());
   };
 
   return {
