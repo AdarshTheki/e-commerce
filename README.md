@@ -1,130 +1,148 @@
-# E-commerce Store with AI Integration
+## 🛍️ E-commerce Store – Cartify with AI Integration
 
-Welcome to the E-commerce Store project! This application is built using the MERN stack (MongoDB, Express.js, React, Node.js) and integrates AI features to enhance user experience and operational efficiency.
+Welcome to **Cartify**, a modern E-commerce platform built using the **MERN stack (MongoDB, Express.js, React, Node.js)** and **AI-powered features** for smarter shopping and streamlined operations.
 
-## Features
+---
 
-### 1. User Authentication
+> 🔗 **Live Demo**:
+> [Client](https://cartify-client.web.app) | [Admin](https://cartify-admin.web.app)
+> 🌐 **Server APIs**:
+> [Koyeb](https://cartify-server.koyeb.app) | [Render](https://e-commerce-szso.onrender.com)
 
-- Sign up and login functionality (email/password, social media login).
-- Password recovery and reset options.
+---
 
-### 2. Product Management
+## ✨ Key Features
 
-- Product listing with images, descriptions, and prices.
-- Categories and filters for searching products by price, popularity, etc.
-- Product detail pages with reviews and ratings.
+### 🔐 User Authentication
 
-### 3. Shopping Cart
+- Email/password & OAuth (Google/GitHub) login.
+- Password recovery and reset functionality.
+- Token-based authentication with JWT & cookie sessions.
 
-- Add to cart functionality for products.
-- View cart with item quantity adjustment and total price calculation.
-- Save items for later.
+### 🛒 Product Management
 
-### 4. Checkout Process
+- Product listing with images, categories, descriptions, discounts, and stock.
+- Sorting and filtering (by price, rating, popularity).
+- SEO-friendly dynamic product pages with user reviews and ratings.
 
-- Multiple payment options (credit card, PayPal, etc.).
-- Address input and order summary before finalizing the purchase.
-- Order confirmation and receipt generation.
+### 🧺 Cart & Wishlist
 
-### 5. User Profile
+- Add/update/remove items from cart.
+- Quantity controls with real-time total calculation.
+- Save-for-later and wishlist functionality.
 
-- User account management (view order history, update personal information).
-- Wishlist feature for saving favorite items.
+### 💳 Checkout & Orders
 
-### 6. Admin Panel
+- Integrated payment gateways (Stripe/PayPal).
+- Address management, shipping summary, and invoices.
+- Order confirmation emails and transaction logs.
 
-- Dashboard for managing products, orders, and users.
-- Analytics for sales, user activity, and inventory status.
-- Ability to add, edit, or delete products.
+### 👤 User Dashboard
 
-### 7. AI Features
+- Manage personal info, order history, and wishlists.
+- Track past and current order statuses.
+- Responsive layout optimized for mobile users.
 
-- **Product Recommendations:** Personalized product suggestions based on user behavior and preferences.
-- **Chatbot Support:** AI-driven customer support chat for answering common queries and guiding users.
-- **Smart Search:** Enhanced search functionality using natural language processing (NLP) to improve search results.
-- **Dynamic Pricing:** AI algorithms to adjust product prices based on demand, competition, and user engagement.
+### 🛠️ Admin Panel
 
-### 8. Review and Rating System
+- CRUD operations for products, categories, and users.
+- Manage orders, reviews, and stock in real-time.
+- Sales & inventory analytics, charts, and dashboard widgets.
 
-- Users can leave reviews and ratings for products.
-- AI moderation to filter inappropriate content.
+### 🤖 AI-Powered Features
 
-### 9. Notifications and Alerts
+- **🧠 Smart Recommendations**: Personalized suggestions based on user behavior and trends.
+- **💬 AI Chatbot Support**: 24/7 smart assistant for common queries and navigation.
+- **🔍 NLP Smart Search**: Natural language processing for intuitive search.
+- **📈 Dynamic Pricing**: Adjust prices based on competition, demand, and engagement.
+- **🧹 AI Moderation**: Automatically filters inappropriate reviews and spam.
 
-- Email/SMS notifications for order updates, promotions, and abandoned cart reminders.
-- Alerts for low-stock items or price drops.
+### ⭐ Review & Rating System
 
-### 10. Responsive Design
+- Submit product reviews and star ratings.
+- Edit or delete your review.
+- View average rating and review breakdown.
 
-- Mobile-friendly layout for easy navigation on smartphones and tablets.
-- Fast loading times and optimized user experience.
+### 🔔 Alerts & Notifications
+
+- Email/SMS notifications for orders, promotions, and cart reminders.
+- Low-stock alerts and real-time updates for admins.
+
+### 📱 Fully Responsive Design
+
+- Tailored experience for desktops, tablets, and mobile devices.
+- Optimized performance with lazy loading, CDN images, and service workers.
+
+## 🧾 Screenshots
 
 ### Admin Panel
 
 <table>
 <tr>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(48).png" alt="admin" width="100%"/>
-</td>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(50).png" alt="category" width="100%"/>
-</td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(48).png" alt="admin" /></td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(50).png" alt="category" /></td>
 </tr>
 <tr>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(49).png" alt="profile" width="100%"/>
-</td>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(51).png" alt="delete" width="100%"/>
-</td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(49).png" alt="profile" /></td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(51).png" alt="delete" /></td>
 </tr>
 </table>
 
-### E-Cartify Store
+### Cartify E-Commerce Store
 
 <table>
 <tr>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(42).png?updatedAt=1754203140912" alt="delete" width="100%"/>
-</td>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(44).png?updatedAt=1754203141129" alt="delete" width="100%"/>
-</td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(42).png?updatedAt=1754203140912" alt="client 1" /></td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(44).png?updatedAt=1754203141129" alt="client 2" /></td>
 </tr>
 <tr>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(45).png?updatedAt=1754203140648" alt="delete" width="100%"/>
-</td>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(46).png?updatedAt=1754203140580" alt="delete" width="100%"/>
-</td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(45).png?updatedAt=1754203140648" alt="client 3" /></td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(46).png?updatedAt=1754203140580" alt="client 4" /></td>
 </tr>
 <tr>
-<td>
-<img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833" alt="delete" width="100%"/>
-</td>
+<td><img src="https://ik.imagekit.io/7mqxjeqt46/Screenshot%20(47).png?updatedAt=1754203140833" alt="client 5" /></td>
 </tr>
 </table>
 
-### Database Management
+## 🗃️ Database Schema Overview
 
 ![Database](https://res.cloudinary.com/dlf3lb48n/image/upload/v1751380882/cartify-demo/whmcb6q2nlubkfr2hjey.png)
 
-### Installation
+## ⚙️ Installation & Setup
 
-1. Clone the repository: `https://github.com/AdarshTheki/e-commerce.git`
-2. Set up the folder: `cd ../client`, `cd ../server` & `cd ../admin`
-3. Install dependencies of each folder structure: `npm install`
-4. Start the development server: `npm run dev`
-5. Open the website in your browser: `http://localhost:3000`
-6. Project hosted with [client](https://cartify-client.web.app) & [admin](https://cartify-admin.web.app)
-7. Server hosted on Koyeb [server1](https://cartify-server.koyeb.app), Render [server2](https://e-commerce-szso.onrender.com)
+```bash
+# 1. Clone the repo
+git clone https://github.com/AdarshTheki/e-commerce.git
+cd e-commerce
 
-### MIT License
+# 2. Install dependencies
+cd client && npm install
+cd ../admin && npm install
+cd ../server && npm install
 
-This project is licensed under the [MIT License]().
+# 3. Start development
+npm run dev  # from each folder (admin, client, server)
+```
 
-### Author
+- 🌐 Visit: `http://localhost:3000` (client)
+- Admin: `http://localhost:3001` or configured port
 
-**[Adarsh Verma]()**
+## 📦 Tech Stack
+
+- **Frontend**: React.js + Redux Toolkit + Tailwind CSS
+- **Backend**: Express.js + Node.js
+- **Database**: MongoDB + Mongoose
+- **AI APIs**: NLP, OpenAI/Gemini (for smart search & chatbot)
+- **Authentication**: JWT, OAuth with Google/GitHub
+- **Cloud Hosting**: Firebase, Koyeb, Render
+- **Deployment**: GitHub Actions, CI/CD, Vercel/Netlify (optional)
+
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
+
+## 🙋 Author
+
+**Adarsh Verma**
+🔗 GitHub: [AdarshTheki](https://github.com/AdarshTheki)
+📧 Email: _\[[adarshverma549@gmail.com](mailto:adarshverma549@gmail.com)]_
