@@ -1,18 +1,18 @@
-import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
-import { logger } from "../middlewares/logger.middleware.js";
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
+import { logger } from '../middlewares/logger.middleware.js';
 
 // Configs
 cloudinary.config({
-  cloud_name: "dlf3lb48n",
-  api_key: "996239776893621",
-  api_secret: "i_PNYOejURBRtp8Rx3DKRoSCd5Q",
+  cloud_name: 'dlf3lb48n',
+  api_key: '996239776893621',
+  api_secret: 'i_PNYOejURBRtp8Rx3DKRoSCd5Q',
 });
 
-const defaultFolder = "cartify";
+const defaultFolder = 'cartify';
 
 // Upload Single Image
-const uploadSingleImg = async (localFilePath = "", folder = "") => {
+const uploadSingleImg = async (localFilePath = '', folder = '') => {
   if (!localFilePath) return false;
 
   try {
@@ -23,13 +23,13 @@ const uploadSingleImg = async (localFilePath = "", folder = "") => {
     fs.unlinkSync(localFilePath); // Clean temp file
     return result.secure_url;
   } catch (error) {
-    logger.error("Upload Error:", error.message);
+    logger.error('Upload Error:', error.message);
     return false;
   }
 };
 
 // Upload Multiple Images
-const uploadMultiImg = async (images = [], folder = "") => {
+const uploadMultiImg = async (images = [], folder = '') => {
   if (!Array.isArray(images) || images.length === 0) return [];
 
   try {
@@ -42,32 +42,32 @@ const uploadMultiImg = async (images = [], folder = "") => {
     );
 
     const urls = uploadResults
-      .filter((res) => res.status === "fulfilled")
+      .filter((res) => res.status === 'fulfilled')
       .map((res) => res.value.secure_url);
 
     images.forEach((img) => fs.unlinkSync(img.path)); // Clean all temp files
 
     return urls;
   } catch (error) {
-    logger.error("Upload Error:", error.message);
+    logger.error('Upload Error:', error.message);
     return [];
   }
 };
 
 // Delete Single Image
-const removeSingleImg = async (url = "") => {
+const removeSingleImg = async (url = '') => {
   if (!url) return false;
 
   try {
     const publicId = extractPublicId(url);
     const result = await cloudinary.uploader.destroy(publicId);
 
-    if (result.result === "ok" || result.result === "not found") return true;
+    if (result.result === 'ok' || result.result === 'not found') return true;
 
     logger.error(result.result);
     return false;
   } catch (error) {
-    logger.error("Delete Error:", error.message);
+    logger.error('Delete Error:', error.message);
     return false;
   }
 };
@@ -84,7 +84,7 @@ const removeMultiImg = async (imageUrls = []) => {
     );
 
     const hasFailures = results.some(
-      (r) => r.status === "rejected" || r.value?.result !== "ok"
+      (r) => r.status === 'rejected' || r.value?.result !== 'ok'
     );
 
     return !hasFailures;
@@ -95,14 +95,14 @@ const removeMultiImg = async (imageUrls = []) => {
 };
 
 // Extract Cloudinary Public ID from URL
-const extractPublicId = (url = "") => {
+const extractPublicId = (url = '') => {
   // Expected format: https://res.cloudinary.com/xxx/image/upload/v12345678/folder/filename.jpg
-  const parts = url.split("/");
-  const filename = parts.pop()?.split(".")[0];
+  const parts = url.split('/');
+  const filename = parts.pop()?.split('.')[0];
   const folder =
     parts.slice(-1)[0] === defaultFolder
       ? defaultFolder
-      : parts.slice(-2).join("/");
+      : parts.slice(-2).join('/');
 
   return `${folder}/${filename}`;
 };

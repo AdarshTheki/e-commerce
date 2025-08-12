@@ -1,62 +1,73 @@
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import http from "http";
-import passport from "passport";
-import "./passport/index.js";
-import { Server } from "socket.io";
-import { initializeSocketIO } from "./socket/index.js";
-// import rateLimit from "express-rate-limit";
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import http from 'http';
+import passport from 'passport';
+import session from 'express-session';
+import rateLimit from 'express-rate-limit';
+import { Server } from 'socket.io';
+
+import { initializeSocketIO } from './config/socket.js';
+import { morganMiddleware } from './middlewares/logger.middleware.js';
+import { apiEndpointMiddleware } from './middlewares/apiEndpoint.middleware.js';
+import { errorMiddleware } from './middlewares/error.middleware.js';
+import './config/passport.js';
 
 // Import All Routing Files
-import userRoute from "./features/user/user.router.js";
-import productRoute from "./features/product/product.router.js";
-import commentRoute from "./features/comment/comment.router.js";
-import categoryRoute from "./features/category/category.router.js";
-import brandRoute from "./features/brand/brand.router.js";
-import cartRoute from "./features/cart/cart.router.js";
-import addressRoute from "./features/address/address.router.js";
-import openaiRoute from "./features/openai/openai.router.js";
-import dashboardRoute from "./features/dashboard/dashboard.router.js";
-import health_checkRoute from "./features/healthcheck/healthcheck.router.js";
-import messageRoute from "./features/message/message.router.js";
-import chatRoute from "./features/chat/chat.router.js";
-import orderRoute from "./features/order/order.router.js";
-import cloudinaryRoute from "./features/cloudinary/cloudinary.router.js";
-import reviewRoute from "./features/review/review.router.js";
-import { stripeWebhook } from "./features/order/order.controller.js";
-import { logger, morganMiddleware } from "./middlewares/logger.middleware.js";
+import userRoute from './routes/user.route.js';
+import productRoute from './routes/product.route.js';
+import commentRoute from './routes/comment.route.js';
+import categoryRoute from './routes/category.route.js';
+import brandRoute from './routes/brand.route.js';
+import cartRoute from './routes/cart.route.js';
+import addressRoute from './routes/address.route.js';
+import openaiRoute from './routes/openai.route.js';
+import dashboardRoute from './routes/dashboard.route.js';
+import messageRoute from './routes/message.route.js';
+import chatRoute from './routes/chat.route.js';
+import cloudinaryRoute from './routes/cloudinary.route.js';
+import reviewRoute from './routes/review.route.js';
+import orderRoute from './routes/order.route.js';
+import { stripeWebhook } from './controllers/order.controller.js';
 
 const app = express();
 
 app.post(
-  "/api/v1/order/stripe-webhook",
-  express.raw({ type: "application/json" }),
+  '/api/v1/order/stripe-webhook',
+  express.raw({ type: 'application/json' }),
   stripeWebhook
 );
 
-app.use(morganMiddleware);
-
-const CORS = process.env?.CORS?.split(",");
+const CORS = process.env?.CORS?.split(',');
 
 app.use(cors({ origin: CORS, credentials: true }));
 
-app.use(express.json({ limit: "16kb" }));
+app.use(express.json({ limit: '16kb' }));
 
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
-app.use(express.static("public"));
+app.use(express.static('public'));
 
 app.use(cookieParser());
 
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 200, // max 100 requests per windowMs
-// });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // max 100 requests per windowMs
+});
 
-// app.use(limiter);
+app.use(limiter);
+
+app.use(morganMiddleware);
 
 app.use(passport.initialize());
+
+app.use(
+  session({
+    secret: process.env.SECRET_TOKEN,
+    saveUninitialized: true,
+    resave: true,
+  })
+);
 
 // Connect and Serve the Socket.Io
 const server = http.createServer(app);
@@ -68,46 +79,30 @@ const io = new Server(server, {
 });
 
 // Instance in App for Global Access
-app.set("io", io);
+app.set('io', io);
 
 initializeSocketIO(io);
 
 // Used All Route URLS
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/product", productRoute);
-app.use("/api/v1/order", orderRoute);
-app.use("/api/v1/comment", commentRoute);
-app.use("/api/v1/category", categoryRoute);
-app.use("/api/v1/brand", brandRoute);
-app.use("/api/v1/cart", cartRoute);
-app.use("/api/v1/address", addressRoute);
-app.use("/api/v1/openai", openaiRoute);
-app.use("/api/v1/dashboard", dashboardRoute);
-app.use("/api/v1/chats", chatRoute);
-app.use("/api/v1/messages", messageRoute);
-app.use("/api/v1/cloudinary", cloudinaryRoute);
-app.use("/api/v1/review", reviewRoute);
-app.use("/", health_checkRoute);
+app.use('/api/v1/user', userRoute);
+app.use('/api/v1/product', productRoute);
+app.use('/api/v1/order', orderRoute);
+app.use('/api/v1/comment', commentRoute);
+app.use('/api/v1/category', categoryRoute);
+app.use('/api/v1/brand', brandRoute);
+app.use('/api/v1/cart', cartRoute);
+app.use('/api/v1/address', addressRoute);
+app.use('/api/v1/openai', openaiRoute);
+app.use('/api/v1/dashboard', dashboardRoute);
+app.use('/api/v1/chats', chatRoute);
+app.use('/api/v1/messages', messageRoute);
+app.use('/api/v1/cloudinary', cloudinaryRoute);
+app.use('/api/v1/review', reviewRoute);
 
-// Check API is Valid Endpoints
-app.use((req, res) => {
-  res.status(404).json({
-    message: "API Endpoint Not Found",
-    path: req.originalUrl,
-    method: req.method,
-  });
-});
+// check API is valid endpoints
+app.use(apiEndpointMiddleware);
 
-// Error Handling Middleware
-app.use((err, req, res, next) => {
-  logger.error(`${err.status || 500} - ${err.message} - ${req.originalUrl}`);
-  return res.status(err.statusCode || 500).json({
-    statusCode: err.statusCode || 500,
-    message: err.message || "Internal Server Error",
-    errors: err.errors || [],
-    path: req.originalUrl,
-    stack: process.env.NODE_ENV === "DEVELOPMENT" ? err.stack : undefined,
-  });
-});
+// global error handler middleware
+app.use(errorMiddleware);
 
 export default server;
