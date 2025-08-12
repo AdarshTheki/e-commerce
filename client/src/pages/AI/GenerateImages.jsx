@@ -1,39 +1,39 @@
-import React, { useState } from "react";
-import { AiToolsData } from "../../assets/assets";
-import { Sparkles } from "lucide-react";
-import useApi from "../../hooks/useApi";
+import React, { useState } from 'react';
+import { AiToolsData } from '../../assets/assets';
+import { Sparkles } from 'lucide-react';
+import useApi from '../../hooks/useApi';
 
 const GenerateImage = () => {
   const styleData = [
-    "Realistic",
-    "Ghibli style",
-    "Anime style",
-    "Cartoon style",
-    "Fantasy style",
-    "3D style",
-    "Portrait style",
+    'Realistic',
+    'Ghibli style',
+    'Anime style',
+    'Cartoon style',
+    'Fantasy style',
+    '3D style',
+    'Portrait style',
   ];
-  const [selectedStyle, setSelectedStyle] = useState("Realistic");
-  const [prompt, setPrompt] = useState("");
+  const [selectedStyle, setSelectedStyle] = useState('Realistic');
+  const [prompt, setPrompt] = useState('');
   const { data, loading, setData, callApi } = useApi();
 
   const aiTool = {
     ...AiToolsData[2],
-    inputLabel: "Describe Your Image",
-    placeholder: "eg., a cute cate playing with a boll of yarn",
-    styleLabel: "Style",
+    inputLabel: 'Describe Your Image',
+    placeholder: 'eg., a cute cate playing with a boll of yarn',
+    styleLabel: 'Style',
   };
 
   // checkbox = Make this image public
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await callApi("/openai/generate-image", {
+    const result = await callApi('/openai/generate-image', {
       prompt: `"${prompt}" in style of "${selectedStyle}"`,
     });
     if (result) {
       setData(result);
-      setPrompt("");
+      setPrompt('');
       setSelectedStyle(styleData[0]);
     }
   };
@@ -73,7 +73,7 @@ const GenerateImage = () => {
                         border: `1px solid ${aiTool.bg.from}`,
                         color: aiTool.bg.from,
                       }
-                    : { border: "1px solid #aaa" }
+                    : { border: '1px solid #aaa' }
                 }
                 className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
                 {style}

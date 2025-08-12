@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { ThumbsUp } from "lucide-react";
-import { errorHandler, axios } from "../../helper";
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { ThumbsUp } from 'lucide-react';
+import { errorHandler, axios } from '../../config';
 
 const ProductReviewLike = ({ reviewId, likes }) => {
   const userId = useSelector((state) => state?.auth?.user?._id);
@@ -21,7 +21,7 @@ const ProductReviewLike = ({ reviewId, likes }) => {
   return (
     <button
       onClick={handleLike}
-      className={`svg-btn text-xs flex gap-1 !w-16 ${like && "bg-indigo-200"}`}>
+      className={`svg-btn text-xs flex gap-1 !w-16 ${like && 'bg-indigo-200'}`}>
       <ThumbsUp size={16} /> {totalLike}
     </button>
   );

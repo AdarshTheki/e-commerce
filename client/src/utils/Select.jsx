@@ -1,5 +1,5 @@
-import { Check } from "lucide-react";
-import React from "react";
+import { Check } from 'lucide-react';
+import React from 'react';
 
 const Select = ({ list = [], onSelected, selected, label }) => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -17,7 +17,7 @@ const Select = ({ list = [], onSelected, selected, label }) => {
         className="w-full flex items-center gap-2.5 text-left px-4 pr-2 py-2 border rounded bg-white text-gray-800 border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none">
         <span>{label || selected}</span>
         <svg
-          className={`w-4 h-4 inline float-right transition-transform duration-200 ${isOpen ? "rotate-180" : "rotate-0"}`}
+          className={`w-4 h-4 inline float-right transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -47,7 +47,7 @@ const Select = ({ list = [], onSelected, selected, label }) => {
               {country === selected ? (
                 <Check size={12} />
               ) : (
-                <Check size={12} style={{ visibility: "hidden" }} />
+                <Check size={12} style={{ visibility: 'hidden' }} />
               )}
               {country}
             </li>

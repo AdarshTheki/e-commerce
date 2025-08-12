@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Input, LazyImage } from "../../utils";
-import { Sheet, Trash2Icon } from "lucide-react";
-import { socialFormats } from "../../helper";
-import useApi from "../../hooks/useApi";
-import GalleryCard from "./GalleryCard";
-import { toast } from "react-toastify";
+import { useState } from 'react';
+import { Sheet, Trash2Icon } from 'lucide-react';
+import { toast } from 'react-toastify';
+import useApi from '../../hooks/useApi';
+import { Input, LazyImage } from '../../utils';
+import { socialFormats } from '../../config';
+import GalleryCard from './Card';
 
 const ImageUpload = () => {
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [selectedFormat, setSelectedFormat] = useState(
-    "Instagram Square (1:1)"
+    'Instagram Square (1:1)'
   );
   const { callApi, loading, data, setData } = useApi();
 
@@ -24,10 +24,10 @@ const ImageUpload = () => {
   async function handleSubmit(e) {
     e.preventDefault();
     console.log(image);
-    if (!image?.name) return toast.error("upload image not found");
+    if (!image?.name) return toast.error('upload image not found');
     const formData = new FormData();
-    formData.append("image", image);
-    const result = await callApi("/cloudinary", formData);
+    formData.append('image', image);
+    const result = await callApi('/cloudinary', formData);
     if (result) {
       setData(result);
       setImage(null);
@@ -87,7 +87,7 @@ const ImageUpload = () => {
             disabled={loading || !image}
             onClick={handleSubmit}
             className="btn !bg-green-600 !text-white !disabled:cursor-none">
-            {loading ? "loading..." : `Upload`}
+            {loading ? 'loading...' : `Upload`}
           </button>
         )}
       </form>
@@ -114,9 +114,9 @@ const ImageUpload = () => {
           <GalleryCard
             item={data}
             secure_url={
-              data?.secure_url?.split("/upload").length
+              data?.secure_url?.split('/upload').length
                 ? data?.secure_url
-                    .split("/upload")
+                    .split('/upload')
                     .join(
                       `/upload/w_${socialFormats[selectedFormat].width},h_${socialFormats[selectedFormat].height},ar_${socialFormats[selectedFormat].aspectRatio},c_fill`
                     )

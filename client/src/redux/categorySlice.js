@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axios } from "../helper";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axios } from '../config';
 
 export const fetchCategories = createAsyncThunk(
-  "categories/fetchCategories",
+  'categories/fetchCategories',
   async () => {
     const response = await axios.get(`/category`);
     return response?.data?.data?.docs;
@@ -10,7 +10,7 @@ export const fetchCategories = createAsyncThunk(
 );
 
 const categorySlice = createSlice({
-  name: "categories",
+  name: 'categories',
   initialState: {
     items: [],
     loading: false,

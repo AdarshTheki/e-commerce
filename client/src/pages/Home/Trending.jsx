@@ -1,10 +1,10 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { ProductItem } from "../../components";
-import { NavLink } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { ProductItem } from '../../components';
+import { NavLink } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 
-const Trending = ({ heading = "Trending Products", size = 8 }) => {
+const Trending = ({ heading = 'Trending Products', size = 8 }) => {
   const { items } = useSelector((s) => s.product);
 
   // Shuffle items array and pick a random subset (e.g., 8 items)
@@ -32,7 +32,7 @@ const Trending = ({ heading = "Trending Products", size = 8 }) => {
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-4 gap-2">
         {shuffledItems.map((item, i) => (
-          <ProductItem key={item._id} {...item} delay={i + 1 + "00ms"} />
+          <ProductItem key={item._id} {...item} delay={i + 1 + '00ms'} />
         ))}
       </div>
     </div>

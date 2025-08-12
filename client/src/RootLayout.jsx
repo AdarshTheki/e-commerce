@@ -1,13 +1,14 @@
-import { useEffect } from "react";
-import { login } from "./redux/authSlice";
-import useApi from "./hooks/useApi";
-import { useDispatch } from "react-redux";
-import { fetchCategories } from "./redux/categorySlice";
-import { fetchBrands } from "./redux/brandSlice";
-import { fetchProducts } from "./redux/productSlice";
-import { fetchCarts } from "./redux/cartSlice";
-import { Footer, NavbarBottom, NavbarTop } from "./components";
-import { Outlet } from "react-router-dom";
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Outlet } from 'react-router-dom';
+
+import { Footer, NavbarBottom, NavbarTop } from './components';
+import { fetchCategories } from './redux/categorySlice';
+import { fetchBrands } from './redux/brandSlice';
+import { fetchProducts } from './redux/productSlice';
+import { fetchCarts } from './redux/cartSlice';
+import { login } from './redux/authSlice';
+import useApi from './hooks/useApi';
 
 // Root Layout for main structure and data fetching
 const RootLayout = () => {
@@ -15,7 +16,7 @@ const RootLayout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    callApi("/user/current-user", {}, "get");
+    callApi('/user/current-user', {}, 'get');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

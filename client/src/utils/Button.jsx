@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-const Button = ({ svg = "", name = "", className = "", ...prop }) => {
+const Button = ({ svg = '', name = '', className = '', ...prop }) => {
   return (
     <button
       {...prop}

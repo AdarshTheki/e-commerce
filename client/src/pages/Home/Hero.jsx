@@ -1,6 +1,6 @@
-import { ChevronDown, Star } from "lucide-react";
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { ChevronDown, Star } from 'lucide-react';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 const Hero = () => {
   return (
@@ -10,7 +10,7 @@ const Hero = () => {
           {/* Hero Content  */}
           <div
             className="w-full lg:w-1/2 order-2 lg:order-1 animate-fadeIn"
-            style={{ animationDuration: "800ms" }}>
+            style={{ animationDuration: '800ms' }}>
             <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
               Discover Modern Essentials
             </p>
@@ -49,7 +49,7 @@ const Hero = () => {
           <div className="w-full lg:w-1/2 order-1 lg:order-2 relative">
             <div
               className="relative h-[400px] md:h-[500px] animate-fadeIn-zoom"
-              style={{ animationDuration: "800ms" }}>
+              style={{ animationDuration: '800ms' }}>
               {/* Main Hero Image  */}
               <img
                 src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w2MzQ2fDB8MXxzZWFyY2h8MXx8bW9kZXJuJTJCZWNvbW1lcmNlJTJCaGVybyUyQnNlY3Rpb24lMkJ3aXRoJTJCcHJvZHVjdCUyQnNob3djYXNlfGVufDB8fHx8MTc0NTg0MzgzN3ww&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=400"
@@ -60,17 +60,17 @@ const Hero = () => {
               {/* Background decorative elements  */}
               <div
                 className="absolute top-[5%] right-[5%] w-40 h-40 bg-indigo-100 rounded-full opacity-60 animate-pulse"
-                style={{ animationDuration: "3000ms" }}></div>
+                style={{ animationDuration: '3000ms' }}></div>
               <div
                 className="absolute bottom-[10%] left-[5%] w-32 h-32 bg-blue-100 rounded-full opacity-60 animate-pulse"
-                style={{ animationDuration: "4000ms" }}></div>
+                style={{ animationDuration: '4000ms' }}></div>
 
               {/* Product Highlight Card  */}
               <div
                 className="absolute -bottom-4 -right-4 md:bottom-10 md:right-0 bg-white p-4 rounded-lg shadow-lg w-48 transition-all duration-500 animate-slide-in-bottom"
                 style={{
-                  animationDuration: "3000ms",
-                  animationDelay: "400ms",
+                  animationDuration: '3000ms',
+                  animationDelay: '400ms',
                 }}>
                 <div className="flex items-center gap-3">
                   <img
@@ -91,8 +91,8 @@ const Hero = () => {
               <div
                 className="absolute -top-4 -left-4 md:top-10 md:left-0 bg-white p-3 rounded-lg shadow-lg transition-all duration-500 animate-slide-in-top"
                 style={{
-                  animationDuration: "5000ms",
-                  animationDelay: "500ms",
+                  animationDuration: '5000ms',
+                  animationDelay: '500ms',
                 }}>
                 <div className="flex items-center">
                   <div className="flex gap-1 text-yellow-400">

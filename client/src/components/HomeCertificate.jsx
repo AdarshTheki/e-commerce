@@ -1,30 +1,30 @@
-import { LazyImage } from "../utils";
+import { LazyImage } from '../utils';
 
 const HomeCertificate = () => {
   const items = [
     {
       id: 1,
-      icon: "https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672163850249.png",
-      title: "100% Authentic",
-      content: "All our products are directly sourced from brands",
+      icon: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672163850249.png',
+      title: '100% Authentic',
+      content: 'All our products are directly sourced from brands',
     },
     {
       id: 2,
-      icon: "https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160879402.png",
-      title: "Free Shipping",
-      content: "On all orders above ₹299",
+      icon: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160879402.png',
+      title: 'Free Shipping',
+      content: 'On all orders above ₹299',
     },
     {
       id: 3,
-      icon: "https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160905809.png",
-      title: "Certified Beauty Advisors",
-      content: "Get expert consultations",
+      icon: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160905809.png',
+      title: 'Certified Beauty Advisors',
+      content: 'Get expert consultations',
     },
     {
       id: 4,
-      icon: "https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160946022.png",
-      title: "Easy Returns",
-      content: "Hassle-free pick-ups and refunds",
+      icon: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/company/1/applications/62d53777f5ad942d3e505f77/theme/pictures/free/original/theme-image-1672160946022.png',
+      title: 'Easy Returns',
+      content: 'Hassle-free pick-ups and refunds',
     },
   ];
 

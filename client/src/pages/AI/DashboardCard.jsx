@@ -1,10 +1,10 @@
-import React from "react";
-import { format } from "date-fns";
-import { ChevronDown, ChevronUp, Heart, Trash2Icon } from "lucide-react";
-import Markdown from "react-markdown";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { axios, errorHandler } from "../../helper";
+import React from 'react';
+import { format } from 'date-fns';
+import { ChevronDown, ChevronUp, Heart, Trash2Icon } from 'lucide-react';
+import Markdown from 'react-markdown';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { axios, errorHandler } from '../../config';
 
 const DashboardCard = ({ isActive, onActive, item, onDelete }) => {
   const { user } = useSelector((s) => s.auth);
@@ -27,12 +27,12 @@ const DashboardCard = ({ isActive, onActive, item, onDelete }) => {
     <div className="card w-full !pt-4 pb-2" key={item?._id}>
       <div className="w-full flex justify-between gap-2 items-center">
         <div className="flex flex-col gap-1">
-          <p className={`font-medium ${isActive ? "" : "line-clamp-1"}`}>
+          <p className={`font-medium ${isActive ? '' : 'line-clamp-1'}`}>
             {item?.prompt}
           </p>
           <div className="text-gray-500 text-xs">
             <span className="lowercase pr-4">#{item?.model}</span>
-            {format(new Date(item?.createdAt), "dd MMM yyyy, h:mm a")}
+            {format(new Date(item?.createdAt), 'dd MMM yyyy, h:mm a')}
           </div>
           <div className="flex items-center">
             <button
@@ -40,7 +40,7 @@ const DashboardCard = ({ isActive, onActive, item, onDelete }) => {
               className="btn flex gap-2 items-center hover:bg-gray-100 !rounded-full">
               <Heart
                 className={`w-4 h-4 text-red-600`}
-                fill={isLiked ? " oklch(57.7% 0.245 27.325)" : "#fff"}
+                fill={isLiked ? ' oklch(57.7% 0.245 27.325)' : '#fff'}
               />
               {likes}
             </button>
@@ -59,7 +59,7 @@ const DashboardCard = ({ isActive, onActive, item, onDelete }) => {
           )}
         </div>
       </div>
-      {isActive && item?.model !== "text-to-image" && (
+      {isActive && item?.model !== 'text-to-image' && (
         <div className="p-2 w-full text-sm">
           <div className="reset-tw">
             <Markdown>{item?.response}</Markdown>
@@ -67,7 +67,7 @@ const DashboardCard = ({ isActive, onActive, item, onDelete }) => {
         </div>
       )}
 
-      {isActive && item?.model === "text-to-image" && (
+      {isActive && item?.model === 'text-to-image' && (
         <img src={item?.response} alt="model_Pic" className="w-full" />
       )}
     </div>

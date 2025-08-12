@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   ChevronDown,
   ChevronUp,
   Heart,
   Sparkles,
   Trash2Icon,
-} from "lucide-react";
-import useApi from "../../hooks/useApi";
-import { Loading } from "../../utils";
-import DashboardCard from "./DashboardCard";
-import { axios, errorHandler } from "../../helper";
+} from 'lucide-react';
+import useApi from '../../hooks/useApi';
+import { Loading } from '../../utils';
+import DashboardCard from './DashboardCard';
+import { axios, errorHandler } from '../../config';
 
 const AIDashboard = () => {
-  const [selectedArticle, setSelectedArticle] = useState("");
+  const [selectedArticle, setSelectedArticle] = useState('');
   const { callApi, data, loading, setData } = useApi();
 
   useEffect(() => {
-    callApi("/openai/generate-text", {}, "get");
+    callApi('/openai/generate-text', {}, 'get');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -56,7 +56,7 @@ const AIDashboard = () => {
               isActive={item._id === selectedArticle}
               onActive={() =>
                 setSelectedArticle((prev) =>
-                  prev === item._id ? "" : item._id
+                  prev === item._id ? '' : item._id
                 )
               }
               onDelete={() => handleDeletePost(item._id)}

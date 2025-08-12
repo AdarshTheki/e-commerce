@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import useAuth from "../hooks/useAuth";
-import { useEffect } from "react";
-import { OAuthButtons } from "../components";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
+import useAuth from '../hooks/useAuth';
+import { OAuthButtons } from '../components';
 
 const Login = () => {
-  const [email, setEmail] = useState("guest-user@gmail.com");
-  const [password, setPassword] = useState("12345");
+  const [email, setEmail] = useState('guest-user@gmail.com');
+  const [password, setPassword] = useState('12345');
   const [rememberMe, setRememberMe] = useState(false);
   const [visible, setVisible] = useState(false);
   const { loginLoading, handleLogin } = useAuth();
@@ -19,10 +18,10 @@ const Login = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const t = urlParams.get("token");
+    const t = urlParams.get('accessToken');
     if (t) {
-      localStorage.setItem("accessToken", t);
-      window.location.href = "/";
+      localStorage.setItem('accessToken', t);
+      window.location.href = '/';
     }
   }, []);
 
@@ -35,7 +34,7 @@ const Login = () => {
 
         <OAuthButtons />
 
-        <form id="loginForm" className="space-y-6" onSubmit={handleSubmit}>
+        <form id="loginForm" className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
@@ -49,7 +48,7 @@ const Login = () => {
               id="email"
               name="email"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter your email"
             />
           </div>
@@ -63,16 +62,16 @@ const Login = () => {
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              type={visible ? "text" : "password"}
+              type={visible ? 'text' : 'password'}
               id="password"
               name="password"
               required
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full py-2 px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter your password"
             />
             <button
               type="button"
-              className="absolute top-14 right-4 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute top-12 right-4 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -97,7 +96,7 @@ const Login = () => {
 
             <div className="text-sm">
               <a
-                href="#"
+                href="/forgot-password"
                 className="font-medium text-blue-600 hover:text-blue-500">
                 Forgot your password?
               </a>
@@ -107,8 +106,8 @@ const Login = () => {
           <button
             disabled={loginLoading}
             type="submit"
-            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
-            {loginLoading ? "Signing In..." : "Sign In"}
+            className="w-full font-medium bg-indigo-600 rounded-lg text-white py-2 hover:bg-indigo-700 disabled:bg-indigo-300 transition">
+            {loginLoading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 

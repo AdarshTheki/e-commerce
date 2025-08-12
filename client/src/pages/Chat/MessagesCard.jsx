@@ -1,20 +1,20 @@
-import React from "react";
-import { classNames, formatChatTime } from "../../helper";
-import { Trash2Icon } from "lucide-react";
+import React from 'react';
+import { classNames, formatChatTime } from '../../config';
+import { Trash2Icon } from 'lucide-react';
 
 const Message = ({ item, onDelete, sender }) => {
   return (
     <div
       className={classNames(
-        "flex flex-col gap-2 mb-2",
-        !sender ? "justify-start" : "items-end"
+        'flex flex-col gap-2 mb-2',
+        !sender ? 'justify-start' : 'items-end'
       )}>
       <div
         className={classNames(
-          "relative cursor-pointer group w-fit py-2 px-5 shadow",
+          'relative cursor-pointer group w-fit py-2 px-5 shadow',
           sender
-            ? "!bg-indigo-100 rounded-l-4xl rounded-t-4xl"
-            : "bg-white rounded-r-4xl rounded-b-4xl"
+            ? '!bg-indigo-100 rounded-l-4xl rounded-t-4xl'
+            : 'bg-white rounded-r-4xl rounded-b-4xl'
         )}>
         <button
           onClick={onDelete}

@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
-import useApi from "../hooks/useApi";
-import useDebounce from "../hooks/useDebounce";
-import { Loading, Input } from "../utils";
-import { ProductItem } from "../components";
-import { useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import useApi from '../hooks/useApi';
+import useDebounce from '../hooks/useDebounce';
+import { Loading, Input } from '../utils';
+import { ProductItem } from '../components';
+import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,13 +15,13 @@ import {
   Settings,
   Star,
   X,
-} from "lucide-react";
+} from 'lucide-react';
 
 const sortByOptions = [
-  { label: "Title (A-Z)", value: "title-asc" },
-  { label: "Title (Z-A)", value: "title-desc" },
-  { label: "Price (Low to High)", value: "price-asc" },
-  { label: "Price (High to Low)", value: "price-desc" },
+  { label: 'Title (A-Z)', value: 'title-asc' },
+  { label: 'Title (Z-A)', value: 'title-desc' },
+  { label: 'Price (Low to High)', value: 'price-asc' },
+  { label: 'Price (High to Low)', value: 'price-desc' },
 ];
 
 const ProductListing = () => {
@@ -29,14 +29,14 @@ const ProductListing = () => {
   const { items: categories } = useSelector((state) => state.categories);
   const { items: brands } = useSelector((state) => state.brands);
   const [limit, setLimit] = useState(10);
-  const [category, setCategory] = useState(params.get("category") || "");
-  const [brand, setBrand] = useState(params.get("brand") || "");
+  const [category, setCategory] = useState(params.get('category') || '');
+  const [brand, setBrand] = useState(params.get('brand') || '');
   const [rating, setRating] = useState(0);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
-  const [sortBy, setSortBy] = useState("title-asc");
+  const [sortBy, setSortBy] = useState('title-asc');
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState(params.get("title") || "");
+  const [search, setSearch] = useState(params.get('title') || '');
   const query = useDebounce(search, 500);
   const [isOpenSort, setIsOpenSort] = React.useState(false);
   const [mobileView, setMobileView] = React.useState(false);
@@ -57,13 +57,13 @@ const ProductListing = () => {
           minRating: (rating === 5 ? rating - 0.5 : rating).toString(),
           maxRating: (rating === 5 ? rating : rating + 1).toString(),
         }),
-        sortBy: sortBy.split("-")[0],
-        order: sortBy.split("-")[1],
+        sortBy: sortBy.split('-')[0],
+        order: sortBy.split('-')[1],
         page,
         limit,
-        title: params.get("title") || query,
+        title: params.get('title') || query,
       },
-      "get"
+      'get'
     );
   }, [
     category,
@@ -80,19 +80,19 @@ const ProductListing = () => {
 
   return (
     <section className="p-2 container mx-auto">
-      <div className="lg:grid gap-2" style={{ gridTemplateColumns: "1fr 3fr" }}>
+      <div className="lg:grid gap-2" style={{ gridTemplateColumns: '1fr 3fr' }}>
         {/* <!-- Filters Sidebar --> */}
         <div
           className={
             mobileView
-              ? "fixed inset-0 bg-black/50 z-30 pt-[30%] duration-300 ease-in" // mobile
-              : "w-full max-lg:hidden lg:sticky lg:h-fit lg:top-[54px]" // desktop
+              ? 'fixed inset-0 bg-black/50 z-30 pt-[30%] duration-300 ease-in' // mobile
+              : 'w-full max-lg:hidden lg:sticky lg:h-fit lg:top-[54px]' // desktop
           }>
           <div
             className={
               mobileView
-                ? "!p-5 h-full text-gray-800 !rounded-2xl bg-white overflow-auto card flex flex-col gap-4"
-                : "overflow-y-auto scrollbar card text-gray-800  flex flex-col gap-4"
+                ? '!p-5 h-full text-gray-800 !rounded-2xl bg-white overflow-auto card flex flex-col gap-4'
+                : 'overflow-y-auto scrollbar card text-gray-800  flex flex-col gap-4'
             }>
             <div className="flex items-center justify-between">
               <p className="text-xl font-medium">Sort & Filter</p>
@@ -109,14 +109,14 @@ const ProductListing = () => {
               <div className="inline-flex gap-1 flex-wrap">
                 {!!category && (
                   <span
-                    onClick={() => setCategory("")}
+                    onClick={() => setCategory('')}
                     className="status-inactive cursor-pointer">
                     {category} x
                   </span>
                 )}
                 {!!brand && (
                   <span
-                    onClick={() => setBrand("")}
+                    onClick={() => setBrand('')}
                     className="status-inactive cursor-pointer">
                     {brand} x
                   </span>
@@ -148,7 +148,7 @@ const ProductListing = () => {
                   {!!search?.length && (
                     <X
                       className="w-4 h-4 cursor-pointer"
-                      onClick={() => setSearch("")}
+                      onClick={() => setSearch('')}
                     />
                   )}
                 </div>
@@ -162,14 +162,14 @@ const ProductListing = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    setIsOpenSort((prev) => (prev === "sort" ? "" : "sort"))
+                    setIsOpenSort((prev) => (prev === 'sort' ? '' : 'sort'))
                   }
                   className="w-full flex justify-between text-left">
                   <span>
                     {sortByOptions.find((i) => i?.value == sortBy)?.label ||
-                      "Select"}
+                      'Select'}
                   </span>
-                  {isOpenSort === "sort" ? (
+                  {isOpenSort === 'sort' ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
@@ -177,7 +177,7 @@ const ProductListing = () => {
                 </button>
               </fieldset>
 
-              {isOpenSort === "sort" && (
+              {isOpenSort === 'sort' && (
                 <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
                   {sortByOptions.map((sort) => (
                     <li
@@ -185,7 +185,7 @@ const ProductListing = () => {
                       className="px-4 py-2 hover:bg-indigo-500 hover:text-white cursor-pointer"
                       onClick={() => {
                         setSortBy(sort.value);
-                        setIsOpenSort("");
+                        setIsOpenSort('');
                       }}>
                       {sort.label}
                     </li>
@@ -202,15 +202,15 @@ const ProductListing = () => {
                   type="button"
                   onClick={() =>
                     setIsOpenSort((prev) =>
-                      prev === "category" ? "" : "category"
+                      prev === 'category' ? '' : 'category'
                     )
                   }
                   className="w-full flex justify-between text-left">
                   <span className="capitalize">
                     {categories?.find((i) => i?.title === category)?.title ||
-                      "Select"}
+                      'Select'}
                   </span>
-                  {isOpenSort === "category" ? (
+                  {isOpenSort === 'category' ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
@@ -218,7 +218,7 @@ const ProductListing = () => {
                 </button>
               </fieldset>
 
-              {isOpenSort === "category" && (
+              {isOpenSort === 'category' && (
                 <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
                   {categories?.map((sort) => (
                     <li
@@ -226,7 +226,7 @@ const ProductListing = () => {
                       className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
                       onClick={() => {
                         setCategory(sort?.title);
-                        setIsOpenSort("");
+                        setIsOpenSort('');
                       }}>
                       {sort?.title}
                     </li>
@@ -242,13 +242,13 @@ const ProductListing = () => {
                 <button
                   type="button"
                   onClick={() =>
-                    setIsOpenSort((prev) => (prev === "brand" ? "" : "brand"))
+                    setIsOpenSort((prev) => (prev === 'brand' ? '' : 'brand'))
                   }
                   className="w-full flex justify-between text-left">
                   <span className="capitalize">
-                    {brands?.find((i) => i?.title === brand)?.title || "Select"}
+                    {brands?.find((i) => i?.title === brand)?.title || 'Select'}
                   </span>
-                  {isOpenSort === "brand" ? (
+                  {isOpenSort === 'brand' ? (
                     <ChevronUp className="w-4 h-4" />
                   ) : (
                     <ChevronDown className="w-4 h-4" />
@@ -256,7 +256,7 @@ const ProductListing = () => {
                 </button>
               </fieldset>
 
-              {isOpenSort === "brand" && (
+              {isOpenSort === 'brand' && (
                 <ul className="w-full bg-white border border-gray-300 rounded shadow-md mt-1 py-2">
                   {brands?.map((sort) => (
                     <li
@@ -264,7 +264,7 @@ const ProductListing = () => {
                       className="px-4 py-2 capitalize hover:bg-indigo-500 hover:text-white cursor-pointer"
                       onClick={() => {
                         setBrand(sort?.title);
-                        setIsOpenSort("");
+                        setIsOpenSort('');
                       }}>
                       {sort?.title}
                     </li>
@@ -328,7 +328,7 @@ const ProductListing = () => {
                         .map((_, i) => (
                           <Star
                             key={i}
-                            fill={i < it ? "oklch(85.2% 0.199 91.936)" : "#fff"}
+                            fill={i < it ? 'oklch(85.2% 0.199 91.936)' : '#fff'}
                             className="w-4 h-4 text-yellow-400"
                           />
                         ))}
@@ -350,12 +350,12 @@ const ProductListing = () => {
                 className="btn-primary !text-sm !rounded-full !bg-rose-600 flex-1"
                 onClick={() => {
                   setLimit(10);
-                  setCategory("");
-                  setBrand("");
+                  setCategory('');
+                  setBrand('');
                   setMaxPrice(100000);
                   setMinPrice(0);
                   setRating(0);
-                  setSearch("");
+                  setSearch('');
                   setPage(1);
                   setMobileView(false);
                 }}>
@@ -369,9 +369,9 @@ const ProductListing = () => {
           {/* Pagination */}
           <div className="flex gap-4 justify-between items-center card !px-2">
             <p className="text-sm pl-2">
-              <span className="max-sm:hidden">Showing</span>{" "}
-              {(page - 1) * limit + 1} to{" "}
-              {Math.min(page * limit, data?.totalDocs || 0)} of{" "}
+              <span className="max-sm:hidden">Showing</span>{' '}
+              {(page - 1) * limit + 1} to{' '}
+              {Math.min(page * limit, data?.totalDocs || 0)} of{' '}
               {data?.totalDocs}
             </p>
             <div className="flex gap-2 items-center justify-center">
@@ -413,7 +413,7 @@ const ProductListing = () => {
                 <ProductItem
                   key={item?._id}
                   {...item}
-                  delay={index + 1 + "00ms"}
+                  delay={index + 1 + '00ms'}
                 />
               ))}
           </div>

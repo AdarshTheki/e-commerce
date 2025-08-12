@@ -1,18 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Loader,
   ShoppingBag,
   ShoppingCart,
   Trash2Icon,
-} from "lucide-react";
-import { Button, Loading, NotFound } from "../utils";
-import { HomeCertificate } from "../components";
-import { useEffect, useState } from "react";
-import { axios, errorHandler } from "../helper";
-import { useDispatch, useSelector } from "react-redux";
-import Trending from "./Home/Trending";
-import { fetchCarts, removeItem, updateItemQuantity } from "../redux/cartSlice";
+} from 'lucide-react';
+import { Button, Loading, NotFound } from '../utils';
+import { HomeCertificate } from '../components';
+import { useEffect, useState } from 'react';
+import { axios, errorHandler } from '../config';
+import { useDispatch, useSelector } from 'react-redux';
+import Trending from './Home/Trending';
+import { fetchCarts, removeItem, updateItemQuantity } from '../redux/cartSlice';
 
 const ShoppingCartPage = () => {
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const ShoppingCartPage = () => {
   const handleCheckout = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.post("/order/stripe-checkout");
+      const res = await axios.post('/order/stripe-checkout');
       if (res.data) {
         window.location.href = res.data?.data?.url;
         setIsLoading(false);
@@ -39,7 +39,7 @@ const ShoppingCartPage = () => {
 
   const handleUpdateQty = async (id, productId, quantity) => {
     try {
-      const res = await axios.put("/cart", { productId, quantity });
+      const res = await axios.put('/cart', { productId, quantity });
       if (res.data) {
         dispatch(updateItemQuantity({ _id: id, quantity }));
       }
@@ -102,7 +102,7 @@ const ShoppingCartPage = () => {
             <div className="flex gap-6 font-semibold mt-10 ">
               <Button
                 svg={<ArrowLeft size={16} />}
-                onClick={() => navigate("/products")}
+                onClick={() => navigate('/products')}
                 name="Go to products"
               />
               <Button
@@ -161,15 +161,15 @@ const CartListing = ({ productId, quantity, onRemove, onQtyChange }) => {
         onClick={() => navigate(`/products/${_id}`)}
         className="bg-gray-300 max-sm:w-full cursor-pointer">
         <img
-          src={thumbnail || "https://placehold.co/120x120"}
+          src={thumbnail || 'https://placehold.co/120x120'}
           alt="Product"
           className="w-[200px] mx-auto object-cover rounded transition-opacity duration-300 opacity-100"
         />
       </div>
       <div className="sm:flex-1 max-sm:px-4 w-full space-y-2 capitalize">
-        <p className="font-medium text-lg">{title || "Smartphone X Pro"}</p>
-        <p>Category : {category || "other"}</p>
-        <p>Brand: {brand || "other"}</p>
+        <p className="font-medium text-lg">{title || 'Smartphone X Pro'}</p>
+        <p>Category : {category || 'other'}</p>
+        <p>Brand: {brand || 'other'}</p>
         <div className="flex items-center my-1">
           <span>Unit Price:</span>
           <span className="ml-2 font-semibold">

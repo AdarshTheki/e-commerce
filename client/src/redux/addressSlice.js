@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axios } from "../helper";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { axios } from '../config';
 
 const initialState = {
   items: [],
@@ -8,7 +8,7 @@ const initialState = {
 };
 
 export const fetchAddresses = createAsyncThunk(
-  "addresses/fetchAddresses",
+  'addresses/fetchAddresses',
   async () => {
     const response = await axios.get(`/address`);
     return response?.data?.data;
@@ -16,7 +16,7 @@ export const fetchAddresses = createAsyncThunk(
 );
 
 const addressSlice = createSlice({
-  name: "address",
+  name: 'address',
   initialState,
   reducers: {
     addAddress: (state, action) => {

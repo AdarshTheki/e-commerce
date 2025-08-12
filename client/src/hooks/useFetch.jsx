@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { axios } from "../helper";
+import { useState, useEffect, useCallback } from 'react';
+import { axios } from '../config';
 
 const useFetch = (url) => {
   const [data, setData] = useState(null);
@@ -17,7 +17,7 @@ const useFetch = (url) => {
       const res = await axios.get(url, { signal });
       if (res.data) setData(res?.data?.data);
     } catch (err) {
-      setError(err?.response?.data?.message || "An internal error occurred");
+      setError(err?.response?.data?.message || 'An internal error occurred');
     } finally {
       setLoading(false);
     }

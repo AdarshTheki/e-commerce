@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 
-import { Input } from "../../utils";
-import useChat from "../../hooks/useChat";
+import { Input } from '../../utils';
+import useChat from '../../hooks/useChat';
 
 const AddChatModal = ({ onClose, chat }) => {
   const { users, onCreateGroupChat, onCreateOrGetChat } = useChat();
-  const [groupName, setGroupName] = React.useState(chat?.name || "");
+  const [groupName, setGroupName] = React.useState(chat?.name || '');
   const [isGroupChat, setIsGroupChat] = React.useState(!!chat?.isGroupChat);
 
-  const [selectUserId, setSelectUserId] = React.useState("");
+  const [selectUserId, setSelectUserId] = React.useState('');
   const [selectedValues, setSelectedValues] = useState(
     chat?.participants?.map((i) => i?._id) || []
   );
@@ -21,7 +21,7 @@ const AddChatModal = ({ onClose, chat }) => {
       setSelectedValues((prev) =>
         checked ? [...prev, value] : prev.filter((val) => val !== value)
       );
-      setSelectUserId("");
+      setSelectUserId('');
     } else {
       setSelectUserId(value);
       setSelectedValues([]);
@@ -29,22 +29,22 @@ const AddChatModal = ({ onClose, chat }) => {
   };
 
   const handleOneChat = async () => {
-    if (!selectUserId) return toast.error("Please select a user");
+    if (!selectUserId) return toast.error('Please select a user');
     onCreateOrGetChat(selectUserId);
     handleClose();
   };
 
   const handleGroupChat = async () => {
     if (!groupName || selectedValues.length === 0) {
-      return toast.error("Please provide a Group Name and add Participants");
+      return toast.error('Please provide a Group Name and add Participants');
     }
     onCreateGroupChat(groupName, selectedValues, chat?._id);
     handleClose();
   };
 
   const handleClose = () => {
-    setSelectUserId("");
-    setGroupName("");
+    setSelectUserId('');
+    setGroupName('');
     setIsGroupChat(false);
     onClose();
   };
@@ -53,7 +53,7 @@ const AddChatModal = ({ onClose, chat }) => {
     <div className="fixed inset-0 bg-black/10 flex justify-center items-center h-full z-50">
       <div className="bg-white rounded-xl p-6 w-96 shadow-xl space-y-5">
         <p className="text-xl font-medium">
-          {chat?._id ? "Update Group Chat" : "Create Chat"}
+          {chat?._id ? 'Update Group Chat' : 'Create Chat'}
         </p>
         {!chat?._id && (
           <label htmlFor="group-chat" className="flex gap-2 items-center">
@@ -107,7 +107,7 @@ const AddChatModal = ({ onClose, chat }) => {
           <button
             className="btn-primary flex-1"
             onClick={isGroupChat ? handleGroupChat : handleOneChat}>
-            {chat?._id ? "Update" : "Create"}
+            {chat?._id ? 'Update' : 'Create'}
           </button>
         </div>
       </div>

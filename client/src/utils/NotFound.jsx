@@ -1,14 +1,14 @@
-import { XCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const NotFound = ({
-  title = "Page Not Found",
-  description = "Oops! Something went wrong. Your page was not fonded.",
-  linkName = "Try Again",
-  linkTo = "/",
-  linkClass = "bg-red-600 hover:bg-red-700",
+  title = 'Page Not Found',
+  description = 'Oops! Something went wrong. Your page was not fonded.',
+  linkName = 'Try Again',
+  linkTo = '/',
+  linkClass = 'bg-red-600 hover:bg-red-700',
   canvas = <XCircle className="w-16 h-16 mx-auto mb-4 text-red-500" />,
-  mainClass = "min-h-screen",
+  mainClass = 'min-h-screen',
 }) => {
   return (
     <div className={`flex items-center justify-center p-6 ${mainClass}`}>

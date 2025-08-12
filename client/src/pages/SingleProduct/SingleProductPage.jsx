@@ -1,20 +1,20 @@
-import { ShoppingCart, Star } from "lucide-react";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { ShoppingCart, Star } from 'lucide-react';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { HeartFavorite } from "../../components";
-import { Button, Loading, NotFound } from "../../utils";
-import { errorHandler, axios } from "../../helper";
-import useFetch from "../../hooks/useFetch";
-import Trending from "../Home/Trending";
-import ProductComment from "./ProductComment";
-import { useDispatch } from "react-redux";
-import { addItem } from "../../redux/cartSlice";
+import { HeartFavorite } from '../../components';
+import { Button, Loading, NotFound } from '../../utils';
+import { errorHandler, axios } from '../../config';
+import useFetch from '../../hooks/useFetch';
+import Trending from '../Home/Trending';
+import CommentListing from './CommentListing';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../../redux/cartSlice';
 
 const SingleProductPage = () => {
   const { id } = useParams();
   const { data: product, loading, error } = useFetch(`/product/${id}`);
-  const [color, setColor] = useState("black");
+  const [color, setColor] = useState('black');
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
 
@@ -32,7 +32,7 @@ const SingleProductPage = () => {
   if (loading) return <Loading />;
 
   if (error)
-    return <NotFound title={JSON.stringify(error).split(`"`).join("")} />;
+    return <NotFound title={JSON.stringify(error).split(`"`).join('')} />;
 
   return (
     <section>
@@ -42,7 +42,7 @@ const SingleProductPage = () => {
           <div className="space-y-4">
             <div className="aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg">
               <img
-                src={product?.thumbnail || "https://placehold.co/600x600"}
+                src={product?.thumbnail || 'https://placehold.co/600x600'}
                 alt="Product"
                 className="object-cover w-full h-full rounded-lg transition-opacity duration-300 opacity-100"
                 loading="lazy"
@@ -55,9 +55,9 @@ const SingleProductPage = () => {
                   className="aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg">
                   <img
                     src={
-                      product?.images[index] || "https://placehold.co/150x150"
+                      product?.images[index] || 'https://placehold.co/150x150'
                     }
-                    alt={index + "_Product-images"}
+                    alt={index + '_Product-images'}
                     className="object-cover w-full h-full rounded-lg transition-opacity duration-300 opacity-100"
                     loading="lazy"
                   />
@@ -96,13 +96,13 @@ const SingleProductPage = () => {
             <div>
               <h3 className="font-semibold mb-3">Color:</h3>
               <div className="flex space-x-3">
-                {["black", "blue", "gray"].map((i) => (
+                {['black', 'blue', 'gray'].map((i) => (
                   <button
                     onClick={() => setColor(i)}
                     style={{ background: i }}
                     key={i}
                     className={`w-8 h-8 rounded-full cursor-pointer ${
-                      i === color && "ring-2 ring-offset-2 ring-black"
+                      i === color && 'ring-2 ring-offset-2 ring-black'
                     }`}></button>
                 ))}
               </div>
@@ -173,7 +173,7 @@ const SingleProductPage = () => {
         </div>
       </div>
 
-      <ProductComment />
+      <CommentListing />
 
       <Trending size={4} heading="Related Products" />
     </section>

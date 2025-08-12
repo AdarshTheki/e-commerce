@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import useApi from "../hooks/useApi";
-import { axios, errorHandler, socket } from "../helper";
-import { toast } from "react-toastify";
+import React, { useEffect, useRef, useState } from 'react';
+import useApi from '../hooks/useApi';
+import { axios, errorHandler, socket } from '../config';
+import { toast } from 'react-toastify';
 
-const NEW_CHAT_EVENT = "newChat";
-const LEAVE_CHAT_EVENT = "leaveChat";
-const UPDATE_GROUP_NAME_EVENT = "updateGroupName";
-const MESSAGE_RECEIVED_EVENT = "messageReceived";
-const MESSAGE_DELETE_EVENT = "messageDeleted";
-const SOCKET_ERROR_EVENT = "socketError";
+const NEW_CHAT_EVENT = 'newChat';
+const LEAVE_CHAT_EVENT = 'leaveChat';
+const UPDATE_GROUP_NAME_EVENT = 'updateGroupName';
+const MESSAGE_RECEIVED_EVENT = 'messageReceived';
+const MESSAGE_DELETE_EVENT = 'messageDeleted';
+const SOCKET_ERROR_EVENT = 'socketError';
 
 const useChat = () => {
   const currentChat = useRef(null);
@@ -31,8 +31,8 @@ const useChat = () => {
   } = useApi();
 
   useEffect(() => {
-    callApiUsers("/user/admin", {}, "get");
-    callApiChats("/chats", {}, "get");
+    callApiUsers('/user/admin', {}, 'get');
+    callApiChats('/chats', {}, 'get');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -77,7 +77,6 @@ const useChat = () => {
   };
 
   const onMessageRetrieved = (msg) => {
-    console.log(msg.chat, currentChat.current?._id);
     if (msg?.chat === currentChat.current?._id) {
       setMessages((prev) => [...prev, msg]);
     } else {
@@ -86,7 +85,7 @@ const useChat = () => {
   };
 
   const onFetchMessages = (chatId) => {
-    callApiMessages(`/messages/${chatId}`, {}, "get");
+    callApiMessages(`/messages/${chatId}`, {}, 'get');
   };
 
   const onCreateOrGetChat = async (userId) => {
@@ -102,8 +101,8 @@ const useChat = () => {
 
   const onCreateGroupChat = async (name, participants = [], chatId) => {
     try {
-      const method = chatId ? "patch" : "post";
-      const url = chatId ? `/chats/group/${chatId}` : "/chats/group";
+      const method = chatId ? 'patch' : 'post';
+      const url = chatId ? `/chats/group/${chatId}` : '/chats/group';
       await axios[method](url, {
         name,
         participants,
@@ -119,15 +118,15 @@ const useChat = () => {
       if (!message.trim()) return;
 
       const formData = new FormData();
-      formData.append("content", message);
+      formData.append('content', message);
 
       if (attachments?.length > 0) {
         attachments?.forEach((_, i) => {
-          formData.append("attachments", attachments[i]);
+          formData.append('attachments', attachments[i]);
         });
       }
       await axios.post(`/messages/${chatId}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
     } catch (error) {
       errorHandler(error);

@@ -1,11 +1,11 @@
-import ImageGallery from "./ImageGallery";
-import ImageUpload from "./ImageUpload";
+import GalleryImage from './GalleryImage';
+import UploadImage from './UploadImage';
 
 const Gallery = () => {
   return (
     <div className="max-w-6xl mx-auto min-h-screen p-3">
-      <ImageUpload />
-      <ImageGallery />
+      <UploadImage />
+      <GalleryImage />
     </div>
   );
 };

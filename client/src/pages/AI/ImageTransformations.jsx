@@ -1,28 +1,28 @@
-import React, { useState } from "react";
-import { Sparkles, Trash2, Wand2 } from "lucide-react";
-import useApi from "../../hooks/useApi";
-import { toast } from "react-toastify";
-import { AiToolsData } from "../../assets/assets";
+import React, { useState } from 'react';
+import { Sparkles, Trash2, Wand2 } from 'lucide-react';
+import useApi from '../../hooks/useApi';
+import { toast } from 'react-toastify';
+import { AiToolsData } from '../../assets/assets';
 
 const ImageTransformations = () => {
   const [image, setImage] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState("");
-  const [prompt, setPrompt] = useState("");
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [prompt, setPrompt] = useState('');
   const [selectedTransformations, setSelectedTransformations] = useState([]);
   const { loading, data, callApi, setData } = useApi();
-  const [endpoint, setEndpoint] = useState("/cloudinary/image-effect");
+  const [endpoint, setEndpoint] = useState('/cloudinary/image-effect');
 
   const aiTool = {
     ...AiToolsData[3],
   };
 
   const transformationOptions = [
-    { name: "Grayscale", value: { effect: "grayscale" } },
-    { name: "Oil Painting", value: { effect: "oil_paint" } },
-    { name: "Cartoonify", value: { effect: "cartoonify" } },
-    { name: "Blur (300)", value: { effect: "blur:300" } },
-    { name: "Pixelate Faces", value: { effect: "pixelate_faces" } },
-    { name: "Sepia", value: { effect: "sepia" } },
+    { name: 'Grayscale', value: { effect: 'grayscale' } },
+    { name: 'Oil Painting', value: { effect: 'oil_paint' } },
+    { name: 'Cartoonify', value: { effect: 'cartoonify' } },
+    { name: 'Blur (300)', value: { effect: 'blur:300' } },
+    { name: 'Pixelate Faces', value: { effect: 'pixelate_faces' } },
+    { name: 'Sepia', value: { effect: 'sepia' } },
   ];
 
   const handleImageChange = (e) => {
@@ -52,23 +52,23 @@ const ImageTransformations = () => {
   const handleTransformationSubmit = async () => {
     if (loading) return;
     if (!image) {
-      return toast.error("Please upload an image first.");
+      return toast.error('Please upload an image first.');
     }
 
     const formData = new FormData();
-    formData.append("image", image);
+    formData.append('image', image);
 
-    if (endpoint === "/cloudinary/remove-object") {
+    if (endpoint === '/cloudinary/remove-object') {
       if (!prompt) {
-        return toast.error("Please enter a prompt to remove an object.");
+        return toast.error('Please enter a prompt to remove an object.');
       }
-      formData.append("prompt", prompt);
+      formData.append('prompt', prompt);
     } else {
       if (selectedTransformations.length === 0) {
-        return toast.error("Please select at least one transformation.");
+        return toast.error('Please select at least one transformation.');
       }
       formData.append(
-        "transformations",
+        'transformations',
         JSON.stringify(selectedTransformations)
       );
     }
@@ -121,7 +121,7 @@ const ImageTransformations = () => {
               type="radio"
               name="/cloudinary/image-effect"
               id="/cloudinary/image-effect"
-              checked={endpoint === "/cloudinary/image-effect"}
+              checked={endpoint === '/cloudinary/image-effect'}
               value="/cloudinary/image-effect"
               onChange={(e) => setEndpoint(e.target.value)}
             />
@@ -134,7 +134,7 @@ const ImageTransformations = () => {
               type="radio"
               name="/cloudinary/remove-object"
               id="/cloudinary/remove-object"
-              checked={endpoint === "/cloudinary/remove-object"}
+              checked={endpoint === '/cloudinary/remove-object'}
               value="/cloudinary/remove-object"
               onChange={(e) => setEndpoint(e.target.value)}
             />
@@ -147,7 +147,7 @@ const ImageTransformations = () => {
               type="radio"
               name="/cloudinary/remove-background"
               id="/cloudinary/remove-background"
-              checked={endpoint === "/cloudinary/remove-background"}
+              checked={endpoint === '/cloudinary/remove-background'}
               value="/cloudinary/remove-background"
               onChange={(e) => setEndpoint(e.target.value)}
             />
@@ -171,7 +171,7 @@ const ImageTransformations = () => {
                         border: `1px solid ${aiTool.bg.from}`,
                         color: aiTool.bg.from,
                       }
-                    : { border: "1px solid #aaa" }
+                    : { border: '1px solid #aaa' }
                 }
                 className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
                 {trans.name}
@@ -180,7 +180,7 @@ const ImageTransformations = () => {
           </div>
         </div>
 
-        {endpoint === "/cloudinary/image-effect" && (
+        {endpoint === '/cloudinary/image-effect' && (
           <button
             disabled={loading}
             onClick={handleTransformationSubmit}
@@ -200,7 +200,7 @@ const ImageTransformations = () => {
         )}
 
         <div className="flex flex-col gap-4">
-          {endpoint === "/cloudinary/remove-background" && (
+          {endpoint === '/cloudinary/remove-background' && (
             <button
               disabled={loading}
               onClick={handleTransformationSubmit}
@@ -218,7 +218,7 @@ const ImageTransformations = () => {
             </button>
           )}
 
-          {endpoint === "/cloudinary/remove-object" && (
+          {endpoint === '/cloudinary/remove-object' && (
             <div className="flex flex-col gap-2">
               <input
                 type="text"
@@ -230,7 +230,7 @@ const ImageTransformations = () => {
               <button
                 disabled={loading}
                 onClick={() =>
-                  handleTransformationSubmit("/cloudinary/remove-object")
+                  handleTransformationSubmit('/cloudinary/remove-object')
                 }
                 className="py-2 hover:opacity-85 flex bg-purple-500 text-white rounded-full items-center justify-center gap-2 !text-sm w-full">
                 {loading ? (

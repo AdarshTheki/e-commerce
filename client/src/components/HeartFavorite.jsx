@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { Heart } from "lucide-react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { errorHandler, axios } from "../helper";
+import React, { useState } from 'react';
+import { Heart } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { errorHandler, axios } from '../config';
 
-const HeartFavorite = ({ id, className, name = "" }) => {
+const HeartFavorite = ({ id, className, name = '' }) => {
   const router = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
@@ -15,7 +15,7 @@ const HeartFavorite = ({ id, className, name = "" }) => {
     e.preventDefault();
     try {
       setLoading(true);
-      if (!user?._id) return router("/login");
+      if (!user?._id) return router('/login');
 
       const res = await axios.patch(`/user/favorite/${id}`);
       if (res.data) {
@@ -41,7 +41,7 @@ const HeartFavorite = ({ id, className, name = "" }) => {
         </div>
       ) : (
         <Heart
-          fill={`${isLiked ? "red" : "#ff01"}`}
+          fill={`${isLiked ? 'red' : '#ff01'}`}
           stroke="red"
           className="h-5 w-5"
         />

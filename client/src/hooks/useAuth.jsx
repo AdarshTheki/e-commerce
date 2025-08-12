@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { axios, errorHandler } from "../helper";
-import { login, logout } from "../redux/authSlice";
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { axios, errorHandler } from '../config';
+import { login, logout } from '../redux/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 const useAuth = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const [avatarLoading, setAvatarLoading] = useState(false);
-  const [fullNameAndEmailLoading, setFullNameAndEmailLoading] = useState(false);
-  const [passwordLoading, setPasswordLoading] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
 
@@ -18,21 +18,21 @@ const useAuth = () => {
     try {
       setLoginLoading(true);
       if (!email || !password) {
-        toast.error("Please fill in all fields.");
+        toast.error('Please fill in all fields.');
         return;
       }
 
-      const res = await axios.post("/user/sign-in", { email, password });
+      const res = await axios.post('/user/sign-in', { email, password });
       const data = res?.data?.data;
       if (data) {
         if (rememberMe) {
-          localStorage.setItem("accessToken", data.accessToken);
-          sessionStorage.clear("accessToken");
+          localStorage.setItem('accessToken', data.accessToken);
+          sessionStorage.clear('accessToken');
         } else {
-          sessionStorage.setItem("accessToken", data.accessToken);
-          localStorage.removeItem("accessToken");
+          sessionStorage.setItem('accessToken', data.accessToken);
+          localStorage.removeItem('accessToken');
         }
-        window.location.href = "/";
+        window.location.href = '/';
       }
     } catch (error) {
       errorHandler(error);
@@ -45,24 +45,24 @@ const useAuth = () => {
     try {
       setRegisterLoading(true);
       if (!fullName || !email || !password || !confirmPassword) {
-        toast.error("Please fill in all fields.");
+        toast.error('Please fill in all fields.');
         return;
       }
 
       if (password !== confirmPassword) {
-        toast.error("Passwords do not match.");
+        toast.error('Passwords do not match.');
         return;
       }
 
-      const { data } = await axios.post("/user/sign-up", {
+      const { data } = await axios.post('/user/sign-up', {
         fullName,
         email,
         password,
-        role: "customer",
+        role: 'customer',
       });
-
       if (data) {
-        await handleLogin(email, password);
+        navigate('/login');
+        toast.success('check your email to verify users');
       }
     } catch (error) {
       errorHandler(error);
@@ -71,36 +71,18 @@ const useAuth = () => {
     }
   };
 
-  const handleUpdateProfile = async (email, fullName, phoneNumber) => {
+  const handleUpdateProfile = async (fullName, phoneNumber) => {
     try {
-      setFullNameAndEmailLoading(true);
-      const res = await axios.patch("/user/update", {
-        email,
+      const res = await axios.patch('/user/update', {
         fullName,
         phoneNumber,
       });
       const data = res?.data?.data;
       if (data) {
-        dispatch(login({ ...user, email, fullName }));
+        dispatch(login({ ...user, fullName, phoneNumber }));
       }
     } catch (error) {
       errorHandler(error);
-    } finally {
-      setFullNameAndEmailLoading(false);
-    }
-  };
-
-  const handleChangePassword = async (oldPassword, newPassword) => {
-    try {
-      setPasswordLoading(true);
-      await axios.post("/user/password", {
-        oldPassword,
-        newPassword,
-      });
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setPasswordLoading(false);
     }
   };
 
@@ -108,8 +90,8 @@ const useAuth = () => {
     try {
       setAvatarLoading(true);
       const formData = new FormData();
-      formData.append("avatar", file);
-      const res = await axios.post("/user/avatar", formData);
+      formData.append('avatar', file);
+      const res = await axios.post('/user/avatar', formData);
       const data = res?.data?.data;
       if (data) {
         dispatch(login({ ...user, avatar: data.avatar }));
@@ -123,20 +105,29 @@ const useAuth = () => {
 
   const handleLogout = async () => {
     dispatch(logout());
-    await axios.post("/user/logout");
-    localStorage.removeItem("accessToken");
-    sessionStorage.removeItem("accessToken");
+    await axios.post('/user/logout');
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken');
+  };
+
+  const handleResendVerifyUser = async () => {
+    try {
+      const res = await axios.get('/user/resend-verify-email');
+      if (res.data) {
+        toast.success('Mail has been sent to your mail ID');
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
   };
 
   return {
     user,
     avatarLoading,
-    fullNameAndEmailLoading,
-    passwordLoading,
     registerLoading,
     loginLoading,
+    handleResendVerifyUser,
     handleUpdateProfile,
-    handleChangePassword,
     handleUploadAvatar,
     handleLogout,
     handleRegister,

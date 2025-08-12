@@ -1,6 +1,6 @@
-import React from "react";
-import { XCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const OrderFailed = () => {
   return (

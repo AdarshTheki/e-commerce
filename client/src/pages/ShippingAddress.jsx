@@ -1,26 +1,26 @@
-import { useState } from "react";
-import { Edit2, Trash2Icon } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from 'react';
+import { Edit2, Trash2Icon } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { errorHandler, axios } from "../helper";
-import { Input, Select } from "../utils";
+import { errorHandler, axios } from '../config';
+import { Input, Select } from '../utils';
 import {
   updateAddress,
   addAddress,
   removeAddress,
-} from "../redux/addressSlice";
+} from '../redux/addressSlice';
 
 const countries = [
-  { label: "China", value: "+86" },
-  { label: "India", value: "+91" },
-  { label: "United States", value: "+1" },
-  { label: "Indonesia", value: "+62" },
-  { label: "Pakistan", value: "+92" },
-  { label: "Nigeria", value: "+234" },
-  { label: "Brazil", value: "+55" },
-  { label: "Bangladesh", value: "+880" },
-  { label: "Russia", value: "+7" },
-  { label: "Mexico", value: "+52" },
+  { label: 'China', value: '+86' },
+  { label: 'India', value: '+91' },
+  { label: 'United States', value: '+1' },
+  { label: 'Indonesia', value: '+62' },
+  { label: 'Pakistan', value: '+92' },
+  { label: 'Nigeria', value: '+234' },
+  { label: 'Brazil', value: '+55' },
+  { label: 'Bangladesh', value: '+880' },
+  { label: 'Russia', value: '+7' },
+  { label: 'Mexico', value: '+52' },
 ];
 
 const ShippingAddress = () => {
@@ -30,22 +30,22 @@ const ShippingAddress = () => {
   const [isOpenForm, setIsOpenForm] = useState(false);
 
   const [formData, setFormData] = useState({
-    addressLine: "",
-    city: "",
-    postalCode: "",
-    countryCode: "IN",
+    addressLine: '',
+    city: '',
+    postalCode: '',
+    countryCode: 'IN',
     isDefault: false,
-    value: "",
+    value: '',
   });
 
   const handleAddressSubmit = async (item) => {
     try {
       setLoading(true);
       if (!item.addressLine || !item.city || !item.postalCode) {
-        throw new Error("please fill all filed");
+        throw new Error('please fill all filed');
       }
-      const method = item?._id ? "patch" : "post";
-      const url = item?._id ? `/address/${item._id}` : "/address";
+      const method = item?._id ? 'patch' : 'post';
+      const url = item?._id ? `/address/${item._id}` : '/address';
 
       const res = await axios[method](url, item);
 
@@ -120,12 +120,12 @@ export default ShippingAddress;
 
 const AddressForm = ({ item, loading, onSubmit, onClose }) => {
   const [formData, setFormData] = useState({
-    addressLine: item?.addressLine || "",
-    city: item?.city || "",
-    postalCode: item?.postalCode || "",
-    countryCode: item?.countryCode || "IN",
+    addressLine: item?.addressLine || '',
+    city: item?.city || '',
+    postalCode: item?.postalCode || '',
+    countryCode: item?.countryCode || 'IN',
     isDefault: item?.isDefault || false,
-    _id: item?._id || "",
+    _id: item?._id || '',
   });
 
   const handleSubmit = async (e) => {
@@ -139,7 +139,7 @@ const AddressForm = ({ item, loading, onSubmit, onClose }) => {
         className="space-y-4 max-w-2xl w-full p-5 sm:p-10 mx-3 shadow-2xl bg-white rounded-xl"
         onSubmit={handleSubmit}>
         <p className="text-2xl font-semibold">
-          {item?._id ? "Update Address" : "Add New Address"}
+          {item?._id ? 'Update Address' : 'Add New Address'}
         </p>
         <Input
           label="AddressLine"
@@ -203,7 +203,7 @@ const AddressForm = ({ item, loading, onSubmit, onClose }) => {
           <button
             type="submit"
             className="bg-indigo-600 btn text-nowrap w-full text-white">
-            {loading ? "Loading..." : "Save"}
+            {loading ? 'Loading...' : 'Save'}
           </button>
         </div>
       </form>

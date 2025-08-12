@@ -1,7 +1,7 @@
-import { ArrowRightIcon } from "lucide-react";
-import React from "react";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { ArrowRightIcon } from 'lucide-react';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 
 const Category = () => {
   const { items } = useSelector((state) => state.categories);
@@ -23,7 +23,7 @@ const Category = () => {
               <img
                 src={
                   item.thumbnail ||
-                  "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w2MzQ2fDB8MXxzZWFyY2h8MXx8b25saW5lJTJCc3RvcmUlMkJjYXRlZ29yeSUyQm5hdmlnYXRpb258ZW58MHx8fHwxNzQ1ODE4OTUzfDA&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=400"
+                  'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w2MzQ2fDB8MXxzZWFyY2h8MXx8b25saW5lJTJCc3RvcmUlMkJjYXRlZ29yeSUyQm5hdmlnYXRpb258ZW58MHx8fHwxNzQ1ODE4OTUzfDA&amp;ixlib=rb-4.0.3&amp;q=80&amp;w=400'
                 }
                 alt="Electronics"
                 className="w-full object-cover aspect-[6/5]  transition-transform duration-500 group-hover:scale-110"
@@ -31,7 +31,7 @@ const Category = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
                 <div className="p-6 w-full">
                   <p className="text-xl font-bold text-white mb-2 capitalize">
-                    {item.title || "Electronics"}
+                    {item.title || 'Electronics'}
                   </p>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">48 Products</span>

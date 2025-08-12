@@ -1,7 +1,7 @@
-import { Bot, Heart, Home, MessagesSquare, Settings } from "lucide-react";
-import { useSelector } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
-import { Avatar } from "../utils";
+import { Bot, Heart, Home, MessagesSquare, Settings } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { Avatar } from '../utils';
 
 const NavbarBottom = () => {
   const { user } = useSelector((s) => s.auth);
@@ -35,7 +35,7 @@ const NavbarBottom = () => {
         </NavLink>
 
         <button
-          onClick={() => navigate("/setting")}
+          onClick={() => navigate('/setting')}
           className="flex items-center justify-center flex-col">
           {user?._id ? (
             <Avatar

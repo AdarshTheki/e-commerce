@@ -1,5 +1,5 @@
-import { Star } from "lucide-react";
-import { dummyTestimonialData } from "../../assets/assets";
+import { Star } from 'lucide-react';
+import { dummyTestimonialData } from '../../assets/assets';
 
 const Testimonial = () => {
   return (
@@ -22,7 +22,7 @@ const Testimonial = () => {
                 .fill(0)
                 .map((_, i) => (
                   <Star
-                    fill={i < testimonial.rating ? "#4f39f6" : "#fff"}
+                    fill={i < testimonial.rating ? '#4f39f6' : '#fff'}
                     key={i}
                     className="w-4 h-4 text-[#4f39f6]"
                   />

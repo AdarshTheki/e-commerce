@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   ArrowLeft,
   ImageUp,
@@ -7,27 +7,27 @@ import {
   Send,
   Trash2Icon,
   X,
-} from "lucide-react";
-import { useSelector } from "react-redux";
+} from 'lucide-react';
+import { useSelector } from 'react-redux';
 
-import ChatItem from "./ChatItem";
-import MessageItem from "./MessageItem";
-import AddChatModal from "./AddChatModal";
-import { Avatar, Input, Loading } from "../../utils";
-import { socket, classNames, getChatObjectMetadata } from "../../helper";
-import useChat from "../../hooks/useChat";
+import { socket, classNames, getChatObjectMetadata } from '../../config';
+import { Avatar, Input, Loading } from '../../utils';
+import MessagesCard from './MessagesCard';
+import AddChatModal from './AddChatModal';
+import useChat from '../../hooks/useChat';
+import ChatsCard from './ChatsCard';
 
-const JOIN_CHAT_EVENT = "joinChat";
+const JOIN_CHAT_EVENT = 'joinChat';
 // const CONNECTED_EVENT = "connected";
 // const DISCONNECT_EVENT = "disconnect";
 // const TYPING_EVENT = "typing";
 // const STOP_TYPING_EVENT = "stopTyping";
 
-const ChatPage = () => {
-  const [message, setMessage] = useState("");
+const ChatMessagesPage = () => {
+  const [message, setMessage] = useState('');
   const [updateChat, setUpdateChat] = useState(null);
   const [openAddChat, setOpenAddChat] = useState(false);
-  const [searchUserChat, setSearchUserChat] = useState("");
+  const [searchUserChat, setSearchUserChat] = useState('');
   const [previews, setPreviews] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [mobileChatOpen, setMobileChatOpen] = useState(true);
@@ -72,8 +72,8 @@ const ChatPage = () => {
         {/* Chat Left Side */}
         <div
           className={classNames(
-            "!sm:max-w-[280px] max-sm:w-full h-full overflow-y-auto",
-            mobileChatOpen && chat?._id && "max-sm:hidden"
+            '!sm:max-w-[280px] max-sm:w-full h-full overflow-y-auto',
+            mobileChatOpen && chat?._id && 'max-sm:hidden'
           )}>
           {/* Create Group Modal */}
           {!!openAddChat && (
@@ -98,7 +98,7 @@ const ChatPage = () => {
               value={searchUserChat}
             />
             {!!searchUserChat && (
-              <button className="btn" onClick={() => setSearchUserChat("")}>
+              <button className="btn" onClick={() => setSearchUserChat('')}>
                 <X size={16} />
               </button>
             )}
@@ -121,7 +121,7 @@ const ChatPage = () => {
                   <button
                     onClick={() => {
                       onCreateOrGetChat(item._id);
-                      setSearchUserChat("");
+                      setSearchUserChat('');
                     }}
                     className="text-left w-full flex gap-2 items-center hover:bg-gray-100 py-1 px-4 rounded-2xl"
                     key={item?._id}>
@@ -138,7 +138,7 @@ const ChatPage = () => {
 
           {/* Display Chats */}
           {[...chats].map((item) => (
-            <ChatItem
+            <ChatsCard
               key={item?._id}
               item={item}
               unreadCount={
@@ -181,8 +181,8 @@ const ChatPage = () => {
         {!!chat?._id && (
           <div
             className={classNames(
-              "w-full max-sm:hidden border-l border-slate-200 overflow-y-auto flex flex-col",
-              mobileChatOpen && "!flex"
+              'w-full max-sm:hidden border-l border-slate-200 overflow-y-auto flex flex-col',
+              mobileChatOpen && '!flex'
             )}>
             <div className="py-2 px-4 flex bg-white items-center gap-3 top-0 sticky z-10">
               <button
@@ -208,7 +208,7 @@ const ChatPage = () => {
             <div className="flex-1 p-4">
               <div className="min-h-[60dvh]">
                 {[...messages].map((item) => (
-                  <MessageItem
+                  <MessagesCard
                     key={item?._id}
                     item={item}
                     onDelete={() => handleMessageDelete(item?._id)}
@@ -228,7 +228,7 @@ const ChatPage = () => {
                     <img
                       src={preview}
                       alt="image-preview"
-                      className={classNames("w-20 h-20 rounded object-cover")}
+                      className={classNames('w-20 h-20 rounded object-cover')}
                     />
                     <Trash2Icon
                       onClick={() => handleRemoveAttachment(i)}
@@ -245,7 +245,7 @@ const ChatPage = () => {
                 e.preventDefault();
                 if (!message.trim()) return;
                 onSendMessage(message, attachments, chat?._id);
-                setMessage("");
+                setMessage('');
                 setAttachments([]);
                 setPreviews([]);
               }}
@@ -307,4 +307,4 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+export default ChatMessagesPage;

@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { AiToolsData } from "../../assets/assets";
-import { Sparkles } from "lucide-react";
-import useApi from "../../hooks/useApi";
-import useTypewriter from "../../hooks/useTypewriter";
-import { toast } from "react-toastify";
-import Markdown from "react-markdown";
+import React, { useState } from 'react';
+import { AiToolsData } from '../../assets/assets';
+import { Sparkles } from 'lucide-react';
+import useApi from '../../hooks/useApi';
+import useTypewriter from '../../hooks/useTypewriter';
+import { toast } from 'react-toastify';
+import Markdown from 'react-markdown';
 
 const ReviewResume = () => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const { loading, data, callApi, setData } = useApi();
   const aiTool = AiToolsData[4];
   const { displayText } = useTypewriter({ text: data?.response, speed: 5 });
@@ -15,14 +15,14 @@ const ReviewResume = () => {
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     if (input?.size > 5 * 1024 * 1024) {
-      return toast.error("Pdf file size under 5MB");
+      return toast.error('Pdf file size under 5MB');
     }
     const formData = new FormData();
-    formData.append("file", input);
-    const result = await callApi("/openai/resume-reviewer", formData);
+    formData.append('file', input);
+    const result = await callApi('/openai/resume-reviewer', formData);
     if (result) {
       setData(result);
-      setInput("");
+      setInput('');
     }
   };
 

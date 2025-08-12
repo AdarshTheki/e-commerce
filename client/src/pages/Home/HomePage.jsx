@@ -1,8 +1,8 @@
-import Hero from "./Hero";
-import Trending from "./Trending";
-import Category from "./Category";
-import Testimonial from "./Testimonial";
-import AITools from "./AITools";
+import Hero from './Hero';
+import Trending from './Trending';
+import Category from './Category';
+import Testimonial from './Testimonial';
+import AITools from './AITools';
 
 const HomePage = () => {
   return (

@@ -1,18 +1,18 @@
-import { NavLink } from "react-router-dom";
+import { NavLink } from 'react-router-dom';
 
 export default function Example() {
   const menus = [
     {
-      id: "/",
-      label: "Home",
+      id: '/',
+      label: 'Home',
     },
-    { id: "/products", label: "Products" },
-    { id: "/favorite", label: "Favorite" },
-    { id: "/cart", label: "Cart" },
-    { id: "/setting", label: "Setting" },
-    { id: "/gallery", label: "Gallery" },
-    { id: "/message", label: "Message" },
-    { id: "/ai", label: "AI Generate" },
+    { id: '/products', label: 'Products' },
+    { id: '/favorite', label: 'Favorite' },
+    { id: '/cart', label: 'Cart' },
+    { id: '/setting', label: 'Setting' },
+    { id: '/gallery', label: 'Gallery' },
+    { id: '/message', label: 'Message' },
+    { id: '/ai', label: 'AI Generate' },
   ];
   return (
     <footer className="flex flex-col bg-slate-50 items-center justify-around w-full pb-5 pt-10 text-sm text-gray-800/70">
@@ -143,7 +143,7 @@ export default function Example() {
         </a>
       </div>
       <p className="mt-8 text-center">
-        Copyright © 2025{" "}
+        Copyright © 2025{' '}
         <a
           href="https://github.com/AdarshTheki"
           target="_blank"

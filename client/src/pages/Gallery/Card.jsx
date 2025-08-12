@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux";
-import useApi from "../../hooks/useApi";
-import { errorHandler } from "../../helper";
+import { useSelector } from 'react-redux';
+import useApi from '../../hooks/useApi';
+import { errorHandler } from '../../config';
 import {
   Download,
   Folder,
@@ -8,8 +8,8 @@ import {
   Image,
   Loader,
   Trash2Icon,
-} from "lucide-react";
-import { Button } from "../../utils";
+} from 'lucide-react';
+import { Button } from '../../utils';
 
 const GalleryCard = ({
   secure_url,
@@ -32,7 +32,7 @@ const GalleryCard = ({
       .then((response) => response.blob())
       .then((blob) => {
         const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         link.href = url;
         link.download = `download.png`;
         document.body.appendChild(link);
@@ -45,9 +45,9 @@ const GalleryCard = ({
   const handleDelete = async () => {
     try {
       const result = await callApi(
-        "/cloudinary",
+        '/cloudinary',
         { imageUrl: secure_url },
-        "delete"
+        'delete'
       );
       if (result) {
         onDelete();
@@ -68,7 +68,7 @@ const GalleryCard = ({
           svg={<Download size={16} />}
           className="text-white bg-slate-800 border-none"
         />
-        {user && user?.role === "admin" && (
+        {user && user?.role === 'admin' && (
           <Button
             disabled={loading}
             onClick={handleDelete}
@@ -80,7 +80,7 @@ const GalleryCard = ({
       <div className="py-2 px-4 space-y-2 bg-white">
         <p className="text-sm font-medium">{filename}</p>
         <div className="flex gap-2 text-xs items-center border-b border-gray-300">
-          <Folder size={14} /> {folder || "/"}
+          <Folder size={14} /> {folder || '/'}
         </div>
         <div className="flex flex-wrap gap-1 items-center justify-between text-xs">
           <div className="flex gap-2 items-center">

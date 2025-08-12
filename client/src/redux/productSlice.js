@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axios } from "../helper";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axios } from '../config';
 
 export const fetchProducts = createAsyncThunk(
-  "products/fetchProducts",
+  'products/fetchProducts',
   async () => {
     const response = await axios.get(`/product?limit=50`);
     return response?.data?.data?.docs;
@@ -10,7 +10,7 @@ export const fetchProducts = createAsyncThunk(
 );
 
 const productSlice = createSlice({
-  name: "products",
+  name: 'products',
   initialState: {
     items: [],
     loading: false,

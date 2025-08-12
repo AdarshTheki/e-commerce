@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --primary: rgb(79, 70, 229);
@@ -95,4 +95,16 @@ button {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes loadingBar {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+.animate-loadingBar {
+  animation: loadingBar 1s ease-out forwards;
 }

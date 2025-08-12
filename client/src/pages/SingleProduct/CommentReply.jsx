@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { format } from "date-fns";
-import CommentLike from "./CommentLike";
-import { CircleAlert, MessageSquare, MessageSquareDiff } from "lucide-react";
+import React, { useState } from 'react';
+import { format } from 'date-fns';
+import CommentLike from './CommentLike';
+import { CircleAlert, MessageSquare, MessageSquareDiff } from 'lucide-react';
 
 const CommentReply = ({ item, onReplyComment }) => {
-  const [text, setText] = useState("");
-  const [activeId, setActiveId] = useState({ type: "", id: null });
+  const [text, setText] = useState('');
+  const [activeId, setActiveId] = useState({ type: '', id: null });
 
   const isRepliesActive =
-    activeId?.id === item?._id && activeId?.type === "replies";
+    activeId?.id === item?._id && activeId?.type === 'replies';
   const isReportsActive =
-    activeId?.id === item?._id && activeId?.type === "reports";
+    activeId?.id === item?._id && activeId?.type === 'reports';
 
   const handleToggle = (type) => {
     setActiveId((prev) =>
       prev.id === item._id && prev.type === type
-        ? { id: null, type: "" }
+        ? { id: null, type: '' }
         : { id: item._id, type }
     );
   };
@@ -23,7 +23,7 @@ const CommentReply = ({ item, onReplyComment }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onReplyComment(item._id, text, activeId.type);
-    setText("");
+    setText('');
   };
 
   const renderReplies = () =>
@@ -38,7 +38,7 @@ const CommentReply = ({ item, onReplyComment }) => {
           <div className="flex flex-col">
             <span className="font-semibold">{reply?.createdBy?.fullName}</span>
             <span className="text-gray-500 text-xs">
-              {format(new Date(reply?.createdAt), "dd MMM yyyy, h:mm a")}
+              {format(new Date(reply?.createdAt), 'dd MMM yyyy, h:mm a')}
             </span>
           </div>
         </div>
@@ -58,7 +58,7 @@ const CommentReply = ({ item, onReplyComment }) => {
           <div className="flex flex-col">
             <span className="font-semibold">{reply?.createdBy?.fullName}</span>
             <span className="text-gray-500 text-xs">
-              {format(new Date(reply?.reportedAt), "dd MMM yyyy, h:mm a")}
+              {format(new Date(reply?.reportedAt), 'dd MMM yyyy, h:mm a')}
             </span>
           </div>
         </div>
@@ -89,16 +89,16 @@ const CommentReply = ({ item, onReplyComment }) => {
 
         <button
           title="comment reply"
-          onClick={() => handleToggle("replies")}
-          className={`svg-btn text-xs flex gap-1 !w-16 ${activeId?.type === "replies" && "bg-indigo-200"}`}>
+          onClick={() => handleToggle('replies')}
+          className={`svg-btn text-xs flex gap-1 !w-16 ${activeId?.type === 'replies' && 'bg-indigo-200'}`}>
           <MessageSquare size={16} />
           {item.replies?.length || 0}
         </button>
 
         <button
           title="comment report"
-          onClick={() => handleToggle("reports")}
-          className={`svg-btn text-xs flex gap-1 !w-16 ${activeId?.type === "reports" && "bg-indigo-200"}`}>
+          onClick={() => handleToggle('reports')}
+          className={`svg-btn text-xs flex gap-1 !w-16 ${activeId?.type === 'reports' && 'bg-indigo-200'}`}>
           <MessageSquareDiff size={16} />
           {item.reports?.length || 0}
         </button>
@@ -106,7 +106,7 @@ const CommentReply = ({ item, onReplyComment }) => {
 
       {isRepliesActive && (
         <>
-          {renderForm("Write a reply...", "Reply")}
+          {renderForm('Write a reply...', 'Reply')}
           <h2 className="font-semibold px-2">All Replies</h2>
           {renderReplies()}
         </>
@@ -114,7 +114,7 @@ const CommentReply = ({ item, onReplyComment }) => {
 
       {isReportsActive && (
         <>
-          {renderForm("Write a reason...", "Report")}
+          {renderForm('Write a reason...', 'Report')}
           <h2 className="font-semibold px-2">All Reports</h2>
           {renderReports()}
         </>

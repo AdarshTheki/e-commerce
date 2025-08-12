@@ -1,13 +1,13 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { axios } from "../helper";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axios } from '../config';
 
-export const fetchBrands = createAsyncThunk("brands/fetchBrands", async () => {
+export const fetchBrands = createAsyncThunk('brands/fetchBrands', async () => {
   const response = await axios.get(`/brand`);
   return response?.data?.data?.docs;
 });
 
 const brandSlice = createSlice({
-  name: "brands",
+  name: 'brands',
   initialState: {
     items: [],
     loading: false,

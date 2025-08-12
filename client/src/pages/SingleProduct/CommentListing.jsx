@@ -1,38 +1,39 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { format } from "date-fns";
-import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { Trash2Icon } from "lucide-react";
-import { errorHandler, axios } from "../../helper";
-import CommentReply from "./CommentReply";
-import useApi from "../../hooks/useApi";
-import { Loading } from "../../utils";
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { format } from 'date-fns';
+import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import { Trash2Icon } from 'lucide-react';
+
+import { errorHandler, axios } from '../../config';
+import CommentReply from './CommentReply';
+import useApi from '../../hooks/useApi';
+import { Loading } from '../../utils';
 
 const ProductComment = () => {
   const { id } = useParams();
-  const [createText, setCreateText] = useState("");
+  const [createText, setCreateText] = useState('');
   const userId = useSelector((state) => state?.auth?.user?._id);
 
   const { data, setData, loading, callApi } = useApi();
 
   useEffect(() => {
-    callApi(`/comment/${id}`, {}, "get");
+    callApi(`/comment/${id}`, {}, 'get');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const createComment = async (e) => {
     e.preventDefault();
     try {
-      if (!createText.trim()) return toast.error("Please fill the text input");
+      if (!createText.trim()) return toast.error('Please fill the text input');
       const res = await axios.post(`/comment`, {
         productId: id,
         text: createText,
       });
       if (res.data) {
         setData((prev) => [res.data?.data, ...prev]);
-        setCreateText("");
+        setCreateText('');
       }
     } catch (error) {
       errorHandler(error);
@@ -41,7 +42,7 @@ const ProductComment = () => {
 
   const updateComment = async (commentId, text) => {
     try {
-      if (!text.trim()) return toast.error("Please fill the text input");
+      if (!text.trim()) return toast.error('Please fill the text input');
       const res = await axios.patch(`/comment/${commentId}`, { text });
       if (res.data.data) {
         setData((prev) =>
@@ -67,7 +68,7 @@ const ProductComment = () => {
   const replyReportComment = async (commentId, text, type) => {
     try {
       let res;
-      if (type === "replies") {
+      if (type === 'replies') {
         res = await axios.post(`/comment/${commentId}/reply`, { text });
       } else {
         res = await axios.post(`/comment/${commentId}/report`, {
@@ -115,7 +116,7 @@ const ProductComment = () => {
             </button>
             {createText.trim() && (
               <button
-                onClick={() => setCreateText("")}
+                onClick={() => setCreateText('')}
                 type="button"
                 className="btn-secondary !text-xs disabled:opacity-70">
                 Cancel
@@ -133,7 +134,7 @@ const ProductComment = () => {
                   <img
                     src={
                       item?.createdBy?.avatar ||
-                      "https://avatar.iran.liara.run/public"
+                      'https://avatar.iran.liara.run/public'
                     }
                     alt="Customer"
                     className="w-10 h-10 rounded-full object-cover transition-opacity duration-300 opacity-100"
@@ -142,7 +143,7 @@ const ProductComment = () => {
                   <div>
                     <p className="font-semibold">{item?.createdBy?.fullName}</p>
                     <p className="text-gray-500 text-xs">
-                      {format(new Date(item?.createdAt), "dd MMM yyyy, h:mm a")}
+                      {format(new Date(item?.createdAt), 'dd MMM yyyy, h:mm a')}
                     </p>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 
 const LazyImage = ({ src, placeholder, fallback, ...rest }) => {
-  const [imgSrc, setImgSrc] = useState(placeholder || "");
+  const [imgSrc, setImgSrc] = useState(placeholder || '');
   const imgRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const LazyImage = ({ src, placeholder, fallback, ...rest }) => {
     }
   }, [src, fallback]);
 
-  return <img ref={imgRef} src={imgSrc || "/placeholder.jpg"} {...rest} />;
+  return <img ref={imgRef} src={imgSrc || '/placeholder.jpg'} {...rest} />;
 };
 
 export default LazyImage;

@@ -1,13 +1,13 @@
-import React, { useId } from "react";
+import React, { useId } from 'react';
 
 const Input = React.forwardRef(
   (
     {
-      label = "",
-      name = "",
-      error = "",
-      className = "",
-      optional = "",
+      label = '',
+      name = '',
+      error = '',
+      className = '',
+      optional = '',
       ...rest
     },
     ref
@@ -34,7 +34,7 @@ const Input = React.forwardRef(
           className={`peer border border-gray-300 rounded focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 block w-full px-4 py-1.5 ${className}`}
           ref={ref}
           required
-          type={rest.type || "text"}
+          type={rest.type || 'text'}
           {...rest}
         />
         {error && (

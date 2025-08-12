@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { axios } from "../helper";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { axios } from '../config';
 
 const initialState = {
   items: [],
@@ -7,13 +7,13 @@ const initialState = {
   error: null,
 };
 
-export const fetchCarts = createAsyncThunk("carts/fetchCarts", async () => {
+export const fetchCarts = createAsyncThunk('carts/fetchCarts', async () => {
   const response = await axios.get(`/cart`);
   return response?.data?.data?.items;
 });
 
 const cartSlice = createSlice({
-  name: "cart",
+  name: 'cart',
   initialState,
   reducers: {
     addItem: (state, action) => {

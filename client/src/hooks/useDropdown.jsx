@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const useDropdown = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -13,9 +13,9 @@ const useDropdown = () => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 

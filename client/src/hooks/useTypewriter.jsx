@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-const useTypewriter = ({ text = "", speed = 100 }) => {
-  const [displayText, setDisplayText] = useState("");
+const useTypewriter = ({ text = '', speed = 100 }) => {
+  const [displayText, setDisplayText] = useState('');
   const [index, setIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 

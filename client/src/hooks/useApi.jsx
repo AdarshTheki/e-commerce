@@ -1,19 +1,21 @@
-import { useState } from "react";
-import { axios, errorHandler } from "../helper";
+import { useState } from 'react';
+import { axios } from '../config';
 
 const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
-  const callApi = async (url, payload = {}, method = "post") => {
+  const callApi = async (url, payload = {}, method = 'post') => {
     setLoading(true);
     setData(null);
+    setError(null);
 
     try {
       const response = await axios({
         method,
         url,
-        ...(method.toLowerCase() === "get"
+        ...(method.toLowerCase() === 'get'
           ? { params: payload }
           : { data: payload }),
       });
@@ -23,14 +25,16 @@ const useApi = () => {
         setData(result);
         return result;
       }
-    } catch (error) {
-      errorHandler(error); // Make sure this function exists
+    } catch (err) {
+      const newError = err?.response?.data?.message || err?.message;
+      console.log('Error:', newError);
+      setError(newError);
     } finally {
       setLoading(false);
     }
   };
 
-  return { loading, data, callApi, setData };
+  return { loading, data, callApi, setData, error };
 };
 
 export default useApi;

@@ -1,29 +1,35 @@
-import ShoppingCartPage from "./ShoppingCartPage";
-import HomePage from "./Home/HomePage";
-import SingleProductPage from "./SingleProduct/Page";
-import ProductsPage from "./ProductsPage";
-import LoginPage from "./LoginPage";
-import RegisterPage from "./RegisterPage";
-import FavoritePage from "./FavoritePage";
-import OrderFailed from "./OrderFailed";
-import OrderSuccess from "./OrderSuccess";
-import ShippingAddress from "./ShippingAddress";
-import GalleryPage from "./Gallery/GalleryPage";
-import Setting from "./Setting";
-import ChatPage from "./Chat/ChatPage";
+import ShoppingCartPage from './ShoppingCartPage';
+import HomePage from './Home/HomePage';
+import SingleProductPage from './SingleProduct/SingleProductPage';
+import ProductsPage from './ProductsPage';
+import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
+import FavoritePage from './FavoritePage';
+import OrderFailed from './OrderFailed';
+import OrderSuccess from './OrderSuccess';
+import ShippingAddress from './ShippingAddress';
+import ImageGalleryPage from './Gallery/ImageGalleryPage';
+import SettingPage from './SettingPage';
+import ChatMessagesPage from './Chat/ChatMessagesPage';
+import ResetPasswordPage from './ResetPasswordPage';
+import ForgotPasswordPage from './ForgotPasswordPage';
+import EmailVerifyPage from './EmailVerifyPage';
 
 export {
+  EmailVerifyPage,
+  ResetPasswordPage,
+  ForgotPasswordPage,
   FavoritePage,
-  GalleryPage,
   HomePage,
   LoginPage,
   OrderFailed,
   OrderSuccess,
   ProductsPage,
   RegisterPage,
-  Setting,
   ShippingAddress,
   ShoppingCartPage,
   SingleProductPage,
-  ChatPage,
+  SettingPage,
+  ImageGalleryPage,
+  ChatMessagesPage,
 };

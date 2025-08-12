@@ -1,42 +1,42 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Heart, Menu, Search, ShoppingCart, User, X } from "lucide-react";
-import { useSelector } from "react-redux";
-import { Avatar } from "../utils";
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Heart, Menu, Search, ShoppingCart, User, X } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { Avatar } from '../utils';
 
 const menuItems = [
   {
     id: 1,
-    name: "Home",
-    path: "/",
+    name: 'Home',
+    path: '/',
   },
   {
     id: 2,
-    name: "Product",
-    path: "/products",
+    name: 'Product',
+    path: '/products',
   },
   {
     id: 3,
-    name: "Gallery",
-    path: "/gallery",
+    name: 'Gallery',
+    path: '/gallery',
   },
   {
     id: 4,
-    name: "Message",
-    path: "/message",
+    name: 'Message',
+    path: '/message',
   },
   {
     id: 5,
-    name: "AI Generate",
-    path: "/ai",
+    name: 'AI Generate',
+    path: '/ai',
   },
 ];
 
 const NavbarTop = () => {
   const [mobileView, setMobileView] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -57,9 +57,9 @@ const NavbarTop = () => {
         <div className="flex items-center justify-between py-4">
           {/* Logo  */}
           <h2
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className="text-xl font-bold text-gray-800 flex gap-2 items-center cursor-pointer">
-            <img src={"./logo.png"} className="w-8 h-6" />
+            <img src={'./logo.png'} className="w-8 h-6" />
             Cartify
           </h2>
 
@@ -90,7 +90,7 @@ const NavbarTop = () => {
 
             {/* Cart Icon with Counter  */}
             <button
-              onClick={() => navigate("/cart")}
+              onClick={() => navigate('/cart')}
               aria-label="Shopping Cart"
               className="text-gray-700 hover:text-indigo-600 transition-colors duration-300 relative">
               <ShoppingCart className="w-5 h-5" />
@@ -103,7 +103,7 @@ const NavbarTop = () => {
 
             {/* Wishlist Icon  */}
             <button
-              onClick={() => navigate("/favorite")}
+              onClick={() => navigate('/favorite')}
               aria-label="Wishlist"
               className="text-gray-700 hover:text-indigo-600 transition-colors duration-300 max-sm:hidden">
               <Heart className="w-5 h-5" />
@@ -111,7 +111,7 @@ const NavbarTop = () => {
 
             {/* User Account Icon  */}
             <button
-              onClick={() => navigate("/setting")}
+              onClick={() => navigate('/setting')}
               className="text-gray-700 hover:text-indigo-600 transition-colors duration-300 max-sm:hidden">
               {user?._id ? (
                 <Avatar
@@ -142,7 +142,7 @@ const NavbarTop = () => {
         {/* Mobile Navigation Menu (Hidden by default)  */}
         <div
           id="mobile-menu"
-          className={`md:hidden border-t border-gray-300 ${mobileView ? "block" : "hidden"}`}>
+          className={`md:hidden border-t border-gray-300 ${mobileView ? 'block' : 'hidden'}`}>
           <ul className="flex py-5 flex-col mx-auto w-64 gap-4">
             {menuItems.map((link) => (
               <li

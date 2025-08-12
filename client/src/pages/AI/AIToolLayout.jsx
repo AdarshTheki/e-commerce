@@ -1,6 +1,6 @@
-import { Sparkles } from "lucide-react";
-import Markdown from "react-markdown";
-import useTypewriter from "../../hooks/useTypewriter";
+import { Sparkles } from 'lucide-react';
+import Markdown from 'react-markdown';
+import useTypewriter from '../../hooks/useTypewriter';
 
 const AIToolLayout = ({
   aiTool,
@@ -14,7 +14,7 @@ const AIToolLayout = ({
   data,
 }) => {
   const { displayText } = useTypewriter({
-    text: data?.response || "",
+    text: data?.response || '',
     speed: 10,
   });
 
@@ -58,7 +58,7 @@ const AIToolLayout = ({
                         border: `1px solid ${aiTool.bg.from}`,
                         color: aiTool.bg.from,
                       }
-                    : { border: "1px solid #aaa" }
+                    : { border: '1px solid #aaa' }
                 }
                 className="rounded-2xl text-nowrap w-fit text-xs px-4 py-1 text-gray-600">
                 {style}
