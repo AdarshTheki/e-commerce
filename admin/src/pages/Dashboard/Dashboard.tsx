@@ -74,7 +74,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 sm:gap-6 gap-4 md:grid-cols-3">
           <DashboardStatCard
             title="Total Revenue"
-            value={data?.totalRevenues}
+            value={data?.lastMonthRevenue}
             lastMonthValue={percentageCalculate(
               data?.lastMonthRevenue,
               data?.totalRevenues
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
           <DashboardStatCard
             title="Total Orders"
-            value={data?.totalOrders}
+            value={data?.lastMonthOrder}
             lastMonthValue={percentageCalculate(
               data?.lastMonthOrder,
               data?.totalOrders
@@ -99,7 +99,7 @@ const Dashboard = () => {
 
           <DashboardStatCard
             title="Total Products"
-            value={data?.totalProducts || 384}
+            value={data?.lastMonthProduct || 384}
             lastMonthValue={percentageCalculate(
               data?.lastMonthProduct,
               data?.totalProducts
@@ -111,7 +111,7 @@ const Dashboard = () => {
 
           <DashboardStatCard
             title="Total Customers"
-            value={data?.totalUsers || 1234}
+            value={data?.lastMonthUser || 1234}
             lastMonthValue={percentageCalculate(
               data?.lastMonthUser,
               data?.totalUsers

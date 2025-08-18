@@ -10,26 +10,32 @@ type GraphPoint = {
 };
 
 export const getSalesPerMonth = (orders: SalesChartProp[]): GraphPoint[] => {
-  if (orders?.length === 0) return [{ name: 'Jan', sales: 0 }];
+  if (!orders || orders.length === 0) {
+    return [{ name: 'No Data', sales: 0 }];
+  }
 
+  const now = new Date();
+  const currentMonthIndex = now.getMonth(); // e.g., Aug = 7
   const salesPerMonth: Record<number, number> = orders.reduce(
     (acc, order) => {
-      const monthIndex = new Date(order.createdAt).getMonth(); // Jan = 0 ... Dec = 11
+      const monthIndex = new Date(order.createdAt).getMonth();
       acc[monthIndex] = (acc[monthIndex] || 0) + order.totalPrice;
       return acc;
     },
     {} as Record<number, number>
   );
 
+  // Build last 12 months, ending at current month
   const graphData: GraphPoint[] = Array.from({ length: 12 }, (_, i) => {
+    const monthIndex = (currentMonthIndex - i + 12) % 12; // backwards
     const month = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(
-      new Date(0, i)
+      new Date(0, monthIndex)
     );
     return {
-      name: month, // "Jan", "Feb", ...
-      sales: salesPerMonth[i] || 0,
+      name: month,
+      sales: Math.floor(salesPerMonth[monthIndex]) || 0,
     };
-  });
+  }).reverse(); // reverse to show oldest → newest
 
   return graphData;
 };

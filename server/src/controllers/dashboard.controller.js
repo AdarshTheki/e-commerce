@@ -89,10 +89,8 @@ const getTotals = asyncHandler(async (req, res) => {
   ]);
 
   // Calculate revenues
-  const [totalRevenue, revenueSinceDate] = await Promise.all([
-    calculateRevenue(),
-    calculateRevenue(dateFilter),
-  ]);
+  const totalRevenue = await calculateRevenue();
+  const revenueSinceDate = await calculateRevenue(dateFilter);
 
   const totals = {
     totalUsers,

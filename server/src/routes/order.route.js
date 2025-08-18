@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.route('/').get(verifyJWT(['admin']), getAllOrders);
+router.route('/').get(verifyJWT(), getAllOrders);
 
 router.patch('/:orderId/status', verifyJWT(['admin']), updateOrderStatus);
 
