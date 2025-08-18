@@ -99,6 +99,15 @@ app.use('/api/v1/messages', messageRoute);
 app.use('/api/v1/cloudinary', cloudinaryRoute);
 app.use('/api/v1/review', reviewRoute);
 
+app.get('/api/v1/health', (req, res) => {
+  res.status(200).json({
+    status: true,
+    statusCode: 200,
+    message: 'Server is healthy 🚀',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // check API is valid endpoints
 app.use(apiEndpointMiddleware);
 
