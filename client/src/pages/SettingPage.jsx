@@ -161,7 +161,8 @@ const ProfileTab = () => {
         <label
           htmlFor="email"
           className="block text-sm font-medium text-gray-700">
-          Email
+          Email at{' '}
+          {user && <span className="status-active">{user?.loginType}</span>}
         </label>
         <div className="flex gap-2">
           <input

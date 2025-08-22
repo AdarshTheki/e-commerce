@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2, UserCircle } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 
 const Register = () => {
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -13,7 +12,7 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleRegister(fullName, email, password, confirmPassword);
+    handleRegister(email.split('@')[0], email, password, confirmPassword);
   };
 
   return (
@@ -23,29 +22,12 @@ const Register = () => {
           Create Account
         </h1>
 
-        <form id="registerForm" className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="fullName"
-              className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
-            <input
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              type="text"
-              id="fullName"
-              name="fullName"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your full name"
-            />
-          </div>
+        <form id="registerForm" className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Email
             </label>
             <input
               value={email}
@@ -77,7 +59,7 @@ const Register = () => {
             />
             <button
               type="button"
-              className="absolute top-12 right-3 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute top-12 right-3 w-[60px] items-center justify-center flex transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               onClick={() => setVisible(!visible)}>
               {visible ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
@@ -103,8 +85,8 @@ const Register = () => {
           <button
             disabled={registerLoading}
             type="submit"
-            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed">
-            {registerLoading ? 'Creating Account...' : 'Sign Up'}
+            className="w-full flex gap-2 items-center justify-center font-medium bg-indigo-600 rounded-xl text-white py-2 hover:bg-indigo-700 disabled:bg-indigo-300 transition">
+            {registerLoading ? <Loader2 /> : <UserCircle />} Register User
           </button>
         </form>
 
