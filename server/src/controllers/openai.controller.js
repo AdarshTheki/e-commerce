@@ -129,15 +129,15 @@ export const resumeReviewer = asyncHandler(async (req, res) => {
   }
 
   const prompt = `
-    You are a professional HR resume reviewer. Please review the following resume text and give constructive feedback.
-    Respond in bullet points with:
-    - Areas of improvement
-    - Strengths
-    - Suggestions for different job roles
-    
-    Resume:
-    ${parsed.text}
-  `;
+    You are a professional career coach and resume reviewer. 
+    Analyze the uploaded resume (PDF) carefully and provide detailed feedback.
+    Inputs: 
+    - Resume File: ${parsed.text}  
+    Output Format:
+    - Strengths ✅  
+    - Weaknesses ⚠️  
+    - Recommendations 📌  
+`;
 
   const response = await openai.chat.completions.create({
     model: 'gemini-2.0-flash',

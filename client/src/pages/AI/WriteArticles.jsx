@@ -23,9 +23,29 @@ const WriteArticle = () => {
 
   const handleSubmit = async () => {
     if (!input.trim()) return toast.error('Enter a valid article topic');
-    const result = await callApi('/openai/generate-text', {
-      prompt: `Write an article about "${input}" in ${selected}.`,
-    });
+
+    const prompt = `
+      You are a professional article writer. 
+      Write a well-structured, engaging, and informative article based on the given inputs.
+      Inputs: 
+      - Article Topic: ${input}  
+      - Article Length: ${selected}  
+      Rules:
+      1. Match the requested length:  
+         - Short → 200–300 words  
+         - Medium → 600–800 words  
+         - Long → 1200+ words  
+      2. Structure the article with:  
+         - A clear introduction  
+         - A well-organized body (use subheadings if helpful)  
+         - A strong conclusion  
+      3. Ensure the tone matches the topic (professional, educational, lifestyle, etc.).  
+      4. Make the article human-like, plagiarism-free, and optimized for readability.  
+      5. Do not include filler text like "In this article we will discuss" — just deliver the content directly.  
+      6. Use simple, clear, and engaging language suitable for a broad audience.  
+  `;
+
+    const result = await callApi('/openai/generate-text', { prompt });
     if (result) {
       setData(result);
       setSelected(styleData[0]);

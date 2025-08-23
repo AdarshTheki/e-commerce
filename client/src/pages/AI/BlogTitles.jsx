@@ -25,10 +25,22 @@ const BlogTitles = () => {
     styleLabel: 'Category',
   };
 
+  const prompt = `
+      You are a creative blog title generator. 
+      Generate 10 unique, catchy, and SEO-friendly blog title ideas.  
+      Inputs: 
+      - text: ${input} 
+      - category: ${selected}
+      Rules:
+      1. The titles must be relevant to the given text.  
+      2. Adapt the style to the selected category (e.g., professional for Business, trendy for Lifestyle, informative for Education, etc.).  
+      3. Each title should be concise (under 12 words).  
+      4. Use engaging words that attract clicks without being clickbait.  
+      5. Return the list in plain numbered format.
+  `;
+
   const handleSubmit = async () => {
-    const result = await callApi('/openai/generate-text', {
-      prompt: `Generate an blog title about "${input}" in category of ${selected} with in 100 words in a point wise.`,
-    });
+    const result = await callApi('/openai/generate-text', { prompt });
     if (result) {
       setData(result);
       setSelected(styleData[0]);

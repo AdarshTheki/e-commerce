@@ -44,7 +44,33 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
         return toast.error('AI to enter at least 50 char entered');
       setAILoading(true);
       const res = await axiosInstance.post('/openai/generate-text', {
-        prompt: `Generate a e-commerce brand description under 1000 characters simple text formate of this context "${formData.description}"`,
+        prompt: `
+        You are an expert in eCommerce product classification. 
+        Analyze the given text (product name or description) and return the most suitable category from the list.
+        
+        Input:  
+        - text: ${formData.description}  
+        
+        Available Categories:  
+        1. Electronics  
+        2. Fashion & Apparel  
+        3. Beauty & Personal Care  
+        4. Home & Kitchen  
+        5. Sports & Outdoors  
+        6. Health & Wellness  
+        7. Books & Stationery  
+        8. Toys & Games  
+        9. Automotive  
+        10. Grocery & Food  
+        11. Jewelry & Accessories  
+        12. Pet Supplies  
+        
+        Rules:  
+        1. Choose the single best-matching category.  
+        2. If unclear, provide the **closest possible category** (don’t leave blank).  
+        3. Do not invent new categories — only pick from the list.  
+        4. Return only the category name.  
+        `,
       });
       if (res.data.data) {
         setFormData({ ...formData, description: res.data.data.response });

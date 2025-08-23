@@ -17,6 +17,7 @@ const GenerateImage = () => {
   const [prompt, setPrompt] = useState('');
   const { data, loading, setData, callApi } = useApi();
 
+  // checkbox = Make this image public
   const aiTool = {
     ...AiToolsData[2],
     inputLabel: 'Describe Your Image',
@@ -24,13 +25,24 @@ const GenerateImage = () => {
     styleLabel: 'Style',
   };
 
-  // checkbox = Make this image public
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await callApi('/openai/generate-image', {
-      prompt: `"${prompt}" in style of "${selectedStyle}"`,
-    });
+
+    const payload = `
+      You are an expert AI image generator. 
+      Create a detailed and visually appealing image based on the following inputs:
+      Inputs: 
+      - Describe Your Image: ${prompt}  
+      - Style: ${selectedStyle}  
+      Rules:
+      1. Always match the requested style. Options: Realistic, Ghibli style, Anime style, Cartoon style, Fantasy style, 3D style, Portrait style.  
+      2. Add creative details to make the image vivid and unique while staying true to the description.  
+      3. Focus on clarity, composition, and aesthetics.  
+      4. Do not add text or watermarks in the image.  
+      5. Generate the image in high quality.
+    `;
+
+    const result = await callApi('/openai/generate-image', { prompt: payload });
     if (result) {
       setData(result);
       setPrompt('');
