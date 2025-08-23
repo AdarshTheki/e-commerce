@@ -1,19 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2, UserCircle } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
-import { OAuthButtons } from '../components';
 
 const Login = () => {
-  const [email, setEmail] = useState('guest-user@gmail.com');
-  const [password, setPassword] = useState('12345');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [visible, setVisible] = useState(false);
   const { loginLoading, handleLogin } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     handleLogin(email, password, rememberMe);
+  };
+
+  const handleOAuthLogin = (provider) => {
+    if (provider === 'guest') {
+      handleLogin('guest-user@gmail.com', '123456', true);
+    } else {
+      const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+      window.location.href = `${BACKEND_URL}/api/v1/user/${provider}`;
+    }
   };
 
   useEffect(() => {
@@ -28,18 +36,43 @@ const Login = () => {
   return (
     <section className="flex items-center justify-center p-4 min-h-[80dvh]">
       <div className="max-w-md w-full bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
-        <h1 className="text-3xl text-center pb-5 font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+        <h1 className="text-3xl text-center font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
           Sign In
         </h1>
 
-        <OAuthButtons />
+        {/* OAuth Login */}
+        <div className="flex gap-1 my-5">
+          <button
+            onClick={() => handleOAuthLogin('google')}
+            className="flex flex-1 items-center justify-center text-sm font-medium gap-2 hover:opacity-80 duration-200 border px-4 py-2 rounded-xl bg-white text-black hover:shadow-lg">
+            <img src="./google.svg" className="h-4 w-4" /> Google
+          </button>
+
+          <button
+            onClick={() => handleOAuthLogin('github')}
+            className="flex flex-1 items-center justify-center text-sm font-medium gap-2 hover:opacity-80 duration-200 border px-4 py-2 rounded-xl bg-black text-white hover:shadow-lg">
+            <img src="./github.svg" className="h-4 w-4" /> GitHub
+          </button>
+
+          <button
+            disabled={loginLoading}
+            onClick={() => handleOAuthLogin('guest')}
+            className="flex flex-1 items-center justify-center text-sm font-medium gap-2 hover:opacity-80 duration-200 border px-4 py-2 rounded-xl bg-indigo-700 text-white hover:shadow-lg">
+            {loginLoading ? (
+              <Loader2 className="h-4 w-4" />
+            ) : (
+              <UserCircle className="h-4 w-4" />
+            )}
+            Guest
+          </button>
+        </div>
 
         <form id="loginForm" className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Email
             </label>
             <input
               value={email}
@@ -77,7 +110,7 @@ const Login = () => {
             </button>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between my-4">
             <div className="flex items-center">
               <input
                 id="remember-me"
@@ -89,7 +122,7 @@ const Login = () => {
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900">
+                className="ml-2 block text-sm text-gray-900 cursor-pointer">
                 Remember me
               </label>
             </div>
@@ -106,8 +139,8 @@ const Login = () => {
           <button
             disabled={loginLoading}
             type="submit"
-            className="w-full font-medium bg-indigo-600 rounded-lg text-white py-2 hover:bg-indigo-700 disabled:bg-indigo-300 transition">
-            {loginLoading ? 'Signing In...' : 'Sign In'}
+            className="w-full flex gap-2 items-center justify-center font-medium bg-indigo-600 rounded-xl text-white py-2 hover:bg-indigo-700 disabled:bg-indigo-300 transition">
+            {loginLoading ? <Loader2 /> : <UserCircle />} Login User
           </button>
         </form>
 

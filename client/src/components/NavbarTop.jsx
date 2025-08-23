@@ -172,7 +172,7 @@ const NavbarTop = () => {
             </div>
             <button
               onClick={() => {
-                navigate(`/product?title=${searchQuery}`);
+                navigate(`/products?title=${searchQuery}`);
                 setSearchOpen(false);
               }}
               className="btn-primary h-[40px] text-sm !rounded-full">
