@@ -8,9 +8,8 @@ import rateLimit from 'express-rate-limit';
 import { Server } from 'socket.io';
 
 import { initializeSocketIO } from './config/socket.js';
-import { morganMiddleware } from './middlewares/logger.middleware.js';
-import { apiEndpointMiddleware } from './middlewares/apiEndpoint.middleware.js';
-import { errorMiddleware } from './middlewares/error.middleware.js';
+import { logger, morganMiddleware } from './middlewares/logger.middleware.js';
+import { env } from './config/constant.js';
 import './config/passport.js';
 
 // Import All Routing Files
@@ -32,13 +31,13 @@ import { stripeWebhook } from './controllers/order.controller.js';
 
 const app = express();
 
+const CORS = env.cors?.split(',');
+
 app.post(
   '/api/v1/order/stripe-webhook',
   express.raw({ type: 'application/json' }),
   stripeWebhook
 );
-
-const CORS = process.env?.CORS?.split(',');
 
 app.use(cors({ origin: CORS, credentials: true }));
 
@@ -61,6 +60,12 @@ app.use(morganMiddleware);
 
 app.use(passport.initialize());
 
+Object.keys(env).forEach((key) => {
+  if (!env[key]) {
+    logger.error(`${key} : environment variable not found!`);
+  }
+});
+
 app.use(
   session({
     secret: process.env.SECRET_TOKEN,
@@ -68,6 +73,8 @@ app.use(
     resave: true,
   })
 );
+
+app.set('trust proxy', 1);
 
 // Connect and Serve the Socket.Io
 const server = http.createServer(app);
@@ -99,6 +106,7 @@ app.use('/api/v1/messages', messageRoute);
 app.use('/api/v1/cloudinary', cloudinaryRoute);
 app.use('/api/v1/review', reviewRoute);
 
+// check API Health is valid endpoints
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: true,
@@ -109,9 +117,26 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 // check API is valid endpoints
-app.use(apiEndpointMiddleware);
+app.use((req, res) => {
+  res.status(405).json({
+    statusCode: 405,
+    path: req.url,
+    method: req.method,
+    message: 'API Endpoint Not Found',
+    success: false,
+  });
+});
 
 // global error handler middleware
-app.use(errorMiddleware);
+app.use((err, req, res, next) => {
+  const code = err?.statusCode ?? err?.status ?? 505;
+  res.status(code).json({
+    statusCode: code,
+    path: req.url,
+    method: req.method,
+    message: err?.message || 'Internal server error!',
+    success: false,
+  });
+});
 
 export default server;
