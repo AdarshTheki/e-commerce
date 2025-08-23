@@ -3,6 +3,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GithubStrategy } from 'passport-github2';
 import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/user.model.js';
+import { env } from '../config/constant.js';
 
 try {
   passport.serializeUser((user, next) => {
@@ -22,9 +23,9 @@ try {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.SERVER_REDIRECT_URL}/api/v1/user/google/callback`,
+        clientID: env.googleClientID,
+        clientSecret: env.googleClientSecret,
+        callbackURL: `${env.serverURL}/api/v1/user/google/callback`,
       },
       async (_, __, profile, next) => {
         const user = await User.findOne({ email: profile._json.email });
@@ -52,9 +53,9 @@ try {
   passport.use(
     new GithubStrategy(
       {
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: `${process.env.SERVER_REDIRECT_URL}/api/v1/user/github/callback`,
+        clientID: env.githubClientID,
+        clientSecret: env.githubClientSecret,
+        callbackURL: `${env.serverURL}/api/v1/user/github/callback`,
       },
       async (_, __, profile, next) => {
         const user = await User.findOne({ email: profile._json.email });

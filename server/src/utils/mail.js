@@ -1,5 +1,6 @@
 import Mailgen from 'mailgen';
 import nodemailer from 'nodemailer';
+import { env } from '../config/constant.js';
 
 const sendEmail = async ({ mailgenContent = '', to = '', subject = '' }) => {
   const mailGenerator = new Mailgen({
@@ -14,11 +15,11 @@ const sendEmail = async ({ mailgenContent = '', to = '', subject = '' }) => {
   const emailText = mailGenerator.generatePlaintext(mailgenContent); // plain text email
 
   const transporter = nodemailer.createTransport({
-    host: process.env.MAILTRAP_SMTP_HOST,
-    port: process.env.MAILTRAP_SMTP_PORT,
+    host: env.mailtrapHost,
+    port: env.mailtrapPort,
     auth: {
-      user: process.env.MAILTRAP_SMTP_USER,
-      pass: process.env.MAILTRAP_SMTP_PASS,
+      user: env.mailtrapUser,
+      pass: env.mailtrapPass,
     },
   });
 

@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import { logger } from '../middlewares/logger.middleware.js';
+import { env } from './constant.js';
 
 async function connectDB() {
   try {
-    const { connection } = await mongoose.connect(process.env.MONGODB_URI);
+    const { connection } = await mongoose.connect(env.mongodbURI);
     const { host, name } = connection;
     logger.info(`MongoDb On >> ${host} - ${name}`);
   } catch (error) {

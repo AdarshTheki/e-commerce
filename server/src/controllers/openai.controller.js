@@ -10,6 +10,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { cloudinary } from '../utils/cloudinary.js';
+import { env } from '../config/constant.js';
 
 // gen_remove:
 // background_removal
@@ -23,7 +24,7 @@ import { cloudinary } from '../utils/cloudinary.js';
 // `Review the following resume and provide a constructive feedback on its strengths, weaknesses and areas for improvement. Resume content:\n\ ${pdfData.text}`;
 
 const openai = new OpenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: env.geminiApiKey,
   baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
 });
 
@@ -77,7 +78,7 @@ export const generateTextToImage = asyncHandler(async (req, res) => {
     {
       headers: {
         ...formData.getHeaders(),
-        'x-api-key': process.env.CLIPDROP_API_KEY,
+        'x-api-key': env.clipDropApiKey,
       },
       responseType: 'arraybuffer',
     }
