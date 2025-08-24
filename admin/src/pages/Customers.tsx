@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon, Plus } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import { useFetch, useTitle } from '../hooks';
 import { Input, Loading, NotFound, Select } from '../components/ui';
@@ -51,7 +51,9 @@ const Customers = () => {
         <div className="flex gap-2">
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSearch(e.target.value)
+            }
             type="text"
             placeholder="User search..."
           />
