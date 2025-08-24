@@ -1,18 +1,18 @@
-# Use Node.js base image
-FROM node:latest
+# Use a smaller base image
+FROM node:24-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Install dependencies only (no dev dependencies in production)
 COPY package*.json ./
-RUN npm install
+RUN npm install --omit=dev
 
-# Copy the rest of the app
+# Copy only necessary files
 COPY . .
 
 # Expose the backend port
 EXPOSE 8000
 
-# Run the backend server
-CMD ["npm", "run", "dev"]
+# Start the server
+CMD ["npm", "run", "start"]

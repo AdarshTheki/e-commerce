@@ -1,0 +1,37 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: ['master']
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: action/checkout@v4
+
+      - name: Set up Node
+        uses: action/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies & test
+        run: |
+          cd server && npm install 
+          cd ../client && npm install && npm run build 
+          cd ../admin && npm install && npm run build
+
+      - name: Build Docker Image
+        run: |
+          docker build -t adarshverma549/cartify-admin ./admin
+          docker build -t adarshverma549/cartify-client ./client
+          docker build -t adarshverma549/cartify-server ./server
+
+      - name: Push To Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
+          docker push adarshverma549/cartify-server 
+          docker push adarshverma549/cartify-client 
+          docker push adarshverma549/cartify-admin
