@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosError, type AxiosInstance } from 'axios';
 import {
   Users,
   LayoutDashboard,

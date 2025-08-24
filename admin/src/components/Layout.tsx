@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+import { type RootState } from '@/redux/store';
 import { Menu, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/Avatar';
 import { menuItems } from '@/lib/utils';
