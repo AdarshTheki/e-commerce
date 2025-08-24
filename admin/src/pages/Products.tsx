@@ -1,6 +1,6 @@
 import { NavLink, useSearchParams } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronRightIcon, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ProductCard } from '@/components';
 import { Input, NotFound, Select } from '../components/ui';
@@ -56,8 +56,10 @@ export default function Product() {
         <div className="flex gap-2">
           <Input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
             type="text"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearch(e.target.value);
+            }}
             placeholder="Search..."
           />
           <Select
