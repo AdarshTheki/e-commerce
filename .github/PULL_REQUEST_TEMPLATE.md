@@ -7,8 +7,8 @@ Fixes #(issue)
 
 ### ✅ Type of Change
 
-- [ ] Bug fix 🐞
-- [ ] New feature ✨
-- [ ] Refactor ♻️
-- [ ] Documentation update 📝
-- [ ] Other (please describe):
+- Bug fix 🐞
+- New feature ✨
+- Refactor ♻️
+- Documentation update 📝
+- Other (please describe):
