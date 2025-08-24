@@ -224,7 +224,7 @@ const ProductForm = ({ data }: { data?: ProductType }) => {
           </div>
           <div className="flex gap-1 flex-col">
             <Textarea
-              onChange={(e) =>
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 setFormData({
                   ...formData,
                   description: e.target.value,
