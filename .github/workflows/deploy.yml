@@ -21,3 +21,7 @@ jobs:
         run: |
           docker build -t adarshverma549/cartify-server ./server
           docker push adarshverma549/cartify-server
+          docker build -t adarshverma549/cartify-admin ./admin
+          docker push adarshverma549/cartify-admin
+          docker build -t adarshverma549/cartify-client ./client
+          docker push adarshverma549/cartify-client
