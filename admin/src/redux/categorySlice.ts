@@ -1,5 +1,9 @@
 import { axiosInstance } from '@/lib/utils';
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from '@reduxjs/toolkit';
 
 // Define the type for the state
 interface CategoryState {

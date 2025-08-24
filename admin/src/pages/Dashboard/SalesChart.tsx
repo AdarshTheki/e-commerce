@@ -6,7 +6,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { getSalesPerMonth, SalesChartProp } from '@/lib/action';
+import { getSalesPerMonth, type SalesChartProp } from '@/lib/action';
 import { useFetch } from '@/hooks';
 import { Loading } from '@/components/ui';
 

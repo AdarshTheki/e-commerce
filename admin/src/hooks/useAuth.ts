@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { axiosInstance, errorHandler } from '@/lib/utils';
 import { login } from '@/redux/authSlice';
 import { AxiosError } from 'axios';
-import { RootState } from '@/redux/store';
+import { type RootState } from '@/redux/store';
 
 const useAuth = () => {
   const dispatch = useDispatch();

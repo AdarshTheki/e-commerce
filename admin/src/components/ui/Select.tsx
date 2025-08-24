@@ -28,12 +28,16 @@ const Select: React.FC<SelectProp> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between gap-2.5 text-left px-4 pr-2 py-2 border rounded-md border-gray-400 ${isOpen && 'outline outline-1'}`}>
+        className={`w-full flex items-center justify-between gap-2.5 text-left px-4 pr-2 py-2 border rounded-md border-gray-400 ${
+          isOpen && 'outline outline-1'
+        }`}>
         <span className="text-nowrap capitalize">
           {(label || selected).substring(0, 18)}
         </span>
         <svg
-          className={`w-5 h-5 inline float-right transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+          className={`w-5 h-5 inline float-right transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : 'rotate-0'
+          }`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"

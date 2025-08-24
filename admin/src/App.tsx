@@ -26,7 +26,7 @@ import { useEffect } from 'react';
 import { login } from './redux/authSlice';
 import { fetchCategories } from './redux/categorySlice';
 import { fetchBrands } from './redux/brandSlice';
-import { AppDispatch } from './redux/store';
+import { type AppDispatch } from './redux/store';
 
 const App: React.FC = () => {
   const { data, loading } = useFetch<UserType | null>('/user/current-user');
