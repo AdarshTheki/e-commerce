@@ -143,7 +143,7 @@ const CategoryForm = ({ item }: { item?: CategoryType }) => {
           <label htmlFor="description">Description</label>
           <Textarea
             value={formData.description}
-            onChange={(e) =>
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
               setFormData({
                 ...formData,
                 description: e.target.value,

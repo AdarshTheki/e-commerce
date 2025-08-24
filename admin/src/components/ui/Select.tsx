@@ -29,7 +29,7 @@ const Select: React.FC<SelectProp> = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between gap-2.5 text-left px-4 pr-2 py-2 border rounded-md border-gray-400 ${
-          isOpen && 'outline outline-1'
+          isOpen && 'outline-1'
         }`}>
         <span className="text-nowrap capitalize">
           {(label || selected).substring(0, 18)}

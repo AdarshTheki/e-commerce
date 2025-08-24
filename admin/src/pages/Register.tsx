@@ -32,7 +32,9 @@ const Register = () => {
             </label>
             <input
               value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setFullName(e.target.value)
+              }
               type="text"
               id="fullName"
               name="fullName"
@@ -49,7 +51,9 @@ const Register = () => {
             </label>
             <input
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
               type="email"
               id="email"
               name="email"

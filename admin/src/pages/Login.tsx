@@ -31,7 +31,9 @@ const Login = () => {
             </label>
             <input
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setEmail(e.target.value)
+              }
               type="email"
               id="email"
               name="email"
@@ -49,7 +51,9 @@ const Login = () => {
             </label>
             <input
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPassword(e.target.value)
+              }
               type={visible ? 'text' : 'password'}
               id="password"
               name="password"

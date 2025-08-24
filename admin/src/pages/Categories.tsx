@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, Plus } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 
@@ -51,7 +51,9 @@ const CategoryListing = () => {
         <div className="flex gap-2">
           <Input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setQuery(e.target.value)
+            }
             type="text"
             placeholder="Search..."
           />

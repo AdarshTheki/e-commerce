@@ -29,19 +29,31 @@ export default function ProfileSettings() {
             <nav className="space-y-2  gap-2">
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === 'profile' ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+                  activeTab === 'profile'
+                    ? 'bg-indigo-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-200'
+                }`}>
                 <User className="mr-3" size={20} />
                 Profile
               </button>
               <button
                 onClick={() => setActiveTab('password')}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === 'password' ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+                  activeTab === 'password'
+                    ? 'bg-indigo-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-200'
+                }`}>
                 <Lock className="mr-3" size={20} />
                 Password
               </button>
               <button
                 onClick={() => setActiveTab('logout')}
-                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${activeTab === 'logout' ? 'bg-indigo-500 text-white' : 'text-gray-600 hover:bg-gray-200'}`}>
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+                  activeTab === 'logout'
+                    ? 'bg-indigo-500 text-white'
+                    : 'text-gray-600 hover:bg-gray-200'
+                }`}>
                 <LogOut className="mr-3" size={20} />
                 Logout
               </button>
@@ -113,7 +125,9 @@ const ProfileTab = () => {
             type="text"
             id="fullName"
             value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setFullName(e.target.value)
+            }
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -127,7 +141,9 @@ const ProfileTab = () => {
             type="email"
             id="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setEmail(e.target.value)
+            }
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -166,7 +182,9 @@ const PasswordTab = () => {
             type="password"
             id="oldPassword"
             value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setOldPassword(e.target.value)
+            }
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -180,7 +198,9 @@ const PasswordTab = () => {
             type="password"
             id="newPassword"
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setNewPassword(e.target.value)
+            }
             className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
