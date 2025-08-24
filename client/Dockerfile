@@ -1,20 +1,23 @@
-# Stage 1: Build React app
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
+
 COPY package*.json ./
-RUN npm install
+
+RUN npm install --frozen-lockfile || npm install
 
 COPY . .
+
 RUN npm run build
 
-# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy build output to nginx html folder
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy build output from Vite to Nginx folder
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Expose Nginx port
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
