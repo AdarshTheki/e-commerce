@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Integration tests check & build
 
 # 1. Trigger: workflow run
 on:
@@ -7,7 +7,7 @@ on:
 
 # 2. Job: job run on virtual machine
 jobs:
-  build:
+  integration-tests:
     run-on: ubuntu-latest
 
     # services:
