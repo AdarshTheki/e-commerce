@@ -8,7 +8,7 @@ on:
 # 2. Job: job run on virtual machine
 jobs:
   integration-tests:
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
 
     # services:
     #   mongo:
