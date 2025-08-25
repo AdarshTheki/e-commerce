@@ -20,11 +20,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
       # Client (React + Vite)
       - name: Install client dependencies
-        run: npm install
+        run: npm ci
         working-directory: client
 
       - name: Build client (React + Vite)
@@ -33,7 +32,7 @@ jobs:
 
       # Admin (React + Vite + TS)
       - name: Install admin dependencies
-        run: npm install
+        run: npm ci
         working-directory: admin
 
       - name: Build admin (React + Vite + TS)
