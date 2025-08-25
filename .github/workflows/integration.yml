@@ -10,6 +10,10 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
     # services:
     #   mongo:
     #     image: mongo
@@ -25,10 +29,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@4
 
-      - name: set Up Nodejs
-        uses: actions/setup-node@4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       # 3. Steps: Install packages, run test, or deploy
 
