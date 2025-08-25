@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+# 1. Trigger: workflow run
+on:
+  pull_request:
+    branches: ['master']
+
+# 2. Job: job run on virtual machine
+jobs:
+  build:
+    run-on: ubuntu-latest
+
+    # services:
+    #   mongo:
+    #     image: mongo
+    #     ports:
+    #       - 27017:27017
+    #     options: >-
+    #       --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
+    #       --health-interval=10s
+    #       --health-timeout=5s
+    #       --health-retries=5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@4
+
+      - name: set Up Nodejs
+        uses: actions/setup-node@4
+        with:
+          node-version: '18'
+
+      # 3. Steps: Install packages, run test, or deploy
+
+      # - name: Install server dependencies
+      #   run: npm install
+      #   working-directory: server
+
+      # - name: Run server test
+      #   run: npm test
+      #   working-directory: server
+
+      - name: Install client dependencies
+        run: npm install
+        working-directory: client
+
+      - name: Build react + vite app
+        run: npm run build
+        working-directory: client
+
+      - name: Install admin dependencies
+        run: npm install
+        working-directory: admin
+
+      - name: Build react + vite + ts App
+        run: npm run build
+        working-directory: admin
+
+      # - name: Run Test
+      #   run: npm test
