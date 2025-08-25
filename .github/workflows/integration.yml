@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@4
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -37,29 +37,20 @@ jobs:
 
       # 3. Steps: Install packages, run test, or deploy
 
-      # - name: Install server dependencies
-      #   run: npm install
-      #   working-directory: server
-
-      # - name: Run server test
-      #   run: npm test
-      #   working-directory: server
-
+      # Client (React + Vite)
       - name: Install client dependencies
         run: npm install
         working-directory: client
 
-      - name: Build react + vite app
+      - name: Build client (React + Vite)
         run: npm run build
         working-directory: client
 
+      # Admin (React + Vite + TS)
       - name: Install admin dependencies
         run: npm install
         working-directory: admin
 
-      - name: Build react + vite + ts App
+      - name: Build admin (React + Vite + TS)
         run: npm run build
         working-directory: admin
-
-      # - name: Run Test
-      #   run: npm test
