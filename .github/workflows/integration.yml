@@ -1,11 +1,9 @@
 name: Integration tests check & build
 
-# 1. Trigger: workflow run
 on:
   pull_request:
     branches: ['master']
 
-# 2. Job: job run on virtual machine
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
@@ -13,17 +11,6 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-
-    # services:
-    #   mongo:
-    #     image: mongo
-    #     ports:
-    #       - 27017:27017
-    #     options: >-
-    #       --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
-    #       --health-interval=10s
-    #       --health-timeout=5s
-    #       --health-retries=5
 
     steps:
       - name: Checkout Code
@@ -34,8 +21,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-      # 3. Steps: Install packages, run test, or deploy
 
       # Client (React + Vite)
       - name: Install client dependencies
