@@ -56,6 +56,8 @@ const userSchema = new Schema(
     forgotPasswordExpiry: Date,
     emailVerificationToken: String,
     emailVerificationExpiry: Date,
+    storageUsed: { type: Number, default: 0 },
+    storageLimit: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -19,9 +19,9 @@ jobs:
 
       - name: Build & Push Docker Image
         run: |
-          docker build -t adarshverma549/cartify-server ./server
-          docker push adarshverma549/cartify-server
-          docker build -t adarshverma549/cartify-admin ./admin
-          docker push adarshverma549/cartify-admin
-          docker build -t adarshverma549/cartify-client ./client
-          docker push adarshverma549/cartify-client
+          docker build -t ${{ secrets.DOCKER_USER }}/cartify-server ./server
+          docker push ${{ secrets.DOCKER_USER }}/cartify-server
+          docker build -t ${{ secrets.DOCKER_USER }}/cartify-admin ./admin
+          docker push ${{ secrets.DOCKER_USER }}/cartify-admin
+          docker build -t ${{ secrets.DOCKER_USER }}/cartify-client ./client
+          docker push ${{ secrets.DOCKER_USER }}/cartify-client

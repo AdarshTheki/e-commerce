@@ -17,6 +17,11 @@ const menuItems = [
     path: '/products',
   },
   {
+    id: 6,
+    name: 'File Manager',
+    path: '/file-manager',
+  },
+  {
     id: 3,
     name: 'Gallery',
     path: '/gallery',
@@ -64,7 +69,7 @@ const NavbarTop = () => {
           </h2>
 
           {/* Desktop Navigation  */}
-          <nav className="hidden md:block">
+          <nav className="hidden lg:block">
             <ul className="flex space-x-8">
               {menuItems.map((link) => (
                 <li
@@ -129,7 +134,7 @@ const NavbarTop = () => {
               onClick={() => setMobileView(!mobileView)}
               id="mobile-menu-button"
               aria-label="Menu"
-              className="md:hidden text-gray-700 hover:text-indigo-600 transition-colors duration-300">
+              className="lg:hidden text-gray-700 hover:text-indigo-600 transition-colors duration-300">
               {mobileView ? (
                 <X className="w-5 h-5" />
               ) : (
@@ -139,10 +144,11 @@ const NavbarTop = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation Menu (Hidden by default)  */}
+        {/* Mobile Navigation Menu */}
         <div
-          id="mobile-menu"
-          className={`md:hidden border-t border-gray-300 ${mobileView ? 'block' : 'hidden'}`}>
+          className={`lg:hidden border-t border-gray-300 overflow-hidden transition-all duration-500 ease-in-out ${
+            mobileView ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}>
           <ul className="flex py-5 flex-col mx-auto w-64 gap-4">
             {menuItems.map((link) => (
               <li
@@ -158,7 +164,11 @@ const NavbarTop = () => {
           </ul>
         </div>
 
-        {!!searchOpen && (
+        {/* Search Bar */}
+        <div
+          className={`transition-all duration-500 ease-in-out overflow-hidden ${
+            searchOpen ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'
+          }`}>
           <div className="p-2 flex gap-2 items-center justify-center left-0 w-full">
             <div className="flex items-center border pl-4 gap-2 bg-white border-gray-500/30 h-[40px] rounded-full overflow-hidden max-w-md w-full">
               <Search className="w-5 h-5" />
@@ -179,7 +189,7 @@ const NavbarTop = () => {
               Search
             </button>
           </div>
-        )}
+        </div>
       </div>
     </header>
   );

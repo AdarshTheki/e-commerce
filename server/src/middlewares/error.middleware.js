@@ -4,7 +4,7 @@ export const errorMiddleware = async (err, req, res, next) => {
     statusCode: code,
     path: req.url,
     method: req.method,
-    message: err?.message || 'Internal server error!',
+    message: err?.stack || 'Internal server error!',
     success: false,
   });
 };

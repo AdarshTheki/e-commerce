@@ -5,6 +5,7 @@ import HomeCertificate from './HomeCertificate';
 import NavbarTop from './NavbarTop';
 import NavbarBottom from './NavbarBottom';
 import ForgotPassword from './ForgotPassword';
+import S3FileManage from './S3FileManage';
 
 export {
   ForgotPassword,
@@ -14,4 +15,5 @@ export {
   HeartFavorite,
   Footer,
   ProductItem,
+  S3FileManage,
 };
