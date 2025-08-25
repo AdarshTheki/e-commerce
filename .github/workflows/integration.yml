@@ -1,0 +1,40 @@
+name: Integration tests check & build
+
+on:
+  pull_request:
+    branches: ['master']
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Client (React + Vite)
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build client (React + Vite)
+        run: npm run build
+        working-directory: client
+
+      # Admin (React + Vite + TS)
+      - name: Install admin dependencies
+        run: npm ci
+        working-directory: admin
+
+      - name: Build admin (React + Vite + TS)
+        run: npm run build
+        working-directory: admin
