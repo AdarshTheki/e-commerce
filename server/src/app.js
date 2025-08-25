@@ -28,6 +28,7 @@ import chatRoute from './routes/chat.route.js';
 import cloudinaryRoute from './routes/cloudinary.route.js';
 import reviewRoute from './routes/review.route.js';
 import orderRoute from './routes/order.route.js';
+import s3BucketRoute from './routes/s3Bucket.route.js';
 import { stripeWebhook } from './controllers/order.controller.js';
 
 const app = express();
@@ -98,13 +99,17 @@ app.use('/api/v1/chats', chatRoute);
 app.use('/api/v1/messages', messageRoute);
 app.use('/api/v1/cloudinary', cloudinaryRoute);
 app.use('/api/v1/review', reviewRoute);
+app.use('/api/v1/s3-bucket', s3BucketRoute);
 
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
-    status: true,
-    statusCode: 200,
-    message: 'Server is healthy 🚀',
+    status: 200,
+    success: true,
+    message: 'Server is running',
     timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: '1.0.0',
   });
 });
 

@@ -25,6 +25,7 @@ import {
   SettingPage,
   ImageGalleryPage,
   ChatMessagesPage,
+  FileManagePage,
 } from './pages';
 import RootLayout from './RootLayout';
 
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
       { path: 'reset-password/:resetToken', element: <ResetPasswordPage /> },
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'verify-email/:verificationToken', element: <EmailVerifyPage /> },
+      { path: 'file-manager', element: <FileManagePage /> },
       {
         element: <ProtectedLayout />,
         children: [

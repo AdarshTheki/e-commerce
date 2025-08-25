@@ -14,8 +14,10 @@ import ChatMessagesPage from './Chat/ChatMessagesPage';
 import ResetPasswordPage from './ResetPasswordPage';
 import ForgotPasswordPage from './ForgotPasswordPage';
 import EmailVerifyPage from './EmailVerifyPage';
+import FileManagePage from './FileManagePage';
 
 export {
+  FileManagePage,
   EmailVerifyPage,
   ResetPasswordPage,
   ForgotPasswordPage,

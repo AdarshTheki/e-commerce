@@ -1,4 +1,4 @@
-name: Integration tests check & build
+name: PR to Check Test Cases
 
 on:
   pull_request:
